@@ -598,7 +598,7 @@
                 const isLeftHigher = lAnkle.y < rAnkle.y;
                 const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle;
                 const restingAnkle = testAnkle === lAnkle ? rAnkle : lAnkle;
-                const buttockPivot = { x: hip.x, y: hip.y + bodyThicknessOffset, score: 1 };
+                const buttockPivot = { x: hip.x, y: hip.y + bodyThicknessOffset, score: hip.score };
                 let bedRefPoint = restingAnkle.score > 0.2 ? { ...restingAnkle } : { x: buttockPivot.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttockPivot.y, score: 1 };
                 activePoints = [bedRefPoint, buttockPivot, { ...testAnkle }];
             } else if (testType === 'hip') {
@@ -606,32 +606,47 @@
                 const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee;
                 const restingAnkle = testKnee === lKnee ? rAnkle : lAnkle;
                 const restingKnee = testKnee === lKnee ? rKnee : lKnee;
-                const buttockPivot = { x: hip.x, y: hip.y + bodyThicknessOffset, score: 1 };
+                const buttockPivot = { x: hip.x, y: hip.y + bodyThicknessOffset, score: hip.score };
                 let bedRefPoint = restingAnkle.score > 0.2 ? { ...restingAnkle } : (restingKnee.score > 0.2 ? { ...restingKnee } : { x: buttockPivot.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttockPivot.y, score: 1 });
                 activePoints = [bedRefPoint, buttockPivot, { ...testKnee }];
             } else {
                 const isLeftHigher = lElbow.y < rElbow.y;
-                activePoints = [{ x: hip.x, y: hip.y + bodyThicknessOffset, score: 1 }, { x: shoulder.x, y: shoulder.y + bodyThicknessOffset, score: 1 }, { ...((isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow) }];
+                const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
+                const backPivot = { x: shoulder.x, y: shoulder.y + bodyThicknessOffset, score: shoulder.score };
+                const buttockRef = { x: hip.x, y: hip.y + bodyThicknessOffset, score: hip.score };
+                activePoints = [ buttockRef, backPivot, { ...testElbow } ];
             }
 
-            activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
+            // 对于静态图片：防丢失保底；对于实时视频：不保底，直接用下方的防误判拦截
+            if (!isLive) {
+                activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
+            }
 
             // 实时模式的峰值算法判定
             if (isLive) {
-                if (activePoints.length === 3) {
-                    
-                    // 【算法改进 1：低置信度防丢帧过滤】
-                    // 如果识别到肢体末端（如脚踝因与床面颜色接近）的可信度低于 25%
-                    // 则直接跳过该帧计算，既不录入错误角度，也不中断正在进行的2秒倒计时
-                    if (activePoints[2].score < 0.25) {
-                        document.getElementById('live-status-text').innerHTML = `<span class="text-yellow-400 font-bold text-xs tracking-wider">⚠️ 画面受衣物干扰，请保持姿势...</span>`;
-                        return; 
-                    }
+                // 【核心升级】：实体防误判工业级过滤网 (Anti-Ghosting Filter)
+                // 1. 确保躯干主轴(肩、髋)在画面内且清晰 (防测家具)
+                const isTorsoVisible = shoulder.score > 0.35 && hip.score > 0.35;
+                // 2. 确保正在测试的肢端(脚踝、膝盖、手肘)清晰可见
+                const isLimbVisible = activePoints[2].score > 0.30;
 
+                if (!isTorsoVisible || !isLimbVisible) {
+                    // 如果判定不是人，发出红色警告，彻底切断测角和计时逻辑
+                    document.getElementById('live-status-text').innerHTML = `<span class="text-rose-400 font-bold text-xs tracking-wider bg-rose-950/70 px-3 py-1.5 rounded-full border border-rose-500/50 backdrop-blur-sm animate-pulse shadow-lg">⚠️ 未检测到完整人体，请入镜</span>`;
+                    document.getElementById('live-angle-display').innerText = '--°';
+                    isHolding = false;
+                    holdStartTime = 0;
+                    
+                    // 清除错误的绿色线条，只保留真实的摄像机干净画面
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                    return; // 阻断执行
+                }
+
+                if (activePoints.length === 3) {
                     const currentAngle = getAngle(activePoints[0], activePoints[1], activePoints[2]);
                     
                     // 【算法改进 2：中值平滑滤波】
-                    // 收集近6帧数据，去掉最高和最低值再求平均。彻底消灭因单帧噪点引起的角度跳动破坏倒计时。
                     angleHistory.push(currentAngle);
                     if (angleHistory.length > 6) angleHistory.shift();
                     let sortedAngles = [...angleHistory].sort((a, b) => a - b);
@@ -640,46 +655,44 @@
 
                     document.getElementById('live-angle-display').innerText = smoothedAngle.toFixed(1) + '°';
 
-                    // 【算法改进 3：动态目标锚定保持】
+                    // 【核心算法重构】：等长收缩(Isometric Hold)严格判定与防死锁
                     if (smoothedAngle > 25) {
-                        if (!isHolding) {
+                        if (smoothedAngle > liveMaxAngle) {
+                            // 1. 创新高 (发力上抬阶段)
+                            liveMaxAngle = smoothedAngle;
+                            saveFrameToBuffer(); // 永远存最高点那帧
+                            holdStartTime = Date.now(); // 只要在移动创新高，计时器就不断重置
                             isHolding = true;
-                            holdStartTime = Date.now();
-                            liveMaxAngle = smoothedAngle; // 设定当前为“锚定目标”
-                            saveFrameToBuffer();
-                        } else {
-                            // 判定是否在“锚定目标”附近（±6度容差，允许正常肌肉发抖）
-                            if (Math.abs(smoothedAngle - liveMaxAngle) <= 6) {
-                                // 还在目标内，且比之前略高，缓慢推高锚点并更新抓拍（应对客户努力慢慢拉伸）
-                                if (smoothedAngle > liveMaxAngle) {
-                                    liveMaxAngle = (liveMaxAngle * 0.7) + (smoothedAngle * 0.3);
-                                    saveFrameToBuffer();
-                                }
-
-                                let holdTime = Date.now() - holdStartTime;
-                                if (holdTime >= 2000) {
-                                    triggerAutoLock();
-                                    return; // 保持2秒完成，锁定！
-                                } else {
-                                    let timeLeft = ((2000 - holdTime) / 1000).toFixed(1);
-                                    document.getElementById('live-status-text').innerHTML = `<span class="text-rose-500 font-black tracking-widest text-sm animate-pulse">🎯 保持住！ ${timeLeft}s 📸</span>`;
-                                }
-                            } else if (smoothedAngle > liveMaxAngle + 6) {
-                                // 突然大幅度升高，说明客户还在发力上抬！重置2秒倒计时，以新高度为锚点
+                            document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 font-bold text-xs tracking-wider animate-pulse">正在发力上抬...</span>`;
+                        } else if (liveMaxAngle - smoothedAngle <= 5) {
+                            // 2. 停在了最高点附近（允许5度以内的正常肌肉发抖容差）
+                            if (!isHolding) {
+                                isHolding = true;
                                 holdStartTime = Date.now();
-                                liveMaxAngle = smoothedAngle;
-                                saveFrameToBuffer();
-                            } else {
-                                // 角度大幅度掉落（放下了腿或手），判定为放弃保持，重置
-                                isHolding = false;
-                                holdStartTime = 0;
-                                document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 text-xs tracking-wider animate-pulse">已重新追踪，请抬起...</span>`;
                             }
+                            let holdTime = Date.now() - holdStartTime;
+                            if (holdTime >= 2000) {
+                                triggerAutoLock();
+                                return; // 保持2秒达标，完美咔嚓！
+                            } else {
+                                let timeLeft = ((2000 - holdTime) / 1000).toFixed(1);
+                                document.getElementById('live-status-text').innerHTML = `<span class="text-rose-500 font-black tracking-widest text-sm shadow-sm px-2 py-1 bg-slate-900/50 rounded-full">🎯 保持住！ ${timeLeft}s 📸</span>`;
+                            }
+                        } else {
+                            // 3. 【核心修复】：角度突然掉落超过5度 
+                            // -> 判定为“借力甩腿（冲高回落）”或“中途泄力”
+                            // 此时必须把历史最高点“降级”至当前角度，重新寻找客户能真正Hold住的真实活动度！
+                            liveMaxAngle = smoothedAngle;
+                            isHolding = false;
+                            holdStartTime = 0;
+                            document.getElementById('live-status-text').innerHTML = `<span class="text-amber-400 font-bold text-xs tracking-wider">角度回落，正在重新锚定...</span>`;
                         }
                     } else {
+                        // 4. 完全放下（低于25度）
                         isHolding = false;
                         holdStartTime = 0;
-                        document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 text-xs tracking-wider animate-pulse">自动追踪最高点中...</span>`;
+                        liveMaxAngle = 0; // 【关键】：彻底清空记录，防止干扰下一次举腿
+                        document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 text-xs tracking-wider flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>等待动作开始...</span>`;
                     }
                 }
                 renderCanvasAndResult(videoElement); 
