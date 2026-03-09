@@ -198,12 +198,19 @@
                 <div class="text-5xl font-black text-white z-10" id="display-angle">0.0°</div>
                 <div id="threshold-feedback" class="mt-2 w-full py-2 px-3 rounded-lg text-center font-bold text-xs sm:text-sm border-2 transition-colors z-10"></div>
 
-                <button id="save-score-btn" class="mt-4 w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-transform active:scale-[0.98] flex items-center justify-center gap-2 text-base sm:text-lg z-10">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    录入该侧成绩并继续
-                </button>
+                <!-- 【修改】：将单一按钮改为“重拍”与“录入”的组合按钮组 -->
+                <div class="flex gap-2 mt-4 w-full z-10">
+                    <button id="retake-btn" class="flex-[1] py-3.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl font-bold shadow-md transition-transform active:scale-[0.98] flex items-center justify-center gap-1 text-sm sm:text-base border border-slate-600">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        重拍
+                    </button>
+                    <button id="save-score-btn" class="flex-[2] py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-transform active:scale-[0.98] flex items-center justify-center gap-1.5 text-sm sm:text-base">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        录入并继续
+                    </button>
+                </div>
                 
-                <button id="download-btn" class="mt-2 text-[10px] sm:text-xs text-slate-400 hover:text-white underline underline-offset-4 transition-colors z-10">
+                <button id="download-btn" class="mt-3 text-[10px] sm:text-xs text-slate-400 hover:text-white underline underline-offset-4 transition-colors z-10">
                     仅保存当前单项截图
                 </button>
             </div>
@@ -290,6 +297,7 @@
         const btnReset = document.getElementById('reset-btn');
         const btnDownload = document.getElementById('download-btn');
         const btnSaveScore = document.getElementById('save-score-btn');
+        const btnRetake = document.getElementById('retake-btn'); // 【新增】重拍按钮引用
         const currentBoardTitle = document.getElementById('current-board-title');
 
         const btnVoiceToggle = document.getElementById('voice-toggle');
@@ -308,6 +316,7 @@
         let dotHitRadius = 35; 
         let currentFinalAngle = 0; 
         let currentFeedbackText = ""; 
+        let lastCaptureMethod = null; // 【新增】记录上一次的拍摄方式 (live/static)
         
         // Voice & Live Tracking State
         let voiceEnabled = false;
@@ -322,6 +331,15 @@
         let angleHistory = [];
         let isHolding = false;
         let holdStartTime = 0;
+
+        // 【新增辅助函数】保存最高点截图和点位
+        function saveFrameToBuffer() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
+            tempCanvas.getContext('2d').drawImage(videoElement, 0, 0);
+            liveMaxFrameDataURL = tempCanvas.toDataURL('image/jpeg', 0.85);
+            liveMaxPoints = activePoints.map(p => ({...p}));
+        }
 
         // --- 1. Voice Assistant Module ---
         btnVoiceToggle.addEventListener('click', () => {
@@ -418,6 +436,7 @@
         // --- 4. 实时动态捕捉 (峰值自动锁定算法) ---
         btnStartCamera.addEventListener('click', async () => {
             resetCanvasForNewUpload();
+            lastCaptureMethod = 'live'; // 【新增】记忆模式
             // 重置峰值算法状态
             liveMaxAngle = 0;
             liveMaxFrameDataURL = null;
@@ -492,11 +511,7 @@
 
             // 如果算法抓到了帧，使用算法帧；如果刚开相机就点手动，直接截取当前帧
             if (!liveMaxFrameDataURL) {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-                tempCanvas.getContext('2d').drawImage(videoElement, 0, 0);
-                liveMaxFrameDataURL = tempCanvas.toDataURL('image/jpeg', 0.9);
-                liveMaxPoints = activePoints.map(p => ({...p}));
+                saveFrameToBuffer();
                 liveMaxAngle = currentFinalAngle || 0;
             }
 
@@ -527,6 +542,7 @@
             const file = e.target.files[0];
             if (!file) return;
             resetCanvasForNewUpload();
+            lastCaptureMethod = 'static'; // 【新增】记忆模式
             const reader = new FileReader();
             reader.onload = function(event) {
                 const tempImg = new Image();
@@ -603,48 +619,67 @@
             // 实时模式的峰值算法判定
             if (isLive) {
                 if (activePoints.length === 3) {
+                    
+                    // 【算法改进 1：低置信度防丢帧过滤】
+                    // 如果识别到肢体末端（如脚踝因与床面颜色接近）的可信度低于 25%
+                    // 则直接跳过该帧计算，既不录入错误角度，也不中断正在进行的2秒倒计时
+                    if (activePoints[2].score < 0.25) {
+                        document.getElementById('live-status-text').innerHTML = `<span class="text-yellow-400 font-bold text-xs tracking-wider">⚠️ 画面受衣物干扰，请保持姿势...</span>`;
+                        return; 
+                    }
+
                     const currentAngle = getAngle(activePoints[0], activePoints[1], activePoints[2]);
                     
-                    // 平滑算法抗抖动
+                    // 【算法改进 2：中值平滑滤波】
+                    // 收集近6帧数据，去掉最高和最低值再求平均。彻底消灭因单帧噪点引起的角度跳动破坏倒计时。
                     angleHistory.push(currentAngle);
-                    if (angleHistory.length > 5) angleHistory.shift();
-                    let smoothedAngle = angleHistory.reduce((a,b)=>a+b, 0) / angleHistory.length;
+                    if (angleHistory.length > 6) angleHistory.shift();
+                    let sortedAngles = [...angleHistory].sort((a, b) => a - b);
+                    let validAngles = sortedAngles.length >= 5 ? sortedAngles.slice(1, -1) : sortedAngles;
+                    let smoothedAngle = validAngles.reduce((a,b)=>a+b, 0) / validAngles.length;
 
                     document.getElementById('live-angle-display').innerText = smoothedAngle.toFixed(1) + '°';
 
-                    // 不断更新最大值与最高帧
-                    if (smoothedAngle > liveMaxAngle) {
-                        liveMaxAngle = smoothedAngle;
-                        const tempCanvas = document.createElement('canvas');
-                        tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-                        tempCanvas.getContext('2d').drawImage(videoElement, 0, 0);
-                        liveMaxFrameDataURL = tempCanvas.toDataURL('image/jpeg', 0.85);
-                        liveMaxPoints = activePoints.map(p => ({...p}));
-                    }
-
-                    // 【核心升级】：峰值2秒保持锁定算法
-                    // 当角度大于25度，且当前角度在峰值的 5度 容差范围内（允许轻微肌肉抖动），开始计时
-                    if (liveMaxAngle > 25 && (liveMaxAngle - smoothedAngle) <= 5) {
+                    // 【算法改进 3：动态目标锚定保持】
+                    if (smoothedAngle > 25) {
                         if (!isHolding) {
                             isHolding = true;
                             holdStartTime = Date.now();
+                            liveMaxAngle = smoothedAngle; // 设定当前为“锚定目标”
+                            saveFrameToBuffer();
                         } else {
-                            let holdTime = Date.now() - holdStartTime;
-                            if (holdTime >= 2000) {
-                                triggerAutoLock();
-                                return; // 中断绘制，直接进入锁定界面
+                            // 判定是否在“锚定目标”附近（±6度容差，允许正常肌肉发抖）
+                            if (Math.abs(smoothedAngle - liveMaxAngle) <= 6) {
+                                // 还在目标内，且比之前略高，缓慢推高锚点并更新抓拍（应对客户努力慢慢拉伸）
+                                if (smoothedAngle > liveMaxAngle) {
+                                    liveMaxAngle = (liveMaxAngle * 0.7) + (smoothedAngle * 0.3);
+                                    saveFrameToBuffer();
+                                }
+
+                                let holdTime = Date.now() - holdStartTime;
+                                if (holdTime >= 2000) {
+                                    triggerAutoLock();
+                                    return; // 保持2秒完成，锁定！
+                                } else {
+                                    let timeLeft = ((2000 - holdTime) / 1000).toFixed(1);
+                                    document.getElementById('live-status-text').innerHTML = `<span class="text-rose-500 font-black tracking-widest text-sm animate-pulse">🎯 保持住！ ${timeLeft}s 📸</span>`;
+                                }
+                            } else if (smoothedAngle > liveMaxAngle + 6) {
+                                // 突然大幅度升高，说明客户还在发力上抬！重置2秒倒计时，以新高度为锚点
+                                holdStartTime = Date.now();
+                                liveMaxAngle = smoothedAngle;
+                                saveFrameToBuffer();
                             } else {
-                                let timeLeft = ((2000 - holdTime) / 1000).toFixed(1);
-                                document.getElementById('live-status-text').innerHTML = `<span class="text-rose-400 font-bold tracking-widest text-sm animate-pulse">保持住！ ${timeLeft}s 📸</span>`;
+                                // 角度大幅度掉落（放下了腿或手），判定为放弃保持，重置
+                                isHolding = false;
+                                holdStartTime = 0;
+                                document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 text-xs tracking-wider animate-pulse">已重新追踪，请抬起...</span>`;
                             }
                         }
                     } else {
-                        // 如果角度掉下去了（超过5度容差），重置倒计时
-                        if (isHolding) {
-                            isHolding = false;
-                            holdStartTime = 0;
-                            document.getElementById('live-status-text').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> 自动追踪最高点中...`;
-                        }
+                        isHolding = false;
+                        holdStartTime = 0;
+                        document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 text-xs tracking-wider animate-pulse">自动追踪最高点中...</span>`;
                     }
                 }
                 renderCanvasAndResult(videoElement); 
@@ -746,6 +781,19 @@
             else if (testType === 'hip') legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 床面抗倾斜基准</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 臀部物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 抬起腿膝盖</div>`;
             else legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 躯干平躺基准线</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 肩背物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 举起手肘部</div>`;
         }
+
+        // 【新增】重新拍摄/检测逻辑
+        btnRetake.addEventListener('click', () => {
+            resetCanvasForNewUpload();
+            if (lastCaptureMethod === 'live') {
+                // 如果刚才用的是视频录制，直接智能重开摄像头，实现无缝重拍
+                btnStartCamera.click();
+            } else {
+                // 如果是上传照片，提示重新上传
+                speak("请重新获取照片。");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
 
         btnSaveScore.addEventListener('click', () => {
             const tType = document.querySelector('input[name="testType"]:checked').value;
