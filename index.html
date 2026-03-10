@@ -61,7 +61,6 @@
             </div>
         </div>
 
-        <!-- AI 引擎加载状态 -->
         <div id="ai-loading" class="flex flex-col items-center justify-center p-10 bg-indigo-50/50 border-b border-indigo-100">
             <svg class="animate-spin h-8 w-8 text-indigo-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             <p class="text-sm font-bold text-indigo-700">正在加载高精度双侧视觉引擎...</p>
@@ -96,7 +95,7 @@
 
             <!-- 选择区域 -->
             <div class="flex flex-col gap-2">
-                <label class="block text-xs sm:text-sm font-bold text-slate-700">1. 选择当前拍摄项目：</label>
+                <label class="block text-xs sm:text-sm font-bold text-slate-700">1. 选择动作 (需完成左右双侧)：</label>
                 <div class="grid grid-cols-3 gap-2">
                     <label class="cursor-pointer">
                         <input type="radio" name="testType" value="slr" class="peer hidden" checked>
@@ -191,9 +190,10 @@
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         重拍
                     </button>
+                    <!-- 【核心引导升级】：按钮动态文字引导，防呆设计 -->
                     <button id="save-score-btn" class="flex-[2] py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-transform active:scale-[0.98] flex items-center justify-center gap-1.5 text-sm sm:text-base">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        录入并继续
+                        <span id="btn-save-text">录入并继续</span>
                     </button>
                 </div>
                 
@@ -307,6 +307,7 @@
         const btnReset = document.getElementById('reset-btn');
         const btnDownload = document.getElementById('download-btn');
         const btnSaveScore = document.getElementById('save-score-btn');
+        const btnSaveText = document.getElementById('btn-save-text'); // 新增按钮文字指引
         const btnRetake = document.getElementById('retake-btn');
         const currentBoardTitle = document.getElementById('current-board-title');
 
@@ -510,7 +511,6 @@
             if (!isLiveTracking) return;
             stopLiveTracking();
             
-            // 空值保护，防止刚点开启就秒点锁定导致崩溃
             if (liveMaxPoints.length === 0) { 
                 saveFrameToBuffer(); 
                 liveMaxAngle = currentFinalAngle || 0; 
@@ -544,7 +544,6 @@
                     const MAX_DIM = 1200; let scale = 1;
                     if (tempImg.width > MAX_DIM || tempImg.height > MAX_DIM) scale = Math.min(MAX_DIM / tempImg.width, MAX_DIM / tempImg.height);
                     
-                    // 【优化】：防止出现浮点数导致Canvas边缘模糊
                     canvas.width = Math.round(tempImg.width * scale); 
                     canvas.height = Math.round(tempImg.height * scale);
                     
@@ -577,7 +576,7 @@
                         dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
                         renderCanvasAndResult(imageSource); 
                         resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                        speak("识别完成。");
+                        speak("拍摄完整。");
                     } else alert("未能识别到姿势，请确认人体完整入镜！");
                 } catch(err) { analyzingMask.classList.add('hidden'); console.error(err); }
             }, 50);
@@ -692,6 +691,10 @@
                 const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
                 displayAngle.innerText = Math.max(0, currentFinalAngle).toFixed(1) + '°';
                 currentBoardTitle.innerText = `当前测量: ${tSide === 'L' ? '左侧' : '右侧'}`;
+                
+                // 【核心引导】：动态改变按钮文字，提醒用户必须要测左右双侧！
+                btnSaveText.innerText = tSide === 'L' ? '录入左侧，准备测右侧' : '录入右侧，进入下一项';
+                
                 renderThresholdFeedback(tType, tSide, currentFinalAngle);
             }
         }
@@ -716,6 +719,7 @@
             else { speak("请重新获取照片。"); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         });
 
+        // 经典的 a 标签安全下载 (不唤起原生菜单以免冲突卡死)
         function generateAndDownloadWatermark() {
             const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
             const tName = tType === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈'), sName = tSide === 'L'?'左侧':'右侧';
@@ -740,7 +744,10 @@
         btnDownload.addEventListener('click', generateAndDownloadWatermark);
 
         btnSaveScore.addEventListener('click', () => {
-            generateAndDownloadWatermark();
+            // 【闭环杀手锏】：将其扔进异步线程，绝不让手机下载框卡死UI流转
+            setTimeout(() => {
+                try { generateAndDownloadWatermark(); } catch(e) { console.error("Watermark Err", e); }
+            }, 300);
 
             const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
             testRecords[tType][tSide] = currentFinalAngle;
@@ -777,11 +784,19 @@
                 document.querySelector(`input[name="testSide"][value="${nextSide}"]`).checked = true;
             }
 
+            // 检查是否全部6个点都录入了
             if (testRecords.slr.L !== null && testRecords.slr.R !== null && testRecords.hip.L !== null && testRecords.hip.R !== null && testRecords.shoulder.L !== null && testRecords.shoulder.R !== null) {
                 generateFinalReport();
-            } else window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                // 防呆提醒：如果你手动跳过了某一侧，在此弹窗警告！
+                if (tType === 'shoulder' && tSide === 'R') {
+                    alert("检测到仍有单侧未完成！PRI 骨盆评估必须包含完整的左右对比数据，请查看顶部面板，补全漏测项目以生成报告。");
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         });
 
+        // --- 基于 PRI 的最终双侧差值诊断算法 (含前后侧紧张判断与大白话描述) ---
         function generateFinalReport() {
             speak("评估全部完成！骨盆旋转与代偿报告已生成。");
             
@@ -866,30 +881,6 @@
             setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'end' }), 300);
         }
 
-        // Dragging & Interaction
-        function getEventCoords(e) {
-            const rect = canvas.getBoundingClientRect(), scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-            let cx = e.clientX, cy = e.clientY; if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
-            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
-        }
-        function handlePointerDown(e) {
-            if (activePoints.length !== 3 || isLiveTracking) return;
-            const {x, y} = getEventCoords(e);
-            draggingPointIndex = activePoints.findIndex(p => Math.sqrt(Math.pow(p.x-x,2)+Math.pow(p.y-y,2)) <= Math.max(dotHitRadius, canvas.width*0.06));
-            if (draggingPointIndex !== -1) { e.preventDefault(); renderCanvasAndResult(staticImageBuffer); }
-        }
-        function handlePointerMove(e) {
-            if (draggingPointIndex === -1 || isLiveTracking) return;
-            e.preventDefault(); const {x, y} = getEventCoords(e);
-            activePoints[draggingPointIndex].x = Math.max(0, Math.min(x, canvas.width)); activePoints[draggingPointIndex].y = Math.max(0, Math.min(y, canvas.height));
-            requestAnimationFrame(() => renderCanvasAndResult(staticImageBuffer));
-        }
-        function handlePointerUp() { if (draggingPointIndex !== -1) { draggingPointIndex = -1; renderCanvasAndResult(staticImageBuffer); } }
-        
-        canvas.addEventListener('mousedown', handlePointerDown); canvas.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
-        canvas.addEventListener('touchstart', handlePointerDown, {passive: false}); canvas.addEventListener('touchmove', handlePointerMove, {passive: false}); window.addEventListener('touchend', handlePointerUp); window.addEventListener('touchcancel', handlePointerUp);
-        
-        btnReset.addEventListener('click', () => { if (originalAiPoints.length === 3) { activePoints = originalAiPoints.map(p => ({...p})); renderCanvasAndResult(staticImageBuffer); }});
     </script>
 </body>
 </html>
