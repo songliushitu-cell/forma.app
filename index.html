@@ -378,23 +378,40 @@
             if (hist.length === 0) historyList.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">暂无历史档案</div>';
             else {
                 hist.forEach((item, index) => {
-                    let trendHTML = '';
-                    if (index < hist.length - 1) {
-                        const diff = item.slr - hist[index + 1].slr; 
-                        trendHTML = diff !== 0 ? `<span class="text-[10px] ${diff > 0 ? 'text-emerald-500' : 'text-rose-500'}">(${diff>0?'+':''}${diff}°)</span>` : '';
-                    }
                     const card = document.createElement('div');
                     card.className = 'bg-white p-3.5 rounded-xl shadow-sm border border-slate-100';
-                    card.innerHTML = `
-                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-50">
-                            <span class="text-xs font-bold text-slate-500">${item.date}</span>
-                            <span class="text-xs font-black ${item.result.includes('A') ? 'text-indigo-500' : 'text-teal-500'} bg-slate-50 px-2 py-0.5 rounded">${item.result}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                            <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">直腿抬高</span><span class="font-mono font-bold text-slate-700">${item.slr}° ${trendHTML}</span></div>
-                            <div class="flex flex-col border-x border-slate-100"><span class="text-slate-400 mb-0.5 text-[10px]">髋屈曲</span><span class="font-mono font-bold text-slate-700">${item.hip}°</span></div>
-                            <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">肩屈</span><span class="font-mono font-bold text-slate-700">${item.shoulder}°</span></div>
-                        </div>`;
+                    
+                    // 【核心升级】：区分单项记录和综合报告的档案展示
+                    if (item.type === 'single') {
+                        card.innerHTML = `
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-50">
+                                <span class="text-xs font-bold text-slate-500">${item.date}</span>
+                                <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded">单侧评估</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="font-bold text-slate-700">${item.name}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono font-black text-indigo-600 text-base">${item.angle}°</span>
+                                    <span class="text-[10px] text-slate-500">${item.result}</span>
+                                </div>
+                            </div>`;
+                    } else {
+                        let trendHTML = '';
+                        if (index < hist.length - 1 && hist[index + 1].type !== 'single') {
+                            const diff = item.slr - hist[index + 1].slr; 
+                            trendHTML = diff !== 0 ? `<span class="text-[10px] ${diff > 0 ? 'text-emerald-500' : 'text-rose-500'}">(${diff>0?'+':''}${diff}°)</span>` : '';
+                        }
+                        card.innerHTML = `
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-50">
+                                <span class="text-xs font-bold text-slate-500">${item.date}</span>
+                                <span class="text-xs font-black ${item.result.includes('A') ? 'text-indigo-500' : 'text-teal-500'} bg-slate-50 px-2 py-0.5 rounded">${item.result}</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                                <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">直腿抬高</span><span class="font-mono font-bold text-slate-700">${item.slr}° ${trendHTML}</span></div>
+                                <div class="flex flex-col border-x border-slate-100"><span class="text-slate-400 mb-0.5 text-[10px]">髋屈曲</span><span class="font-mono font-bold text-slate-700">${item.hip}°</span></div>
+                                <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">肩屈</span><span class="font-mono font-bold text-slate-700">${item.shoulder}°</span></div>
+                            </div>`;
+                    }
                     historyList.appendChild(card);
                 });
             }
@@ -795,25 +812,90 @@
             else legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 躯干平躺基准线</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 肩背物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 举起手肘部</div>`;
         }
 
+        // 【核心升级】：生成带时间戳、角度的专业水印照片并下载
+        function generateAndDownloadWatermark() {
+            const tType = document.querySelector('input[name="testType"]:checked').value;
+            const tSide = document.querySelector('input[name="testSide"]:checked').value;
+            const tName = tType === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈');
+            const sName = tSide === 'L'?'左侧':'右侧';
+            
+            const now = new Date();
+            // 获取精准的年月日时分秒
+            const dateStr = now.getFullYear() + '/' + (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getDate().toString().padStart(2, '0') + ' ' + now.toLocaleTimeString('zh-CN', {hour12: false});
+
+            const tCanvas = document.createElement('canvas'); 
+            tCanvas.width = canvas.width; tCanvas.height = canvas.height; 
+            const tCtx = tCanvas.getContext('2d'); 
+            tCtx.drawImage(canvas, 0, 0);
+            
+            // 增加底部高度以容纳两行专业信息
+            const barHeight = Math.max(100, tCanvas.height * 0.15); 
+            tCtx.fillStyle = 'rgba(15, 23, 42, 0.85)'; 
+            tCtx.fillRect(0, tCanvas.height - barHeight, tCanvas.width, barHeight);
+            
+            // 绘制左侧：项目与角度、判定结果
+            tCtx.fillStyle = '#ffffff'; 
+            tCtx.font = `bold ${Math.max(22, tCanvas.height * 0.035)}px sans-serif`; 
+            tCtx.textAlign = 'left'; tCtx.textBaseline = 'middle'; 
+            tCtx.fillText(`${sName}${tName}：${currentFinalAngle.toFixed(1)}°`, 20, tCanvas.height - barHeight + 35);
+            
+            tCtx.fillStyle = currentFeedbackText.includes('后侧') ? '#a5b4fc' : '#5eead4'; // 根据前后侧改变结果颜色
+            tCtx.font = `bold ${Math.max(16, tCanvas.height * 0.025)}px sans-serif`; 
+            tCtx.fillText(currentFeedbackText, 20, tCanvas.height - barHeight + 70);
+            
+            // 绘制右侧：日期时间戳、专属水印
+            tCtx.textAlign = 'right';
+            tCtx.fillStyle = 'rgba(203, 213, 225, 0.9)'; 
+            tCtx.font = `bold ${Math.max(14, tCanvas.height * 0.022)}px sans-serif`;
+            tCtx.fillText(dateStr, tCanvas.width - 20, tCanvas.height - barHeight + 35);
+            
+            tCtx.fillStyle = 'rgba(100, 116, 139, 0.7)'; 
+            tCtx.font = `italic bold ${Math.max(16, tCanvas.height * 0.025)}px sans-serif`; 
+            tCtx.fillText("@宋教头 | PelvicScan Pro", tCanvas.width - 20, tCanvas.height - barHeight + 70);
+
+            // 触发下载
+            const link = document.createElement('a'); 
+            link.download = `${sName}${tName}_${now.getTime()}.jpg`; 
+            link.href = tCanvas.toDataURL('image/jpeg', 0.95); 
+            link.click();
+        }
+
+        // 绑定手动下载按钮
+        btnDownload.addEventListener('click', generateAndDownloadWatermark);
+
         // 【新增】重新拍摄/检测逻辑
         btnRetake.addEventListener('click', () => {
             resetCanvasForNewUpload();
             if (lastCaptureMethod === 'live') {
-                // 如果刚才用的是视频录制，直接智能重开摄像头，实现无缝重拍
                 btnStartCamera.click();
             } else {
-                // 如果是上传照片，提示重新上传
                 speak("请重新获取照片。");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
         btnSaveScore.addEventListener('click', () => {
+            // 【闭环杀手锏】：点击录入成绩的瞬间，自动保存水印相片！
+            generateAndDownloadWatermark();
+
             const tType = document.querySelector('input[name="testType"]:checked').value;
             const tSide = document.querySelector('input[name="testSide"]:checked').value;
             testRecords[tType][tSide] = currentFinalAngle;
             document.getElementById(`score-${tType}-${tSide}`).innerText = currentFinalAngle.toFixed(0) + '°';
             resetCanvasForNewUpload();
+
+            // 【闭环杀手锏】：将这次单侧成绩也直接打卡进历史档案！
+            const tName = tType === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈');
+            const sName = tSide === 'L'?'左侧':'右侧';
+            const dateStr = new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            saveHistoryToStorage({
+                type: 'single',
+                date: dateStr,
+                name: `${sName}${tName}`,
+                angle: currentFinalAngle.toFixed(1),
+                result: currentFeedbackText.split('判定：')[1] || currentFeedbackText
+            });
 
             if (testRecords[tType].L !== null && testRecords[tType].R !== null) {
                 const finalScore = Math.min(testRecords[tType].L, testRecords[tType].R);
@@ -854,18 +936,12 @@
                 finalDesc.innerText = "骨盆前侧肌肉组织存在压迫，将骨盆产生“向前拉”的代偿。建议遵循方案 B 的恢复计划。";
                 finalList.innerHTML = `<li class="flex gap-2"><span class="font-bold text-teal-500">1.</span> 90/90 侧支撑伸手 (侧腹肌呼吸)</li><li class="flex gap-2"><span class="font-bold text-teal-500">2.</span> 钩卧腘绳肌臀桥 (恢复屈曲)</li><li class="flex gap-2"><span class="font-bold text-teal-500">3.</span> 仰卧交叉交替 (伸展臀部)</li>`;
             }
-            saveHistoryToStorage({ date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }), slr: testRecords.slr.final.toFixed(1), hip: testRecords.hip.final.toFixed(1), shoulder: testRecords.shoulder.final.toFixed(1), result: isPosterior ? "方案 A (后侧)" : "方案 B (前侧)" });
+            
+            // 最终综合报告存入档案
+            saveHistoryToStorage({ type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }), slr: testRecords.slr.final.toFixed(1), hip: testRecords.hip.final.toFixed(1), shoulder: testRecords.shoulder.final.toFixed(1), result: isPosterior ? "方案 A (后侧)" : "方案 B (前侧)" });
             document.getElementById('final-report-section').classList.remove('hidden'); setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'end' }), 300);
         }
 
-        btnDownload.addEventListener('click', () => {
-            const tCanvas = document.createElement('canvas'); tCanvas.width = canvas.width; tCanvas.height = canvas.height; const tCtx = tCanvas.getContext('2d'); tCtx.drawImage(canvas, 0, 0);
-            const barHeight = Math.max(80, tCanvas.height * 0.12); tCtx.fillStyle = 'rgba(15, 23, 42, 0.85)'; tCtx.fillRect(0, tCanvas.height - barHeight, tCanvas.width, barHeight);
-            tCtx.fillStyle = '#ffffff'; tCtx.font = `bold ${Math.max(18, tCanvas.height * 0.035)}px sans-serif`; tCtx.textAlign = 'left'; tCtx.textBaseline = 'middle'; tCtx.fillText(currentFeedbackText, 20, tCanvas.height - barHeight / 2);
-            tCtx.fillStyle = 'rgba(148, 163, 184, 0.6)'; tCtx.font = `italic bold ${Math.max(18, tCanvas.height * 0.03)}px sans-serif`; tCtx.textAlign = 'right'; tCtx.fillText("@宋教头", tCanvas.width - 20, tCanvas.height - barHeight / 2 - 4);
-            tCtx.fillStyle = 'rgba(100, 116, 139, 0.5)'; tCtx.font = `bold ${Math.max(12, tCanvas.height * 0.015)}px sans-serif`; tCtx.fillText("PelvicScan Pro", tCanvas.width - 20, tCanvas.height - barHeight / 2 + 16);
-            const link = document.createElement('a'); link.download = `单侧评估_${new Date().getTime()}.jpg`; link.href = tCanvas.toDataURL('image/jpeg', 0.95); link.click();
-        });
     </script>
 </body>
 </html>
