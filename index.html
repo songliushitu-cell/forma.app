@@ -271,9 +271,6 @@
         </div>
     </div>
 
-    <!-- 隐藏标签 -->
-    <img id="sourceImage" class="hidden">
-
     <!-- 悬浮水印徽章 -->
     <div class="fixed bottom-6 right-4 sm:bottom-10 sm:right-10 z-50 flex items-center gap-2.5 bg-slate-800/40 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full shadow-lg border border-slate-600/30 cursor-default transition-all duration-300 opacity-60 hover:opacity-100">
         <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-700/40 flex items-center justify-center shadow-inner border border-slate-500/30">
@@ -294,7 +291,6 @@
         const liveOverlay = document.getElementById('live-overlay');
         const btnLockFrame = document.getElementById('btn-lock-frame');
 
-        const sourceImage = document.getElementById('sourceImage');
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
         const canvasContainer = document.getElementById('canvas-container');
@@ -320,9 +316,9 @@
 
         // Global State
         let testRecords = { 
-            slr: { L: null, R: null }, 
-            hip: { L: null, R: null }, 
-            shoulder: { L: null, R: null } 
+            slr: { L: null, R: null, final: null }, 
+            hip: { L: null, R: null, final: null }, 
+            shoulder: { L: null, R: null, final: null } 
         };
         let detector;
         let activePoints = []; 
@@ -338,23 +334,33 @@
         let liveStream = null;
         let liveRequestID = null;
 
-        // 【关键Bug修复】：添加进程锁，防止动态捕捉成功后静态图片onload幽灵刷新覆盖UI
-        let ignoreNextImageLoad = false;
-
         // Auto-Peak Detection (1.5s)
         let liveMaxAngle = 0;
-        let liveMaxFrameDataURL = null;
         let liveMaxPoints = [];
         let angleHistory = [];
         let isHolding = false;
         let holdStartTime = 0;
 
+        // 保存当前画面的离屏 Canvas（替代不稳定的 img onload）
+        const staticImageBuffer = document.createElement('canvas');
+
         function saveFrameToBuffer() {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-            tempCanvas.getContext('2d').drawImage(videoElement, 0, 0);
-            liveMaxFrameDataURL = tempCanvas.toDataURL('image/jpeg', 0.85);
+            staticImageBuffer.width = canvas.width;
+            staticImageBuffer.height = canvas.height;
+            staticImageBuffer.getContext('2d').drawImage(videoElement, 0, 0);
             liveMaxPoints = activePoints.map(p => ({...p}));
+        }
+
+        // 图例更新函数 (修复之前报错缺失的函数)
+        function updateLegend(testType) {
+            const legend = document.getElementById('point-legend');
+            if (testType === 'slr') {
+                legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 床面抗倾斜基准</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 臀部物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 抬起腿脚踝</div>`;
+            } else if (testType === 'hip') {
+                legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 床面抗倾斜基准</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 臀部物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 抬起腿膝盖</div>`;
+            } else {
+                legend.innerHTML = `<div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 躯干平躺基准线</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 肩背物理转轴</div><div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🔵 举起手肘部</div>`;
+            }
         }
 
         // --- 1. Voice Assistant ---
@@ -450,7 +456,7 @@
         // --- 4. Live Tracking (Strict Isometric Hold Algorithm 1.5s) ---
         btnStartCamera.addEventListener('click', async () => {
             resetCanvasForNewUpload(); lastCaptureMethod = 'live';
-            liveMaxAngle = 0; liveMaxFrameDataURL = null; liveMaxPoints = []; angleHistory = []; isHolding = false; holdStartTime = 0;
+            liveMaxAngle = 0; liveMaxPoints = []; angleHistory = []; isHolding = false; holdStartTime = 0;
             document.getElementById('live-angle-display').innerText = '0.0°';
             document.getElementById('live-status-text').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> 自动追踪最高点中...`;
 
@@ -501,26 +507,28 @@
             if (!isLiveTracking) return;
             stopLiveTracking();
             
-            // 【关键Bug修复】：上锁，告诉onload函数不要执行覆盖逻辑
-            ignoreNextImageLoad = true;
+            // 确保保存了最后一帧作为截图
+            if (liveMaxPoints.length === 0) { saveFrameToBuffer(); liveMaxAngle = currentFinalAngle || 0; }
             
-            if (!liveMaxFrameDataURL) { saveFrameToBuffer(); liveMaxAngle = currentFinalAngle || 0; }
-            sourceImage.src = liveMaxFrameDataURL; 
-            activePoints = liveMaxPoints.map(p => ({...p})); originalAiPoints = activePoints.map(p => ({...p}));
+            activePoints = liveMaxPoints.map(p => ({...p})); 
+            originalAiPoints = activePoints.map(p => ({...p}));
+            currentFinalAngle = liveMaxAngle; 
             
-            const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
-            updateLegend(tType); dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
+            const tType = document.querySelector('input[name="testType"]:checked').value;
+            updateLegend(tType); 
+            dragInstruction.classList.remove('hidden'); 
+            resultBoard.classList.remove('hidden');
             
-            currentFinalAngle = liveMaxAngle; renderCanvasAndResult(sourceImage); 
+            // 直接用离屏画板的图像去渲染，摆脱 onload
+            renderCanvasAndResult(staticImageBuffer); 
             setTimeout(() => resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
             
-            // 【优化】：语音播报
             speak(`拍摄完整，角度是${liveMaxAngle.toFixed(1)}度。`);
         }
 
         btnLockFrame.addEventListener('click', triggerAutoLock);
 
-        // --- 5. Static Image Upload ---
+        // --- 5. Static Image Upload (重构：完全脱离 onload 锁干扰) ---
         function handleImageUpload(e) {
             const file = e.target.files[0]; if (!file) return;
             resetCanvasForNewUpload(); lastCaptureMethod = 'static';
@@ -531,38 +539,43 @@
                     const MAX_DIM = 1200; let scale = 1;
                     if (tempImg.width > MAX_DIM || tempImg.height > MAX_DIM) scale = Math.min(MAX_DIM / tempImg.width, MAX_DIM / tempImg.height);
                     canvas.width = tempImg.width * scale; canvas.height = tempImg.height * scale;
-                    const tCan = document.createElement('canvas'); tCan.width = canvas.width; tCan.height = canvas.height;
-                    tCan.getContext('2d').drawImage(tempImg, 0, 0, tCan.width, tCan.height);
-                    sourceImage.src = tCan.toDataURL('image/jpeg', 0.9);
+                    
+                    // 将图片画到离屏 buffer
+                    staticImageBuffer.width = canvas.width;
+                    staticImageBuffer.height = canvas.height;
+                    staticImageBuffer.getContext('2d').drawImage(tempImg, 0, 0, canvas.width, canvas.height);
+                    
+                    runAIEstimation(staticImageBuffer);
                 }
                 tempImg.src = event.target.result;
             }
             reader.readAsDataURL(file); e.target.value = ''; 
         }
 
-        sourceImage.onload = function() {
-            // 【关键Bug修复】：拦截因动态捕捉存图而意外触发的onload
-            if (ignoreNextImageLoad) {
-                ignoreNextImageLoad = false;
-                return;
-            }
+        function runAIEstimation(imageSource) {
+            canvasContainer.classList.remove('hidden'); 
+            analyzingMask.classList.remove('hidden'); 
             
-            if(isLiveTracking) return; 
-            canvasContainer.classList.remove('hidden'); analyzingMask.classList.remove('hidden'); ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
+            // 提前画个底图
+            ctx.drawImage(imageSource, 0, 0, canvas.width, canvas.height);
+
             setTimeout(async () => {
                 try {
-                    const poses = await detector.estimatePoses(sourceImage);
+                    const poses = await detector.estimatePoses(imageSource);
                     analyzingMask.classList.add('hidden');
                     if (poses.length > 0) {
-                        extractPointsFromPose(poses[0], false); originalAiPoints = activePoints.map(p => ({...p}));
+                        extractPointsFromPose(poses[0], false); 
+                        originalAiPoints = activePoints.map(p => ({...p}));
                         updateLegend(document.querySelector('input[name="testType"]:checked').value);
                         dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
-                        renderCanvasAndResult(sourceImage); resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                        speak("识别完成。");
-                    } else alert("未能识别到姿势！");
-                } catch(err) { analyzingMask.classList.add('hidden'); }
+                        renderCanvasAndResult(imageSource); 
+                        resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        speak("拍摄完整。");
+                    } else alert("未能识别到姿势，请确认人体完整入镜！");
+                } catch(err) { analyzingMask.classList.add('hidden'); console.error(err); }
             }, 50);
-        };
+        }
+
         cameraInput.addEventListener('change', handleImageUpload); albumInput.addEventListener('change', handleImageUpload);
 
         // --- 6. Pose Extraction & Isometric Logic ---
@@ -618,7 +631,7 @@
 
                     document.getElementById('live-angle-display').innerText = smoothedAngle.toFixed(1) + '°';
 
-                    // 终极防死锁与防作弊 1.5秒算法 (改为了1500ms)
+                    // 1.5秒保持算法
                     if (smoothedAngle > 25) {
                         if (smoothedAngle > liveMaxAngle) {
                             liveMaxAngle = smoothedAngle; saveFrameToBuffer(); holdStartTime = Date.now(); isHolding = true;
@@ -626,7 +639,7 @@
                         } else if (liveMaxAngle - smoothedAngle <= 5) {
                             if (!isHolding) { isHolding = true; holdStartTime = Date.now(); }
                             let holdTime = Date.now() - holdStartTime;
-                            if (holdTime >= 1500) { triggerAutoLock(); return; } // 修改为1.5秒
+                            if (holdTime >= 1500) { triggerAutoLock(); return; } // 1.5秒咔嚓
                             else {
                                 let timeLeft = ((1500 - holdTime) / 1000).toFixed(1);
                                 document.getElementById('live-status-text').innerHTML = `<span class="text-rose-500 font-black tracking-widest text-sm shadow-sm px-2 py-1 bg-slate-900/50 rounded-full">🎯 保持住！ ${timeLeft}s 📸</span>`;
@@ -645,7 +658,7 @@
         }
 
         // --- 7. Rendering & Feedback ---
-        function renderCanvasAndResult(imgSource = sourceImage) {
+        function renderCanvasAndResult(imgSource) {
             if (activePoints.length !== 3) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height); if(imgSource) ctx.drawImage(imgSource, 0, 0, canvas.width, canvas.height);
 
@@ -683,9 +696,8 @@
         }
         function getKeypoint(kp, name) { return kp.find(k => k.name === name) || {x:0, y:0, score:0}; }
 
-        // 【优化】：移除单边评测中不准确的“前侧/后侧紧张”诱导，保持纯客观记录，避免与最终报告冲突
         function renderThresholdFeedback(testType, testSide, angleDeg) {
-            let ability = testType === 'slr' ? '反映髋关节内旋能力' : (testType === 'hip' ? '反映髋关节外旋能力' : '反映骨盆前移程度');
+            let ability = testType === 'slr' ? '反映髋关节内旋能力' : (testType === 'hip' ? '反映髋关节外旋能力' : '反映该侧骨盆前移程度');
             currentFeedbackText = `客观记录：${angleDeg.toFixed(1)}° (${ability})`;
             thresholdFeedback.innerText = currentFeedbackText;
             thresholdFeedback.className = `mt-2 w-full py-2 px-3 rounded-lg text-center font-bold text-[11px] sm:text-xs border-2 bg-indigo-500/20 border-indigo-500 text-indigo-300 z-10`;
@@ -698,8 +710,8 @@
             else { speak("请重新获取照片。"); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         });
 
-        // 【核心升级：iOS相册原生调用功能】
-        function generateWatermarkFile() {
+        // 降级为经典的 a 标签下载（保存在手机文件，规避浏览器安全限制）
+        function generateAndDownloadWatermark() {
             const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
             const tName = tType === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈'), sName = tSide === 'L'?'左侧':'右侧';
             const now = new Date(), dateStr = now.getFullYear() + '/' + (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getDate().toString().padStart(2, '0') + ' ' + now.toLocaleTimeString('zh-CN', {hour12: false});
@@ -714,40 +726,17 @@
             tCtx.textAlign = 'right'; tCtx.fillStyle = 'rgba(203, 213, 225, 0.9)'; tCtx.font = `bold ${Math.max(14, tCanvas.height * 0.022)}px sans-serif`; tCtx.fillText(dateStr, tCanvas.width - 20, tCanvas.height - barHeight + 35);
             tCtx.fillStyle = 'rgba(100, 116, 139, 0.7)'; tCtx.font = `italic bold ${Math.max(16, tCanvas.height * 0.025)}px sans-serif`; tCtx.fillText("@宋教头 | PelvicScan Pro", tCanvas.width - 20, tCanvas.height - barHeight + 70);
 
-            // 【关键黑科技】：同步生成原生 File 对象，防止丢失浏览器 User-Gesture 权限
-            const dataUrl = tCanvas.toDataURL('image/jpeg', 0.95);
-            const arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8arr = new Uint8Array(n);
-            while(n--){ u8arr[n] = bstr.charCodeAt(n); }
-            
-            return new File([u8arr], `${sName}${tName}_${now.getTime()}.jpg`, {type:mime});
+            const link = document.createElement('a'); 
+            link.download = `${sName}${tName}_${now.getTime()}.jpg`; 
+            link.href = tCanvas.toDataURL('image/jpeg', 0.95); 
+            link.click();
         }
 
-        // 调用原生分享菜单（iOS专用）或备用下载方案
-        function handleSaveAndShare() {
-            const file = generateWatermarkFile();
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                // 呼出 iPhone 底部菜单，用户点击“保存图像”即入相册，这是iOS沙盒权限下的完美妥协方案
-                navigator.share({
-                    files: [file],
-                    title: '保存评估图'
-                }).catch(err => { console.log('分享被取消或失败:', err); });
-            } else {
-                // 降级方案 (PC 或 老式安卓)
-                const link = document.createElement('a'); 
-                link.download = file.name; 
-                link.href = URL.createObjectURL(file); 
-                link.click();
-            }
-        }
-
-        btnDownload.addEventListener('click', handleSaveAndShare);
+        btnDownload.addEventListener('click', generateAndDownloadWatermark);
 
         btnSaveScore.addEventListener('click', () => {
-            // 点击“录入并继续”时，先呼出分享存图菜单
-            handleSaveAndShare();
+            // 点击保存时，自动下载水印图到手机文件中
+            generateAndDownloadWatermark();
 
             const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
             testRecords[tType][tSide] = currentFinalAngle;
@@ -760,11 +749,23 @@
                 angle: currentFinalAngle.toFixed(1)
             });
 
+            // 【核心修复：在左右都测完后，提取较差值并在上方显示确定角度】
             if (testRecords[tType].L !== null && testRecords[tType].R !== null) {
-                const trBox = document.getElementById(`tracker-${tType}`), fText = document.getElementById(`score-${tType}-final`);
-                trBox.classList.replace('bg-white', 'bg-emerald-50'); trBox.classList.replace('border-slate-100', 'border-emerald-500'); trBox.querySelector('span:first-child').classList.replace('text-slate-400', 'text-emerald-600');
-                fText.classList.replace('text-slate-300', 'text-emerald-600'); fText.innerText = "已完成";
+                // 提取左右较差值（角度越小代表活动度越受限，即越差）
+                testRecords[tType].final = Math.min(testRecords[tType].L, testRecords[tType].R);
 
+                const trBox = document.getElementById(`tracker-${tType}`);
+                const fText = document.getElementById(`score-${tType}-final`);
+                
+                trBox.classList.replace('bg-white', 'bg-emerald-50'); 
+                trBox.classList.replace('border-slate-100', 'border-emerald-500'); 
+                trBox.querySelector('span:first-child').classList.replace('text-slate-400', 'text-emerald-600');
+                fText.classList.replace('text-slate-300', 'text-emerald-600'); 
+                
+                // 完美显示确定角度
+                fText.innerText = `较差: ${testRecords[tType].final.toFixed(1)}°`;
+
+                // 语音播报进入下一个流程
                 if (tType === 'slr' && testRecords.hip.L === null) {
                     document.querySelector('input[value="hip"]').checked = true; document.querySelector('input[value="L"]').checked = true;
                     speak(`直抬腿完成。请准备左侧主动髋屈曲。`);
@@ -789,14 +790,12 @@
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
             const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
 
-            // 差值计算
             const diffHip = hipL - hipR; 
             const diffSLR = slrL - slrR; 
             const diffSh = shL - shR;    
 
             const threshold = 5;
             let diagnosis = "Transition";
-            let title = "诊断: 过渡/混合骨盆代偿", desc = "", planHTML = "";
             let orientationText = "骨盆朝向数据复杂，需人工介入分析";
 
             // 逻辑 1: 基线 (Left AIC)
@@ -870,6 +869,30 @@
             setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'end' }), 300);
         }
 
+        // Dragging & Interaction
+        function getEventCoords(e) {
+            const rect = canvas.getBoundingClientRect(), scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+            let cx = e.clientX, cy = e.clientY; if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
+        }
+        function handlePointerDown(e) {
+            if (activePoints.length !== 3 || isLiveTracking) return;
+            const {x, y} = getEventCoords(e);
+            draggingPointIndex = activePoints.findIndex(p => Math.sqrt(Math.pow(p.x-x,2)+Math.pow(p.y-y,2)) <= Math.max(dotHitRadius, canvas.width*0.06));
+            if (draggingPointIndex !== -1) { e.preventDefault(); renderCanvasAndResult(staticImageBuffer); }
+        }
+        function handlePointerMove(e) {
+            if (draggingPointIndex === -1 || isLiveTracking) return;
+            e.preventDefault(); const {x, y} = getEventCoords(e);
+            activePoints[draggingPointIndex].x = Math.max(0, Math.min(x, canvas.width)); activePoints[draggingPointIndex].y = Math.max(0, Math.min(y, canvas.height));
+            requestAnimationFrame(() => renderCanvasAndResult(staticImageBuffer));
+        }
+        function handlePointerUp() { if (draggingPointIndex !== -1) { draggingPointIndex = -1; renderCanvasAndResult(staticImageBuffer); } }
+        
+        canvas.addEventListener('mousedown', handlePointerDown); canvas.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
+        canvas.addEventListener('touchstart', handlePointerDown, {passive: false}); canvas.addEventListener('touchmove', handlePointerMove, {passive: false}); window.addEventListener('touchend', handlePointerUp); window.addEventListener('touchcancel', handlePointerUp);
+        
+        btnReset.addEventListener('click', () => { if (originalAiPoints.length === 3) { activePoints = originalAiPoints.map(p => ({...p})); renderCanvasAndResult(staticImageBuffer); }});
     </script>
 </body>
 </html>
