@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PelvicScan Pro - AI 骨盆评估系统</title>
+    <title>FORMA骨盆评估</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.21.0/dist/tf-converter.min.js"></script>
@@ -21,42 +21,34 @@
 
     <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col my-2 border border-slate-100 pb-6">
         
-        <!-- 头部标题区 -->
-        <div class="bg-slate-900 px-6 pt-8 pb-5 text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
-            
-            <button id="voice-toggle" class="absolute top-5 left-5 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 border border-slate-600 text-slate-400 hover:text-white transition-colors" title="开启/关闭语音助手">
+        <!-- Apple 风格头部 -->
+        <div class="px-6 pt-10 pb-6 text-center relative bg-white">
+            <button id="voice-toggle" class="absolute top-6 left-5 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors" title="开启/关闭语音助手">
                 <svg id="icon-voice-off" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
-                <svg id="icon-voice-on" class="w-4 h-4 hidden text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.898a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                <svg id="icon-voice-on" class="w-4 h-4 hidden text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.898a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
             </button>
 
-            <button id="btn-show-history" class="absolute top-5 right-5 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 border border-slate-600 text-slate-400 hover:text-white transition-colors" title="历史评估档案">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <!-- 替换为文字按钮 -->
+            <button id="btn-show-donate" class="absolute top-6 right-5 z-20 flex items-center justify-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition-all text-[11px] font-bold shadow-sm border border-slate-200/50" title="支持与打赏">
+                支持一下
             </button>
 
-            <div class="relative z-10 mt-6">
-                <h1 class="text-3xl font-black text-white mb-1.5 tracking-wide flex justify-center items-baseline gap-1.5">
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-300 italic drop-shadow-md">PelvicScan</span>
-                    <span class="text-xl text-slate-200 font-bold">Pro</span>
-                </h1>
-                <h2 class="text-sm font-bold text-slate-300 mb-4 tracking-[0.15em] uppercase">PRI 临床级骨盆评估</h2>
-                
-                <div class="flex flex-col items-center mt-2 relative">
-                    <p class="text-slate-200 text-[11px] sm:text-xs font-medium leading-relaxed bg-slate-800/80 px-4 py-2 rounded-full border border-slate-600/50 shadow-inner backdrop-blur-sm relative z-10">
-                        双侧对比扫描，精准解析 PEC 代偿与骨盆旋转
-                    </p>
-                    <div class="w-full flex justify-end mt-3 sm:pr-2">
-                        <div class="flex items-center gap-2 cursor-default transition-opacity duration-300 opacity-60 hover:opacity-100">
-                            <div class="flex flex-col items-end">
-                                <span class="text-slate-400 text-xs sm:text-sm font-bold tracking-widest leading-none">@宋教头</span>
-                                <span class="text-slate-500/70 text-[8px] sm:text-[9px] uppercase tracking-[0.25em] mt-1 font-medium">Pro Evaluator</span>
-                            </div>
-                            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-700/30 flex items-center justify-center border border-slate-500/30 relative overflow-hidden backdrop-blur-sm shadow-inner">
-                                <div class="absolute top-0 left-0 w-full h-1/2 bg-white/5 rounded-b-full"></div>
-                                <span class="text-slate-400/80 text-lg font-black font-serif italic relative z-10">S</span>
-                            </div>
-                        </div>
+            <div class="mt-4 flex flex-col items-center">
+                <!-- 优化的标题排版 (基础版作为右上角角标) -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="flex items-start">
+                        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-wide">FORMA</h1>
+                        <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded tracking-widest border border-slate-200/60 ml-1 mt-1 shadow-sm">基础版</span>
                     </div>
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-500 tracking-[0.25em] mt-0.5 ml-1">骨盆评估</h2>
+                </div>
+                
+                <!-- 优化的提示说明 -->
+                <div class="mt-4 flex items-center gap-1.5 px-3 bg-slate-50 py-1.5 rounded-lg border border-slate-100">
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="text-[10px] sm:text-xs text-slate-400 font-medium tracking-wide">
+                        此程序分析结果仅供体态参考，不作为医疗临床诊断依据
+                    </p>
                 </div>
             </div>
         </div>
@@ -122,6 +114,27 @@
                 </div>
             </div>
 
+            <!-- 测试要求与提示 -->
+            <div class="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-700 mb-3 flex items-center gap-1.5">
+                    测试要求与防代偿提示
+                </h3>
+                <ul class="space-y-3 text-[11px] sm:text-xs text-slate-600">
+                    <li class="flex items-start gap-2">
+                        <span class="text-sm leading-none mt-0.5">📱</span>
+                        <span class="leading-relaxed">建议将手机放在地上或桌上，镜头对准您的<b>侧面全身</b>。</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-sm leading-none mt-0.5">👕</span>
+                        <span class="leading-relaxed">请穿<b>紧身运动服</b>，避免宽松衣物遮挡关节。</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-sm leading-none mt-0.5">🎙️</span>
+                        <span class="leading-relaxed">建议点击左上角<b>开启语音</b>，听从 AI 防代偿口令进行动作。</span>
+                    </li>
+                </ul>
+            </div>
+
             <!-- 操作按钮区 -->
             <div>
                 <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-2">2. 录入姿态 (推荐使用实时捕捉)</label>
@@ -139,6 +152,10 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册选择
                             <input type="file" accept="image/*" id="albumInput" class="hidden">
                         </label>
+                    </div>
+                    <!-- 署名移至相册选择右下角 -->
+                    <div class="flex justify-end mt-0.5">
+                        <p class="text-[9px] sm:text-[10px] text-slate-400/80 font-medium italic tracking-wider pr-1">Designed by @宋教头</p>
                     </div>
                 </div>
             </div>
@@ -244,19 +261,27 @@
         </div>
     </div>
 
-    <!-- 历史档案 Modal -->
-    <div id="history-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
-        <div class="bg-white w-full sm:w-[400px] h-[80vh] sm:h-[600px] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform">
-            <div class="p-5 bg-slate-800 text-white flex justify-between items-center">
-                <h2 class="text-lg font-bold flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    评估历史档案
+    <!-- 打赏 Modal -->
+    <div id="donate-modal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center fade-in">
+        <div class="bg-white w-[85%] sm:w-[320px] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform">
+            <div class="p-4 bg-slate-800 text-white flex justify-between items-center">
+                <h2 class="text-base font-bold flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    支持与打赏
                 </h2>
-                <button id="btn-close-history" class="text-slate-400 hover:text-white p-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <button id="btn-close-donate" class="text-slate-400 hover:text-white p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div id="history-list" class="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-3 no-scrollbar"></div>
-            <div class="p-4 bg-white border-t border-slate-100">
-                <button id="btn-clear-history" class="w-full py-2.5 text-sm font-bold text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors">清空所有记录</button>
+            <div class="p-6 flex flex-col items-center bg-slate-50">
+                <div class="w-48 h-48 bg-white border border-slate-200 p-2 rounded-xl shadow-sm mb-4 flex items-center justify-center overflow-hidden relative group">
+                    <!-- 引用真实上传的微信收款码。如果路径不对，显示温馨提示 -->
+                    <img src="IMG_1456.jpeg" alt="打赏二维码" class="w-full h-full object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                    <div class="absolute inset-0 flex-col items-center justify-center bg-slate-50 text-slate-400 hidden p-2 text-center flex">
+                        <svg class="w-8 h-8 mb-2 opacity-50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-[10px] leading-tight">二维码图片未找到<br>请将 <b>IMG_1456.jpeg</b><br>与本文件放于同文件夹</span>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-700 font-bold text-center">感谢您的认可与支持！</p>
+                <p class="text-[11px] text-slate-500 mt-1.5 text-center px-4">如果您觉得这个工具对您有帮助，可以请作者喝杯咖啡 ☕️</p>
             </div>
         </div>
     </div>
@@ -265,13 +290,13 @@
     <img id="sourceImage" class="hidden">
 
     <!-- 悬浮水印徽章 -->
-    <div class="fixed bottom-6 right-4 sm:bottom-10 sm:right-10 z-50 flex items-center gap-2.5 bg-slate-800/40 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full shadow-lg border border-slate-600/30 cursor-default transition-all duration-300 opacity-60 hover:opacity-100">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-700/40 flex items-center justify-center shadow-inner border border-slate-500/30">
-            <span class="text-slate-300/80 text-sm sm:text-base font-black font-serif italic">S</span>
+    <div class="fixed bottom-6 right-4 sm:bottom-10 sm:right-10 z-50 flex items-center gap-2.5 bg-white/80 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-full shadow-lg border border-slate-200 cursor-default transition-all duration-300 opacity-60 hover:opacity-100">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-100 flex items-center justify-center shadow-inner border border-slate-200">
+            <span class="text-slate-500 text-sm sm:text-base font-black font-serif italic">S</span>
         </div>
         <div class="flex flex-col justify-center">
-            <span class="text-xs sm:text-sm font-bold text-slate-300/90 tracking-widest leading-tight mb-0.5">@宋教头</span>
-            <span class="text-[8px] sm:text-[9px] font-medium text-slate-400/70 uppercase tracking-[0.2em] leading-tight">Pro Evaluator</span>
+            <span class="text-xs sm:text-sm font-bold text-slate-700 tracking-widest leading-tight mb-0.5">@宋教头</span>
+            <span class="text-[8px] sm:text-[9px] font-medium text-slate-400 uppercase tracking-[0.2em] leading-tight">Pro Evaluator</span>
         </div>
     </div>
 
@@ -302,11 +327,9 @@
         const currentBoardTitle = document.getElementById('current-board-title');
 
         const btnVoiceToggle = document.getElementById('voice-toggle');
-        const btnShowHistory = document.getElementById('btn-show-history');
-        const btnCloseHistory = document.getElementById('btn-close-history');
-        const historyModal = document.getElementById('history-modal');
-        const historyList = document.getElementById('history-list');
-        const btnClearHistory = document.getElementById('btn-clear-history');
+        const btnShowDonate = document.getElementById('btn-show-donate');
+        const btnCloseDonate = document.getElementById('btn-close-donate');
+        const donateModal = document.getElementById('donate-modal');
 
         // Global State
         let testRecords = { 
@@ -365,9 +388,12 @@
             voiceEnabled = !voiceEnabled;
             document.getElementById('icon-voice-on').classList.toggle('hidden', !voiceEnabled);
             document.getElementById('icon-voice-off').classList.toggle('hidden', voiceEnabled);
-            btnVoiceToggle.classList.toggle('bg-slate-800', !voiceEnabled);
-            btnVoiceToggle.classList.toggle('bg-indigo-900', voiceEnabled);
-            btnVoiceToggle.classList.toggle('border-emerald-500/50', voiceEnabled);
+            btnVoiceToggle.classList.toggle('bg-slate-100', !voiceEnabled);
+            btnVoiceToggle.classList.toggle('text-slate-500', !voiceEnabled);
+            btnVoiceToggle.classList.toggle('bg-emerald-50', voiceEnabled);
+            btnVoiceToggle.classList.toggle('text-emerald-500', voiceEnabled);
+            btnVoiceToggle.classList.toggle('border', voiceEnabled);
+            btnVoiceToggle.classList.toggle('border-emerald-200', voiceEnabled);
             if (voiceEnabled) speak("语音教练向导已开启。");
             else window.speechSynthesis.cancel();
         });
@@ -380,57 +406,15 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- 2. History Storage ---
+        // --- 2. History Storage & Donate UI ---
         function loadHistory() { return localStorage.getItem('pelvic_history_v4') ? JSON.parse(localStorage.getItem('pelvic_history_v4')) : []; }
         function saveHistoryToStorage(recordStr) {
             const hist = loadHistory(); hist.unshift(recordStr); 
             localStorage.setItem('pelvic_history_v4', JSON.stringify(hist));
         }
 
-        btnShowHistory.addEventListener('click', () => {
-            const hist = loadHistory();
-            historyList.innerHTML = '';
-            if (hist.length === 0) historyList.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">暂无历史档案</div>';
-            else {
-                hist.forEach((item, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-white p-3.5 rounded-xl shadow-sm border border-slate-100';
-                    
-                    if (item.type === 'single') {
-                        card.innerHTML = `
-                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-50">
-                                <span class="text-xs font-bold text-slate-500">${item.date}</span>
-                                <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded">单侧打卡</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="font-bold text-slate-700">${item.name}</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-mono font-black text-indigo-600 text-base">${item.angle}°</span>
-                                </div>
-                            </div>`;
-                    } else {
-                        card.innerHTML = `
-                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-50">
-                                <span class="text-xs font-bold text-slate-500">${item.date}</span>
-                                <span class="text-[10px] font-black text-white bg-indigo-500 px-2 py-0.5 rounded shadow-sm">综合诊断</span>
-                            </div>
-                            <div class="text-sm font-bold text-slate-700 mb-2">${item.result}</div>
-                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                                <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">直抬腿(L/R)</span><span class="font-mono font-bold text-slate-700">${item.slrL}° / ${item.slrR}°</span></div>
-                                <div class="flex flex-col border-x border-slate-100"><span class="text-slate-400 mb-0.5 text-[10px]">髋屈曲(L/R)</span><span class="font-mono font-bold text-slate-700">${item.hipL}° / ${item.hipR}°</span></div>
-                                <div class="flex flex-col"><span class="text-slate-400 mb-0.5 text-[10px]">肩屈(L/R)</span><span class="font-mono font-bold text-slate-700">${item.shL}° / ${item.shR}°</span></div>
-                            </div>`;
-                    }
-                    historyList.appendChild(card);
-                });
-            }
-            historyModal.classList.remove('hidden');
-        });
-
-        btnCloseHistory.addEventListener('click', () => historyModal.classList.add('hidden'));
-        btnClearHistory.addEventListener('click', () => {
-            if(confirm("确定要清空所有客户评估档案吗？")) { localStorage.removeItem('pelvic_history_v4'); historyModal.classList.add('hidden'); }
-        });
+        btnShowDonate.addEventListener('click', () => donateModal.classList.remove('hidden'));
+        btnCloseDonate.addEventListener('click', () => donateModal.classList.add('hidden'));
 
         // --- 3. Initialization & Reset ---
         async function initAI() {
@@ -445,7 +429,7 @@
 
         function resetCanvasForNewUpload() {
             stopLiveTracking(); 
-            canvasContainer.classList.add('hidden'); dragInstruction.classList.add('hidden'); resultBoard.classList.add('hidden'); currentPoses = [];
+            canvasContainer.classList.add('hidden'); dragInstruction.classList.add('hidden'); resultBoard.classList.add('hidden');
         }
         
         radioInputs.forEach(r => r.addEventListener('change', () => { resetCanvasForNewUpload(); updateSaveButtonText(); }));
@@ -592,19 +576,30 @@
             const tType = document.querySelector('input[name="testType"]:checked').value;
             const offset = canvas.height * 0.04; 
 
+            // 计算朝向：如果臀部在肩膀右侧（hip.x > shoulder.x），说明腿在右边，身体朝右
+            const dirX = hip.x > shoulder.x ? 1 : -1;
+
             if (tType === 'slr') {
-                const isLeftHigher = lAnkle.y < rAnkle.y; const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle; const restAnkle = testAnkle === lAnkle ? rAnkle : lAnkle;
+                const isLeftHigher = lAnkle.y < rAnkle.y; 
+                const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle; 
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = restAnkle.score > 0.2 ? { ...restAnkle } : { x: buttock.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttock.y, score: 1 };
+                // 强制绝对水平线作为基准：y坐标与buttock严格一致
+                let bed = { x: buttock.x + dirX * (canvas.width * 0.4), y: buttock.y, score: 1 };
                 activePoints = [bed, buttock, { ...testAnkle }];
             } else if (tType === 'hip') {
-                const isLeftHigher = lKnee.y < rKnee.y; const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee; const restAnkle = testKnee === lKnee ? rAnkle : lAnkle; const restKnee = testKnee === lKnee ? rKnee : lKnee;
+                const isLeftHigher = lKnee.y < rKnee.y; 
+                const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee; 
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = restAnkle.score > 0.2 ? { ...restAnkle } : (restKnee.score > 0.2 ? { ...restKnee } : { x: buttock.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttock.y, score: 1 });
+                // 强制绝对水平线作为基准：y坐标与buttock严格一致
+                let bed = { x: buttock.x + dirX * (canvas.width * 0.4), y: buttock.y, score: 1 };
                 activePoints = [bed, buttock, { ...testKnee }];
             } else {
-                const isLeftHigher = lElbow.y < rElbow.y; const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
-                activePoints = [ { x: hip.x, y: hip.y + offset, score: hip.score }, { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score }, { ...testElbow } ];
+                const isLeftHigher = lElbow.y < rElbow.y; 
+                const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
+                const shoulderPivot = { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score };
+                // 肩屈强制绝对水平线（代表平躺的躯干）：y坐标与肩部严格一致
+                let torso = { x: shoulderPivot.x + dirX * (canvas.width * 0.4), y: shoulderPivot.y, score: 1 };
+                activePoints = [torso, shoulderPivot, { ...testElbow }];
             }
 
             if (!isLive) activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
