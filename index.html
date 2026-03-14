@@ -19,17 +19,19 @@
         .bg-mac-blue { background-color: #0a84ff; }
         .border-mac-blue { border-color: #0a84ff; }
         .shadow-mac-blue { box-shadow: 0 4px 14px rgba(10, 132, 255, 0.3); }
+        /* 移除数字输入框的上下箭头 */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
-<!-- 恢复自由滚动，移除全局高度锁定，确保排版不被挤压 -->
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
-    <!-- 主容器：恢复标准的垂直卡片布局，内容自适应高度 -->
+    <!-- 主容器 -->
     <div class="w-full max-w-md mx-auto my-auto bg-[#f5f5f7] rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col border border-white relative transition-all duration-300">
         
         <!-- Apple 银白风格头部 -->
         <div class="px-6 pt-10 pb-8 text-center relative bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
-            <!-- 极简的顶部微光 -->
             <div class="absolute inset-0 pointer-events-none overflow-hidden flex justify-center">
                 <div class="absolute top-0 w-3/4 h-24 bg-white blur-[30px] rounded-full opacity-60"></div>
             </div>
@@ -46,14 +48,12 @@
             </button>
 
             <div class="mt-4 flex flex-col items-center relative z-10">
-                <!-- 纯黑大标题与银灰副标题 -->
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
                     <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">基础版</span>
                 </div>
                 
-                <!-- 提示说明框 (已加入署名) -->
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
                     <div class="flex items-center gap-2 text-left">
                         <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -71,7 +71,7 @@
             <p class="text-xs font-bold text-slate-600 tracking-widest">正在加载 Pro 视觉引擎...</p>
         </div>
 
-        <!-- 主内容区：恢复稳固的垂直单列 -->
+        <!-- 主内容区 -->
         <div id="main-content" class="p-5 sm:p-6 hidden bg-[#f5f5f7] flex-col gap-6">
             
             <!-- 进度追踪面板 -->
@@ -152,21 +152,25 @@
 
             <!-- 操作按钮区 -->
             <div>
-                <label class="block text-xs font-bold text-slate-500 tracking-wider mb-2.5">2. 动作捕捉</label>
+                <label class="block text-xs font-bold text-slate-500 tracking-wider mb-2.5">2. 动作捕捉与录入</label>
                 <div class="flex flex-col gap-2.5">
                     <button id="btn-start-camera" class="w-full py-3.5 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] flex items-center justify-center gap-2 text-sm tracking-widest">
                         <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         启动实时捕捉
                     </button>
+                    <!-- 三分块次要操作：包含手动录入 -->
                     <div class="flex gap-2 text-center items-center justify-center">
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-3 px-2 rounded-xl text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1.5 tracking-wider">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 高清抓拍
+                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 高清抓拍
                             <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden">
                         </label>
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-3 px-2 rounded-xl text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1.5 tracking-wider">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册分析
+                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册分析
                             <input type="file" accept="image/*" id="albumInput" class="hidden">
                         </label>
+                        <button id="btn-manual-input" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider active:scale-[0.98]">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 手动录入
+                        </button>
                     </div>
                 </div>
             </div>
@@ -194,11 +198,11 @@
                 </div>
             </div>
 
-            <!-- 微调提示 -->
+            <!-- 微调提示（亮色信息框） -->
             <div id="drag-instruction" class="hidden flex flex-col gap-3 bg-white p-4 rounded-xl border border-white shadow-sm">
                 <div class="flex items-start justify-between gap-2">
                     <p class="text-[10px] sm:text-[11px] font-medium text-slate-600 leading-relaxed tracking-wide">
-                        💡 AI 已标定。按住 <span class="text-[#0a84ff] font-bold">节点</span> 拖动微调。
+                        💡 AI 已标定物理轴心。如受衣物干扰，请按住 <span class="text-[#0a84ff] font-bold">节点</span> 拖动微调。
                     </p>
                     <button id="reset-btn" class="text-[10px] sm:text-[11px] font-bold text-[#0a84ff] hover:text-blue-800 shrink-0 border border-[#0a84ff]/20 bg-[#0a84ff]/5 px-2 py-1 rounded shadow-sm">重置原位</button>
                 </div>
@@ -239,7 +243,7 @@
                 <div class="w-full bg-[#f5f5f7] p-4.5 rounded-xl border border-black/5 flex flex-col gap-2.5 mb-3 z-10 p-4">
                     <div class="flex items-center gap-2 border-b border-[#e5e5ea] pb-2.5">
                         <span class="text-base">🧭</span>
-                        <span class="text-xs font-bold text-slate-800 tracking-wider">骨盆力学状态</span>
+                        <span class="text-xs font-bold text-slate-800 tracking-wider">骨盆当前状态</span>
                     </div>
                     <span id="final-pelvic-orientation" class="text-[11px] sm:text-xs font-medium text-slate-600 leading-relaxed mt-1">--</span>
                 </div>
@@ -247,12 +251,18 @@
                 <div id="final-posture-analysis" class="w-full bg-[#f5f5f7] p-4.5 rounded-xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed p-4">
                     <div class="font-bold mac-blue border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-xs tracking-wider">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
-                        代偿痛点分析画像
+                        日常痛点与体态表现
                     </div>
                     <div id="analysis-content" class="flex flex-col gap-3.5 mt-1">
                         <!-- JS 动态注入 -->
                     </div>
                 </div>
+
+                <!-- 增加重新评估按钮 -->
+                <button id="btn-start-over" class="mt-6 w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-xs tracking-widest z-10 flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    开启新一轮评估
+                </button>
             </div>
 
         </div>
@@ -278,6 +288,50 @@
                 </div>
                 <p class="text-sm text-slate-800 font-bold text-center tracking-wider">感谢您的认可与支持</p>
                 <p class="text-[10px] text-slate-500 mt-2 text-center px-4 tracking-wide leading-relaxed">如果您觉得这个工具对您有帮助<br>可以请作者喝杯咖啡 ☕️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手动输入 Modal -->
+    <div id="manual-modal" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
+        <div class="bg-white w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50 transform transition-transform">
+            <div class="p-4 bg-[#f5f5f7] text-slate-800 flex justify-between items-center border-b border-[#e5e5ea]">
+                <h2 class="text-sm font-bold flex items-center gap-2 tracking-widest">
+                    <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    手动角度录入
+                </h2>
+                <button id="btn-close-manual" class="text-slate-400 hover:text-slate-600 p-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-5 flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (L)</label>
+                        <input type="number" min="0" max="180" id="m-slr-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (R)</label>
+                        <input type="number" min="0" max="180" id="m-slr-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (L)</label>
+                        <input type="number" min="0" max="180" id="m-hip-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (R)</label>
+                        <input type="number" min="0" max="180" id="m-hip-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (L)</label>
+                        <input type="number" min="0" max="180" id="m-sh-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (R)</label>
+                        <input type="number" min="0" max="180" id="m-sh-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                    </div>
+                </div>
+                <button id="btn-submit-manual" class="w-full py-3.5 mt-3 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] text-[11px] tracking-widest">
+                    保存已填数据 (满6项自动出报告)
+                </button>
             </div>
         </div>
     </div>
@@ -314,6 +368,15 @@
         const btnShowDonate = document.getElementById('btn-show-donate');
         const btnCloseDonate = document.getElementById('btn-close-donate');
         const donateModal = document.getElementById('donate-modal');
+
+        // Manual Input Modal
+        const btnManualInput = document.getElementById('btn-manual-input');
+        const manualModal = document.getElementById('manual-modal');
+        const btnCloseManual = document.getElementById('btn-close-manual');
+        const btnSubmitManual = document.getElementById('btn-submit-manual');
+        
+        // Start Over
+        const btnStartOver = document.getElementById('btn-start-over');
 
         // Global State
         let testRecords = { 
@@ -395,6 +458,77 @@
         btnShowDonate.addEventListener('click', () => donateModal.classList.remove('hidden'));
         btnCloseDonate.addEventListener('click', () => donateModal.classList.add('hidden'));
 
+        // --- Manual Input Actions (Enhanced with smart partial fill) ---
+        btnManualInput.addEventListener('click', () => {
+            // 打开弹窗时，自动填充已经存在的数据
+            document.getElementById('m-slr-l').value = testRecords.slr.L !== null ? testRecords.slr.L : '';
+            document.getElementById('m-slr-r').value = testRecords.slr.R !== null ? testRecords.slr.R : '';
+            document.getElementById('m-hip-l').value = testRecords.hip.L !== null ? testRecords.hip.L : '';
+            document.getElementById('m-hip-r').value = testRecords.hip.R !== null ? testRecords.hip.R : '';
+            document.getElementById('m-sh-l').value = testRecords.shoulder.L !== null ? testRecords.shoulder.L : '';
+            document.getElementById('m-sh-r').value = testRecords.shoulder.R !== null ? testRecords.shoulder.R : '';
+            manualModal.classList.remove('hidden');
+        });
+        
+        btnCloseManual.addEventListener('click', () => manualModal.classList.add('hidden'));
+
+        btnSubmitManual.addEventListener('click', () => {
+            const inputMap = [
+                { id: 'm-slr-l', t: 'slr', s: 'L' }, { id: 'm-slr-r', t: 'slr', s: 'R' },
+                { id: 'm-hip-l', t: 'hip', s: 'L' }, { id: 'm-hip-r', t: 'hip', s: 'R' },
+                { id: 'm-sh-l', t: 'shoulder', s: 'L' }, { id: 'm-sh-r', t: 'shoulder', s: 'R' }
+            ];
+
+            let hasError = false;
+            inputMap.forEach(item => {
+                const valStr = document.getElementById(item.id).value.trim();
+                if (valStr !== '') {
+                    const val = parseFloat(valStr);
+                    // 核心容错验证：限制输入在合理生理范围内
+                    if (isNaN(val) || val < 0 || val > 180) {
+                        hasError = true;
+                    } else {
+                        testRecords[item.t][item.s] = val;
+                    }
+                }
+            });
+
+            if (hasError) {
+                alert("数值异常：为保证诊断精确，请输入 0 到 180 之间的有效度数！");
+                return;
+            }
+
+            updateTrackerUI();
+            manualModal.classList.add('hidden');
+            resetCanvasForNewUpload();
+
+            const nextTest = getNextMissingTest();
+            if (!nextTest) {
+                generateFinalReport();
+            } else {
+                // 如果只填了一部分，聪明地把选项切到下一个空缺项
+                document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
+                document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
+                updateSaveButtonText();
+            }
+        });
+
+        // --- Start Over Action ---
+        btnStartOver.addEventListener('click', () => {
+            testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
+            updateTrackerUI();
+            document.getElementById('final-report-section').classList.add('hidden');
+            
+            document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
+            document.querySelector(`input[name="testSide"][value="L"]`).checked = true;
+            updateSaveButtonText();
+            
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            speak("已重置，请开启新一轮测试。");
+        });
+
+
         // --- AI Init ---
         async function initAI() {
             try {
@@ -410,7 +544,6 @@
         function scrollToDisplayArea() {
             const mainContent = document.getElementById('main-content');
             if (mainContent) {
-                // 平滑滚动到底部
                 mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
             }
         }
@@ -656,7 +789,7 @@
             }
         }
 
-        // --- Rendering (macOS Light Pro Color Scheme) ---
+        // --- Rendering ---
         function renderCanvasAndResult(imgSource) {
             if (activePoints.length !== 3) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height); if(imgSource) ctx.drawImage(imgSource, 0, 0, canvas.width, canvas.height);
@@ -667,15 +800,12 @@
             let startAngle = Math.atan2(p1.y - p2.y, p1.x - p2.x), endAngle = Math.atan2(p3.y - p2.y, p3.x - p2.x);
             let diff = endAngle - startAngle; while (diff <= -Math.PI) diff += 2*Math.PI; while (diff > Math.PI) diff -= 2*Math.PI;
 
-            // Pro Blue Arc
             ctx.beginPath(); ctx.moveTo(p2.x, p2.y); ctx.arc(p2.x, p2.y, arcRadius, startAngle, endAngle, diff<0); ctx.closePath(); 
             ctx.fillStyle = 'rgba(10, 132, 255, 0.2)'; ctx.fill();
             
-            // Pro Blue Lines
             ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); 
             ctx.strokeStyle = '#0a84ff'; ctx.lineWidth = lineWidth; ctx.lineJoin = 'round'; ctx.stroke();
 
-            // Point Colors matching the Light Pro legend
             const pointColors = ['#ff3b30', '#ffcc00', '#007aff'];
             activePoints.forEach((p, index) => {
                 ctx.beginPath(); ctx.arc(p.x, p.y, index === draggingPointIndex ? drawRadius * 1.5 : drawRadius, 0, 2 * Math.PI);
@@ -773,8 +903,8 @@
                 const valL = testRecords[t].L;
                 const valR = testRecords[t].R;
                 
-                if (valL !== null) document.getElementById(`score-${t}-L`).innerText = valL.toFixed(0) + '°';
-                if (valR !== null) document.getElementById(`score-${t}-R`).innerText = valR.toFixed(0) + '°';
+                document.getElementById(`score-${t}-L`).innerText = valL !== null ? valL.toFixed(0) + '°' : '--';
+                document.getElementById(`score-${t}-R`).innerText = valR !== null ? valR.toFixed(0) + '°' : '--';
                 
                 if (valL !== null && valR !== null) {
                     testRecords[t].final = Math.min(valL, valR);
@@ -783,6 +913,12 @@
                     trBox.querySelector('span:first-child').classList.replace('text-slate-400', 'text-[#0a84ff]');
                     fText.classList.replace('text-slate-300', 'text-slate-800'); 
                     fText.innerText = `短板值: ${testRecords[t].final.toFixed(1)}°`;
+                } else {
+                    trBox.classList.replace('bg-[#0a84ff]/5', 'bg-white'); 
+                    trBox.classList.replace('border-[#0a84ff]/40', 'border-transparent'); 
+                    trBox.querySelector('span:first-child').classList.replace('text-[#0a84ff]', 'text-slate-400');
+                    fText.classList.replace('text-slate-800', 'text-slate-300'); 
+                    fText.innerText = `待完成`;
                 }
             });
         }
@@ -805,7 +941,7 @@
                 document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
                 document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
                 
-                let tName = nextTest.type === 'slr'?'主动直腿抬高':(nextTest.type==='hip'?'主动髋屈曲':'主动肩屈');
+                let tName = nextTest.type === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈');
                 let sName = nextTest.side === 'L'?'左侧':'右侧';
                 
                 updateSaveButtonText();
@@ -818,7 +954,7 @@
 
         // --- 最终综合报告 ---
         function generateFinalReport() {
-            speak("测试集采集完成！正在解算系统深度诊断报告。");
+            speak("测试集采集完成！正在为您生成体态分析报告。");
             
             const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
@@ -830,7 +966,7 @@
             if (testRecords.shoulder.final <= 100) posteriorScore++;
             
             const isPosterior = posteriorScore >= 2;
-            const tensionStatus = isPosterior ? "后链张力过高" : "前侧链条缩短";
+            const tensionStatus = isPosterior ? "身体后侧紧绷" : "身体前侧紧绷";
             const tensionClass = "text-black";
 
             const diffHip = hipL - hipR; 
@@ -858,54 +994,59 @@
             const analysisContent = document.getElementById('analysis-content'); 
             
             if (diagnosis === "LeftAIC") {
-                titleEl.innerText = `诊断输出: ${tensionStatus} · 骨盆右侧偏转`; 
+                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆向右偏转`; 
                 titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "您的骨盆力学重心整体 <strong class='text-slate-900'>偏向右侧</strong>，且左侧骨盆存在向前的代偿性翻转。在静态站立时，您的体重会无意识地更多分配给右腿。";
+                orientationEl.innerHTML = "您的骨盆整体 <strong class='text-slate-900'>偏向右侧</strong>，左侧骨盆像被往前翻一样。站立时，您会无意识地把大部分体重压在右腿上。";
                 
                 analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心轴：</b> 站立时倾向于将体重压在右腿（“稍息”姿态）。左侧骨盆的内翻会导致两侧臀肌发力感知不对称。</p>
-                    <p><b class="text-slate-800">💥 脊柱与腰椎：</b> 因底盘向右扭转，腰椎需向左反向代偿。这使得 <strong class="mac-blue">右后侧腰肌（如腰方肌）</strong> 处于长期的被动缩短状态，是右腰极易酸痛和劳损的核心诱因。</p>
-                    <p><b class="text-slate-800">🦵 下肢运动链：</b> 右腿承担过多静息重量，导致肌肉质地更紧绷；左侧大腿骨被动外旋，活动时左膝有相对更大的“内扣”风险。</p>
-                    <p><b class="text-slate-800">🧘 胸椎与肩颈：</b> 为了维持视野朝前，躯干被迫产生对侧扭转，引发 <strong class="mac-blue">右肩偏低、左肩偏高</strong> 的高低肩现象，并伴随左侧斜方肌常态化紧张。</p>
+                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 站着时喜欢“稍息”站姿，把重量压在右腿。因为左侧骨盆往内翻，您会觉得两边屁股发力大小不一样。</p>
+                    <p><b class="text-slate-800">💥 腰部感受：</b> 底盘向右扭，腰为了让人能面朝正前方，就得硬往左扭回来。这会让 <strong class="mac-blue">右侧后腰的肌肉</strong> 长期紧绷，特别容易酸痛和劳损。</p>
+                    <p><b class="text-slate-800">🦵 腿部状态：</b> 右腿受力太多，肌肉容易僵硬；左侧大腿骨不自觉向外转，活动时左膝盖更容易往里扣。</p>
+                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 身体的扭转容易导致 <strong class="mac-blue">右肩低、左肩高</strong> 的高低肩，而且左侧肩膀和脖子会经常感到紧张僵硬。</p>
                 `;
             } else if (diagnosis === "Lateral") {
-                titleEl.innerText = `诊断输出: ${tensionStatus} · 骨盆左侧抬高 (侧倾)`; 
+                titleEl.innerText = `诊断结果: ${tensionStatus} · 高低骨盆 (左侧高)`; 
                 titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "力学检测显示您的骨盆存在明显的 <strong class='text-slate-900'>侧倾（高低骨盆）</strong>。左侧骨盆轴被锚定在异常高位，导致下肢力线产生严重的失衡代偿。";
+                orientationEl.innerHTML = "检测显示您有明显的 <strong class='text-slate-900'>高低骨盆</strong>。您的左侧骨盆被卡在了较高位置，导致走路和站立时双腿受力严重不均。";
                 
                 analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心轴：</b> 骨盆失去冠状面的水平状态，左侧被异常力线卡在高位，无法随步态自然沉降。</p>
-                    <p><b class="text-slate-800">💥 脊柱与腰椎：</b> 侧倾直接引发 <strong class="mac-blue">左侧腰部（侧腰肌群）</strong> 的严重物理空间挤压。表现为左腰侧强烈的紧绷感，或在转身/弯腰时偶发“卡住”的刺痛。</p>
-                    <p><b class="text-slate-800">🦵 下肢运动链：</b> 左骨盆抬高使得在视觉及体感上出现 <strong class="mac-blue">假性短腿（左短右长）</strong>。代偿表现为左脚不自觉地微微踮脚，或右膝屈曲以平衡高度差。</p>
-                    <p><b class="text-slate-800">🧘 胸椎与肩颈：</b> 上半身通过脊柱侧弯来对抗底盘的倾斜，诱发 <strong class="mac-blue">左肩被动压低、右肩相对抬高</strong> 的张力带，是造成单侧偏头痛或极度颈部牵扯痛的根源。</p>
+                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 骨盆一高一低，左侧降不下来，就像一直踩着个台阶，左右严重不平衡。</p>
+                    <p><b class="text-slate-800">💥 腰部感受：</b> 高低骨盆把 <strong class="mac-blue">左侧腰部</strong> 严重挤压在一起。您可能会觉得左侧腰部特别紧绷，弯腰或转身时有时会觉得“卡住”或刺痛。</p>
+                    <p><b class="text-slate-800">🦵 腿部状态：</b> 左边骨盆高，会让您感觉 <strong class="mac-blue">左腿好像比右腿短</strong>。为了平衡，您的左脚可能会不自觉地微微踮起，或者右膝盖会弯曲一点。</p>
+                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 上半身为了不歪倒，脊柱会弯曲代偿，导致 <strong class="mac-blue">左肩被动压低、右肩相对抬高</strong>。这种拉扯很容易引起单侧偏头痛或脖子一边特别疼。</p>
                 `;
             } else if (diagnosis === "Oblique") {
-                titleEl.innerText = `诊断输出: ${tensionStatus} · 骨盆斜轴扭转`; 
+                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆深度扭转 (拧麻花)`; 
                 titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "检测到深度的 <strong class='text-slate-900'>对角线斜轴扭转</strong>。左侧骨盆受到严重向前的剪切拉力，形同“拧麻花”状态，代表较深层的筋膜网代偿。";
+                orientationEl.innerHTML = "检测到比较深度的 <strong class='text-slate-900'>对角线扭转</strong>。您的左侧骨盆被严重地向前拉扯，整个骨盆就像“拧麻花”一样，代表身体深层的肌肉筋膜已经出现了较严重的代偿习惯。";
                 
                 analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心轴：</b> 身体底盘处于极度扭曲中。左骨盆被强力拉向右前侧下方，使得行走时的重力传递路径极度低效和不稳定。</p>
-                    <p><b class="text-slate-800">💥 脊柱与腰椎：</b> 腰骶关节（L5-S1区域）承受了巨大的三维交叉剪切力。这极易诱发 <strong class="mac-blue">深层的后腰底钝痛或刺痛</strong>，常在久坐起身的瞬间爆发。</p>
-                    <p><b class="text-slate-800">🦵 下肢运动链：</b> 极度扭转的力线迫使左腿向内螺旋，极大地增加了 <strong class="mac-blue">X型腿（膝外翻）及扁平足塌陷</strong> 的风险，鞋底内侧往往磨损更严重。</p>
-                    <p><b class="text-slate-800">🧘 胸椎与肩颈：</b> 为了平衡下肢的扭曲，胸廓强行“含胸拔背”。表现为背部肩胛骨不对称（一前一后）、头前伸、富贵包，甚至导致膈肌受限，呼吸短促变浅。</p>
+                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 身体底盘处于极度扭曲中。左侧骨盆被强行拉向右前下方，导致您走路时身体发力很不顺畅、重心不稳。</p>
+                    <p><b class="text-slate-800">💥 腰部感受：</b> 腰和屁股连接的地方（后腰最底下）承受着各个方向的撕扯力。这特别容易引发 <strong class="mac-blue">深层的后腰底酸痛或刺痛</strong>，尤其在久坐突然站起来的那一下感觉最明显。</p>
+                    <p><b class="text-slate-800">🦵 腿部状态：</b> 扭曲的力量逼着左腿向内转，让您更容易出现 <strong class="mac-blue">X型腿及扁平足</strong>，平时鞋底内侧往往磨损得也更快。</p>
+                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 为了不让身体顺着下半身扭过去，您的胸背会强行“含胸驼背”来稳住。这会让您的肩胛骨一前一后，脖子前倾，甚至长出富贵包，连呼吸都可能觉得闷、喘气变浅。</p>
                 `;
             } else {
-                titleEl.innerText = `诊断输出: ${tensionStatus} · 双侧相对对称`; 
+                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆前倾卡死`; 
                 titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "您的骨盆力学轴线在左右两端相对平衡，未检出重度侧偏。核心问题在于 <strong class='text-slate-900'>矢状面（前后方向）张力失衡</strong> 导致的骨盆整体活动度被锁死。";
+                orientationEl.innerHTML = "您的骨盆左右两边基本对称，没有明显的歪斜。核心问题是 <strong class='text-slate-900'>骨盆整体向前倾斜</strong>，导致活动度被卡死。";
                 
                 analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心轴：</b> 骨盆作为一个整体，陷入了向前倾斜的死锁状态（“假翘臀”）。表现为腹壁核心张力丢失，下腹部极易不自觉前凸。</p>
-                    <p><b class="text-slate-800">💥 脊柱与腰椎：</b> 骨盆过度前倾导致腰椎生理曲度被迫变深。<strong class="mac-blue">双侧竖脊肌常年处于极端发力的缩短状态</strong>，在长时间站立或仰卧较硬床面时，腰部会出现强烈的酸胀和悬空疲劳感。</p>
-                    <p><b class="text-slate-800">🦵 下肢运动链：</b> 为在腹部前凸的情况下维系重力平衡，膝关节常出现 <strong class="mac-blue">锁死超伸</strong> 代偿。小腿后侧肌群被迫承接额外重力，极易形成肌肉型粗壮。</p>
-                    <p><b class="text-slate-800">🧘 胸椎与肩颈：</b> 重心前移迫使上胸椎向后向下拉拽（驼背）以防摔倒，导致头部相对前伸。颈椎后侧及肩部斜方肌长年超负荷作业，僵硬如石。</p>
+                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 骨盆整体向前倒（俗称“假翘臀”）。肚子上的肌肉使不上劲，下腹部容易不自觉地往前凸。</p>
+                    <p><b class="text-slate-800">💥 腰部感受：</b> 骨盆前倾会让腰往里凹得很深，<strong class="mac-blue">后背两侧的腰肉一直处于死死发力的状态</strong>。只要站久了，或者躺在硬板床上，腰部就会非常酸胀，感觉悬空没有支撑。</p>
+                    <p><b class="text-slate-800">🦵 腿部状态：</b> 为了在挺着肚子时保持平衡，您的膝盖往往会 <strong class="mac-blue">往后锁死（膝盖超伸）</strong>。这会让小腿肚子被迫多发力，时间长了小腿容易长成肌肉型粗壮。</p>
+                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 重心往前跑，上半身为了防止摔倒就会习惯性驼背，导致脖子往前伸。脖子后侧和肩膀的肌肉常年被拉扯，摸起来像石头一样僵硬。</p>
                 `;
             }
 
             saveHistoryToStorage({
                 type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                slrL: slrL.toFixed(1), slrR: slrR.toFixed(1), hipL: hipL.toFixed(1), hipR: hipR.toFixed(1), shL: shL.toFixed(1), shR: shR.toFixed(1),
+                slrL: slrL !== null ? slrL.toFixed(1) : '--', 
+                slrR: slrR !== null ? slrR.toFixed(1) : '--', 
+                hipL: hipL !== null ? hipL.toFixed(1) : '--', 
+                hipR: hipR !== null ? hipR.toFixed(1) : '--', 
+                shL: shL !== null ? shL.toFixed(1) : '--', 
+                shR: shR !== null ? shR.toFixed(1) : '--',
                 result: titleEl.innerText
             });
 
