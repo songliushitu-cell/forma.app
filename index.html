@@ -5,15 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FORMA骨盆评估 - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.21.0/dist/tf-converter.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@3.21.0/dist/tf-backend-webgl.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.21.0/dist/tf-converter.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@3.21.0/dist/tf-backend-webgl.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu@3.21.0/dist/tf-backend-cpu.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <style>
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .report-accordion summary::-webkit-details-marker { display: none; }
+        .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
+        .report-hero {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(244,248,255,0.96) 58%, rgba(234,243,255,0.96) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        .report-key-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(245,245,247,0.98) 100%);
+        }
+        .report-reading {
+            gap: 16px;
+        }
+        .report-reading p {
+            margin: 0;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(229, 229, 234, 0.9);
+            background: rgba(255,255,255,0.88);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .report-reading b {
+            display: inline-block;
+            margin-right: 2px;
+        }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
         .bg-mac-blue { background-color: #0a84ff; }
@@ -22,7 +47,7 @@
         /* 移除数字输入框的上下箭头 */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        input[type=number] { appearance: textfield; -moz-appearance: textfield; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
@@ -66,13 +91,16 @@
             </div>
         </div>
 
-        <div id="ai-loading" class="flex flex-col items-center justify-center p-10 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
-            <svg class="animate-spin h-8 w-8 mac-blue mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <p class="text-xs font-bold text-slate-600 tracking-widest">正在加载 Pro 视觉引擎...</p>
+        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <svg id="ai-loading-spinner" class="animate-spin h-5 w-5 mac-blue shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600 tracking-wide leading-relaxed">正在后台加载视觉引擎，你也可以先手动录入数据。</p>
+            </div>
+            <button id="btn-retry-ai" class="hidden shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">重试引擎</button>
         </div>
 
         <!-- 主内容区 -->
-        <div id="main-content" class="p-5 sm:p-6 hidden bg-[#f5f5f7] flex-col gap-6">
+        <div id="main-content" class="p-5 sm:p-6 flex bg-[#f5f5f7] flex-col gap-6">
             
             <!-- 进度追踪面板 -->
             <div class="bg-[#e5e5ea] p-2 rounded-[1.25rem] border border-black/5 flex justify-between gap-1.5 shadow-inner">
@@ -125,6 +153,12 @@
                         <input type="radio" name="testSide" value="R" class="peer hidden">
                         <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 右侧 (R)</div>
                     </label>
+                </div>
+                <div class="flex items-center justify-between px-1 pt-1">
+                    <span class="text-[10px] font-medium text-slate-400 tracking-wide">调试模式会显示 AI 实际取点和侧别</span>
+                    <button id="btn-toggle-debug" class="text-[10px] font-bold text-slate-600 bg-white border border-[#e5e5ea] rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">
+                        显示调试信息
+                    </button>
                 </div>
             </div>
 
@@ -182,7 +216,12 @@
                 
                 <!-- 摄像覆盖层 -->
                 <div id="live-overlay" class="absolute inset-0 flex flex-col items-center justify-between z-20 hidden fade-in pointer-events-none p-4 pb-6">
-                    <div class="mt-4 bg-black/70 backdrop-blur-md px-8 py-4 rounded-[1.5rem] text-white font-bold flex flex-col items-center shadow-lg border border-white/10 pointer-events-auto">
+                    <div class="w-full flex justify-end pointer-events-auto">
+                        <button id="btn-stop-camera" class="w-9 h-9 rounded-full bg-black/60 backdrop-blur-md hover:bg-black/80 text-white flex items-center justify-center shadow-lg border border-white/15 active:scale-95 transition-transform" title="关闭摄像头">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="bg-black/70 backdrop-blur-md px-8 py-4 rounded-[1.5rem] text-white font-bold flex flex-col items-center shadow-lg border border-white/10 pointer-events-auto">
                         <span id="live-status-text" class="text-xs mac-blue mb-1 flex items-center gap-1.5 tracking-widest transition-colors">
                             <span class="w-2 h-2 rounded-full bg-mac-blue animate-pulse shadow-mac-blue"></span> 自动追踪最高点中...
                         </span>
@@ -202,13 +241,31 @@
             <div id="drag-instruction" class="hidden flex flex-col gap-3 bg-white p-4 rounded-xl border border-white shadow-sm">
                 <div class="flex items-start justify-between gap-2">
                     <p class="text-[10px] sm:text-[11px] font-medium text-slate-600 leading-relaxed tracking-wide">
-                        💡 AI 已标定物理轴心。如受衣物干扰，请按住 <span class="text-[#0a84ff] font-bold">节点</span> 拖动微调。
+                        AI 会先按床面方向自动校正参考线。如受衣物、床单边缘或拍摄角度干扰，请按住 <span class="text-[#0a84ff] font-bold">节点</span> 拖动微调；其中 <span class="text-[#ff3b30] font-bold">1 号点</span> 只负责旋转床面水平线。画面中 <span class="text-[#34c759] font-bold">绿色虚线</span> 为水平 0° 基准，红色参考线应尽量与之平行对齐，测量结果才更准确。
                     </p>
                     <button id="reset-btn" class="text-[10px] sm:text-[11px] font-bold text-[#0a84ff] hover:text-blue-800 shrink-0 border border-[#0a84ff]/20 bg-[#0a84ff]/5 px-2 py-1 rounded shadow-sm">重置原位</button>
                 </div>
+                <div id="reference-guide-note" class="text-[10px] sm:text-[11px] font-medium text-[#0a84ff] bg-[#0a84ff]/8 border border-[#0a84ff]/15 rounded-xl px-3 py-2.5 leading-relaxed">系统会先按水平基线初始化；如果画面略微拍歪，可拖动 1 号点做细调。</div>
                 <div id="point-legend" class="grid grid-cols-1 gap-2 text-[10px] sm:text-[11px] font-medium text-slate-600 bg-[#f5f5f7] p-3 rounded-lg border border-black/5">
                     <!-- 动态生成 -->
                 </div>
+            </div>
+
+            <div id="debug-panel" class="hidden flex-col gap-3 bg-slate-900 text-slate-100 p-4 rounded-xl border border-slate-700 shadow-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold tracking-[0.2em] text-slate-300">DEBUG PANEL</span>
+                    <span id="debug-status-badge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">ON</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">模式: <span id="debug-mode" class="text-sky-300">待机</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">角度: <span id="debug-angle" class="text-sky-300">--</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中动作: <span id="debug-test-type" class="text-sky-300">slr</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中侧别: <span id="debug-selected-side" class="text-sky-300">L</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">轴心侧: <span id="debug-pivot-side" class="text-amber-300">--</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">肢体侧: <span id="debug-limb-side" class="text-amber-300">--</span></div>
+                </div>
+                <div id="debug-fallback" class="text-[10px] font-medium text-amber-200 bg-amber-500/10 border border-amber-400/20 rounded-lg px-3 py-2">回退状态: 未触发</div>
+                <div id="debug-point-summary" class="text-[10px] font-mono leading-relaxed text-slate-300 bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">尚未开始检测</div>
             </div>
 
             <!-- 结果展示板 -->
@@ -230,35 +287,109 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="hidden fade-in bg-white border border-white p-5 sm:p-6 rounded-2xl shadow-xl mt-2 flex flex-col items-center relative overflow-hidden">
+            <div id="final-report-section" class="hidden fade-in bg-white border border-white p-5 sm:p-6 rounded-[2rem] shadow-xl mt-2 flex flex-col items-stretch relative overflow-hidden gap-3">
                 <div class="absolute -top-20 -right-20 w-48 h-48 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2 sm:mb-3 z-10 flex items-center gap-1.5">
-                    <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                    系统深度诊断报告
-                </h2>
-                
-                <div id="final-result-title" class="text-lg sm:text-xl font-black text-black mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm">获取中...</div>
+                <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/70 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="w-full bg-[#f5f5f7] p-4.5 rounded-xl border border-black/5 flex flex-col gap-2.5 mb-3 z-10 p-4">
-                    <div class="flex items-center gap-2 border-b border-[#e5e5ea] pb-2.5">
-                        <span class="text-base">🧭</span>
-                        <span class="text-xs font-bold text-slate-800 tracking-wider">骨盆当前状态</span>
+                <div class="relative z-10 w-full report-hero rounded-[1.6rem] border border-white/80 px-4 py-4 sm:px-5 sm:py-5 overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-20 bg-white/60 blur-2xl pointer-events-none"></div>
+                    <div class="relative">
+                        <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            体态评估报告
+                        </h2>
+                        <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight">获取中...</div>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span id="final-report-confidence" class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/10 text-[#0a84ff] border border-[#0a84ff]/20">模式匹配度：--</span>
+                            <span class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-600 border border-[#e5e5ea]">依据：6项动作筛查左右差值</span>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <div id="final-report-confidence-detail" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
+                                匹配度说明：--
+                            </div>
+                            <div id="final-report-note" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
+                                本报告用于体态与功能筛查参考，结论来自动作角度差值与模式匹配，不替代影像学检查或临床诊断。
+                            </div>
+                        </div>
                     </div>
-                    <span id="final-pelvic-orientation" class="text-[11px] sm:text-xs font-medium text-slate-600 leading-relaxed mt-1">--</span>
                 </div>
 
-                <div id="final-posture-analysis" class="w-full bg-[#f5f5f7] p-4.5 rounded-xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed p-4">
-                    <div class="font-bold mac-blue border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-xs tracking-wider">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
-                        日常痛点与体态表现
+                <div class="w-full flex flex-col gap-3 z-10">
+                    <div class="report-key-card border border-black/5 rounded-2xl p-4 sm:p-5 flex flex-col gap-2.5 shadow-sm">
+                        <span class="text-[11px] sm:text-xs font-bold tracking-[0.18em] text-slate-400">当前判断</span>
+                        <span id="final-combo-label" class="text-base sm:text-[17px] font-black text-slate-900 leading-relaxed">--</span>
                     </div>
-                    <div id="analysis-content" class="flex flex-col gap-3.5 mt-1">
+                    <div class="report-key-card border border-black/5 rounded-2xl p-4 sm:p-5 flex flex-col gap-2.5 shadow-sm">
+                        <span class="text-[11px] sm:text-xs font-bold tracking-[0.18em] text-slate-400">身体状态</span>
+                        <span id="final-body-state" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7">--</span>
+                    </div>
+                    <div class="hidden bg-[linear-gradient(135deg,rgba(10,132,255,0.12),rgba(255,255,255,0.92))] border border-[#0a84ff]/15 rounded-2xl p-4 sm:p-5 flex flex-col gap-2.5 shadow-sm">
+                        <span class="text-[11px] sm:text-xs font-bold tracking-[0.18em] text-[#0a84ff]">调整顺序</span>
+                        <span id="final-solution-order" class="text-base sm:text-[17px] font-bold text-slate-700 leading-relaxed">--</span>
+                    </div>
+                </div>
+
+                <div class="w-full flex flex-col gap-3 z-10">
+                    <div class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 p-4 sm:p-5 shadow-sm">
+                        <div class="flex items-center gap-2 border-b border-[#e5e5ea] pb-2.5">
+                            <span class="text-base">🧭</span>
+                            <span class="text-sm sm:text-[15px] font-bold text-slate-800 tracking-wider">模式解读</span>
+                        </div>
+                        <span id="final-pelvic-orientation" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 mt-1">--</span>
+                    </div>
+                    <div class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 p-4 sm:p-5 shadow-sm">
+                        <div class="flex items-center gap-2 border-b border-[#e5e5ea] pb-2.5">
+                            <span class="text-base">📌</span>
+                            <span class="text-sm sm:text-[15px] font-bold text-slate-800 tracking-wider">判读摘要</span>
+                        </div>
+                        <div id="final-compression-summary" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5">压缩模式说明：--</div>
+                        <div id="final-report-data" class="text-[12px] sm:text-[13px] text-slate-500 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5 leading-6">数据依据：--</div>
+                    </div>
+                </div>
+
+                <div id="final-pri-analysis" class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
+                    <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
+                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        体态分析
+                        <span class="ml-auto text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-700 border border-amber-400/30 tracking-wider">测试推断</span>
+                    </div>
+                    <div id="final-pri-content" class="report-reading flex flex-col gap-4"></div>
+                </div>
+
+                <div class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
+                    <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
+                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4v-1a7 7 0 0114 0v1a4 4 0 01-4 4H7zm10-10a4 4 0 114-4 4 4 0 01-4 4z"></path></svg>
+                        臀型外观推演
+                    </div>
+                    <div id="final-glute-content" class="report-reading flex flex-col gap-4"></div>
+                </div>
+
+                <div id="final-posture-analysis" class="hidden w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
+                    <div class="font-bold mac-blue border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
+                        功能表现与代偿提示
+                    </div>
+                    <div id="analysis-content" class="report-reading flex flex-col gap-4 mt-2">
                         <!-- JS 动态注入 -->
                     </div>
                 </div>
 
-                <!-- 增加重新评估按钮 -->
+                <div class="hidden w-full bg-[#f5f5f7] p-4 sm:p-5 rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 shadow-sm">
+                    <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
+                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m3 6V7m3 10v-4M5 21h14"></path></svg>
+                        技术判读依据
+                    </div>
+                    <div id="final-technical-content" class="report-reading flex flex-col gap-4"></div>
+                </div>
+
+                <div class="hidden w-full bg-[#f5f5f7] p-4 rounded-xl border border-black/5 flex-col gap-3 mb-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed">
+                    <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-xs tracking-wider">
+                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        建议干预方向
+                    </div>
+                    <div id="final-action-content" class="report-reading flex flex-col gap-4"></div>
+                </div>
+
                 <button id="btn-start-over" class="mt-6 w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-xs tracking-widest z-10 flex items-center justify-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     开启新一轮评估
@@ -340,15 +471,33 @@
     <img id="sourceImage" class="hidden">
 
     <script>
+        // roundRect polyfill（兼容 iOS Safari 15.3 及以下）
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                const radius = typeof r === 'number' ? r : (Array.isArray(r) ? r[0] : 0);
+                const rx = Math.min(radius, w / 2, h / 2);
+                this.moveTo(x + rx, y);
+                this.lineTo(x + w - rx, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + rx);
+                this.lineTo(x + w, y + h - rx);
+                this.quadraticCurveTo(x + w, y + h, x + w - rx, y + h);
+                this.lineTo(x + rx, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - rx);
+                this.lineTo(x, y + rx);
+                this.quadraticCurveTo(x, y, x + rx, y);
+                this.closePath();
+                return this;
+            };
+        }
+
         // DOM Elements
+        const canvas = document.getElementById('imageCanvas');
         const cameraInput = document.getElementById('photoInput'); 
         const albumInput = document.getElementById('albumInput');
         const btnStartCamera = document.getElementById('btn-start-camera'); 
         const videoElement = document.getElementById('videoElement');
         const liveOverlay = document.getElementById('live-overlay');
         const btnLockFrame = document.getElementById('btn-lock-frame');
-
-        const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
         const canvasContainer = document.getElementById('canvas-container');
         const analyzingMask = document.getElementById('analyzing-mask');
@@ -363,18 +512,33 @@
         const btnSaveText = document.getElementById('btn-save-text'); 
         const btnRetake = document.getElementById('retake-btn');
         const currentBoardTitle = document.getElementById('current-board-title');
+        const referenceGuideNote = document.getElementById('reference-guide-note');
+        const aiLoading = document.getElementById('ai-loading');
+        const aiLoadingMessage = document.getElementById('ai-loading-message');
+        const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
+        const btnRetryAI = document.getElementById('btn-retry-ai');
 
         const btnVoiceToggle = document.getElementById('voice-toggle');
         const btnShowDonate = document.getElementById('btn-show-donate');
         const btnCloseDonate = document.getElementById('btn-close-donate');
         const donateModal = document.getElementById('donate-modal');
+        const btnToggleDebug = document.getElementById('btn-toggle-debug');
+        const debugPanel = document.getElementById('debug-panel');
+        const debugStatusBadge = document.getElementById('debug-status-badge');
+        const debugMode = document.getElementById('debug-mode');
+        const debugAngle = document.getElementById('debug-angle');
+        const debugTestType = document.getElementById('debug-test-type');
+        const debugSelectedSide = document.getElementById('debug-selected-side');
+        const debugPivotSide = document.getElementById('debug-pivot-side');
+        const debugLimbSide = document.getElementById('debug-limb-side');
+        const debugFallback = document.getElementById('debug-fallback');
+        const debugPointSummary = document.getElementById('debug-point-summary');
 
         // Manual Input Modal
         const btnManualInput = document.getElementById('btn-manual-input');
         const manualModal = document.getElementById('manual-modal');
         const btnCloseManual = document.getElementById('btn-close-manual');
         const btnSubmitManual = document.getElementById('btn-submit-manual');
-        
         // Start Over
         const btnStartOver = document.getElementById('btn-start-over');
 
@@ -396,14 +560,435 @@
         let isLiveTracking = false;
         let liveStream = null;
         let liveRequestID = null;
+        let aiEngineState = {
+            status: 'idle',
+            error: '',
+            initPromise: null,
+            backend: ''
+        };
 
         let liveMaxAngle = 0;
         let liveMaxPoints = [];
         let angleHistory = [];
         let isHolding = false;
         let holdStartTime = 0;
+        let debugEnabled = false;
+        let referenceGuideState = {
+            enabled: false,
+            dirX: 1,
+            angleOffset: 0,
+            length: 0,
+            mode: 'default',
+            confidence: 0,
+            manualAdjusted: false
+        };
+        let originalReferenceGuideState = null;
+        let debugState = {
+            mode: '待机',
+            angle: '--',
+            testType: 'slr',
+            selectedSide: 'L',
+            pivotSide: '--',
+            limbSide: '--',
+            fallback: '回退状态: 未触发',
+            points: '尚未开始检测'
+        };
 
         const staticImageBuffer = document.createElement('canvas');
+        const detectionBuffer = document.createElement('canvas');
+        const detectionCtx = detectionBuffer.getContext('2d');
+        const luminanceBuffer = document.createElement('canvas');
+        const luminanceCtx = luminanceBuffer.getContext('2d', { willReadFrequently: true });
+        const levelBuffer = document.createElement('canvas');
+        const levelCtx = levelBuffer.getContext('2d', { willReadFrequently: true });
+        const AI_BACKEND_TIMEOUT = 4000;
+        const AI_INIT_TIMEOUT = 12000;
+
+        function withTimeout(promise, timeoutMs, message) {
+            return new Promise((resolve, reject) => {
+                const timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+                promise
+                    .then(result => {
+                        window.clearTimeout(timeoutId);
+                        resolve(result);
+                    })
+                    .catch(error => {
+                        window.clearTimeout(timeoutId);
+                        reject(error);
+                    });
+            });
+        }
+
+        function updateAIStatus(status, message) {
+            aiLoading.classList.remove('hidden');
+            aiLoadingSpinner.classList.toggle('hidden', status !== 'loading');
+            btnRetryAI.classList.toggle('hidden', status !== 'failed');
+            aiLoadingMessage.innerText = message;
+
+            aiLoading.classList.remove('bg-rose-50', 'border-rose-200', 'bg-emerald-50', 'border-emerald-200');
+            aiLoadingMessage.classList.remove('text-rose-600', 'text-emerald-600');
+            aiLoadingMessage.classList.add('text-slate-600');
+
+            if (status === 'failed') {
+                aiLoading.classList.add('bg-rose-50', 'border-rose-200');
+                aiLoadingMessage.classList.remove('text-slate-600');
+                aiLoadingMessage.classList.add('text-rose-600');
+                return;
+            }
+
+            if (status === 'ready') {
+                aiLoading.classList.add('bg-emerald-50', 'border-emerald-200');
+                aiLoadingMessage.classList.remove('text-slate-600');
+                aiLoadingMessage.classList.add('text-emerald-600');
+                window.setTimeout(() => {
+                    if (aiEngineState.status === 'ready') aiLoading.classList.add('hidden');
+                }, 1200);
+            }
+        }
+
+        async function resolveBestBackend() {
+            const backendCandidates = ['webgl', 'cpu'];
+            let lastError = null;
+
+            for (const backendName of backendCandidates) {
+                try {
+                    await tf.setBackend(backendName);
+                    await tf.ready();
+                    return backendName;
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+
+            throw lastError || new Error('未找到可用的 TensorFlow 后端');
+        }
+
+        async function ensureAIReady(actionLabel) {
+            if (detector) return true;
+
+            try {
+                await initAI(aiEngineState.status === 'failed');
+                return Boolean(detector);
+            } catch (error) {
+                alert(`视觉引擎暂未就绪，当前无法${actionLabel}。你可以先使用手动录入，稍后再点“重试引擎”。`);
+                return false;
+            }
+        }
+
+        function normalizeAngleValue(value) {
+            if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
+            const numericValue = Number(value);
+            return Math.round(numericValue * 10) / 10;
+        }
+
+        function formatAngleValue(value, digits = 1) {
+            const normalizedValue = normalizeAngleValue(value);
+            return normalizedValue === null ? '--' : normalizedValue.toFixed(digits);
+        }
+
+        function normalizeRadians(value) {
+            let angle = value;
+            while (angle <= -Math.PI) angle += Math.PI * 2;
+            while (angle > Math.PI) angle -= Math.PI * 2;
+            return angle;
+        }
+
+        function clampReferenceAngleOffset(offset) {
+            const limit = Math.PI / 8;
+            return Math.max(-limit, Math.min(limit, offset));
+        }
+
+        function getHorizontalBaseAngle(dirX) {
+            return dirX >= 0 ? 0 : Math.PI;
+        }
+
+        function getReferenceRayDistance(pivot, angle, padding = 18) {
+            const cosValue = Math.cos(angle);
+            const sinValue = Math.sin(angle);
+            const xDistance = Math.abs(cosValue) < 0.0001
+                ? Infinity
+                : (cosValue > 0
+                    ? (canvas.width - padding - pivot.x) / cosValue
+                    : (padding - pivot.x) / cosValue);
+            const yDistance = Math.abs(sinValue) < 0.0001
+                ? Infinity
+                : (sinValue > 0
+                    ? (canvas.height - padding - pivot.y) / sinValue
+                    : (padding - pivot.y) / sinValue);
+            return Math.max(0, Math.min(xDistance, yDistance));
+        }
+
+        function buildReferencePoint(pivot, dirX, preferredLength, angleOffset = 0) {
+            const minimumLength = Math.max(canvas.width * 0.18, 80);
+            const desiredLength = Math.max(minimumLength, preferredLength || 0);
+            const finalAngle = getHorizontalBaseAngle(dirX) + angleOffset;
+            const maxReach = getReferenceRayDistance(pivot, finalAngle);
+            const usableLength = Math.max(Math.min(desiredLength, Math.max(24, maxReach - 6)), Math.min(maxReach, 72));
+            return {
+                x: pivot.x + Math.cos(finalAngle) * usableLength,
+                y: pivot.y + Math.sin(finalAngle) * usableLength,
+                score: 1
+            };
+        }
+
+        function sampleLuminanceValue(data, width, height, x, y) {
+            const sampleX = Math.round(x);
+            const sampleY = Math.round(y);
+            if (sampleX < 0 || sampleX >= width || sampleY < 0 || sampleY >= height) return null;
+            const index = (sampleY * width + sampleX) * 4;
+            return data[index] * 0.2126 + data[index + 1] * 0.7152 + data[index + 2] * 0.0722;
+        }
+
+        function estimateReferenceAngleOffset(source, pivot, dirX) {
+            const { width, height } = getSourceSize(source);
+            const scale = Math.min(1, 420 / Math.max(width, height));
+            levelBuffer.width = Math.max(1, Math.round(width * scale));
+            levelBuffer.height = Math.max(1, Math.round(height * scale));
+            levelCtx.clearRect(0, 0, levelBuffer.width, levelBuffer.height);
+            levelCtx.filter = 'grayscale(1) contrast(1.2)';
+            levelCtx.drawImage(source, 0, 0, levelBuffer.width, levelBuffer.height);
+            levelCtx.filter = 'none';
+
+            const { data } = levelCtx.getImageData(0, 0, levelBuffer.width, levelBuffer.height);
+            const pivotX = pivot.x * scale;
+            const pivotY = pivot.y * scale;
+            const searchStart = Math.max(12, levelBuffer.width * 0.06);
+            const searchEnd = Math.min(levelBuffer.width * 0.46, 210);
+            const step = Math.max(10, (searchEnd - searchStart) / 7);
+            const bandDistance = Math.max(4, Math.round(levelBuffer.height * 0.015));
+            const baseAngle = getHorizontalBaseAngle(dirX);
+            let bestOffset = 0;
+            let bestScore = 0;
+
+            for (let degree = -16; degree <= 16; degree += 1) {
+                const candidateOffset = degree * Math.PI / 180;
+                const candidateAngle = baseAngle + candidateOffset;
+                const vectorX = Math.cos(candidateAngle);
+                const vectorY = Math.sin(candidateAngle);
+                const normalX = -vectorY;
+                const normalY = vectorX;
+                let totalScore = 0;
+                let validSamples = 0;
+
+                for (let distance = searchStart; distance <= searchEnd; distance += step) {
+                    const baseX = pivotX + vectorX * distance;
+                    const baseY = pivotY + vectorY * distance;
+                    const upper = sampleLuminanceValue(data, levelBuffer.width, levelBuffer.height, baseX + normalX * bandDistance, baseY + normalY * bandDistance);
+                    const lower = sampleLuminanceValue(data, levelBuffer.width, levelBuffer.height, baseX - normalX * bandDistance, baseY - normalY * bandDistance);
+                    const center = sampleLuminanceValue(data, levelBuffer.width, levelBuffer.height, baseX, baseY);
+
+                    if (upper === null || lower === null || center === null) continue;
+                    totalScore += Math.abs(upper - lower) + Math.abs(center - (upper + lower) / 2) * 0.35;
+                    validSamples += 1;
+                }
+
+                if (!validSamples) continue;
+                const normalizedScore = totalScore / validSamples;
+                if (normalizedScore > bestScore) {
+                    bestScore = normalizedScore;
+                    bestOffset = candidateOffset;
+                }
+            }
+
+            return {
+                angleOffset: bestScore >= 12 ? clampReferenceAngleOffset(bestOffset) : 0,
+                confidence: bestScore
+            };
+        }
+
+        function applyReferenceGuide(source, pivot, dirX, preferredLength, preserveExisting = false) {
+            const safeLength = Math.max(Math.max(canvas.width * 0.18, 80), preferredLength || 0);
+
+            if (!preserveExisting || !referenceGuideState.enabled || referenceGuideState.dirX !== dirX) {
+                const estimated = estimateReferenceAngleOffset(source, pivot, dirX);
+                referenceGuideState = {
+                    enabled: true,
+                    dirX,
+                    angleOffset: estimated.angleOffset,
+                    length: safeLength,
+                    mode: estimated.confidence >= 12 ? 'auto' : 'default',
+                    confidence: estimated.confidence,
+                    manualAdjusted: false
+                };
+            } else {
+                referenceGuideState.dirX = dirX;
+                referenceGuideState.length = safeLength;
+            }
+
+            return buildReferencePoint(pivot, referenceGuideState.dirX, referenceGuideState.length, referenceGuideState.angleOffset);
+        }
+
+        function cacheReferenceGuideAsOriginal() {
+            originalReferenceGuideState = { ...referenceGuideState };
+        }
+
+        function updateReferenceGuideNote() {
+            if (!referenceGuideNote) return;
+            if (!referenceGuideState.enabled) {
+                referenceGuideNote.style.removeProperty('background');
+                referenceGuideNote.style.removeProperty('border-color');
+                referenceGuideNote.style.removeProperty('color');
+                referenceGuideNote.innerText = '系统会先按水平基线初始化；如果画面略微拍歪，可拖动 1 号点做细调。';
+                return;
+            }
+
+            const offsetDeg = Math.abs(referenceGuideState.angleOffset * 180 / Math.PI);
+            const offsetText = `${formatAngleValue(offsetDeg)}°`;
+            const isAligned = offsetDeg < 2;
+
+            if (isAligned) {
+                referenceGuideNote.style.background = 'rgba(52,199,89,0.10)';
+                referenceGuideNote.style.borderColor = 'rgba(52,199,89,0.35)';
+                referenceGuideNote.style.color = '#1a7a36';
+                referenceGuideNote.innerText = '✅ 参考线已与水平 0° 对齐，现在可以放心测量。';
+                return;
+            }
+
+            referenceGuideNote.style.removeProperty('background');
+            referenceGuideNote.style.removeProperty('border-color');
+            referenceGuideNote.style.removeProperty('color');
+
+            if (referenceGuideState.manualAdjusted) {
+                referenceGuideNote.innerText = `当前参考线已手动微调 ${offsetText}。继续拖动 1 号点时，只会旋转床面基线，不会带动轴心点偏移。`;
+                return;
+            }
+
+            if (referenceGuideState.mode === 'auto') {
+                referenceGuideNote.innerText = `系统已先按床面边缘自动校平 ${offsetText}。如果照片还有轻微倾斜，可继续拖动 1 号点微调。`;
+                return;
+            }
+
+            referenceGuideNote.innerText = '系统已先按水平基线初始化；如果床面边缘不够清楚，可拖动 1 号点手动校正。';
+        }
+
+        function getSourceSize(source) {
+            return {
+                width: source.videoWidth || source.naturalWidth || source.width || canvas.width || 1,
+                height: source.videoHeight || source.naturalHeight || source.height || canvas.height || 1
+            };
+        }
+
+        function computeAverageLuminance(source, sampleSize = 72) {
+            const { width, height } = getSourceSize(source);
+            const scale = Math.min(1, sampleSize / Math.max(width, height));
+            luminanceBuffer.width = Math.max(1, Math.round(width * scale));
+            luminanceBuffer.height = Math.max(1, Math.round(height * scale));
+            luminanceCtx.clearRect(0, 0, luminanceBuffer.width, luminanceBuffer.height);
+            luminanceCtx.filter = 'none';
+            luminanceCtx.drawImage(source, 0, 0, luminanceBuffer.width, luminanceBuffer.height);
+            const { data } = luminanceCtx.getImageData(0, 0, luminanceBuffer.width, luminanceBuffer.height);
+            let total = 0;
+            let count = 0;
+            for (let i = 0; i < data.length; i += 16) {
+                total += data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
+                count += 1;
+            }
+            return count ? total / count : 0;
+        }
+
+        function sampleCanvasLuminance(centerX, centerY, radius) {
+            const startX = Math.max(0, Math.round(centerX - radius));
+            const startY = Math.max(0, Math.round(centerY - radius));
+            const width = Math.min(canvas.width - startX, Math.round(radius * 2));
+            const height = Math.min(canvas.height - startY, Math.round(radius * 2));
+            if (width <= 0 || height <= 0) return 128;
+            const { data } = ctx.getImageData(startX, startY, width, height);
+            let total = 0;
+            let count = 0;
+            for (let i = 0; i < data.length; i += 32) {
+                total += data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
+                count += 1;
+            }
+            return count ? total / count : 128;
+        }
+
+        function prepareDetectionSource(source, filterString) {
+            const { width, height } = getSourceSize(source);
+            detectionBuffer.width = width;
+            detectionBuffer.height = height;
+            detectionCtx.clearRect(0, 0, width, height);
+            detectionCtx.filter = filterString;
+            detectionCtx.drawImage(source, 0, 0, width, height);
+            detectionCtx.filter = 'none';
+            return detectionBuffer;
+        }
+
+        function getPoseConfidence(pose) {
+            if (!pose?.keypoints?.length) return 0;
+            const visiblePoints = pose.keypoints.filter(point => typeof point.score === 'number');
+            if (!visiblePoints.length) return 0;
+            return visiblePoints.reduce((sum, point) => sum + point.score, 0) / visiblePoints.length;
+        }
+
+        async function estimatePosesWithFallback(source, mode = 'static') {
+            const averageLuminance = computeAverageLuminance(source);
+            const variants = [{ label: 'raw', input: source }];
+
+            if (averageLuminance > 172) {
+                variants.push({ label: 'bright-bg-balanced', input: prepareDetectionSource(source, 'brightness(0.82) contrast(1.28) saturate(1.08)') });
+                variants.push({ label: 'bright-bg-strong', input: prepareDetectionSource(source, 'brightness(0.72) contrast(1.42) saturate(1.1)') });
+            } else if (averageLuminance > 145 && mode === 'static') {
+                variants.push({ label: 'soft-contrast', input: prepareDetectionSource(source, 'brightness(0.9) contrast(1.18) saturate(1.04)') });
+            }
+
+            let bestPoses = [];
+            let bestConfidence = 0;
+            for (const variant of variants) {
+                const poses = await detector.estimatePoses(variant.input);
+                const confidence = poses.length ? Math.max(...poses.map(getPoseConfidence)) : 0;
+                if (confidence > bestConfidence) {
+                    bestConfidence = confidence;
+                    bestPoses = poses;
+                }
+                if (poses.length && confidence >= (mode === 'live' ? 0.28 : 0.34)) {
+                    return { poses, averageLuminance, variant: variant.label, confidence };
+                }
+            }
+
+            return { poses: bestPoses, averageLuminance, variant: bestPoses.length ? 'best-effort' : 'none', confidence: bestConfidence };
+        }
+
+        function getDetectionFailureMessage(averageLuminance) {
+            if (averageLuminance > 172) {
+                return '当前画面背景偏亮、人物和床面边界不够明显。请尽量让被测者穿深色衣物，避开大面积白墙或强逆光，再重试。';
+            }
+            return '未能识别到有效人体骨骼，请确认被测者完整入镜，且人物与背景有足够对比。';
+        }
+
+        function getPointLabels(testType) {
+            if (testType === 'slr') return ['床面参考线', '臀部轴心', '脚踝点'];
+            if (testType === 'hip') return ['床面参考线', '臀部轴心', '膝盖点'];
+            return ['躯干参考线', '肩部轴心', '手肘点'];
+        }
+
+        function renderDebugPanel() {
+            debugPanel.classList.toggle('hidden', !debugEnabled);
+            debugPanel.classList.toggle('flex', debugEnabled);
+            btnToggleDebug.innerText = debugEnabled ? '隐藏调试信息' : '显示调试信息';
+            if (!debugEnabled) return;
+
+            debugStatusBadge.innerText = 'ON';
+            debugMode.innerText = debugState.mode;
+            debugAngle.innerText = debugState.angle;
+            debugTestType.innerText = debugState.testType;
+            debugSelectedSide.innerText = debugState.selectedSide;
+            debugPivotSide.innerText = debugState.pivotSide;
+            debugLimbSide.innerText = debugState.limbSide;
+            debugFallback.innerText = debugState.fallback;
+            debugPointSummary.innerText = debugState.points;
+        }
+
+        function updateDebugState(partialState = {}) {
+            debugState = { ...debugState, ...partialState };
+            renderDebugPanel();
+        }
+
+        function syncDebugSelectionState() {
+            updateDebugState({
+                testType: document.querySelector('input[name="testType"]:checked').value,
+                selectedSide: document.querySelector('input[name="testSide"]:checked').value
+            });
+        }
 
         function saveFrameToBuffer() {
             staticImageBuffer.width = canvas.width;
@@ -415,17 +1000,19 @@
         function updateSaveButtonText() {
             const side = document.querySelector('input[name="testSide"]:checked').value;
             btnSaveText.innerText = side === 'L' ? '录入左侧，准备测右侧' : '录入右侧，进入下一项';
+            syncDebugSelectionState();
         }
 
         function updateLegend(testType) {
             const legend = document.getElementById('point-legend');
             if (testType === 'slr') {
-                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">床面绝对水平轴</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">臀部物理轴心</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">抬起侧脚踝标点</span></div>`;
+                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">1 号点：床面参考线，仅旋转基线做水平微调</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">2 号点：臀部物理轴心</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">3 号点：抬起侧脚踝标点</span></div>`;
             } else if (testType === 'hip') {
-                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">床面绝对水平轴</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">臀部物理轴心</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">屈曲侧膝盖标点</span></div>`;
+                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">1 号点：床面参考线，仅旋转基线做水平微调</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">2 号点：臀部物理轴心</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">3 号点：屈曲侧膝盖标点</span></div>`;
             } else {
-                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">躯干平躺基准线</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">肩背物理转轴</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">屈曲侧手肘标点</span></div>`;
+                legend.innerHTML = `<div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff3b30] shadow-[0_2px_4px_rgba(255,59,48,0.3)]"></span> <span class="text-slate-700">1 号点：躯干参考线，仅旋转基线做水平微调</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffcc00] shadow-[0_2px_4px_rgba(255,204,0,0.3)]"></span> <span class="text-slate-700">2 号点：肩背物理转轴</span></div><div class="flex items-center gap-1.5 sm:gap-2"><span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#007aff] shadow-[0_2px_4px_rgba(0,122,255,0.3)]"></span> <span class="text-slate-700">3 号点：屈曲侧手肘标点</span></div>`;
             }
+            updateReferenceGuideNote();
         }
 
         btnVoiceToggle.addEventListener('click', () => {
@@ -457,16 +1044,20 @@
 
         btnShowDonate.addEventListener('click', () => donateModal.classList.remove('hidden'));
         btnCloseDonate.addEventListener('click', () => donateModal.classList.add('hidden'));
+        btnToggleDebug.addEventListener('click', () => {
+            debugEnabled = !debugEnabled;
+            renderDebugPanel();
+        });
 
         // --- Manual Input Actions (Enhanced with smart partial fill) ---
         btnManualInput.addEventListener('click', () => {
             // 打开弹窗时，自动填充已经存在的数据
-            document.getElementById('m-slr-l').value = testRecords.slr.L !== null ? testRecords.slr.L : '';
-            document.getElementById('m-slr-r').value = testRecords.slr.R !== null ? testRecords.slr.R : '';
-            document.getElementById('m-hip-l').value = testRecords.hip.L !== null ? testRecords.hip.L : '';
-            document.getElementById('m-hip-r').value = testRecords.hip.R !== null ? testRecords.hip.R : '';
-            document.getElementById('m-sh-l').value = testRecords.shoulder.L !== null ? testRecords.shoulder.L : '';
-            document.getElementById('m-sh-r').value = testRecords.shoulder.R !== null ? testRecords.shoulder.R : '';
+            document.getElementById('m-slr-l').value = testRecords.slr.L !== null ? formatAngleValue(testRecords.slr.L) : '';
+            document.getElementById('m-slr-r').value = testRecords.slr.R !== null ? formatAngleValue(testRecords.slr.R) : '';
+            document.getElementById('m-hip-l').value = testRecords.hip.L !== null ? formatAngleValue(testRecords.hip.L) : '';
+            document.getElementById('m-hip-r').value = testRecords.hip.R !== null ? formatAngleValue(testRecords.hip.R) : '';
+            document.getElementById('m-sh-l').value = testRecords.shoulder.L !== null ? formatAngleValue(testRecords.shoulder.L) : '';
+            document.getElementById('m-sh-r').value = testRecords.shoulder.R !== null ? formatAngleValue(testRecords.shoulder.R) : '';
             manualModal.classList.remove('hidden');
         });
         
@@ -488,13 +1079,13 @@
                     if (isNaN(val) || val < 0 || val > 180) {
                         hasError = true;
                     } else {
-                        testRecords[item.t][item.s] = val;
+                        testRecords[item.t][item.s] = normalizeAngleValue(val);
                     }
                 }
             });
 
             if (hasError) {
-                alert("数值异常：为保证诊断精确，请输入 0 到 180 之间的有效度数！");
+                alert("数值异常：请输入 0 到 180 之间的有效度数！");
                 return;
             }
 
@@ -517,6 +1108,9 @@
         btnStartOver.addEventListener('click', () => {
             testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
             updateTrackerUI();
+            resetCanvasForNewUpload();
+            manualModal.classList.add('hidden');
+            donateModal.classList.add('hidden');
             document.getElementById('final-report-section').classList.add('hidden');
             
             document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
@@ -530,39 +1124,118 @@
 
 
         // --- AI Init ---
-        async function initAI() {
-            try {
-                await tf.setBackend('webgl'); await tf.ready();
-                detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, { modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER });
-                document.getElementById('ai-loading').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                document.getElementById('main-content').classList.add('flex');
-            } catch (error) { document.getElementById('ai-loading').innerHTML = `<p class="text-rose-500 font-bold text-xs tracking-widest">系统引擎加载失败，请刷新重试</p>`; }
-        }
-        window.onload = initAI;
+        async function initAI(forceRetry = false) {
+            if (detector && !forceRetry) return detector;
+            if (aiEngineState.initPromise && !forceRetry) return aiEngineState.initPromise;
 
-        function scrollToDisplayArea() {
-            const mainContent = document.getElementById('main-content');
-            if (mainContent) {
-                mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
+            aiEngineState.status = 'loading';
+            aiEngineState.error = '';
+            updateAIStatus('loading', '正在后台加载视觉引擎，你也可以先手动录入数据。');
+
+            aiEngineState.initPromise = (async () => {
+                if (!window.tf || !window.poseDetection) {
+                    throw new Error('视觉模型脚本未能成功加载');
+                }
+
+                const backendName = await withTimeout(resolveBestBackend(), AI_BACKEND_TIMEOUT, 'TensorFlow 后端启动超时');
+                aiEngineState.backend = backendName;
+
+                detector = await withTimeout(
+                    poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
+                        modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
+                    }),
+                    AI_INIT_TIMEOUT,
+                    '视觉模型初始化超时'
+                );
+
+                aiEngineState.status = 'ready';
+                updateAIStatus('ready', `视觉引擎已就绪（${backendName}）`);
+                return detector;
+            })().catch(error => {
+                detector = null;
+                aiEngineState.status = 'failed';
+                aiEngineState.error = error?.message || '未知错误';
+                updateAIStatus('failed', `视觉引擎加载失败：${aiEngineState.error}。你仍可先手动录入，或点击右侧重试。`);
+                throw error;
+            }).finally(() => {
+                aiEngineState.initPromise = null;
+            });
+
+            return aiEngineState.initPromise;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            initAI().catch(() => {});
+        });
+
+        btnRetryAI.addEventListener('click', () => {
+            initAI(true).catch(() => {});
+        });
+
+        function scrollToDisplayArea(targetElement = null) {
+            const element = targetElement || (!canvasContainer.classList.contains('hidden') ? canvasContainer : (!resultBoard.classList.contains('hidden') ? resultBoard : document.getElementById('final-report-section')));
+            if (element && typeof element.scrollIntoView === 'function') {
+                element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
+
+        function updateAngleRuler(angle = null, forceShow = false) {}
+
+        function updateAnglePreviewButton() {}
+
+        function openAnglePreview() {}
+
+        function closeAnglePreview() {}
 
         function resetCanvasForNewUpload() {
             stopLiveTracking(); 
             canvasContainer.classList.add('hidden'); dragInstruction.classList.add('hidden'); resultBoard.classList.add('hidden');
+            closeAnglePreview();
+            analyzingMask.classList.add('hidden');
+            activePoints = [];
+            originalAiPoints = [];
+            referenceGuideState = {
+                enabled: false,
+                dirX: 1,
+                angleOffset: 0,
+                length: 0,
+                mode: 'default',
+                confidence: 0,
+                manualAdjusted: false
+            };
+            originalReferenceGuideState = null;
+            draggingPointIndex = -1;
+            currentFinalAngle = 0;
+            updateAngleRuler(null);
             canvas.style.touchAction = 'auto';
+            updateReferenceGuideNote();
+            updateDebugState({
+                mode: '待机',
+                angle: '--',
+                pivotSide: '--',
+                limbSide: '--',
+                fallback: '回退状态: 未触发',
+                points: '尚未开始检测'
+            });
         }
         
         radioInputs.forEach(r => r.addEventListener('change', () => { resetCanvasForNewUpload(); updateSaveButtonText(); }));
         sideInputs.forEach(r => r.addEventListener('change', () => { resetCanvasForNewUpload(); updateSaveButtonText(); }));
 
         // --- Live Tracking ---
+        document.getElementById('btn-stop-camera').addEventListener('click', () => {
+            resetCanvasForNewUpload();
+        });
+
         btnStartCamera.addEventListener('click', async () => {
+            if (isLiveTracking || liveStream) return; // 防止重复点击
+            const ready = await ensureAIReady('启动实时捕捉');
+            if (!ready) return;
             resetCanvasForNewUpload(); lastCaptureMethod = 'live';
             liveMaxAngle = 0; liveMaxPoints = []; angleHistory = []; isHolding = false; holdStartTime = 0;
+            updateDebugState({ mode: '实时捕捉启动中' });
             
             canvasContainer.classList.remove('hidden'); 
+            updateAngleRuler(null, true);
             analyzingMask.classList.remove('hidden');
             analyzingMask.innerHTML = `<div class="bg-white/90 px-6 py-4 rounded-2xl shadow-sm flex flex-col items-center"><svg class="animate-spin h-6 w-6 mac-blue mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="mac-blue font-bold text-xs tracking-widest">启动视觉组件...</span></div>`;
             
@@ -597,6 +1270,7 @@
                 
                 livePoseLoop();
             } catch (e) { 
+                updateDebugState({ mode: '摄像头启动失败' });
                 analyzingMask.innerHTML = `<span class="text-rose-500 font-bold text-xs tracking-widest">硬件调用失败，请检查浏览器权限配置。</span>`;
                 setTimeout(() => { resetCanvasForNewUpload(); }, 3000);
             }
@@ -605,14 +1279,22 @@
         async function livePoseLoop() {
             if (!isLiveTracking) return;
             try {
-                const poses = await detector.estimatePoses(videoElement);
+                const detectionResult = await estimatePosesWithFallback(videoElement, 'live');
+                const poses = detectionResult.poses;
                 if (!isLiveTracking) return;
                 if (poses.length > 0) extractPointsFromPose(poses[0], true);
                 else {
                     ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
                     document.getElementById('live-angle-display').innerText = '--°';
+                    updateAngleRuler(null, true);
+                    document.getElementById('live-status-text').innerHTML = `<span class="text-amber-500 font-bold text-xs tracking-wider bg-white/80 px-3 py-1.5 rounded-full border border-amber-200 shadow-sm">亮背景或对比不足，请调整环境后再试</span>`;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error('[livePoseLoop]', e);
+                if (isLiveTracking) {
+                    document.getElementById('live-status-text').innerHTML = '<span class="text-rose-400 font-bold text-xs tracking-wider bg-rose-50/80 px-3 py-1.5 rounded-full border border-rose-200">检测异常，正在恢复...</span>';
+                }
+            }
             if (isLiveTracking) liveRequestID = requestAnimationFrame(livePoseLoop);
         }
 
@@ -621,6 +1303,7 @@
             if (liveRequestID) cancelAnimationFrame(liveRequestID);
             if (liveStream) { liveStream.getTracks().forEach(t => t.stop()); liveStream = null; }
             liveOverlay.classList.add('hidden');
+            liveRequestID = null;
         }
 
         function triggerAutoLock() {
@@ -629,12 +1312,13 @@
             
             if (liveMaxPoints.length === 0) { 
                 saveFrameToBuffer(); 
-                liveMaxAngle = currentFinalAngle || 0; 
+                liveMaxAngle = normalizeAngleValue(currentFinalAngle || 0) || 0; 
             }
             
             activePoints = liveMaxPoints.map(p => ({...p})); 
             originalAiPoints = activePoints.map(p => ({...p}));
-            currentFinalAngle = liveMaxAngle; 
+            cacheReferenceGuideAsOriginal();
+            currentFinalAngle = normalizeAngleValue(liveMaxAngle) || 0; 
             
             const tType = document.querySelector('input[name="testType"]:checked').value;
             updateLegend(tType); 
@@ -651,9 +1335,14 @@
         btnLockFrame.addEventListener('click', triggerAutoLock);
 
         // --- Static Image Upload ---
-        function handleImageUpload(e) {
+        async function handleImageUpload(e) {
             const file = e.target.files[0]; if (!file) return;
-            resetCanvasForNewUpload(); lastCaptureMethod = 'static';
+            const ready = await ensureAIReady('使用图片分析');
+            if (!ready) {
+                e.target.value = '';
+                return;
+            }
+            resetCanvasForNewUpload(); lastCaptureMethod = e.target.id === 'photoInput' ? 'photo' : 'album';
             const reader = new FileReader();
             reader.onload = function(event) {
                 const tempImg = new Image();
@@ -675,8 +1364,28 @@
             reader.readAsDataURL(file); e.target.value = ''; 
         }
 
+        function getSideAwareKeypoint(leftPoint, rightPoint, selectedSide, minimumScore = 0.1) {
+            const preferredPoint = selectedSide === 'L' ? leftPoint : rightPoint;
+            const fallbackPoint = selectedSide === 'L' ? rightPoint : leftPoint;
+
+            if (preferredPoint.score > minimumScore) return { point: preferredPoint, side: selectedSide, usedFallback: false };
+            if (fallbackPoint.score > minimumScore) return { point: fallbackPoint, side: selectedSide === 'L' ? 'R' : 'L', usedFallback: true };
+
+            const winningPoint = preferredPoint.score >= fallbackPoint.score ? preferredPoint : fallbackPoint;
+            return {
+                point: winningPoint,
+                side: winningPoint === leftPoint ? 'L' : 'R',
+                usedFallback: winningPoint !== preferredPoint
+            };
+        }
+
         function runAIEstimation(imageSource) {
+            if (!detector) {
+                alert('视觉引擎尚未完成初始化，请稍后重试，或先使用手动录入。');
+                return;
+            }
             canvasContainer.classList.remove('hidden'); 
+            updateAngleRuler(null, true);
             analyzingMask.classList.remove('hidden'); 
             
             scrollToDisplayArea();
@@ -686,19 +1395,26 @@
 
             setTimeout(async () => {
                 try {
-                    const poses = await detector.estimatePoses(imageSource);
+                    const detectionResult = await estimatePosesWithFallback(imageSource, 'static');
+                    const poses = detectionResult.poses;
                     analyzingMask.classList.add('hidden');
                     if (poses.length > 0) {
                         extractPointsFromPose(poses[0], false); 
                         originalAiPoints = activePoints.map(p => ({...p}));
+                        cacheReferenceGuideAsOriginal();
                         updateLegend(document.querySelector('input[name="testType"]:checked').value);
                         dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
                         canvas.style.touchAction = 'none'; 
                         renderCanvasAndResult(imageSource); 
                         scrollToDisplayArea();
                         speak("标定完成。");
-                    } else alert("未能识别到有效人体骨骼，请确认被测者完整入镜！");
-                } catch(err) { analyzingMask.classList.add('hidden'); console.error(err); }
+                    } else alert(getDetectionFailureMessage(detectionResult.averageLuminance));
+                } catch(err) {
+                    analyzingMask.classList.add('hidden');
+                    updateDebugState({ mode: '静态标定失败' });
+                    alert('AI 标定失败，请重试或更换人物与背景对比更明显的正侧位图片。');
+                    console.error(err);
+                }
             }, 50);
         }
 
@@ -713,41 +1429,62 @@
             const lAnkle = getKeypoint(kp, 'left_ankle'), rAnkle = getKeypoint(kp, 'right_ankle');
             const lElbow = getKeypoint(kp, 'left_elbow'), rElbow = getKeypoint(kp, 'right_elbow');
 
-            const shoulder = lShoulder.score > rShoulder.score ? lShoulder : rShoulder;
-            const hip = lHip.score > rHip.score ? lHip : rHip;
             const tType = document.querySelector('input[name="testType"]:checked').value;
+            const tSide = document.querySelector('input[name="testSide"]:checked').value;
+            const shoulderSelection = getSideAwareKeypoint(lShoulder, rShoulder, tSide, 0.2);
+            const hipSelection = getSideAwareKeypoint(lHip, rHip, tSide, 0.2);
+            const shoulder = shoulderSelection.point;
+            const hip = hipSelection.point;
             const offset = canvas.height * 0.04; 
+            const referenceSource = isLive ? videoElement : staticImageBuffer;
 
             const dirX = hip.x > shoulder.x ? 1 : -1;
+            let limbSelection;
+            let pivotSide = hipSelection.side;
 
             if (tType === 'slr') {
-                const isLeftHigher = lAnkle.y < rAnkle.y; 
-                const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle; 
+                limbSelection = getSideAwareKeypoint(lAnkle, rAnkle, tSide);
+                const testAnkle = limbSelection.point;
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = { x: buttock.x + dirX * (canvas.width * 0.4), y: buttock.y, score: 1 };
+                const bed = applyReferenceGuide(referenceSource, buttock, dirX, canvas.width * 0.4, isLive && referenceGuideState.enabled);
                 activePoints = [bed, buttock, { ...testAnkle }];
             } else if (tType === 'hip') {
-                const isLeftHigher = lKnee.y < rKnee.y; 
-                const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee; 
+                limbSelection = getSideAwareKeypoint(lKnee, rKnee, tSide);
+                const testKnee = limbSelection.point;
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = { x: buttock.x + dirX * (canvas.width * 0.4), y: buttock.y, score: 1 };
+                const bed = applyReferenceGuide(referenceSource, buttock, dirX, canvas.width * 0.4, isLive && referenceGuideState.enabled);
                 activePoints = [bed, buttock, { ...testKnee }];
             } else {
-                const isLeftHigher = lElbow.y < rElbow.y; 
-                const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
+                pivotSide = shoulderSelection.side;
+                limbSelection = getSideAwareKeypoint(lElbow, rElbow, tSide);
+                const testElbow = limbSelection.point;
                 const shoulderPivot = { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score };
-                let torso = { x: shoulderPivot.x + dirX * (canvas.width * 0.4), y: shoulderPivot.y, score: 1 };
+                const torso = applyReferenceGuide(referenceSource, shoulderPivot, dirX, canvas.width * 0.4, isLive && referenceGuideState.enabled);
                 activePoints = [torso, shoulderPivot, { ...testElbow }];
             }
+
+            updateReferenceGuideNote();
+
+            updateDebugState({
+                mode: isLive ? '实时追踪中' : '静态标定完成',
+                testType: tType,
+                selectedSide: tSide,
+                pivotSide,
+                limbSide: limbSelection ? limbSelection.side : '--',
+                fallback: limbSelection && limbSelection.usedFallback ? `回退状态: 已回退到 ${limbSelection.side} 侧关键点` : '回退状态: 未触发'
+            });
 
             if (!isLive) activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
 
             if (isLive) {
                 const isTorsoVisible = shoulder.score > 0.35 && hip.score > 0.35; const isLimbVisible = activePoints[2].score > 0.30;
                 if (!isTorsoVisible || !isLimbVisible) {
+                    updateDebugState({ mode: '目标丢失', angle: '--', points: '关键点置信度不足，等待重新入镜' });
                     document.getElementById('live-status-text').innerHTML = `<span class="text-rose-500 font-bold text-xs tracking-wider bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 backdrop-blur-sm animate-pulse shadow-sm">目标丢失，请全身边缘入镜</span>`;
                     document.getElementById('live-angle-display').innerText = '--°';
+                    updateAngleRuler(null, true);
                     isHolding = false; holdStartTime = 0;
+                    angleHistory = []; // 追踪丢失时清空，防恢复后角度残留
                     ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
                     return; 
                 }
@@ -762,11 +1499,13 @@
                     let sorted = [...angleHistory].sort((a, b) => a - b); let valid = sorted.length >= 5 ? sorted.slice(1, -1) : sorted;
                     let smoothedAngle = valid.reduce((a,b)=>a+b, 0) / valid.length;
 
+                    updateDebugState({ angle: smoothedAngle.toFixed(1) + '°' });
                     document.getElementById('live-angle-display').innerText = smoothedAngle.toFixed(1) + '°';
+                    updateAngleRuler(smoothedAngle, true);
 
                     if (smoothedAngle > 25) {
                         if (smoothedAngle > liveMaxAngle) {
-                            liveMaxAngle = smoothedAngle; saveFrameToBuffer(); holdStartTime = Date.now(); isHolding = true;
+                            liveMaxAngle = normalizeAngleValue(smoothedAngle) || 0; saveFrameToBuffer(); holdStartTime = Date.now(); isHolding = true;
                             document.getElementById('live-status-text').innerHTML = `<span class="text-emerald-400 font-bold text-xs tracking-widest animate-pulse drop-shadow-md">系统记录极值中...</span>`;
                         } else if (liveMaxAngle - smoothedAngle <= 5) {
                             if (!isHolding) { isHolding = true; holdStartTime = Date.now(); }
@@ -777,11 +1516,12 @@
                                 document.getElementById('live-status-text').innerHTML = `<span class="text-white font-black tracking-widest text-sm shadow-md px-3 py-1.5 bg-[#0a84ff] rounded-full">防代偿定格: ${timeLeft}s</span>`;
                             }
                         } else {
-                            liveMaxAngle = smoothedAngle; isHolding = false; holdStartTime = 0;
+                            liveMaxAngle = normalizeAngleValue(smoothedAngle) || 0; isHolding = false; holdStartTime = 0;
                             document.getElementById('live-status-text').innerHTML = `<span class="text-amber-400 font-bold text-xs tracking-wider drop-shadow-md">基准线重置中...</span>`;
                         }
                     } else {
                         isHolding = false; holdStartTime = 0; liveMaxAngle = 0;
+                        updateDebugState({ mode: '等待动作触发' });
                         document.getElementById('live-status-text').innerHTML = `<span class="mac-blue text-xs tracking-widest flex items-center gap-1.5 drop-shadow-sm"><span class="w-2 h-2 rounded-full bg-mac-blue animate-pulse shadow-mac-blue"></span>监听测试动作触发...</span>`;
                     }
                 }
@@ -795,18 +1535,75 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); if(imgSource) ctx.drawImage(imgSource, 0, 0, canvas.width, canvas.height);
 
             const p1 = activePoints[0], p2 = activePoints[1], p3 = activePoints[2]; 
+            const pointLabels = getPointLabels(document.querySelector('input[name="testType"]:checked').value);
             const lineWidth = Math.max(3, canvas.width * 0.008), drawRadius = Math.max(8, canvas.width * 0.015), arcRadius = Math.max(30, canvas.width * 0.08);
+
+            // --- 水平 0° 基准线 ---
+            ctx.save();
+            ctx.setLineDash([Math.max(6, canvas.width * 0.012), Math.max(5, canvas.width * 0.009)]);
+            ctx.beginPath();
+            ctx.moveTo(0, p2.y);
+            ctx.lineTo(canvas.width, p2.y);
+            ctx.strokeStyle = 'rgba(52, 199, 89, 0.72)';
+            ctx.lineWidth = Math.max(1.5, lineWidth * 0.42);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            const hLabelText = '↔ 水平 0°';
+            const hLabelFontSize = Math.max(10, canvas.width * 0.018);
+            ctx.font = `bold ${hLabelFontSize}px -apple-system, sans-serif`;
+            const hLabelPadX = Math.max(6, canvas.width * 0.01);
+            const hLabelH = Math.max(16, hLabelFontSize * 1.5);
+            const hLabelW = ctx.measureText(hLabelText).width + hLabelPadX * 2;
+            const hLabelY = Math.max(4, p2.y - hLabelH - 5);
+            ctx.fillStyle = 'rgba(52, 199, 89, 0.90)';
+            ctx.beginPath();
+            ctx.roundRect(8, hLabelY, hLabelW, hLabelH, hLabelH / 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(hLabelText, 8 + hLabelPadX, hLabelY + hLabelH / 2 + 0.5);
+            ctx.restore();
+
+            const referenceVectorX = p1.x - p2.x;
+            const referenceVectorY = p1.y - p2.y;
+            const referenceLength = Math.max(Math.sqrt(referenceVectorX * referenceVectorX + referenceVectorY * referenceVectorY), 1);
+            const referenceUnitX = referenceVectorX / referenceLength;
+            const referenceUnitY = referenceVectorY / referenceLength;
+            const referenceReach = Math.max(canvas.width, canvas.height) * 1.2;
+            const referenceStart = {
+                x: p2.x - referenceUnitX * referenceReach,
+                y: p2.y - referenceUnitY * referenceReach
+            };
+            const referenceEnd = {
+                x: p2.x + referenceUnitX * referenceReach,
+                y: p2.y + referenceUnitY * referenceReach
+            };
+
+            ctx.beginPath();
+            ctx.setLineDash([Math.max(10, canvas.width * 0.018), Math.max(8, canvas.width * 0.012)]);
+            ctx.moveTo(referenceStart.x, referenceStart.y);
+            ctx.lineTo(referenceEnd.x, referenceEnd.y);
+            ctx.strokeStyle = 'rgba(255, 59, 48, 0.85)';
+            ctx.lineWidth = Math.max(2, lineWidth * 0.55);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.font = `bold ${Math.max(11, canvas.width * 0.02)}px -apple-system, sans-serif`;
+            ctx.fillStyle = 'rgba(255, 59, 48, 0.95)';
+            ctx.fillText(pointLabels[0], Math.max(12, p2.x + 14), Math.max(20, p2.y - 14));
 
             let startAngle = Math.atan2(p1.y - p2.y, p1.x - p2.x), endAngle = Math.atan2(p3.y - p2.y, p3.x - p2.x);
             let diff = endAngle - startAngle; while (diff <= -Math.PI) diff += 2*Math.PI; while (diff > Math.PI) diff -= 2*Math.PI;
 
-            ctx.beginPath(); ctx.moveTo(p2.x, p2.y); ctx.arc(p2.x, p2.y, arcRadius, startAngle, endAngle, diff<0); ctx.closePath(); 
-            ctx.fillStyle = 'rgba(10, 132, 255, 0.2)'; ctx.fill();
-            
             ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); 
             ctx.strokeStyle = '#0a84ff'; ctx.lineWidth = lineWidth; ctx.lineJoin = 'round'; ctx.stroke();
 
             const pointColors = ['#ff3b30', '#ffcc00', '#007aff'];
+            const pointBadges = [
+                `1 ${pointLabels[0]}${referenceGuideState.manualAdjusted ? '·已微调' : referenceGuideState.mode === 'auto' ? '·已校平' : ''}`,
+                `2 ${pointLabels[1]}-${debugState.pivotSide}`,
+                `3 ${pointLabels[2]}-${debugState.limbSide}`
+            ];
             activePoints.forEach((p, index) => {
                 ctx.beginPath(); ctx.arc(p.x, p.y, index === draggingPointIndex ? drawRadius * 1.5 : drawRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = pointColors[index]; ctx.fill();
@@ -817,16 +1614,67 @@
                 ctx.shadowBlur = 4;
                 ctx.fill();
                 ctx.shadowBlur = 0;
+
+                const badgePaddingX = Math.max(8, canvas.width * 0.01);
+                const badgeHeight = Math.max(18, canvas.width * 0.03);
+                const badgeY = Math.max(6, p.y - drawRadius - badgeHeight - 8);
+                ctx.font = `bold ${Math.max(10, canvas.width * 0.018)}px -apple-system, sans-serif`;
+                const badgeText = pointBadges[index];
+                const badgeWidth = ctx.measureText(badgeText).width + badgePaddingX * 2;
+                const badgeX = Math.min(Math.max(6, p.x - badgeWidth / 2), canvas.width - badgeWidth - 6);
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.86)';
+                ctx.beginPath();
+                ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, badgeHeight / 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(badgeText, badgeX + badgePaddingX, badgeY + badgeHeight / 2 + 0.5);
             });
 
-            currentFinalAngle = getAngle(p1, p2, p3);
+            currentFinalAngle = normalizeAngleValue(getAngle(p1, p2, p3)) || 0;
+            updateAngleRuler(currentFinalAngle, true);
             ctx.font = `bold ${Math.max(16, canvas.width * 0.04)}px -apple-system, sans-serif`; 
             ctx.fillStyle = '#0a84ff'; ctx.shadowColor = "rgba(255,255,255,0.8)"; ctx.shadowBlur = 4;
-            ctx.fillText(`${currentFinalAngle.toFixed(1)}°`, p2.x + arcRadius * 0.2, p2.y - arcRadius * 0.5); ctx.shadowBlur = 0; 
+            ctx.fillText(`${formatAngleValue(currentFinalAngle)}°`, p2.x + arcRadius * 0.2, p2.y - arcRadius * 0.5); ctx.shadowBlur = 0; 
+            const pointSummary = activePoints.map((point, index) => `${pointLabels[index]}: (${Math.round(point.x)}, ${Math.round(point.y)}) / s=${(point.score ?? 1).toFixed(2)}`).join('\n');
+            updateDebugState({
+                angle: `${formatAngleValue(Math.max(0, currentFinalAngle))}°`,
+                points: pointSummary
+            });
+            updateReferenceGuideNote();
+
+            // --- 水平对齐提示 ---
+            const refAngleRad = Math.atan2(p1.y - p2.y, p1.x - p2.x);
+            const refAbsDeg = Math.abs(refAngleRad * 180 / Math.PI);
+            const refDevDeg = Math.min(refAbsDeg, 180 - refAbsDeg);
+            if (refDevDeg < 2) {
+                ctx.save();
+                const alignText = '✓ 参考线已水平对齐';
+                const alignFontSize = Math.max(11, canvas.width * 0.022);
+                ctx.font = `bold ${alignFontSize}px -apple-system, sans-serif`;
+                const alignPadX = Math.max(10, canvas.width * 0.014);
+                const alignH = Math.max(20, alignFontSize * 1.6);
+                const alignW = ctx.measureText(alignText).width + alignPadX * 2;
+                const alignX = (canvas.width - alignW) / 2;
+                const alignYPos = Math.max(8, p2.y - Math.max(34, canvas.height * 0.1));
+                ctx.shadowColor = 'rgba(52, 199, 89, 0.55)';
+                ctx.shadowBlur = 14;
+                ctx.fillStyle = 'rgba(52, 199, 89, 0.94)';
+                ctx.beginPath();
+                ctx.roundRect(alignX, alignYPos, alignW, alignH, alignH / 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(alignText, alignX + alignPadX, alignYPos + alignH / 2 + 0.5);
+                ctx.restore();
+            }
 
             if(!isLiveTracking) {
                 const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
-                displayAngle.innerText = Math.max(0, currentFinalAngle).toFixed(1) + '°';
+                displayAngle.innerText = formatAngleValue(Math.max(0, currentFinalAngle)) + '°';
                 currentBoardTitle.innerText = `测量结果 [ ${tSide === 'L' ? '左侧' : '右侧'} ]`;
                 btnSaveText.innerText = tSide === 'L' ? '确认存入 L，切换 R 侧' : '确认存入 R，完成项';
                 renderThresholdFeedback(tType, tSide, currentFinalAngle);
@@ -835,14 +1683,17 @@
 
         function getAngle(p1, p2, p3) {
             const a = Math.sqrt(Math.pow(p2.x-p1.x,2)+Math.pow(p2.y-p1.y,2)), b = Math.sqrt(Math.pow(p2.x-p3.x,2)+Math.pow(p2.y-p3.y,2)), c = Math.sqrt(Math.pow(p3.x-p1.x,2)+Math.pow(p3.y-p1.y,2));
-            return Math.acos((a*a+b*b-c*c)/(2*a*b)) * (180/Math.PI) || 0;
+            if (a === 0 || b === 0) return 0;
+            const cosine = Math.max(-1, Math.min(1, (a*a+b*b-c*c)/(2*a*b)));
+            return Math.acos(cosine) * (180/Math.PI) || 0;
         }
         function getKeypoint(kp, name) { return kp.find(k => k.name === name) || {x:0, y:0, score:0}; }
 
         function renderThresholdFeedback(testType, testSide, angleDeg) {
             let ability = testType === 'slr' ? '反映髋关节内旋能力' : (testType === 'hip' ? '反映髋关节外旋能力' : '反映该侧骨盆前移程度');
-            currentFeedbackText = `系统标定：${angleDeg.toFixed(1)}° (主导项：${ability})`;
+            currentFeedbackText = `系统标定：${formatAngleValue(angleDeg)}° (主导项：${ability})`;
             thresholdFeedback.innerText = currentFeedbackText;
+            updateDebugState({ mode: isLiveTracking ? debugState.mode : '静态结果可微调' });
         }
 
         // --- Dragging ---
@@ -868,7 +1719,23 @@
         function handlePointerMove(e) {
             if (draggingPointIndex === -1 || isLiveTracking) return;
             e.preventDefault(); const {x, y} = getEventCoords(e);
-            activePoints[draggingPointIndex].x = Math.max(0, Math.min(x, canvas.width)); activePoints[draggingPointIndex].y = Math.max(0, Math.min(y, canvas.height));
+            if (draggingPointIndex === 0) {
+                const pivot = activePoints[1];
+                const rawAngle = Math.atan2(y - pivot.y, x - pivot.x);
+                const offset = clampReferenceAngleOffset(normalizeRadians(rawAngle - getHorizontalBaseAngle(referenceGuideState.dirX)));
+                referenceGuideState.enabled = true;
+                referenceGuideState.angleOffset = offset;
+                referenceGuideState.manualAdjusted = true;
+                referenceGuideState.mode = 'manual';
+                referenceGuideState.length = Math.max(referenceGuideState.length, canvas.width * 0.18, 80);
+                activePoints[0] = buildReferencePoint(pivot, referenceGuideState.dirX, referenceGuideState.length, referenceGuideState.angleOffset);
+            } else {
+                activePoints[draggingPointIndex].x = Math.max(0, Math.min(x, canvas.width));
+                activePoints[draggingPointIndex].y = Math.max(0, Math.min(y, canvas.height));
+                if (draggingPointIndex === 1 && referenceGuideState.enabled) {
+                    activePoints[0] = buildReferencePoint(activePoints[1], referenceGuideState.dirX, referenceGuideState.length, referenceGuideState.angleOffset);
+                }
+            }
             requestAnimationFrame(() => renderCanvasAndResult(staticImageBuffer));
         }
 
@@ -876,14 +1743,27 @@
         
         canvas.addEventListener('mousedown', handlePointerDown); canvas.addEventListener('mousemove', handlePointerMove); window.addEventListener('mouseup', handlePointerUp);
         canvas.addEventListener('touchstart', handlePointerDown, {passive: false}); canvas.addEventListener('touchmove', handlePointerMove, {passive: false}); window.addEventListener('touchend', handlePointerUp); window.addEventListener('touchcancel', handlePointerUp);
-        
-        btnReset.addEventListener('click', () => { if (originalAiPoints.length === 3) { activePoints = originalAiPoints.map(p => ({...p})); renderCanvasAndResult(staticImageBuffer); }});
+        btnReset.addEventListener('click', () => {
+            if (originalAiPoints.length === 3) {
+                activePoints = originalAiPoints.map(p => ({...p}));
+                if (originalReferenceGuideState) referenceGuideState = { ...originalReferenceGuideState };
+                updateReferenceGuideNote();
+                renderCanvasAndResult(staticImageBuffer);
+            }
+        });
+        syncDebugSelectionState();
+        renderDebugPanel();
 
         // --- Workflow ---
         btnRetake.addEventListener('click', () => {
             resetCanvasForNewUpload();
             if (lastCaptureMethod === 'live') btnStartCamera.click();
-            else { speak("请重新调用图像输入。"); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            else if (lastCaptureMethod === 'photo') cameraInput.click();
+            else if (lastCaptureMethod === 'album') albumInput.click();
+            else {
+                speak("请重新调用图像输入。");
+                scrollToDisplayArea(document.getElementById('main-content'));
+            }
         });
 
         function getNextMissingTest() {
@@ -903,16 +1783,16 @@
                 const valL = testRecords[t].L;
                 const valR = testRecords[t].R;
                 
-                document.getElementById(`score-${t}-L`).innerText = valL !== null ? valL.toFixed(0) + '°' : '--';
-                document.getElementById(`score-${t}-R`).innerText = valR !== null ? valR.toFixed(0) + '°' : '--';
+                document.getElementById(`score-${t}-L`).innerText = valL !== null ? formatAngleValue(valL) + '°' : '--';
+                document.getElementById(`score-${t}-R`).innerText = valR !== null ? formatAngleValue(valR) + '°' : '--';
                 
                 if (valL !== null && valR !== null) {
-                    testRecords[t].final = Math.min(valL, valR);
+                    testRecords[t].final = normalizeAngleValue(Math.min(valL, valR));
                     trBox.classList.replace('bg-white', 'bg-[#0a84ff]/5'); 
                     trBox.classList.replace('border-transparent', 'border-[#0a84ff]/40'); 
                     trBox.querySelector('span:first-child').classList.replace('text-slate-400', 'text-[#0a84ff]');
                     fText.classList.replace('text-slate-300', 'text-slate-800'); 
-                    fText.innerText = `短板值: ${testRecords[t].final.toFixed(1)}°`;
+                    fText.innerText = `短板值: ${formatAngleValue(testRecords[t].final)}°`;
                 } else {
                     trBox.classList.replace('bg-[#0a84ff]/5', 'bg-white'); 
                     trBox.classList.replace('border-[#0a84ff]/40', 'border-transparent'); 
@@ -925,12 +1805,12 @@
 
         btnSaveScore.addEventListener('click', () => {
             const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
-            testRecords[tType][tSide] = currentFinalAngle;
+            testRecords[tType][tSide] = normalizeAngleValue(currentFinalAngle);
             
             saveHistoryToStorage({
                 type: 'single', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 name: `${tSide === 'L'?'左侧':'右侧'}${tType === 'slr'?'直抬腿':(tType==='hip'?'髋屈曲':'肩屈')}`,
-                angle: currentFinalAngle.toFixed(1)
+                angle: formatAngleValue(currentFinalAngle)
             });
 
             updateTrackerUI();
@@ -941,7 +1821,7 @@
                 document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
                 document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
                 
-                let tName = nextTest.type === 'slr'?'主动直腿抬高':(tType==='hip'?'主动髋屈曲':'主动肩屈');
+                let tName = nextTest.type === 'slr' ? '主动直腿抬高' : (nextTest.type === 'hip' ? '主动髋屈曲' : '主动肩屈');
                 let sName = nextTest.side === 'L'?'左侧':'右侧';
                 
                 updateSaveButtonText();
@@ -955,103 +1835,458 @@
         // --- 最终综合报告 ---
         function generateFinalReport() {
             speak("测试集采集完成！正在为您生成体态分析报告。");
-            
+
             const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
             const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
-            
-            let posteriorScore = 0;
-            if (testRecords.slr.final <= 50) posteriorScore++;
-            if (testRecords.hip.final >= 100) posteriorScore++;
-            if (testRecords.shoulder.final <= 100) posteriorScore++;
-            
-            const isPosterior = posteriorScore >= 2;
-            const tensionStatus = isPosterior ? "身体后侧紧绷" : "身体前侧紧绷";
-            const tensionClass = "text-black";
 
-            const diffHip = hipL - hipR; 
-            const diffSLR = slrL - slrR; 
-            const diffSh = shL - shR;    
-
-            const threshold = 5;
-            let diagnosis = "Oblique"; 
-
-            if (diffHip > threshold && diffSLR < -threshold && diffSh < -threshold) { diagnosis = "LeftAIC"; }
-            else if (diffHip > threshold && diffSLR < -threshold && diffSh > threshold) { diagnosis = "Lateral"; }
-            else if (diffHip < -threshold && diffSLR > threshold && diffSh < -threshold) { diagnosis = "Oblique"; }
-            else if (Math.abs(diffHip) <= 8 && Math.abs(diffSLR) <= 8 && Math.abs(diffSh) <= 8) { diagnosis = "Anterior"; }
-            else {
-                let scoreLeftAIC = (diffHip > 0 ? 1 : 0) + (diffSLR < 0 ? 1 : 0) + (diffSh < 0 ? 1 : 0);
-                let scoreLateral = (diffHip > 0 ? 1 : 0) + (diffSLR < 0 ? 1 : 0) + (diffSh > 0 ? 1 : 0);
-                let scoreOblique = (diffHip < 0 ? 1 : 0) + (diffSLR > 0 ? 1 : 0) + (diffSh < 0 ? 1 : 0);
-                if (scoreLeftAIC >= 2 && scoreLeftAIC >= scoreLateral && scoreLeftAIC >= scoreOblique) diagnosis = "LeftAIC";
-                else if (scoreLateral >= 2 && scoreLateral >= scoreOblique) diagnosis = "Lateral";
-                else diagnosis = "Oblique";
+            if ([slrL, slrR, hipL, hipR, shL, shR].some(value => value === null)) {
+                alert('测试数据尚未采集完整，无法生成最终报告。');
+                return;
             }
 
             const titleEl = document.getElementById('final-result-title');
-            const orientationEl = document.getElementById('final-pelvic-orientation'); 
-            const analysisContent = document.getElementById('analysis-content'); 
-            
-            if (diagnosis === "LeftAIC") {
-                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆向右偏转`; 
-                titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "您的骨盆整体 <strong class='text-slate-900'>偏向右侧</strong>，左侧骨盆像被往前翻一样。站立时，您会无意识地把大部分体重压在右腿上。";
-                
-                analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 站着时喜欢“稍息”站姿，把重量压在右腿。因为左侧骨盆往内翻，您会觉得两边屁股发力大小不一样。</p>
-                    <p><b class="text-slate-800">💥 腰部感受：</b> 底盘向右扭，腰为了让人能面朝正前方，就得硬往左扭回来。这会让 <strong class="mac-blue">右侧后腰的肌肉</strong> 长期紧绷，特别容易酸痛和劳损。</p>
-                    <p><b class="text-slate-800">🦵 腿部状态：</b> 右腿受力太多，肌肉容易僵硬；左侧大腿骨不自觉向外转，活动时左膝盖更容易往里扣。</p>
-                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 身体的扭转容易导致 <strong class="mac-blue">右肩低、左肩高</strong> 的高低肩，而且左侧肩膀和脖子会经常感到紧张僵硬。</p>
-                `;
-            } else if (diagnosis === "Lateral") {
-                titleEl.innerText = `诊断结果: ${tensionStatus} · 高低骨盆 (左侧高)`; 
-                titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "检测显示您有明显的 <strong class='text-slate-900'>高低骨盆</strong>。您的左侧骨盆被卡在了较高位置，导致走路和站立时双腿受力严重不均。";
-                
-                analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 骨盆一高一低，左侧降不下来，就像一直踩着个台阶，左右严重不平衡。</p>
-                    <p><b class="text-slate-800">💥 腰部感受：</b> 高低骨盆把 <strong class="mac-blue">左侧腰部</strong> 严重挤压在一起。您可能会觉得左侧腰部特别紧绷，弯腰或转身时有时会觉得“卡住”或刺痛。</p>
-                    <p><b class="text-slate-800">🦵 腿部状态：</b> 左边骨盆高，会让您感觉 <strong class="mac-blue">左腿好像比右腿短</strong>。为了平衡，您的左脚可能会不自觉地微微踮起，或者右膝盖会弯曲一点。</p>
-                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 上半身为了不歪倒，脊柱会弯曲代偿，导致 <strong class="mac-blue">左肩被动压低、右肩相对抬高</strong>。这种拉扯很容易引起单侧偏头痛或脖子一边特别疼。</p>
-                `;
-            } else if (diagnosis === "Oblique") {
-                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆深度扭转 (拧麻花)`; 
-                titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "检测到比较深度的 <strong class='text-slate-900'>对角线扭转</strong>。您的左侧骨盆被严重地向前拉扯，整个骨盆就像“拧麻花”一样，代表身体深层的肌肉筋膜已经出现了较严重的代偿习惯。";
-                
-                analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 身体底盘处于极度扭曲中。左侧骨盆被强行拉向右前下方，导致您走路时身体发力很不顺畅、重心不稳。</p>
-                    <p><b class="text-slate-800">💥 腰部感受：</b> 腰和屁股连接的地方（后腰最底下）承受着各个方向的撕扯力。这特别容易引发 <strong class="mac-blue">深层的后腰底酸痛或刺痛</strong>，尤其在久坐突然站起来的那一下感觉最明显。</p>
-                    <p><b class="text-slate-800">🦵 腿部状态：</b> 扭曲的力量逼着左腿向内转，让您更容易出现 <strong class="mac-blue">X型腿及扁平足</strong>，平时鞋底内侧往往磨损得也更快。</p>
-                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 为了不让身体顺着下半身扭过去，您的胸背会强行“含胸驼背”来稳住。这会让您的肩胛骨一前一后，脖子前倾，甚至长出富贵包，连呼吸都可能觉得闷、喘气变浅。</p>
-                `;
-            } else {
-                titleEl.innerText = `诊断结果: ${tensionStatus} · 骨盆前倾卡死`; 
-                titleEl.className = `text-lg sm:text-xl font-black ${tensionClass} mb-5 tracking-wide z-10 text-center leading-tight drop-shadow-sm`;
-                orientationEl.innerHTML = "您的骨盆左右两边基本对称，没有明显的歪斜。核心问题是 <strong class='text-slate-900'>骨盆整体向前倾斜</strong>，导致活动度被卡死。";
-                
-                analysisContent.innerHTML = `
-                    <p><b class="text-slate-800">⚖️ 骨盆与重心：</b> 骨盆整体向前倒（俗称“假翘臀”）。肚子上的肌肉使不上劲，下腹部容易不自觉地往前凸。</p>
-                    <p><b class="text-slate-800">💥 腰部感受：</b> 骨盆前倾会让腰往里凹得很深，<strong class="mac-blue">后背两侧的腰肉一直处于死死发力的状态</strong>。只要站久了，或者躺在硬板床上，腰部就会非常酸胀，感觉悬空没有支撑。</p>
-                    <p><b class="text-slate-800">🦵 腿部状态：</b> 为了在挺着肚子时保持平衡，您的膝盖往往会 <strong class="mac-blue">往后锁死（膝盖超伸）</strong>。这会让小腿肚子被迫多发力，时间长了小腿容易长成肌肉型粗壮。</p>
-                    <p><b class="text-slate-800">🧘 肩颈状态：</b> 重心往前跑，上半身为了防止摔倒就会习惯性驼背，导致脖子往前伸。脖子后侧和肩膀的肌肉常年被拉扯，摸起来像石头一样僵硬。</p>
-                `;
-            }
+            const orientationEl = document.getElementById('final-pelvic-orientation');
+            const compressionSummaryEl = document.getElementById('final-compression-summary');
+            const analysisContent = document.getElementById('analysis-content');
+            const reportConfidenceEl = document.getElementById('final-report-confidence');
+            const reportConfidenceDetailEl = document.getElementById('final-report-confidence-detail');
+            const reportNoteEl = document.getElementById('final-report-note');
+            const reportDataEl = document.getElementById('final-report-data');
+            const gluteContentEl = document.getElementById('final-glute-content');
+            const priAnalysisEl = document.getElementById('final-pri-content');
+            const technicalContentEl = document.getElementById('final-technical-content');
+            const actionContentEl = document.getElementById('final-action-content');
+            const comboLabelEl = document.getElementById('final-combo-label');
+            const bodyStateEl = document.getElementById('final-body-state');
+            const solutionOrderEl = document.getElementById('final-solution-order');
+
+            const diffHip = hipL - hipR;
+            const diffSLR = slrL - slrR;
+            const diffSh = shL - shR;
+            const threshold = 10;
+            const nearThreshold = 5;
+
+            const compressionCandidates = {
+                posterior: {
+                    key: 'posterior',
+                    label: '骨盆后侧肌肉紧张（大家常说的骨盆前移）',
+                    fullLabel: '骨盆后侧肌肉紧张（大家常说的骨盆前移）',
+                    alias: 'PC',
+                    solutionName: '骨盆后侧肌肉紧张方案',
+                    checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高偏低、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
+                    mechanism: '后侧肌群更像在持续踩“刹车”。臀大肌、深层外旋肌以及后侧组织过度缩短，把骨盆从后方向前推，身体为了不向前摔倒，只能长期把重心顶在前脚掌。',
+                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
+                    objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆后侧肌肉紧张的判定阈值。`,
+                    primaryAction: {
+                        name: '靠墙深蹲夹球',
+                        target: '腘绳肌、内收肌、下后胸廓扩张',
+                        method: '背靠墙下蹲到大腿接近平行，双膝夹软球，保持腰背轻贴墙面，伴随 5 到 8 秒长呼气，感受后下胸廓和骨盆后侧被撑开。',
+                        dosage: '3 组，每组 5 到 8 次完整呼吸。'
+                    },
+                    secondaryAction: {
+                        name: '低角度手臂前伸呼吸',
+                        target: '下后纵隔、胸廓回缩、骨盆后侧减压',
+                        method: '坐姿或半蹲位，手臂保持低于 60 度前伸，呼气时肋骨回收，吸气时尝试把气送到下背部和后侧肋骨。',
+                        dosage: '2 到 3 组，每组 5 次慢呼吸。'
+                    }
+                },
+                anterior: {
+                    key: 'anterior',
+                    label: '骨盆前侧肌肉紧张（大家常说的骨盆前倾）',
+                    fullLabel: '骨盆前侧肌肉紧张（大家常说的骨盆前倾）',
+                    alias: 'AC',
+                    solutionName: '骨盆前侧肌肉紧张方案',
+                    checks: [testRecords.slr.final > 50, testRecords.hip.final < 100, testRecords.shoulder.final > 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高相对保留、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向前拉。',
+                    mechanism: '前侧肌群更像在持续向前“拉扯”。股四头肌、髋屈肌等前侧组织缩短，把骨盆向前下方牵拉，身体重心因此更容易前移并压在脚趾区域。',
+                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 < 100°、肩屈 > 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
+                    objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆前侧肌肉紧张的判定阈值。`,
+                    primaryAction: {
+                        name: '90/90 呼吸配合前伸',
+                        target: '腘绳肌、腹斜肌、骨盆后倾控制',
+                        method: '仰卧屈髋屈膝，脚跟踩墙，轻抬尾骨让下背微贴地，双臂前伸或 90 度上举，缓慢长呼气，感受下腹和腿后侧把骨盆轻轻带回中立。',
+                        dosage: '3 组，每组 4 到 6 次完整呼吸。'
+                    },
+                    secondaryAction: {
+                        name: '沙发髋部伸展',
+                        target: '髋屈肌、股四头肌前侧链释放',
+                        method: '后脚背放在沙发或墙边，前脚踩地呈弓步，保持下腹微收、避免挺腰，用骨盆后倾去拉长前侧，而不是单纯把腰往前顶。',
+                        dosage: '每侧 3 组，每组 5 次深呼吸。'
+                    }
+                }
+            };
+
+            const rotationCandidates = [
+                {
+                    key: 'LeftAIC',
+                    label: '左侧骨盆（髂骨相对）更往前',
+                    shortLabel: '左侧更往前',
+                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 < 右', '肩屈：左 < 右'],
+                    solutionName: '基线方案',
+                    planSummary: '再进入基线方案，重点恢复左侧过度靠前的骨盆位置，重建左右承重与旋转回正。',
+                    action: {
+                        name: '偏侧承重回正',
+                        target: '恢复左右承重切换与骨盆旋转回正',
+                        method: '加入偏侧承重、单侧呼气和胸廓回正训练，让骨盆从“左侧更靠前”逐步回到更中性的相对位置。',
+                        dosage: '每次 1 到 2 个单侧动作，2 到 3 组。'
+                    },
+                    phaseTwo: [
+                        { name: 'PRI 90/90 支持左脚在墙上的交替交叉', dosage: '4 组，每组 5 次呼吸（只做左脚在墙）' },
+                        { name: 'PRI 左膝向膝', dosage: '4 组，每组 5 次呼吸（只做一边）' },
+                        { name: 'PRI 右侧侧向右心尖扩张，左臂伸展和左内收肌', dosage: '4 组，每组 5 次呼吸（只做一边）' }
+                    ],
+                    score: () => {
+                        const hipScore = diffHip > threshold ? 2 : diffHip > nearThreshold ? 1 : 0;
+                        const slrScore = diffSLR < -threshold ? 2 : diffSLR < -nearThreshold ? 1 : 0;
+                        const shoulderScore = diffSh < -threshold ? 2 : diffSh < -nearThreshold ? 1 : 0;
+                        return hipScore + slrScore + shoulderScore;
+                    },
+                    evidenceCount: () => [diffHip > threshold, diffSLR < -threshold, diffSh < -threshold].filter(Boolean).length,
+                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧大，左侧直腿抬高通常比右侧小，左侧肩屈通常也比右侧小。'
+                },
+                {
+                    key: 'Oblique',
+                    label: '左侧骨盆（髂骨相对）更往前且更高',
+                    shortLabel: '左侧更前更高',
+                    evidenceLabels: ['髋屈：左 < 右', '直抬：左 > 右', '肩屈：左 > 右'],
+                    solutionName: '斜轴方案',
+                    planSummary: '再进入这一类方案，重点解除左侧骨盆相对更往前、也更高的状态。',
+                    action: {
+                        name: '交叉节奏回正',
+                        target: '解除左侧骨盆相对更往前且更高的状态',
+                        method: '优先做能让胸廓与骨盆重新对齐的交叉模式训练，配合上肢前伸、下肢承重和呼气，把上下半身拉回同一节奏。',
+                        dosage: '每次 1 到 2 个交叉模式动作，2 到 3 组。'
+                    },
+                    phaseTwo: [
+                        { name: '左侧靠右推进', dosage: '3 组，每组 5 次呼吸，单侧' },
+                        { name: '左侧卧时右侧臀大肌促进', dosage: '3 组，每组 5 次呼吸，单侧' },
+                        { name: 'PRI 右侧向左内收肌拉回', dosage: '3 组，每组 5 次呼吸，单侧' },
+                        { name: '补偿偏差的仰卧交叉连接', dosage: '3 组，每侧 5 次呼吸' }
+                    ],
+                    phaseThree: [
+                        { name: '右脚向前和同侧负荷的前脚抬高分蹲', dosage: '3 组，每组 15 次' },
+                        { name: '右脚向前和对侧负荷的前脚抬高分蹲', dosage: '3 组，每组 15 次' },
+                        { name: '交错姿势的横向电缆切割', dosage: '3 组，每组 15 次，单侧' }
+                    ],
+                    score: () => {
+                        const hipScore = diffHip < -threshold ? 2 : diffHip < -nearThreshold ? 1 : 0;
+                        const shoulderScore = diffSh > threshold ? 2 : diffSh > nearThreshold ? 1 : 0;
+                        const slrScore = diffSLR > threshold ? 1.5 : diffSLR > nearThreshold ? 1 : 0;
+                        return hipScore + shoulderScore + slrScore;
+                    },
+                    evidenceCount: () => [diffHip < -threshold, diffSh > threshold, diffSLR > threshold].filter(Boolean).length,
+                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧小，左侧肩屈通常比右侧大；直腿抬高多数时候左侧也会比右侧大，但过渡期的人不一定完全一样。'
+                },
+                {
+                    key: 'Lateral',
+                    label: '左侧骨盆（髂骨相对）更低，右侧更高',
+                    shortLabel: '左低右高',
+                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 > 右', '肩屈：左 < 右'],
+                    solutionName: '横向方案',
+                    planSummary: '再进入这一类方案，重点减轻把骨盆带成左低右高的力量，重建侧向稳定。',
+                    action: {
+                        name: '侧向稳定回正',
+                        target: '降低把骨盆带成左低右高的力量，重建左右侧向稳定',
+                        method: '让被抬高的一侧学会下降，让低侧学会稳定承重，避免只做单纯侧弯拉伸或两边完全一样的动作。',
+                        dosage: '每次 1 到 2 个侧向稳定动作，2 到 3 组。'
+                    },
+                    phaseTwo: [
+                        { name: 'PRI 右侧向左内收肌拉回', dosage: '4 组，每组 5 次呼吸（只做右侧躺）' },
+                        { name: 'PRI 交替循环步态', dosage: '4 组，每组 5 次呼吸（双侧）' },
+                        { name: 'PRI 左侧躺着右侧 FA 外展', dosage: '4 组，每组 5 次呼吸（只左侧躺）' }
+                    ],
+                    score: () => {
+                        const hipScore = diffHip > threshold ? 2 : diffHip > nearThreshold ? 1 : 0;
+                        const slrScore = diffSLR > threshold ? 2 : diffSLR > nearThreshold ? 1 : 0;
+                        const shoulderScore = diffSh < -threshold ? 2 : diffSh < -nearThreshold ? 1 : 0;
+                        return hipScore + slrScore + shoulderScore;
+                    },
+                    evidenceCount: () => [diffHip > threshold, diffSLR > threshold, diffSh < -threshold].filter(Boolean).length,
+                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧大，左侧直腿抬高通常也比右侧大，而左侧肩屈通常比右侧小。'
+                }
+            ];
+
+            const phaseOnePlan = [
+                { name: 'PRI 短静坐呼吸训练', dosage: '3 组，每组 5 次呼吸' },
+                { name: 'PRI 侧卧夹球剪切力训练', dosage: '3 组，每组 5 次呼吸' },
+                { name: '推球四足呼吸', dosage: '3 组，每组 5 次呼吸' },
+                { name: 'PRI 股直肌的仰卧半伸展', dosage: '3 组，每侧 15 次' },
+                { name: 'TFL 抑制训练', dosage: '3 组，10 次' }
+            ];
+
+            const renderExerciseList = (items) => items.map((item, index) => `<p>${index + 1}. <b class="text-slate-800">${item.name}</b>：${item.dosage}</p>`).join('');
+            const renderAccordionCard = (title, subtitle, bodyHtml, isOpen = false, tone = 'white') => {
+                const palette = tone === 'blue'
+                    ? 'bg-[#0a84ff]/5 border-[#0a84ff]/15'
+                    : 'bg-white border-[#e5e5ea]';
+                return `
+                    <details class="report-accordion rounded-xl border ${palette} p-3.5 shadow-sm" ${isOpen ? 'open' : ''}>
+                        <summary class="list-none flex items-center justify-between gap-3 cursor-pointer select-none">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">${title}</span>
+                                <span class="text-[10px] font-bold text-slate-400">${subtitle}</span>
+                            </div>
+                            <svg class="accordion-chevron w-4 h-4 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </summary>
+                        <div class="mt-3 flex flex-col gap-2 text-slate-600">${bodyHtml}</div>
+                    </details>`;
+            };
+
+            const compressionPattern = Object.values(compressionCandidates)
+                .map(candidate => ({ ...candidate, score: candidate.checks.filter(Boolean).length }))
+                .sort((a, b) => b.score - a.score)[0];
+            const rotationRanked = rotationCandidates
+                .map(candidate => ({ ...candidate, scoreValue: candidate.score(), evidenceHits: candidate.evidenceCount() }))
+                .sort((a, b) => b.scoreValue - a.scoreValue);
+            let rotationPattern = rotationRanked[0];
+            const rotationOverrideNote = '当前报告只根据直腿抬高、主动髋屈曲、主动肩屈这 6 项主测试来判断整体方向和左右差异，不再额外加入股骨内外旋作为辅助分流条件。';
+
+            const comboProfiles = {
+                posterior_LeftAIC: {
+                    bodyState: '骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆比右侧更加靠前。',
+                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练基线方案'
+                },
+                posterior_Oblique: {
+                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧极度靠前、靠上，形成对角线轴的卡死。',
+                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练斜轴方案'
+                },
+                posterior_Lateral: {
+                    bodyState: '骨盆整体被后侧肌肉推向前方，且骨盆从左下侧被向右上方横向推起。',
+                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练横向方案'
+                },
+                anterior_LeftAIC: {
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层保留着左侧更靠前的基础不对称。',
+                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练基线方案'
+                },
+                anterior_Oblique: {
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧极度靠前且偏高。',
+                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练斜轴方案'
+                },
+                anterior_Lateral: {
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左向右的横向推力。',
+                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练横向方案'
+                }
+            };
+
+            const comboKey = `${compressionPattern.key}_${rotationPattern.key}`;
+            const comboProfile = comboProfiles[comboKey] || comboProfiles[`${compressionPattern.key}_LeftAIC`];
+            const compressionEvidenceCount = compressionPattern.score;
+            const rotationEvidenceCount = rotationPattern.evidenceHits;
+            const evidenceCount = compressionEvidenceCount + rotationEvidenceCount;
+            const confidenceLabel = evidenceCount >= 5 ? '高' : (evidenceCount >= 4 ? '中' : '低');
+            const confidenceToneClass = confidenceLabel === '高'
+                ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+                : confidenceLabel === '中'
+                    ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
+                    : 'bg-slate-500/10 text-slate-700 border-slate-400/20';
+            const confidenceDetail = confidenceLabel === '高'
+                ? '高匹配度表示：整体压缩方向和左右偏移方向都比较一致，所以这次分型可信度较高。'
+                : confidenceLabel === '中'
+                    ? '中匹配度表示：主要方向已经比较清楚，但还夹杂一些过渡代偿。更适合先按当前方案练，再复测确认。'
+                    : '低匹配度表示：身体现在更像处在过渡期或混合状态。这次报告仍会给出最接近的方向，但更建议结合后续复测一起看。';
+            const compressionTraining = compressionPattern.key === 'posterior'
+                ? '第一阶段先把骨盆后侧肌肉紧张这层松开，核心是降低后侧顶推感、恢复后下胸廓与骨盆后侧空间。'
+                : '第一阶段先把骨盆前侧肌肉紧张这层松开，核心是降低前侧拉扯感、恢复腹斜肌和腿后侧对骨盆的回收能力。';
+            const mixedModeNote = testRecords.slr.final < 50 && testRecords.hip.final < 100
+                ? '补充提示：直腿抬高和髋屈曲同时偏低，提示前后双重受压或整体张力偏高。实际训练时仍建议先把整体张力降下来，再进入底层旋转修正。'
+                : '补充提示：姿势模式本身不等于病变，真正要关注的是身体是否被锁在单一策略里，失去了进入其他角度的能力。';
+            const rotationEvidenceText = rotationPattern.evidenceLabels.join('，');
+            const phaseThreeBlock = rotationPattern.phaseThree
+                ? renderAccordionCard('阶段三', '第 5-6 周', renderExerciseList(rotationPattern.phaseThree), false)
+                : '';
+            const gluteCompressionProfiles = {
+                posterior: {
+                    label: '后侧压缩主型',
+                    morphologyTag: '低臀峰锁紧表现',
+                    appearance: '按骨盆后侧压缩和后链锁紧的表现推演，臀后侧与臀下缘更像处在持续收短状态，臀部不容易自然向后展开。外观上更常见后翘感不足、臀线偏平、下缘像被提前收住。',
+                    peak: '臀峰位置更容易显得偏低或偏内收，视觉上不容易形成自然向后、向外的圆弧。',
+                    lowerSupport: '臀下缘支撑常见表现是“紧但不托”，看起来线条收得快，真正的下段饱满度反而不足。',
+                    training: '先把后侧顶推感降下来，再恢复臀中后外侧空间，重点补回臀峰向后展开和臀下缘承托。',
+                    priorities: ['先降后侧顶推和夹紧感，再谈翘度', '优先补臀中后外侧展开，而不是一味夹臀', '训练时重点建立臀下缘承托和向后延展'],
+                    avoid: ['避免一上来就做大重量硬夹臀、把屁股越练越紧', '避免用腰往前顶、用下背抢后伸制造假翘臀', '避免深蹲或后踢时只追求幅度，不管骨盆是否前推']
+                },
+                anterior: {
+                    label: '前侧牵拉主型',
+                    morphologyTag: '高臀峰下段不足表现',
+                    appearance: '按骨盆前侧牵拉和前移策略推演，臀部更像是上缘张力偏高、下段回收不足。外观上更常见腰臀交界更抢眼、臀上缘偏紧，但中下段往后包裹感不够。',
+                    peak: '臀峰位置更容易显得偏上、偏散，容易有“上面紧、下面空”的观感。',
+                    lowerSupport: '臀下缘支撑常见表现是不够稳，站立时下段托举感不足，臀腿交界更容易提前变平。',
+                    training: '先把前侧拉扯感降下来，再补臀中下段承重、回收和向后延展能力，让臀峰和下缘重新连起来。',
+                    priorities: ['先减前侧牵拉，让骨盆别一直往前掉', '优先补臀中下段回收和承重，不先追上缘膨胀感', '训练时把臀峰和下缘连成一体，避免只练上半截'],
+                    avoid: ['避免反复做只会强化髋前顶的臀冲和后踢', '避免站姿训练时膝盖锁死、重心全压前脚掌', '避免只追求臀上缘充血感，忽略下段支撑和稳定']
+                }
+            };
+            const gluteRotationProfiles = {
+                LeftAIC: {
+                    biasTag: '前移偏置型',
+                    asymmetry: '左右差异更像左侧臀部更紧、更难向后铺开，右侧更容易外顶代偿，所以两边圆润度和受力感可能不一致。',
+                    height: '视觉上更常见一侧臀峰不够展开，另一侧外侧更容易先顶出来。',
+                    trainingHint: '做单侧训练时，通常更要盯住左侧是否真的向后展开、右侧是否又偷偷外顶代偿。'
+                },
+                Oblique: {
+                    biasTag: '斜向高低偏置型',
+                    asymmetry: '左右差异更像左上与右下形成斜向不均，常见表现是某一侧上缘更紧，另一侧下缘更容易代偿。',
+                    height: '视觉上更容易出现一边臀峰偏高、另一边下缘更抢眼的斜向差异。',
+                    trainingHint: '训练时要避免只做两边一样的动作量，更要关注斜向两端是否重新平衡。'
+                },
+                Lateral: {
+                    biasTag: '侧向高低偏置型',
+                    asymmetry: '左右差异更像一侧臀峰更高、另一侧下缘承重更多，视觉上更容易出现高低边或左右外扩不一致。',
+                    height: '如果站姿代偿更明显，常会看到一侧臀线偏高，另一侧下段更沉。',
+                    trainingHint: '训练时要优先修正左右承重和高低边，不能只做双侧对称发力。'
+                }
+            };
+            const gluteCompression = gluteCompressionProfiles[compressionPattern.key] || gluteCompressionProfiles.posterior;
+            const gluteRotation = gluteRotationProfiles[rotationPattern.key] || gluteRotationProfiles.LeftAIC;
+            const gluteCombinedTag = `${gluteCompression.label} / ${gluteRotation.biasTag}`;
+            const gluteConfidenceNote = confidenceLabel === '高'
+                ? '这部分趋势和本次动作测试结果一致性较高，可作为当前训练观察重点。'
+                : confidenceLabel === '中'
+                    ? '这部分属于趋势判断，适合先结合训练反馈观察，再和后续复测对照。'
+                    : '这部分先作为方向提示看待，后面如果你补充臀型规则库或外观照片，再进一步细分会更稳。';
+
+            reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
+            reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
+            reportConfidenceDetailEl.innerText = `匹配度说明：${confidenceDetail}`;
+            reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
+            titleEl.innerText = `评估结果：${compressionPattern.label}，${rotationPattern.label}`;
+            titleEl.className = 'text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight';
+            orientationEl.innerHTML = `这次报告分两层看：先看 <strong class='text-slate-900'>整体活动受限更像哪种压缩模式</strong>，结果更接近 <strong class='text-slate-900'>${compressionPattern.fullLabel}</strong>；再看 <strong class='text-slate-900'>左右差异更像哪种旋转偏移</strong>，结果更接近 <strong class='text-slate-900'>${rotationPattern.label}</strong>。`;
+            compressionSummaryEl.innerText = `压缩模式说明：${compressionPattern.summary}`;
+            reportDataEl.innerText = `数据依据：直腿抬高左减右 ${diffSLR.toFixed(1)}°；髋屈左减右 ${diffHip.toFixed(1)}°；肩屈左减右 ${diffSh.toFixed(1)}°；左右显著差异主要参考 10°。整体更接近${compressionPattern.label}，左右差异更接近${rotationPattern.label}`;
+            comboLabelEl.innerText = `整体更像${compressionPattern.label}，左右差异更像${rotationPattern.label}`;
+            bodyStateEl.innerText = comboProfile.bodyState;
+            solutionOrderEl.innerText = comboProfile.solutionOrder;
+
+            analysisContent.innerHTML = `
+                <p><b class="text-slate-800">1. 先怎么理解骨盆侧倾：</b> 骨盆侧倾通常不是骨盆单独出了问题，而是全身为了保持平衡，慢慢形成的一种代偿模式。常见的主类型，大致可以理解成三种骨盆位置关系：<strong class="mac-blue">左侧骨盆（髂骨相对）更往前</strong>、<strong class="mac-blue">左侧骨盆（髂骨相对）更往前且更高</strong>、<strong class="mac-blue">左侧骨盆（髂骨相对）更低，右侧更高</strong>。</p>
+                <p><b class="text-slate-800">2. 你的整体状态更像什么：</b> 先看整体角度限制，你更接近 <strong class="mac-blue">${compressionPattern.fullLabel}</strong>。这说明第一步更应该先处理身体整体前后方向的卡紧问题。</p>
+                <p><b class="text-slate-800">3. 你的左右差异更像什么：</b> 再看左右角度差异，你更接近 <strong class="mac-blue">${rotationPattern.label}</strong>。对应的差异特征是 <strong class="mac-blue">${rotationEvidenceText}</strong>，这决定你第二步更适合走哪条回正路线。</p>
+                <p><b class="text-slate-800">4. 用白话描述你现在的状态：</b> ${comboProfile.bodyState}</p>
+                <p><b class="text-slate-800">5. 训练顺序怎么排：</b> <strong class="mac-blue">${comboProfile.solutionOrder}</strong></p>
+            `;
+
+            gluteContentEl.innerHTML = `
+                <p><b class="text-slate-800">1. 当前臀型组合标签：</b> 这次结果更接近 <strong class="mac-blue">${gluteCombinedTag}</strong>。其中 <strong class="mac-blue">${gluteCompression.label}</strong> 用来描述骨盆前后压缩主型，<strong class="mac-blue">${gluteRotation.biasTag}</strong> 用来描述左右表面偏置方向，二者合并后更适合做正式记录和复测对照。</p>
+                <p><b class="text-slate-800">2. 外观表现：</b> 当前更像 <strong class="mac-blue">${gluteCompression.morphologyTag}</strong>。${gluteCompression.appearance}</p>
+                <p><b class="text-slate-800">3. 臀峰与下缘支撑：</b> ${gluteCompression.peak} ${gluteCompression.lowerSupport}</p>
+                <p><b class="text-slate-800">4. 左右高低差异：</b> ${gluteRotation.asymmetry} ${gluteRotation.height}</p>
+                <p><b class="text-slate-800">5. 训练优先级：</b> ${gluteCompression.training} 建议顺序：${gluteCompression.priorities.join('；')}。${gluteRotation.trainingHint}</p>
+                <p><b class="text-slate-800">6. 避免的代偿：</b> ${gluteCompression.avoid.join('；')}。${gluteConfidenceNote}</p>
+            `;
+
+            const priPostureProfiles = {
+                posterior_LeftAIC: {
+                    postureTend: '重心可能偏向前脚掌，腰背有轻微前拱感，左侧髋关节可能比右侧更难完全放松展开。',
+                    moveTend: '下蹲或弯腰时腰椎可能比臀部先动，左右迈步时躯干摇摆幅度可能不一致。',
+                    hint: '优先降低后侧整体紧绷感，再关注左右承重是否均匀。'
+                },
+                posterior_Oblique: {
+                    postureTend: '重心可能偏向前脚掌，躯干可能有轻微斜向旋转，左侧肩膀与右侧髋部之间张力可能更高。',
+                    moveTend: '旋转类动作（转身、挥臂）可能一侧顺另一侧滞，跑步或快走时步伐节奏可能不对称。',
+                    hint: '先降低整体后侧紧绷，再逐步调整斜向旋转的不均衡。'
+                },
+                posterior_Lateral: {
+                    postureTend: '重心可能偏向前脚掌，骨盆可能存在轻微侧向高低差，站立时一侧腰可能更紧。',
+                    moveTend: '单腿站立时骨盆可能有轻微侧移，上下楼梯或跑步时左右落地感受可能不同。',
+                    hint: '先降低整体后侧紧绷，再关注左右高低和侧向承重的均衡。'
+                },
+                anterior_LeftAIC: {
+                    postureTend: '腰椎前段可能有轻微过度弯曲，腹部前侧张力可能偏高，左侧髋关节可能比右侧更难向后放松。',
+                    moveTend: '深蹲或抬腿时腰椎可能先于髋发力，左右腿抬起高度和感受可能有差异。',
+                    hint: '先降低前侧牵拉感，再关注左右腿动作的对称性。'
+                },
+                anterior_Oblique: {
+                    postureTend: '腰椎前弯可能偏大，躯干可能有轻微斜向旋转，左侧肩部张力可能更明显。',
+                    moveTend: '旋转动作可能一侧灵活一侧受限，大步走或跑步时步幅左右可能不一致。',
+                    hint: '先降低前侧整体紧绷，再逐步调整斜向两端的不均衡。'
+                },
+                anterior_Lateral: {
+                    postureTend: '腰椎前弯可能偏大，骨盆可能有轻微侧向高低差，两侧腰部张力可能不同。',
+                    moveTend: '单腿动作时骨盆可能有侧移倾向，左右迈步节奏可能略有差异。',
+                    hint: '先降低前侧紧绷感，再关注左右高低和侧向稳定。'
+                }
+            };
+
+            const priProfile = priPostureProfiles[comboKey] || priPostureProfiles['posterior_LeftAIC'];
+
+            priAnalysisEl.innerHTML = `
+                <p class="text-[11px] text-amber-700 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2 leading-relaxed">⚠️ 以下为基于动作角度数据的推测性分析，仅供参考，不代表确定结论，具体情况因人而异。</p>
+                <p><b class="text-slate-800">体态倾向：</b> ${priProfile.postureTend}</p>
+                <p><b class="text-slate-800">动作倾向：</b> ${priProfile.moveTend}</p>
+                <p><b class="text-slate-800">调整方向提示：</b> ${priProfile.hint}</p>
+            `;
+
+            technicalContentEl.innerHTML = `
+                <p><b class="text-slate-800">1. 压缩模式依据：</b> ${compressionPattern.mechanism} ${compressionPattern.objective}</p>
+                <p><b class="text-slate-800">2. 偏移类型依据：</b> 左右差异最接近 <strong class="mac-blue">${rotationPattern.label}</strong>。${rotationPattern.evidenceText()}</p>
+                <p><b class="text-slate-800">3. 最终收口判断：</b> ${rotationOverrideNote} 骨盆侧倾不是非黑即白，报告优先告诉你"现在最像哪一种"。</p>
+                <p><b class="text-slate-800">4. 补充提醒：</b> ${mixedModeNote}</p>
+            `;
+
+            actionContentEl.innerHTML = `
+                ${renderAccordionCard('呼吸基础', '先学会呼吸', `
+                    <p><b class="text-slate-800">呼气怎么做：</b> 先放松，再用嘴把气慢慢呼干净。重点不是猛用力，而是把呼气拉长，尽量感觉两侧腹部在参与，而不是只有肚子正前面死撑。</p>
+                    <p><b class="text-slate-800">吸气怎么做：</b> 一般用鼻子吸气，先按 5 秒呼、5 秒吸的节奏练最稳妥。</p>
+                    <p><b class="text-slate-800">工具怎么用：</b> 推荐中号气球。用嘴吹气球，停一下，再用鼻子吸气，重复做，目的主要是帮助横膈肌更好参与。</p>
+                    <p><b class="text-slate-800">发力别太大：</b> 一开始控制在 3/10 左右就够了，尽量不要超过 5/10。如果一开始就很酸、很烧、很胀，通常不是做得更好，而是太用力了。</p>
+                `, true)}
+                ${renderAccordionCard('阶段一', '第 1-2 周，所有类型通用', `
+                    <p><b class="text-slate-800">这一阶段先做什么：</b> 不管你最后更接近哪一类情况，前 1 到 2 周都先做这套共同基础计划，目的是先把身体带到更容易调整的位置，再进入后面的针对性训练。</p>
+                    ${renderExerciseList(phaseOnePlan)}
+                `, true)}
+                ${renderAccordionCard('步骤 1', '先处理外层压缩', `
+                    <p><b class="text-slate-800">第一步先练什么：</b> ${compressionPattern.solutionName}</p>
+                    <p><b class="text-slate-800">为什么先练这个：</b> ${compressionTraining}</p>
+                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${compressionPattern.primaryAction.name}</strong></p>
+                    <p><b class="text-slate-800">这个动作主要练什么：</b> ${compressionPattern.primaryAction.target}</p>
+                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.primaryAction.method}</p>
+                    <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.primaryAction.dosage}</p>
+                `, false)}
+                ${renderAccordionCard('步骤 2', '再处理底层旋转', `
+                    <p><b class="text-slate-800">第二步再练什么：</b> ${rotationPattern.solutionName}</p>
+                    <p><b class="text-slate-800">这一阶段的重点：</b> ${rotationPattern.planSummary}</p>
+                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${rotationPattern.action.name}</strong></p>
+                    <p><b class="text-slate-800">这个动作主要练什么：</b> ${rotationPattern.action.target}</p>
+                    <p><b class="text-slate-800">动作怎么做：</b> ${rotationPattern.action.method}</p>
+                    <p><b class="text-slate-800">建议做多少：</b> ${rotationPattern.action.dosage}</p>
+                `, false)}
+                ${renderAccordionCard('辅助动作卡', '配套执行', `
+                    <p><b class="text-slate-800">配套动作：</b> <strong class="mac-blue">${compressionPattern.secondaryAction.name}</strong></p>
+                    <p><b class="text-slate-800">主要作用：</b> ${compressionPattern.secondaryAction.target}</p>
+                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.secondaryAction.method}</p>
+                    <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.secondaryAction.dosage}</p>
+                `, false)}
+                ${renderAccordionCard('阶段二', '第 3-4 周，按分型进入', `
+                    <p><b class="text-slate-800">第 3 到 4 周进入：</b> ${rotationPattern.solutionName}</p>
+                    ${renderExerciseList(rotationPattern.phaseTwo)}
+                `, true)}
+                ${phaseThreeBlock}
+                ${renderAccordionCard('解决顺序总览', '调整导航', `<p><b class="text-slate-800">简单说：</b> ${comboProfile.solutionOrder}</p>`, true, 'blue')}
+                ${renderAccordionCard('执行原则', '频率与持续', `
+                    <p><b class="text-slate-800">一周做几次：</b> 每周 3 到 4 次比较合适，3 次已经很好，4 次通常更理想。</p>
+                    <p><b class="text-slate-800">每个动作做几组：</b> 先以 3 组为基础；4 组可以更强一点，但一般不建议一天总量超过 5 组。</p>
+                    <p><b class="text-slate-800">能不能分开做：</b> 可以。比如早上 2 组、晚上 2 组，通常比一天只练一次更容易让身体适应新姿势。</p>
+                    <p><b class="text-slate-800">最重要的原则：</b> 不是硬把身体“掰回去”，而是用较轻的发力和正确呼吸，让神经系统慢慢接受新的、更省力的位置。</p>
+                `, false)}
+                ${renderAccordionCard('复测指标', '2-3 周后回看', `<p>复测时不要只看骨盆外观。更重要的是看：整体角度有没有慢慢脱离 ${compressionPattern.label} 的限制、左右差异有没有慢慢脱离 ${rotationPattern.label} 的特征，以及你的姿势是否更对称、肩和髋是否更好动、身体不适有没有减少。</p>`, false)}
+            `;
 
             saveHistoryToStorage({
                 type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                slrL: slrL !== null ? slrL.toFixed(1) : '--', 
-                slrR: slrR !== null ? slrR.toFixed(1) : '--', 
-                hipL: hipL !== null ? hipL.toFixed(1) : '--', 
-                hipR: hipR !== null ? hipR.toFixed(1) : '--', 
-                shL: shL !== null ? shL.toFixed(1) : '--', 
+                slrL: slrL !== null ? slrL.toFixed(1) : '--',
+                slrR: slrR !== null ? slrR.toFixed(1) : '--',
+                hipL: hipL !== null ? hipL.toFixed(1) : '--',
+                hipR: hipR !== null ? hipR.toFixed(1) : '--',
+                shL: shL !== null ? shL.toFixed(1) : '--',
                 shR: shR !== null ? shR.toFixed(1) : '--',
                 result: titleEl.innerText
             });
 
             document.getElementById('final-report-section').classList.remove('hidden');
-            scrollToDisplayArea();
+            scrollToDisplayArea(document.getElementById('final-report-section'));
         }
 
     </script>
