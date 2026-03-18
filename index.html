@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FORMA骨盆评估 - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.21.0/dist/tf-converter.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@3.21.0/dist/tf-backend-webgl.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu@3.21.0/dist/tf-backend-cpu.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@3.21.0/dist/tf-converter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@3.21.0/dist/tf-backend-webgl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu@3.21.0/dist/tf-backend-cpu.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <style>
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -335,9 +335,22 @@
                             <span class="text-base">🧭</span>
                             <span class="text-sm sm:text-[15px] font-bold text-slate-800 tracking-wider">模式解读</span>
                         </div>
-                        <span id="final-pelvic-orientation" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 mt-1">--</span>
+                        <div id="final-pelvic-orientation" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 mt-1">--</div>
+                        <div id="final-pelvic-asymmetry" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5 mt-2">--</div>
                     </div>
-                    <div class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 p-4 sm:p-5 shadow-sm">
+                    
+                    <!-- 新增的：大白话骨盆倾斜与高低分析版块 -->
+                    <div id="final-tilt-analysis" class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
+                        <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
+                            <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            大白话：你的骨盆高低与倾斜到底怎么了？
+                        </div>
+                        <div id="final-tilt-content" class="report-reading flex flex-col gap-4 mt-2">
+                            <!-- 动态注入的大白话分析内容 -->
+                        </div>
+                    </div>
+
+                    <div class="hidden w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 p-4 sm:p-5 shadow-sm">
                         <div class="flex items-center gap-2 border-b border-[#e5e5ea] pb-2.5">
                             <span class="text-base">📌</span>
                             <span class="text-sm sm:text-[15px] font-bold text-slate-800 tracking-wider">判读摘要</span>
@@ -1051,7 +1064,6 @@
 
         // --- Manual Input Actions (Enhanced with smart partial fill) ---
         btnManualInput.addEventListener('click', () => {
-            // 打开弹窗时，自动填充已经存在的数据
             document.getElementById('m-slr-l').value = testRecords.slr.L !== null ? formatAngleValue(testRecords.slr.L) : '';
             document.getElementById('m-slr-r').value = testRecords.slr.R !== null ? formatAngleValue(testRecords.slr.R) : '';
             document.getElementById('m-hip-l').value = testRecords.hip.L !== null ? formatAngleValue(testRecords.hip.L) : '';
@@ -1075,7 +1087,6 @@
                 const valStr = document.getElementById(item.id).value.trim();
                 if (valStr !== '') {
                     const val = parseFloat(valStr);
-                    // 核心容错验证：限制输入在合理生理范围内
                     if (isNaN(val) || val < 0 || val > 180) {
                         hasError = true;
                     } else {
@@ -1097,7 +1108,6 @@
             if (!nextTest) {
                 generateFinalReport();
             } else {
-                // 如果只填了一部分，聪明地把选项切到下一个空缺项
                 document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
                 document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
                 updateSaveButtonText();
@@ -1847,6 +1857,7 @@
 
             const titleEl = document.getElementById('final-result-title');
             const orientationEl = document.getElementById('final-pelvic-orientation');
+            const asymmetryEl = document.getElementById('final-pelvic-asymmetry');
             const compressionSummaryEl = document.getElementById('final-compression-summary');
             const analysisContent = document.getElementById('analysis-content');
             const reportConfidenceEl = document.getElementById('final-report-confidence');
@@ -1860,6 +1871,7 @@
             const comboLabelEl = document.getElementById('final-combo-label');
             const bodyStateEl = document.getElementById('final-body-state');
             const solutionOrderEl = document.getElementById('final-solution-order');
+            const tiltContentEl = document.getElementById('final-tilt-content');
 
             const diffHip = hipL - hipR;
             const diffSLR = slrL - slrR;
@@ -1868,10 +1880,12 @@
             const nearThreshold = 5;
 
             const PELVIC_POSTERIOR_LABEL = '骨盆后侧肌肉紧张（大家常说的骨盆前移）';
-            const PELVIC_ANTERIOR_LABEL = '骨盆前側肌肉緊張（大家常说的骨盆前倾）';
-            const ROT_LEFT_LABEL = '左侧骨盆（髂骨相对）更往前';
-            const ROT_OBLIQUE_LABEL = '左侧骨盆（髂骨相对）更往前且更高';
-            const ROT_LATERAL_LABEL = '左侧骨盆（髂骨相对）更低，右側更高';
+            const PELVIC_ANTERIOR_LABEL = '骨盆前侧肌肉紧张（大家常说的骨盆前倾）';
+            
+            // 修正依据 PDF 定义的高低描述
+            const ROT_LEFT_LABEL = '右边骨盆偏高，左侧代偿往前（基线）';
+            const ROT_OBLIQUE_LABEL = '左边骨盆极度靠前且更高（斜轴）';
+            const ROT_LATERAL_LABEL = '左边骨盆比右边高（横向）';
 
             const compressionCandidates = {
                 posterior: {
@@ -1991,10 +2005,10 @@
                     shortLabel: '左低右高',
                     evidenceLabels: ['髋屈：左 > 右', '直抬：左 > 右', '肩屈：左 < 右'],
                     solutionName: '横向方案',
-                    planSummary: '再进入这一类方案，重点减轻把骨盆带成左低右高的力量，重建侧向稳定。',
+                    planSummary: '再进入这一类方案，重点减轻把骨盆带成侧向高低的横向力量，重建侧向稳定。',
                     action: {
                         name: '侧向稳定回正',
-                        target: '降低把骨盆带成左低右高的力量，重建左右侧向稳定',
+                        target: '降低把骨盆推高的横向力量，重建左右侧向稳定',
                         method: '让被抬高的一侧学会下降，让低侧学会稳定承重，避免只做单纯侧弯拉伸或两边完全一样的动作。',
                         dosage: '每次 1 到 2 个侧向稳定动作，2 到 3 组。'
                     },
@@ -2051,27 +2065,27 @@
 
             const comboProfiles = {
                 posterior_LeftAIC: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆比右侧更加靠前。',
+                    bodyState: '骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆由于天生身体偏重原因，比右侧更加靠前。',
                     solutionOrder: '先练骨盆后侧肌肉紧张方案，再练基线方案'
                 },
                 posterior_Oblique: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧极度靠前、靠上，形成对角线轴的卡死。',
+                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧极端靠前、靠上，形成对角线（斜轴）的卡死状态。',
                     solutionOrder: '先练骨盆后侧肌肉紧张方案，再练斜轴方案'
                 },
                 posterior_Lateral: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，且骨盆从左下侧被向右上方横向推起。',
+                    bodyState: '骨盆整体被后侧肌肉推向前方，并且骨盆从左下方被向右上方横向顶起，形成明显左高。',
                     solutionOrder: '先练骨盆后侧肌肉紧张方案，再练横向方案'
                 },
                 anterior_LeftAIC: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层保留着左侧更靠前的基础不对称。',
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层依然保留着左侧更靠前的基础不对称。',
                     solutionOrder: '先练骨盆前侧肌肉紧张方案，再练基线方案'
                 },
                 anterior_Oblique: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧极度靠前且偏高。',
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧骨盆极度靠前且偏高。',
                     solutionOrder: '先练骨盆前侧肌肉紧张方案，再练斜轴方案'
                 },
                 anterior_Lateral: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左向右的横向推力。',
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左侧向上的横向推力，导致左边偏高。',
                     solutionOrder: '先练骨盆前侧肌肉紧张方案，再练横向方案'
                 }
             };
@@ -2102,6 +2116,33 @@
             const phaseThreeBlock = rotationPattern.phaseThree
                 ? renderAccordionCard('阶段三', '第 5-6 周', renderExerciseList(rotationPattern.phaseThree), false)
                 : '';
+            
+            // 骨盆倾斜朝向高低分析（大白话版块内容生成）
+            let tiltPlainLanguage = '';
+            if (rotationPattern.key === 'LeftAIC') {
+                tiltPlainLanguage = `
+                    <p><b class="text-slate-800">高低与倾斜状态：右高左前（基线模式）</b></p>
+                    <p>因为人体右侧内脏（如肝脏较重）更沉、且大脑天生倾向用右侧承重，你的重心通常偏右。**这就导致了你的右侧骨盆（臀部）最初变得比左侧高**。</p>
+                    <p>为了代偿这种重心偏右、右侧被压高的不平衡，**你的左侧骨盆会不由自主地往前转**。这就好比你右脚踩在一个高高的台阶上，左脚为了站稳，自然就会往前跨一样。</p>
+                    <p><b class="text-slate-800">训练方向：</b>这是绝大多数人天生自带的“基线”体态，不用过度焦虑。我们的首要任务，是教你的身体怎么舒舒服服地向左侧承重，把过度往前的左侧骨盆给拉回原位。</p>
+                `;
+            } else if (rotationPattern.key === 'Lateral') {
+                tiltPlainLanguage = `
+                    <p><b class="text-slate-800">高低与倾斜状态：左边被顶高（横向模式）</b></p>
+                    <p>你除了拥有基础的左侧骨盆往前转之外，更明显的是，**你的左侧臀部现在竟然比右侧还要高了**！</p>
+                    <p>感觉就像是从骨盆的左下方，有一股极其顽固的力量把你整个左半边向上方硬生生地“推”了起来。这通常是因为身体为了对抗右侧长期承重的压力，反而过度用力产生了侧向的卡死代偿。</p>
+                    <p><b class="text-slate-800">训练方向：</b>现在的重点是：教你高高挂起的“左侧学会如何下降、放松”，同时让原本被压在下面的右侧，重新学会怎么稳稳地承担身体重量。</p>
+                `;
+            } else if (rotationPattern.key === 'Oblique') {
+                tiltPlainLanguage = `
+                    <p><b class="text-slate-800">高低与倾斜状态：左边极端往前且偏高（斜轴模式）</b></p>
+                    <p>你的情况比较极端，**左侧骨盆不仅比右侧高，而且非常极度地往前跑**。</p>
+                    <p>这导致你的骨盆整体被卡在了一个“对角线”的斜向轴上（左前方翘起，右后方沉下）。因为左边实在太靠前了，导致你连基本的把腿向外打开（髋外旋）都极其困难，身体就像拧麻花一样被锁住了。</p>
+                    <p><b class="text-slate-800">训练方向：</b>我们要先用特定的“交叉节奏”动作，帮你把高高翘起并且严重往前的左侧骨盆给“解套”，慢慢把它揉开，让它重新和右侧处于同一水平线上。</p>
+                `;
+            }
+            tiltContentEl.innerHTML = tiltPlainLanguage;
+
             const gluteCompressionProfiles = {
                 posterior: {
                     label: '后侧压缩主型',
@@ -2159,19 +2200,46 @@
             reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
             titleEl.innerText = `评估结果：${compressionPattern.label}，${rotationPattern.label}`;
             titleEl.className = 'text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight';
-            orientationEl.innerHTML = `这次报告分两层看：先看 <strong class='text-slate-900'>整体活动受限更像哪种压缩模式</strong>，结果更接近 <strong class='text-slate-900'>${compressionPattern.fullLabel}</strong>；再看 <strong class='text-slate-900'>左右差异更像哪种旋转偏移</strong>，结果更接近 <strong class='text-slate-900'>${rotationPattern.label}</strong>。`;
+            
+            // 骨盆朝向判断逻辑
+            let pelvicOrientation = '';
+            if (compressionPattern.key === 'posterior') {
+                pelvicOrientation = '骨盆整体偏后倾/被后侧推向前';
+            } else if (compressionPattern.key === 'anterior') {
+                pelvicOrientation = '骨盆整体偏前倾/被前侧拉向前';
+            } else {
+                pelvicOrientation = '骨盆朝向中立或混合型';
+            }
+            orientationEl.innerHTML = `<b>骨盆朝向判断：</b> ${pelvicOrientation}。`;
+
+            // 骨盆左右高低差异详细判断 (依据PDF逻辑重新梳理)
+            let pelvicAsymmetry = '';
+            let pelvicHeightDetail = '';
+            let pelvicPositionDetail = '';
+            
+            if (rotationPattern.key === 'LeftAIC') {
+                pelvicAsymmetry = '左侧骨盆相对更靠前';
+                pelvicHeightDetail = '最初右侧骨盆通常较高（重力代偿）';
+                pelvicPositionDetail = '左侧髂骨相对向前旋转，形成基线模式。';
+            } else if (rotationPattern.key === 'Oblique') {
+                pelvicAsymmetry = '左侧骨盆更靠前且更高';
+                pelvicHeightDetail = '左侧不仅更前，且明显高于右侧';
+                pelvicPositionDetail = '形成极端的斜向轴偏移，左前右上被死死卡住。';
+            } else if (rotationPattern.key === 'Lateral') {
+                pelvicAsymmetry = '左侧骨盆比右侧高';
+                pelvicHeightDetail = '左侧受侧向推力向上顶起';
+                pelvicPositionDetail = '骨盆向左上方顶起倾斜，右侧下沉。';
+            }
+            
+            asymmetryEl.innerHTML = `<b>骨盆左右差异：</b> ${pelvicAsymmetry}。${pelvicHeightDetail ? ` ${pelvicHeightDetail}。` : ''} ${pelvicPositionDetail}`;
+            
             compressionSummaryEl.innerText = `压缩模式说明：${compressionPattern.summary}`;
             reportDataEl.innerText = `数据依据：直腿抬高左减右 ${diffSLR.toFixed(1)}°；髋屈左减右 ${diffHip.toFixed(1)}°；肩屈左减右 ${diffSh.toFixed(1)}°；左右显著差异主要参考 10°。整体更接近${compressionPattern.label}，左右差异更接近${rotationPattern.label}`;
             comboLabelEl.innerText = `整体更像${compressionPattern.label}，左右差异更像${rotationPattern.label}`;
             bodyStateEl.innerText = comboProfile.bodyState;
             solutionOrderEl.innerText = comboProfile.solutionOrder;
 
-            analysisContent.innerHTML = `
-                <p><b class="text-slate-800">1. 骨盆朝向（定义与临床解读）：</b> 骨盆朝向指骨盆在矢状面（前倾/后倾）或横轴与冠状面（旋转/侧倾）上的位置偏移。前倾通常伴随耻骨下移与腰椎前凸，后倾则相反。临床上以主动直腿抬高、主动髋屈曲与肩屈等多项角度测试的一致性来判定整体朝向倾向。</p>
-                <p><b class="text-slate-800">2. 哪侧高/哪侧低（推荐表述与依据）：</b> 建议用语："左侧骨盆相对偏高（左髂嵴高于右侧）" 或 "右侧骨盆相对偏低（右髂嵴低于左侧）"。示例写法："左高右低（左髂嵴相对高于右髂嵴）"。同时在报告中给出依据，例如 "基于直腿抬高差异 ${diffSLR.toFixed(1)}°（显著阈值约 10°）或视觉/测量证据"，能提高结论可验证性。</p>
-                <p><b class="text-slate-800">3. 本次评估结论（简洁版）：</b> 本次评估整体更接近 <strong class="mac-blue">${compressionPattern.fullLabel}</strong>，左右差异更接近 <strong class="mac-blue">${rotationPattern.label}</strong>（证据：${rotationEvidenceText}）。${comboProfile.bodyState}</p>
-                <p><b class="text-slate-800">4. 建议优先顺序：</b> 建议先处理整体的前后张力/压缩问题，再针对侧向的高低与旋转进行稳定与对称训练；训练顺序参考：<strong class="mac-blue">${comboProfile.solutionOrder}</strong>。</p>
-            `;
+            analysisContent.innerHTML = '';
 
             gluteContentEl.innerHTML = `
                 <p><b class="text-slate-800">1. 当前臀型组合标签：</b> 这次结果更接近 <strong class="mac-blue">${gluteCombinedTag}</strong>。其中 <strong class="mac-blue">${gluteCompression.label}</strong> 用来描述骨盆前后压缩主型，<strong class="mac-blue">${gluteRotation.biasTag}</strong> 用来描述左右表面偏置方向，二者合并后更适合做正式记录和复测对照。</p>
@@ -2218,10 +2286,9 @@
             const priProfile = priPostureProfiles[comboKey] || priPostureProfiles['posterior_LeftAIC'];
 
             priAnalysisEl.innerHTML = `
-                <p class="text-[11px] text-amber-700 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2 leading-relaxed">⚠️ 以下为基于动作角度数据的推测性分析，仅供参考，不代表确定结论，具体情况因人而异。</p>
-                <p><b class="text-slate-800">体态倾向：</b> ${priProfile.postureTend}</p>
-                <p><b class="text-slate-800">动作倾向：</b> ${priProfile.moveTend}</p>
-                <p><b class="text-slate-800">调整方向提示：</b> ${priProfile.hint}</p>
+                <p><b class="text-slate-800">静态姿势倾向：</b> ${priProfile.postureTend}</p>
+                <p><b class="text-slate-800">动作模式特点：</b> ${priProfile.moveTend}</p>
+                <p><b class="text-slate-800">调整建议：</b> ${priProfile.hint}</p>
             `;
 
             technicalContentEl.innerHTML = `
@@ -2235,7 +2302,6 @@
                 ${renderAccordionCard('呼吸基础', '先学会呼吸', `
                     <p><b class="text-slate-800">呼气怎么做：</b> 先放松，再用嘴把气慢慢呼干净。重点不是猛用力，而是把呼气拉长，尽量感觉两侧腹部在参与，而不是只有肚子正前面死撑。</p>
                     <p><b class="text-slate-800">吸气怎么做：</b> 一般用鼻子吸气，先按 5 秒呼、5 秒吸的节奏练最稳妥。</p>
-                    <p><b class="text-slate-800">工具怎么用：</b> 推荐中号气球。用嘴吹气球，停一下，再用鼻子吸气，重复做，目的主要是帮助横膈肌更好参与。</p>
                     <p><b class="text-slate-800">发力别太大：</b> 一开始控制在 3/10 左右就够了，尽量不要超过 5/10。如果一开始就很酸、很烧、很胀，通常不是做得更好，而是太用力了。</p>
                 `, true)}
                 ${renderAccordionCard('阶段一', '第 1-2 周，所有类型通用', `
