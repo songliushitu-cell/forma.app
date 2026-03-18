@@ -1867,11 +1867,17 @@
             const threshold = 10;
             const nearThreshold = 5;
 
+            const PELVIC_POSTERIOR_LABEL = '骨盆后侧肌肉紧张（大家常说的骨盆前移）';
+            const PELVIC_ANTERIOR_LABEL = '骨盆前側肌肉緊張（大家常说的骨盆前倾）';
+            const ROT_LEFT_LABEL = '左侧骨盆（髂骨相对）更往前';
+            const ROT_OBLIQUE_LABEL = '左侧骨盆（髂骨相对）更往前且更高';
+            const ROT_LATERAL_LABEL = '左侧骨盆（髂骨相对）更低，右側更高';
+
             const compressionCandidates = {
                 posterior: {
                     key: 'posterior',
-                    label: '骨盆后侧肌肉紧张（大家常说的骨盆前移）',
-                    fullLabel: '骨盆后侧肌肉紧张（大家常说的骨盆前移）',
+                    label: PELVIC_POSTERIOR_LABEL,
+                    fullLabel: PELVIC_POSTERIOR_LABEL,
                     alias: 'PC',
                     solutionName: '骨盆后侧肌肉紧张方案',
                     checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
@@ -1894,8 +1900,8 @@
                 },
                 anterior: {
                     key: 'anterior',
-                    label: '骨盆前侧肌肉紧张（大家常说的骨盆前倾）',
-                    fullLabel: '骨盆前侧肌肉紧张（大家常说的骨盆前倾）',
+                    label: PELVIC_ANTERIOR_LABEL,
+                    fullLabel: PELVIC_ANTERIOR_LABEL,
                     alias: 'AC',
                     solutionName: '骨盆前侧肌肉紧张方案',
                     checks: [testRecords.slr.final > 50, testRecords.hip.final < 100, testRecords.shoulder.final > 100],
@@ -1921,7 +1927,7 @@
             const rotationCandidates = [
                 {
                     key: 'LeftAIC',
-                    label: '左侧骨盆（髂骨相对）更往前',
+                    label: ROT_LEFT_LABEL,
                     shortLabel: '左侧更往前',
                     evidenceLabels: ['髋屈：左 > 右', '直抬：左 < 右', '肩屈：左 < 右'],
                     solutionName: '基线方案',
@@ -1948,7 +1954,7 @@
                 },
                 {
                     key: 'Oblique',
-                    label: '左侧骨盆（髂骨相对）更往前且更高',
+                    label: ROT_OBLIQUE_LABEL,
                     shortLabel: '左侧更前更高',
                     evidenceLabels: ['髋屈：左 < 右', '直抬：左 > 右', '肩屈：左 > 右'],
                     solutionName: '斜轴方案',
@@ -1981,7 +1987,7 @@
                 },
                 {
                     key: 'Lateral',
-                    label: '左侧骨盆（髂骨相对）更低，右侧更高',
+                    label: ROT_LATERAL_LABEL,
                     shortLabel: '左低右高',
                     evidenceLabels: ['髋屈：左 > 右', '直抬：左 > 右', '肩屈：左 < 右'],
                     solutionName: '横向方案',
@@ -2161,11 +2167,10 @@
             solutionOrderEl.innerText = comboProfile.solutionOrder;
 
             analysisContent.innerHTML = `
-                <p><b class="text-slate-800">1. 先怎么理解骨盆侧倾：</b> 骨盆侧倾通常不是骨盆单独出了问题，而是全身为了保持平衡，慢慢形成的一种代偿模式。常见的主类型，大致可以理解成三种骨盆位置关系：<strong class="mac-blue">左侧骨盆（髂骨相对）更往前</strong>、<strong class="mac-blue">左侧骨盆（髂骨相对）更往前且更高</strong>、<strong class="mac-blue">左侧骨盆（髂骨相对）更低，右侧更高</strong>。</p>
-                <p><b class="text-slate-800">2. 你的整体状态更像什么：</b> 先看整体角度限制，你更接近 <strong class="mac-blue">${compressionPattern.fullLabel}</strong>。这说明第一步更应该先处理身体整体前后方向的卡紧问题。</p>
-                <p><b class="text-slate-800">3. 你的左右差异更像什么：</b> 再看左右角度差异，你更接近 <strong class="mac-blue">${rotationPattern.label}</strong>。对应的差异特征是 <strong class="mac-blue">${rotationEvidenceText}</strong>，这决定你第二步更适合走哪条回正路线。</p>
-                <p><b class="text-slate-800">4. 用白话描述你现在的状态：</b> ${comboProfile.bodyState}</p>
-                <p><b class="text-slate-800">5. 训练顺序怎么排：</b> <strong class="mac-blue">${comboProfile.solutionOrder}</strong></p>
+                <p><b class="text-slate-800">1. 骨盆朝向（定义与临床解读）：</b> 骨盆朝向指骨盆在矢状面（前倾/后倾）或横轴与冠状面（旋转/侧倾）上的位置偏移。前倾通常伴随耻骨下移与腰椎前凸，后倾则相反。临床上以主动直腿抬高、主动髋屈曲与肩屈等多项角度测试的一致性来判定整体朝向倾向。</p>
+                <p><b class="text-slate-800">2. 哪侧高/哪侧低（推荐表述与依据）：</b> 建议用语："左侧骨盆相对偏高（左髂嵴高于右侧）" 或 "右侧骨盆相对偏低（右髂嵴低于左侧）"。示例写法："左高右低（左髂嵴相对高于右髂嵴）"。同时在报告中给出依据，例如 "基于直腿抬高差异 ${diffSLR.toFixed(1)}°（显著阈值约 10°）或视觉/测量证据"，能提高结论可验证性。</p>
+                <p><b class="text-slate-800">3. 本次评估结论（简洁版）：</b> 本次评估整体更接近 <strong class="mac-blue">${compressionPattern.fullLabel}</strong>，左右差异更接近 <strong class="mac-blue">${rotationPattern.label}</strong>（证据：${rotationEvidenceText}）。${comboProfile.bodyState}</p>
+                <p><b class="text-slate-800">4. 建议优先顺序：</b> 建议先处理整体的前后张力/压缩问题，再针对侧向的高低与旋转进行稳定与对称训练；训练顺序参考：<strong class="mac-blue">${comboProfile.solutionOrder}</strong>。</p>
             `;
 
             gluteContentEl.innerHTML = `
