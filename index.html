@@ -372,9 +372,9 @@
                 <div class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
                     <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
                         <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4v-1a7 7 0 0114 0v1a4 4 0 01-4 4H7zm10-10a4 4 0 114-4 4 4 0 01-4 4z"></path></svg>
-                        臀型外观推演
+                        照镜子能看到的代偿臀型 (视觉推演)
                     </div>
-                    <div id="final-glute-content" class="report-reading flex flex-col gap-4"></div>
+                    <div id="final-glute-content" class="report-reading flex flex-col gap-4 mt-2"></div>
                 </div>
 
                 <div id="final-posture-analysis" class="hidden w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
@@ -2118,87 +2118,77 @@
                 : '';
             
             // 骨盆倾斜朝向高低分析（大白话版块内容生成）
-            let tiltPlainLanguage = '';
+            let horizontalOrientationHtml = '';
+            if (['LeftAIC', 'Lateral', 'Oblique'].includes(rotationPattern.key)) {
+                horizontalOrientationHtml = '<p><b class="text-slate-800">骨盆水平朝向：</b>你的骨盆整体在水平方向上<strong class="text-[#0a84ff]">朝向右侧</strong>（因为人体右侧内脏较重且大脑偏好右侧承重，你的身体本能地更依赖右腿支撑）。</p>';
+            }
+
+            let tiltPlainLanguage = horizontalOrientationHtml;
             if (rotationPattern.key === 'LeftAIC') {
-                tiltPlainLanguage = `
+                tiltPlainLanguage += `
                     <p><b class="text-slate-800">高低与倾斜状态：右高左前（基线模式）</b></p>
-                    <p>因为人体右侧内脏（如肝脏较重）更沉、且大脑天生倾向用右侧承重，你的重心通常偏右。**这就导致了你的右侧骨盆（臀部）最初变得比左侧高**。</p>
-                    <p>为了代偿这种重心偏右、右侧被压高的不平衡，**你的左侧骨盆会不由自主地往前转**。这就好比你右脚踩在一个高高的台阶上，左脚为了站稳，自然就会往前跨一样。</p>
+                    <p>这就导致了你的右侧骨盆（臀部）最初变得比左侧高。</p>
+                    <p>为了代偿这种重心偏右、右侧被压高的不平衡，你的左侧骨盆会不由自主地往前转。这就好比你右脚踩在一个高高的台阶上，左脚为了站稳，自然就会往前跨一样。</p>
                     <p><b class="text-slate-800">训练方向：</b>这是绝大多数人天生自带的“基线”体态，不用过度焦虑。我们的首要任务，是教你的身体怎么舒舒服服地向左侧承重，把过度往前的左侧骨盆给拉回原位。</p>
                 `;
             } else if (rotationPattern.key === 'Lateral') {
-                tiltPlainLanguage = `
+                tiltPlainLanguage += `
                     <p><b class="text-slate-800">高低与倾斜状态：左边被顶高（横向模式）</b></p>
-                    <p>你除了拥有基础的左侧骨盆往前转之外，更明显的是，**你的左侧臀部现在竟然比右侧还要高了**！</p>
+                    <p>你除了拥有基础的左侧骨盆往前转之外，更明显的是，你的左侧臀部现在竟然比右侧还要高了！</p>
                     <p>感觉就像是从骨盆的左下方，有一股极其顽固的力量把你整个左半边向上方硬生生地“推”了起来。这通常是因为身体为了对抗右侧长期承重的压力，反而过度用力产生了侧向的卡死代偿。</p>
                     <p><b class="text-slate-800">训练方向：</b>现在的重点是：教你高高挂起的“左侧学会如何下降、放松”，同时让原本被压在下面的右侧，重新学会怎么稳稳地承担身体重量。</p>
                 `;
             } else if (rotationPattern.key === 'Oblique') {
-                tiltPlainLanguage = `
+                tiltPlainLanguage += `
                     <p><b class="text-slate-800">高低与倾斜状态：左边极端往前且偏高（斜轴模式）</b></p>
-                    <p>你的情况比较极端，**左侧骨盆不仅比右侧高，而且非常极度地往前跑**。</p>
+                    <p>你的情况比较极端，左侧骨盆不仅比右侧高，而且非常极度地往前跑。</p>
                     <p>这导致你的骨盆整体被卡在了一个“对角线”的斜向轴上（左前方翘起，右后方沉下）。因为左边实在太靠前了，导致你连基本的把腿向外打开（髋外旋）都极其困难，身体就像拧麻花一样被锁住了。</p>
                     <p><b class="text-slate-800">训练方向：</b>我们要先用特定的“交叉节奏”动作，帮你把高高翘起并且严重往前的左侧骨盆给“解套”，慢慢把它揉开，让它重新和右侧处于同一水平线上。</p>
                 `;
             }
             tiltContentEl.innerHTML = tiltPlainLanguage;
 
-            const gluteCompressionProfiles = {
-                posterior: {
-                    label: '后侧压缩主型',
-                    morphologyTag: '低臀峰锁紧表现',
-                    appearance: '按骨盆后侧压缩和后链锁紧的表现推演，臀后侧与臀下缘更像处在持续收短状态，臀部不容易自然向后展开。外观上更常见后翘感不足、臀线偏平、下缘像被提前收住。',
-                    peak: '臀峰位置更容易显得偏低或偏内收，视觉上不容易形成自然向后、向外的圆弧。',
-                    lowerSupport: '臀下缘支撑常见表现是“紧但不托”，看起来线条收得快，真正的下段饱满度反而不足。',
-                    training: '先把后侧顶推感降下来，再恢复臀中后外侧空间，重点补回臀峰向后展开和臀下缘承托。',
-                    priorities: ['先降后侧顶推和夹紧感，再谈翘度', '优先补臀中后外侧展开，而不是一味夹臀', '训练时重点建立臀下缘承托和向后延展'],
-                    avoid: ['避免一上来就做大重量硬夹臀、把屁股越练越紧', '避免用腰往前顶、用下背抢后伸制造假翘臀', '避免深蹲或后踢时只追求幅度，不管骨盆是否前推']
+            // 大白话：代偿臀型视觉特征推演组合
+            const visualCombos = {
+                'posterior_LeftAIC': {
+                    name: '大小塌塌臀 (后压缩 + 基线)',
+                    visual: '整体扁平，轻微不对称。屁股没肉，侧面看像直线，穿紧身裤撑不起来。仔细看，左右两边屁股大小或高低稍微有点不一样。',
+                    explanation: '你的骨盆后侧肌肉太紧，把整个骨盆往前下方“卷”进去了。屁股上的肌肉被拉长，发不上力，自然就塌了。加上人天生有点发力偏好，导致一边塌得更明显一点。'
                 },
-                anterior: {
-                    label: '前侧牵拉主型',
-                    morphologyTag: '高臀峰下段不足表现',
-                    appearance: '按骨盆前侧牵拉和前移策略推演，臀部更像是上缘张力偏高、下段回收不足。外观上更常见腰臀交界更抢眼、臀上缘偏紧，但中下段往后包裹感不够。',
-                    peak: '臀峰位置更容易显得偏上、偏散，容易有“上面紧、下面空”的观感。',
-                    lowerSupport: '臀下缘支撑常见表现是不够稳，站立时下段托举感不足，臀腿交界更容易提前变平。',
-                    training: '先把前侧拉扯感降下来，再补臀中下段承重、回收和向后延展能力，让臀峰和下缘重新连起来。',
-                    priorities: ['先减前侧牵拉，让骨盆别一直往前掉', '优先补臀中下段回收和承重，不先追上缘膨胀感', '训练时把臀峰和下缘连成一体，避免只练上半截'],
-                    avoid: ['避免反复做只会强化髋前顶的臀冲和后踢', '避免站姿训练时膝盖锁死、重心全压前脚掌', '避免只追求臀上缘充血感，忽略下段支撑和稳定']
+                'posterior_Oblique': {
+                    name: '长短腿扁平臀 (后压缩 + 斜轴)',
+                    visual: '一边高一边低，走路深浅脚。屁股同样很扁平，但裤腰带永远是歪的。站直的时候感觉一条腿长、一条腿短，有一侧的腰身显得特别短。',
+                    explanation: '你的骨盆不仅被“卷”平了，而且左边还死死地卡在了一个偏高的位置。这不仅让屁股没型，还会让你的脊椎和腿长跟着代偿，视觉上就变成了长短腿。'
+                },
+                'posterior_Lateral': {
+                    name: '歪屁股 / 单侧平臀 (后压缩 + 横向)',
+                    visual: '重心全压在一边。臀部整体不翘，站立时总喜欢把重心压在一条腿上。承重那边的屁股不仅扁，大腿外侧还会有一块死肉（特别紧）。',
+                    explanation: '骨盆后侧卡死的同时，还被一股力量从侧面“顶歪”了。你现在的身体重心严重偏移，一直压着一边的屁股在使用，导致它被压得又扁又僵硬。'
+                },
+                'anterior_LeftAIC': {
+                    name: '经典假翘臀 (前压缩 + 基线)',
+                    visual: '腰酸背痛型。侧面看屁股挺翘，肚子有点往前凸。但经常觉得腰很酸、很僵硬，站久了特别累。',
+                    explanation: '你的骨盆过度往前倒了，看起来屁股变翘了，但其实是腰椎被死死卡住代偿出来的假象。骨盆前侧的肌肉太紧，一直把你往前下方拉，背部和腰部肌肉只能死死拽住你防止摔倒，所以站久了腰会特别酸。'
+                },
+                'anterior_Oblique': {
+                    name: '假胯宽撅撅臀 (前压缩 + 斜轴)',
+                    visual: '大腿根突出，腰极度反弓。不仅撅屁股、腰反弓，最要命的是大腿根部两侧有两块肉特别突出（假胯宽），显得腿很短。',
+                    explanation: '骨盆过度前倾的同时，一边还严重往上卡死了。为了保持平衡，你的大腿骨只能被迫往内转，这一转，大腿外侧的骨头（大转子）就顶出来了，形成了很难看的假胯宽。'
+                },
+                'anterior_Lateral': {
+                    name: '高低假翘臀 (前压缩 + 横向)',
+                    visual: '撅屁股 + 扭腰站姿。屁股往后撅，但从背后看，腰部两侧的弧线完全不一样，一边腰侧被挤压出了赘肉，总习惯扭着身子站。',
+                    explanation: '你的骨盆往前倒了，同时还在水平方向上被推移了。这就好比你不仅撅着屁股，还扭着腰。长久下来，不仅两边屁股发力不均，腰两侧的肉也会不对称。'
                 }
             };
-            const gluteRotationProfiles = {
-                LeftAIC: {
-                    biasTag: '前移偏置型',
-                    asymmetry: '左右差异更像左侧臀部更紧、更难向后铺开，右侧更容易外顶代偿，所以两边圆润度和受力感可能不一致。',
-                    height: '视觉上更常见一侧臀峰不够展开，另一侧外侧更容易先顶出来。',
-                    trainingHint: '做单侧训练时，通常更要盯住左侧是否真的向后展开、右侧是否又偷偷外顶代偿。'
-                },
-                Oblique: {
-                    biasTag: '斜向高低偏置型',
-                    asymmetry: '左右差异更像左上与右下形成斜向不均，常见表现是某一侧上缘更紧，另一侧下缘更容易代偿。',
-                    height: '视觉上更容易出现一边臀峰偏高、另一边下缘更抢眼的斜向差异。',
-                    trainingHint: '训练时要避免只做两边一样的动作量，更要关注斜向两端是否重新平衡。'
-                },
-                Lateral: {
-                    biasTag: '侧向高低偏置型',
-                    asymmetry: '左右差异更像一侧臀峰更高、另一侧下缘承重更多，视觉上更容易出现高低边或左右外扩不一致。',
-                    height: '如果站姿代偿更明显，常会看到一侧臀线偏高，另一侧下段更沉。',
-                    trainingHint: '训练时要优先修正左右承重和高低边，不能只做双侧对称发力。'
-                }
-            };
-            const gluteCompression = gluteCompressionProfiles[compressionPattern.key] || gluteCompressionProfiles.posterior;
-            const gluteRotation = gluteRotationProfiles[rotationPattern.key] || gluteRotationProfiles.LeftAIC;
-            const gluteCombinedTag = `${gluteCompression.label} / ${gluteRotation.biasTag}`;
-            const gluteConfidenceNote = confidenceLabel === '高'
-                ? '这部分趋势和本次动作测试结果一致性较高，可作为当前训练观察重点。'
-                : confidenceLabel === '中'
-                    ? '这部分属于趋势判断，适合先结合训练反馈观察，再和后续复测对照。'
-                    : '这部分先作为方向提示看待，后面如果你补充臀型规则库或外观照片，再进一步细分会更稳。';
+            
+            const comboData = visualCombos[comboKey] || visualCombos['posterior_LeftAIC'];
 
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
             reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
             reportConfidenceDetailEl.innerText = `匹配度说明：${confidenceDetail}`;
             reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
-            titleEl.innerText = `评估结果：${compressionPattern.label}，${rotationPattern.label}`;
+            titleEl.innerText = `评估结果：${compressionPattern.alias} + ${rotationPattern.shortLabel}`;
             titleEl.className = 'text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight';
             
             // 骨盆朝向判断逻辑
@@ -2210,9 +2200,9 @@
             } else {
                 pelvicOrientation = '骨盆朝向中立或混合型';
             }
-            orientationEl.innerHTML = `<b>骨盆朝向判断：</b> ${pelvicOrientation}。`;
+            orientationEl.innerHTML = `<b>骨盆前后倾判定：</b> ${pelvicOrientation}。`;
 
-            // 骨盆左右高低差异详细判断 (依据PDF逻辑重新梳理)
+            // 骨盆左右高低差异详细判断
             let pelvicAsymmetry = '';
             let pelvicHeightDetail = '';
             let pelvicPositionDetail = '';
@@ -2242,12 +2232,9 @@
             analysisContent.innerHTML = '';
 
             gluteContentEl.innerHTML = `
-                <p><b class="text-slate-800">1. 当前臀型组合标签：</b> 这次结果更接近 <strong class="mac-blue">${gluteCombinedTag}</strong>。其中 <strong class="mac-blue">${gluteCompression.label}</strong> 用来描述骨盆前后压缩主型，<strong class="mac-blue">${gluteRotation.biasTag}</strong> 用来描述左右表面偏置方向，二者合并后更适合做正式记录和复测对照。</p>
-                <p><b class="text-slate-800">2. 外观表现：</b> 当前更像 <strong class="mac-blue">${gluteCompression.morphologyTag}</strong>。${gluteCompression.appearance}</p>
-                <p><b class="text-slate-800">3. 臀峰与下缘支撑：</b> ${gluteCompression.peak} ${gluteCompression.lowerSupport}</p>
-                <p><b class="text-slate-800">4. 左右高低差异：</b> ${gluteRotation.asymmetry} ${gluteRotation.height}</p>
-                <p><b class="text-slate-800">5. 训练优先级：</b> ${gluteCompression.training} 建议顺序：${gluteCompression.priorities.join('；')}。${gluteRotation.trainingHint}</p>
-                <p><b class="text-slate-800">6. 避免的代偿：</b> ${gluteCompression.avoid.join('；')}。${gluteConfidenceNote}</p>
+                <p><b class="text-slate-800">1. 代偿臀型特征：</b> <strong class="mac-blue">${comboData.name}</strong></p>
+                <p><b class="text-slate-800">2. 照镜子能看到的现象：</b> ${comboData.visual}</p>
+                <p><b class="text-slate-800">3. 讲给你听的身体真相：</b> ${comboData.explanation}</p>
             `;
 
             const priPostureProfiles = {
