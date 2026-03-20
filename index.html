@@ -107,21 +107,21 @@
                 <div id="tracker-slr" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动直腿抬高</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
-                        <span>L:<span id="score-slr-L">--</span></span> <span>R:<span id="score-slr-R">--</span></span>
+                        <span>左:<span id="score-slr-L">--</span></span> <span>右:<span id="score-slr-R">--</span></span>
                     </div>
                     <span class="text-[11px] sm:text-xs font-black text-slate-300" id="score-slr-final">待完成</span>
                 </div>
                 <div id="tracker-hip" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动髋屈曲</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
-                        <span>L:<span id="score-hip-L">--</span></span> <span>R:<span id="score-hip-R">--</span></span>
+                        <span>左:<span id="score-hip-L">--</span></span> <span>右:<span id="score-hip-R">--</span></span>
                     </div>
                     <span class="text-[11px] sm:text-xs font-black text-slate-300" id="score-hip-final">待完成</span>
                 </div>
                 <div id="tracker-shoulder" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动肩屈</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
-                        <span>L:<span id="score-shoulder-L">--</span></span> <span>R:<span id="score-shoulder-R">--</span></span>
+                        <span>左:<span id="score-shoulder-L">--</span></span> <span>右:<span id="score-shoulder-R">--</span></span>
                     </div>
                     <span class="text-[11px] sm:text-xs font-black text-slate-300" id="score-shoulder-final">待完成</span>
                 </div>
@@ -147,11 +147,11 @@
                 <div class="flex p-1 bg-[#e5e5ea] rounded-xl shadow-inner mt-1 border border-black/5">
                     <label class="flex-1 cursor-pointer relative">
                         <input type="radio" name="testSide" value="L" class="peer hidden" checked>
-                        <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 左侧 (L)</div>
+                        <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 左侧</div>
                     </label>
                     <label class="flex-1 cursor-pointer relative">
                         <input type="radio" name="testSide" value="R" class="peer hidden">
-                        <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 右侧 (R)</div>
+                        <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 右侧</div>
                     </label>
                 </div>
                 <div class="flex items-center justify-between px-1 pt-1">
@@ -253,14 +253,14 @@
 
             <div id="debug-panel" class="hidden flex-col gap-3 bg-slate-900 text-slate-100 p-4 rounded-xl border border-slate-700 shadow-sm">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-bold tracking-[0.2em] text-slate-300">DEBUG PANEL</span>
-                    <span id="debug-status-badge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">ON</span>
+                    <span class="text-[11px] font-bold tracking-[0.2em] text-slate-300">系统调试面板</span>
+                    <span id="debug-status-badge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">开启</span>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
                     <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">模式: <span id="debug-mode" class="text-sky-300">待机</span></div>
                     <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">角度: <span id="debug-angle" class="text-sky-300">--</span></div>
-                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中动作: <span id="debug-test-type" class="text-sky-300">slr</span></div>
-                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中侧别: <span id="debug-selected-side" class="text-sky-300">L</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中动作: <span id="debug-test-type" class="text-sky-300">直腿抬高</span></div>
+                    <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">选中侧别: <span id="debug-selected-side" class="text-sky-300">左侧</span></div>
                     <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">轴心侧: <span id="debug-pivot-side" class="text-amber-300">--</span></div>
                     <div class="bg-slate-800 rounded-lg px-3 py-2 border border-slate-700">肢体侧: <span id="debug-limb-side" class="text-amber-300">--</span></div>
                 </div>
@@ -281,7 +281,7 @@
                     </button>
                     <button id="save-score-btn" class="flex-[2] py-3.5 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide whitespace-nowrap">
                         <svg class="w-4 h-4 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span id="btn-save-text">录入左侧数据</span>
+                        <span id="btn-save-text">确认存入左侧，准备测右侧</span>
                     </button>
                 </div>
             </div>
@@ -301,7 +301,7 @@
                         <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight">获取中...</div>
                         <div class="flex flex-wrap gap-2 mb-3">
                             <span id="final-report-confidence" class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/10 text-[#0a84ff] border border-[#0a84ff]/20">模式匹配度：--</span>
-                            <span class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-600 border border-[#e5e5ea]">依据：6项动作筛查左右差值</span>
+                            <span class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-600 border border-[#e5e5ea]">分析依据：三大测试动作的左右角度差值</span>
                         </div>
                         <div class="flex flex-col gap-3">
                             <div id="final-report-confidence-detail" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
@@ -339,7 +339,6 @@
                         <div id="final-pelvic-asymmetry" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5 mt-2">--</div>
                     </div>
                     
-                    <!-- 新增的：大白话骨盆倾斜与高低分析版块 -->
                     <div id="final-tilt-analysis" class="w-full bg-[#f5f5f7] rounded-2xl border border-black/5 flex flex-col gap-3 z-10 text-slate-600 text-[13px] sm:text-[14px] leading-7 p-4 sm:p-5 shadow-sm">
                         <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-sm sm:text-[15px] tracking-wider">
                             <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
@@ -356,7 +355,7 @@
                             <span class="text-sm sm:text-[15px] font-bold text-slate-800 tracking-wider">判读摘要</span>
                         </div>
                         <div id="final-compression-summary" class="text-[13px] sm:text-[14px] font-medium text-slate-600 leading-7 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5">压缩模式说明：--</div>
-                        <div id="final-report-data" class="text-[12px] sm:text-[13px] text-slate-500 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5 leading-6">数据依据：--</div>
+                        <div id="final-report-data" class="text-[12px] sm:text-[13px] text-slate-500 bg-white rounded-xl border border-[#e5e5ea] px-4 py-3.5 leading-6">数据分析依据：--</div>
                     </div>
                 </div>
 
@@ -449,27 +448,27 @@
             <div class="p-5 flex flex-col gap-4">
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (L)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (左侧)</label>
                         <input type="number" min="0" max="180" id="m-slr-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (R)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (右侧)</label>
                         <input type="number" min="0" max="180" id="m-slr-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (L)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (左侧)</label>
                         <input type="number" min="0" max="180" id="m-hip-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (R)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (右侧)</label>
                         <input type="number" min="0" max="180" id="m-hip-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (L)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (左侧)</label>
                         <input type="number" min="0" max="180" id="m-sh-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (R)</label>
+                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (右侧)</label>
                         <input type="number" min="0" max="180" id="m-sh-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
                     </div>
                 </div>
@@ -980,13 +979,17 @@
             btnToggleDebug.innerText = debugEnabled ? '隐藏调试信息' : '显示调试信息';
             if (!debugEnabled) return;
 
-            debugStatusBadge.innerText = 'ON';
+            debugStatusBadge.innerText = '开启';
             debugMode.innerText = debugState.mode;
             debugAngle.innerText = debugState.angle;
-            debugTestType.innerText = debugState.testType;
-            debugSelectedSide.innerText = debugState.selectedSide;
-            debugPivotSide.innerText = debugState.pivotSide;
-            debugLimbSide.innerText = debugState.limbSide;
+            
+            const typeMap = { 'slr': '直腿抬高', 'hip': '髋屈曲', 'shoulder': '肩屈' };
+            debugTestType.innerText = typeMap[debugState.testType] || debugState.testType;
+            
+            const sideMap = { 'L': '左侧', 'R': '右侧', '--': '--' };
+            debugSelectedSide.innerText = sideMap[debugState.selectedSide] || debugState.selectedSide;
+            debugPivotSide.innerText = sideMap[debugState.pivotSide] || debugState.pivotSide;
+            debugLimbSide.innerText = sideMap[debugState.limbSide] || debugState.limbSide;
             debugFallback.innerText = debugState.fallback;
             debugPointSummary.innerText = debugState.points;
         }
@@ -1012,7 +1015,7 @@
 
         function updateSaveButtonText() {
             const side = document.querySelector('input[name="testSide"]:checked').value;
-            btnSaveText.innerText = side === 'L' ? '录入左侧，准备测右侧' : '录入右侧，进入下一项';
+            btnSaveText.innerText = side === 'L' ? '确认存入左侧，准备测右侧' : '确认存入右侧，完成本项';
             syncDebugSelectionState();
         }
 
@@ -1481,7 +1484,7 @@
                 selectedSide: tSide,
                 pivotSide,
                 limbSide: limbSelection ? limbSelection.side : '--',
-                fallback: limbSelection && limbSelection.usedFallback ? `回退状态: 已回退到 ${limbSelection.side} 侧关键点` : '回退状态: 未触发'
+                fallback: limbSelection && limbSelection.usedFallback ? `回退状态: 已回退到 ${limbSelection.side === 'L' ? '左' : '右'}侧关键点` : '回退状态: 未触发'
             });
 
             if (!isLive) activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
@@ -1611,8 +1614,8 @@
             const pointColors = ['#ff3b30', '#ffcc00', '#007aff'];
             const pointBadges = [
                 `1 ${pointLabels[0]}${referenceGuideState.manualAdjusted ? '·已微调' : referenceGuideState.mode === 'auto' ? '·已校平' : ''}`,
-                `2 ${pointLabels[1]}-${debugState.pivotSide}`,
-                `3 ${pointLabels[2]}-${debugState.limbSide}`
+                `2 ${pointLabels[1]}-${debugState.pivotSide === 'L' ? '左侧' : (debugState.pivotSide === 'R' ? '右侧' : '--')}`,
+                `3 ${pointLabels[2]}-${debugState.limbSide === 'L' ? '左侧' : (debugState.limbSide === 'R' ? '右侧' : '--')}`
             ];
             activePoints.forEach((p, index) => {
                 ctx.beginPath(); ctx.arc(p.x, p.y, index === draggingPointIndex ? drawRadius * 1.5 : drawRadius, 0, 2 * Math.PI);
@@ -1686,7 +1689,7 @@
                 const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
                 displayAngle.innerText = formatAngleValue(Math.max(0, currentFinalAngle)) + '°';
                 currentBoardTitle.innerText = `测量结果 [ ${tSide === 'L' ? '左侧' : '右侧'} ]`;
-                btnSaveText.innerText = tSide === 'L' ? '确认存入 L，切换 R 侧' : '确认存入 R，完成项';
+                btnSaveText.innerText = tSide === 'L' ? '确认存入左侧，准备测右侧' : '确认存入右侧，完成本项';
                 renderThresholdFeedback(tType, tSide, currentFinalAngle);
             }
         }
@@ -1879,61 +1882,61 @@
             const threshold = 10;
             const nearThreshold = 5;
 
-            const PELVIC_POSTERIOR_LABEL = '骨盆后侧肌肉紧张（大家常说的骨盆前移）';
-            const PELVIC_ANTERIOR_LABEL = '骨盆前侧肌肉紧张（大家常说的骨盆前倾）';
+            const PELVIC_POSTERIOR_LABEL = '骨盆后侧肌肉紧张（俗称骨盆前移）';
+            const PELVIC_ANTERIOR_LABEL = '骨盆前侧肌肉紧张（俗称骨盆前倾）';
             
-            // 修正依据 PDF 定义的高低描述
-            const ROT_LEFT_LABEL = '右边骨盆偏高，左侧代偿往前（基线）';
-            const ROT_OBLIQUE_LABEL = '左边骨盆极度靠前且更高（斜轴）';
-            const ROT_LATERAL_LABEL = '左边骨盆比右边高（横向）';
+            // 大白话分型标签
+            const ROT_LEFT_LABEL = '右高左前（基础前移模式）';
+            const ROT_OBLIQUE_LABEL = '左边极度往前且偏高（对角线卡死模式）';
+            const ROT_LATERAL_LABEL = '左边被异常顶高（侧向受压模式）';
 
             const compressionCandidates = {
                 posterior: {
                     key: 'posterior',
                     label: PELVIC_POSTERIOR_LABEL,
                     fullLabel: PELVIC_POSTERIOR_LABEL,
-                    alias: 'PC',
-                    solutionName: '骨盆后侧肌肉紧张方案',
+                    alias: '骨盆后侧肌肉紧张',
+                    solutionName: '骨盆后侧肌肉放松方案',
                     checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高偏低、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
-                    mechanism: '后侧肌群更像在持续踩“刹车”。臀大肌、深层外旋肌以及后侧组织过度缩短，把骨盆从后方向前推，身体为了不向前摔倒，只能长期把重心顶在前脚掌。',
-                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
-                    objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆后侧肌肉紧张的判定阈值。`,
+                    summary: '通过对三大角度的分析，你当前整体符合“骨盆后侧肌肉紧张”的特征：直腿抬高角度偏小、髋屈曲角度偏大、肩屈受限。这说明你的骨盆整体像被后侧紧绷的肌肉持续向前推。',
+                    mechanism: '你的身体后侧肌肉（比如臀大肌、深层外旋肌）就像死死踩住了“刹车”并且过度缩短。它们把你的骨盆从后方向前推，你的身体为了不向前摔倒，只能长期把重心顶在脚掌前侧。',
+                    thresholdExplanation: '角度分析说明：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，身体呈现典型的后侧肌肉群过度紧绷状态。',
+                    objective: `你的动作测试结果：主动直腿抬高（短板）${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲（短板）${formatAngleValue(testRecords.hip.final)}°，主动肩屈（短板）${formatAngleValue(testRecords.shoulder.final)}°。这组数据清晰地指向了骨盆后侧肌肉紧张。`,
                     primaryAction: {
                         name: '靠墙深蹲夹球',
-                        target: '腘绳肌、内收肌、下后胸廓扩张',
-                        method: '背靠墙下蹲到大腿接近平行，双膝夹软球，保持腰背轻贴墙面，伴随 5 到 8 秒长呼气，感受后下胸廓和骨盆后侧被撑开。',
-                        dosage: '3 组，每组 5 到 8 次完整呼吸。'
+                        target: '大腿后侧、大腿内侧发力，并撑开后下背部胸廓',
+                        method: '背靠墙下蹲到大腿接近平行地面，双膝夹一个软球，保持腰背轻贴墙面。配合 5 到 8 秒的长长呼气，去感受后下背部和骨盆后侧的肌肉被缓缓撑开。',
+                        dosage: '做 3 组，每组保持 5 到 8 次完整的深呼吸。'
                     },
                     secondaryAction: {
-                        name: '低角度手臂前伸呼吸',
-                        target: '下后纵隔、胸廓回缩、骨盆后侧减压',
-                        method: '坐姿或半蹲位，手臂保持低于 60 度前伸，呼气时肋骨回收，吸气时尝试把气送到下背部和后侧肋骨。',
-                        dosage: '2 到 3 组，每组 5 次慢呼吸。'
+                        name: '低角度手臂前伸深呼吸',
+                        target: '背部回缩、骨盆后侧减压',
+                        method: '坐姿或半蹲姿势，手臂保持低于 60 度向前伸。长呼气时感觉肋骨往下收缩，吸气时尝试把气吸到下背部和后侧肋骨的位置。',
+                        dosage: '做 2 到 3 组，每组 5 次慢呼吸。'
                     }
                 },
                 anterior: {
                     key: 'anterior',
                     label: PELVIC_ANTERIOR_LABEL,
                     fullLabel: PELVIC_ANTERIOR_LABEL,
-                    alias: 'AC',
-                    solutionName: '骨盆前侧肌肉紧张方案',
+                    alias: '骨盆前侧肌肉紧张',
+                    solutionName: '骨盆前侧肌肉放松方案',
                     checks: [testRecords.slr.final > 50, testRecords.hip.final < 100, testRecords.shoulder.final > 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高相对保留、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向前拉。',
-                    mechanism: '前侧肌群更像在持续向前“拉扯”。股四头肌、髋屈肌等前侧组织缩短，把骨盆向前下方牵拉，身体重心因此更容易前移并压在脚趾区域。',
-                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 < 100°、肩屈 > 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
-                    objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆前侧肌肉紧张的判定阈值。`,
+                    summary: '通过对三大角度的分析，你当前整体符合“骨盆前侧肌肉紧张”的特征：直腿抬高角度相对保留、髋屈曲受限、肩屈灵活。这说明你的骨盆整体像被前侧紧绷的肌肉持续向前下方拉扯。',
+                    mechanism: '你的前侧肌肉群（比如大腿前侧的股四头肌、髋屈肌）就像在持续向前“拉扯”。这些前侧组织缩短，把你的骨盆向前下方牵拉，导致你的身体重心更容易前移并压在脚趾区域。',
+                    thresholdExplanation: '角度分析说明：直腿抬高 > 50°、髋屈曲 < 100°、肩屈 > 100° 时，身体呈现典型的前侧肌肉群过度紧绷状态。',
+                    objective: `你的动作测试结果：主动直腿抬高（短板）${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲（短板）${formatAngleValue(testRecords.hip.final)}°，主动肩屈（短板）${formatAngleValue(testRecords.shoulder.final)}°。这组数据清晰地指向了骨盆前侧肌肉紧张。`,
                     primaryAction: {
-                        name: '90/90 呼吸配合前伸',
-                        target: '腘绳肌、腹斜肌、骨盆后倾控制',
-                        method: '仰卧屈髋屈膝，脚跟踩墙，轻抬尾骨让下背微贴地，双臂前伸或 90 度上举，缓慢长呼气，感受下腹和腿后侧把骨盆轻轻带回中立。',
-                        dosage: '3 组，每组 4 到 6 次完整呼吸。'
+                        name: '90/90 呼吸配合手臂前伸',
+                        target: '激活大腿后侧与侧腹，控制骨盆回正',
+                        method: '仰卧，大腿和小腿呈90度，脚跟踩墙。轻抬尾骨让下背部微微贴地。双臂前伸或90度上举，缓慢长呼气，感受小腹和腿后侧发力把骨盆轻轻带回到中立位。',
+                        dosage: '做 3 组，每组 4 到 6 次完整的深呼吸。'
                     },
                     secondaryAction: {
-                        name: '沙发髋部伸展',
-                        target: '髋屈肌、股四头肌前侧链释放',
-                        method: '后脚背放在沙发或墙边，前脚踩地呈弓步，保持下腹微收、避免挺腰，用骨盆后倾去拉长前侧，而不是单纯把腰往前顶。',
-                        dosage: '每侧 3 组，每组 5 次深呼吸。'
+                        name: '沙发大腿前侧伸展',
+                        target: '释放大腿前侧与髋屈肌拉扯力',
+                        method: '后脚背放在沙发或墙边，前脚踩地呈弓步。保持小腹微微收紧、避免挺腰。重点是用“骨盆向后收”的动作去拉长大腿前侧，而不是单纯把腰往前顶。',
+                        dosage: '左右各 3 组，每组 5 次深呼吸。'
                     }
                 }
             };
@@ -1943,19 +1946,19 @@
                     key: 'LeftAIC',
                     label: ROT_LEFT_LABEL,
                     shortLabel: '左侧更往前',
-                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 < 右', '肩屈：左 < 右'],
-                    solutionName: '基线方案',
-                    planSummary: '再进入基线方案，重点恢复左侧过度靠前的骨盆位置，重建左右承重与旋转回正。',
+                    evidenceLabels: ['髋屈曲：左侧 > 右侧', '直腿抬高：左侧 < 右侧', '肩屈：左侧 < 右侧'],
+                    solutionName: '重心回正基础方案',
+                    planSummary: '第二阶段进入重心回正方案，重点是让你过度靠前的左侧骨盆退回来，并重新建立身体左右两侧的承重平衡。',
                     action: {
-                        name: '偏侧承重回正',
-                        target: '恢复左右承重切换与骨盆旋转回正',
-                        method: '加入偏侧承重、单侧呼气和胸廓回正训练，让骨盆从“左侧更靠前”逐步回到更中性的相对位置。',
-                        dosage: '每次 1 到 2 个单侧动作，2 到 3 组。'
+                        name: '单侧承重回正训练',
+                        target: '恢复身体在左右两侧自如切换重心的能力，让骨盆旋转回正',
+                        method: '通过加入特定方向的单侧承重、单侧呼气和胸廓回正训练，让一直“卡”在前面的左侧骨盆逐步回到更平衡的位置。',
+                        dosage: '每次选 1 到 2 个单侧动作，做 2 到 3 组。'
                     },
                     phaseTwo: [
-                        { name: 'PRI 90/90 支持左脚在墙上的交替交叉', dosage: '4 组，每组 5 次呼吸（只做左脚在墙）' },
-                        { name: 'PRI 左膝向膝', dosage: '4 组，每组 5 次呼吸（只做一边）' },
-                        { name: 'PRI 右侧侧向右心尖扩张，左臂伸展和左内收肌', dosage: '4 组，每组 5 次呼吸（只做一边）' }
+                        { name: '90/90 靠墙左脚支撑交替交叉', dosage: '做 4 组，每组 5 次呼吸（只做左脚踩墙发力）' },
+                        { name: '左侧膝盖向内并拢训练', dosage: '做 4 组，每组 5 次呼吸（只做左侧单边）' },
+                        { name: '右侧卧位舒展（左臂前伸配合左大腿内收）', dosage: '做 4 组，每组 5 次呼吸（只做单边）' }
                     ],
                     score: () => {
                         const hipScore = diffHip > threshold ? 2 : diffHip > nearThreshold ? 1 : 0;
@@ -1964,31 +1967,31 @@
                         return hipScore + slrScore + shoulderScore;
                     },
                     evidenceCount: () => [diffHip > threshold, diffSLR < -threshold, diffSh < -threshold].filter(Boolean).length,
-                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧大，左侧直腿抬高通常比右侧小，左侧肩屈通常也比右侧小。'
+                    evidenceText: () => '大白话来说，就是在你的测试里：左侧的髋屈曲通常比右侧大，而左侧的直腿抬高和左侧的肩屈通常都比右侧小。'
                 },
                 {
                     key: 'Oblique',
                     label: ROT_OBLIQUE_LABEL,
-                    shortLabel: '左侧更前更高',
-                    evidenceLabels: ['髋屈：左 < 右', '直抬：左 > 右', '肩屈：左 > 右'],
-                    solutionName: '斜轴方案',
-                    planSummary: '再进入这一类方案，重点解除左侧骨盆相对更往前、也更高的状态。',
+                    shortLabel: '左侧严重靠前且偏高',
+                    evidenceLabels: ['髋屈曲：左侧 < 右侧', '直腿抬高：左侧 > 右侧', '肩屈：左侧 > 右侧'],
+                    solutionName: '对角线解套方案',
+                    planSummary: '第二阶段进入对角线解套方案，重点是解除左侧骨盆不仅往前跑、还极度偏高的卡死状态。',
                     action: {
-                        name: '交叉节奏回正',
-                        target: '解除左侧骨盆相对更往前且更高的状态',
-                        method: '优先做能让胸廓与骨盆重新对齐的交叉模式训练，配合上肢前伸、下肢承重和呼气，把上下半身拉回同一节奏。',
-                        dosage: '每次 1 到 2 个交叉模式动作，2 到 3 组。'
+                        name: '交叉节奏回正训练',
+                        target: '解除左侧骨盆像被拧麻花一样的对角线卡死',
+                        method: '优先做能让上半身和骨盆重新对齐的交叉模式训练。配合手臂前伸、下肢单侧承重和呼气，把上下半身拉回到同一个顺畅的节奏里。',
+                        dosage: '每次选 1 到 2 个交叉模式动作，做 2 到 3 组。'
                     },
                     phaseTwo: [
-                        { name: '左侧靠右推进', dosage: '3 组，每组 5 次呼吸，单侧' },
-                        { name: '左侧卧时右侧臀大肌促进', dosage: '3 组，每组 5 次呼吸，单侧' },
-                        { name: 'PRI 右侧向左内收肌拉回', dosage: '3 组，每组 5 次呼吸，单侧' },
-                        { name: '补偿偏差的仰卧交叉连接', dosage: '3 组，每侧 5 次呼吸' }
+                        { name: '左侧卧位向右下方发力', dosage: '做 3 组，每组 5 次呼吸，单侧执行' },
+                        { name: '左侧卧位右侧臀大肌激活', dosage: '做 3 组，每组 5 次呼吸，单侧执行' },
+                        { name: '右侧卧位向左大腿内侧拉回', dosage: '做 3 组，每组 5 次呼吸，单侧执行' },
+                        { name: '仰卧对角线交叉相连训练', dosage: '做 3 组，每侧 5 次深呼吸' }
                     ],
                     phaseThree: [
-                        { name: '右脚向前和同侧负荷的前脚抬高分蹲', dosage: '3 组，每组 15 次' },
-                        { name: '右脚向前和对侧负荷的前脚抬高分蹲', dosage: '3 组，每组 15 次' },
-                        { name: '交错姿势的横向电缆切割', dosage: '3 组，每组 15 次，单侧' }
+                        { name: '右脚在前·前脚垫高分腿蹲（同侧负重）', dosage: '做 3 组，每组 15 次' },
+                        { name: '右脚在前·前脚垫高分腿蹲（对侧负重）', dosage: '做 3 组，每组 15 次' },
+                        { name: '弓步站姿横向下拉/拉扯', dosage: '做 3 组，每组 15 次，单侧执行' }
                     ],
                     score: () => {
                         const hipScore = diffHip < -threshold ? 2 : diffHip < -nearThreshold ? 1 : 0;
@@ -1997,25 +2000,25 @@
                         return hipScore + shoulderScore + slrScore;
                     },
                     evidenceCount: () => [diffHip < -threshold, diffSh > threshold, diffSLR > threshold].filter(Boolean).length,
-                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧小，左侧肩屈通常比右侧大；直腿抬高多数时候左侧也会比右侧大，但过渡期的人不一定完全一样。'
+                    evidenceText: () => '大白话来说，就是在你的测试里：左侧的髋屈曲反而比右侧小了，左侧的肩屈比右侧大；同时大多数时候，左侧的直腿抬高也会比右侧大。'
                 },
                 {
                     key: 'Lateral',
                     label: ROT_LATERAL_LABEL,
-                    shortLabel: '左低右高',
-                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 > 右', '肩屈：左 < 右'],
-                    solutionName: '横向方案',
-                    planSummary: '再进入这一类方案，重点减轻把骨盆带成侧向高低的横向力量，重建侧向稳定。',
+                    shortLabel: '左侧异常顶高',
+                    evidenceLabels: ['髋屈曲：左侧 > 右侧', '直腿抬高：左侧 > 右侧', '肩屈：左侧 < 右侧'],
+                    solutionName: '侧向稳定重建方案',
+                    planSummary: '第二阶段进入侧向稳定方案，重点是减轻把骨盆强行“顶成高低边”的横向力量，重新建立身体两侧的稳定支撑。',
                     action: {
-                        name: '侧向稳定回正',
-                        target: '降低把骨盆推高的横向力量，重建左右侧向稳定',
-                        method: '让被抬高的一侧学会下降，让低侧学会稳定承重，避免只做单纯侧弯拉伸或两边完全一样的动作。',
-                        dosage: '每次 1 到 2 个侧向稳定动作，2 到 3 组。'
+                        name: '高低边与侧向稳定回正',
+                        target: '降低把骨盆单侧推高的异常力量，重建左右平衡',
+                        method: '核心是让被抬高的一侧骨盆学会“降下来”，让一直下沉的一侧学会“稳定发力承重”。要避免只做单纯的侧面拉伸，或者两边做一模一样的动作。',
+                        dosage: '每次选 1 到 2 个侧向稳定动作，做 2 到 3 组。'
                     },
                     phaseTwo: [
-                        { name: 'PRI 右侧向左内收肌拉回', dosage: '4 组，每组 5 次呼吸（只做右侧躺）' },
-                        { name: 'PRI 交替循环步态', dosage: '4 组，每组 5 次呼吸（双侧）' },
-                        { name: 'PRI 左侧躺着右侧 FA 外展', dosage: '4 组，每组 5 次呼吸（只左侧躺）' }
+                        { name: '右侧卧位向左大腿内侧拉回', dosage: '做 4 组，每组 5 次呼吸（只做右侧躺）' },
+                        { name: '原地交替迈步训练', dosage: '做 4 组，每组 5 次呼吸（双侧执行）' },
+                        { name: '左侧卧位右大腿外展', dosage: '做 4 组，每组 5 次呼吸（只做左侧躺）' }
                     ],
                     score: () => {
                         const hipScore = diffHip > threshold ? 2 : diffHip > nearThreshold ? 1 : 0;
@@ -2024,16 +2027,16 @@
                         return hipScore + slrScore + shoulderScore;
                     },
                     evidenceCount: () => [diffHip > threshold, diffSLR > threshold, diffSh < -threshold].filter(Boolean).length,
-                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧大，左侧直腿抬高通常也比右侧大，而左侧肩屈通常比右侧小。'
+                    evidenceText: () => '大白话来说，就是在你的测试里：左侧的髋屈曲通常比右侧大，左侧直腿抬高也比右侧大，而左侧的肩屈通常比右侧小。'
                 }
             ];
 
             const phaseOnePlan = [
-                { name: 'PRI 短静坐呼吸训练', dosage: '3 组，每组 5 次呼吸' },
-                { name: 'PRI 侧卧夹球剪切力训练', dosage: '3 组，每组 5 次呼吸' },
-                { name: '推球四足呼吸', dosage: '3 组，每组 5 次呼吸' },
-                { name: 'PRI 股直肌的仰卧半伸展', dosage: '3 组，每侧 15 次' },
-                { name: 'TFL 抑制训练', dosage: '3 组，10 次' }
+                { name: '基础短静坐深呼吸', dosage: '做 3 组，每组 5 次深长呼吸' },
+                { name: '侧卧夹球骨盆微动训练', dosage: '做 3 组，每组 5 次深长呼吸' },
+                { name: '四足支撑推球深呼吸', dosage: '做 3 组，每组 5 次深长呼吸' },
+                { name: '仰卧大腿前侧半伸展', dosage: '做 3 组，每侧 15 次' },
+                { name: '大腿外侧（阔筋膜张肌）放松训练', dosage: '做 3 组，每次 10 下' }
             ];
 
             const renderExerciseList = (items) => items.map((item, index) => `<p>${index + 1}. <b class="text-slate-800">${item.name}</b>：${item.dosage}</p>`).join('');
@@ -2061,32 +2064,32 @@
                 .map(candidate => ({ ...candidate, scoreValue: candidate.score(), evidenceHits: candidate.evidenceCount() }))
                 .sort((a, b) => b.scoreValue - a.scoreValue);
             let rotationPattern = rotationRanked[0];
-            const rotationOverrideNote = '当前报告只根据直腿抬高、主动髋屈曲、主动肩屈这 6 项主测试来判断整体方向和左右差异，不再额外加入股骨内外旋作为辅助分流条件。';
+            const rotationOverrideNote = '当前报告只根据直腿抬高、主动髋屈曲、主动肩屈这 6 项主测试的左右差异来锁定整体旋转方向，不再引入复杂的内部专业流派分流。';
 
             const comboProfiles = {
                 posterior_LeftAIC: {
                     bodyState: '骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆由于天生身体偏重原因，比右侧更加靠前。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练基线方案'
+                    solutionOrder: '先练“骨盆后侧肌肉放松方案”，再进入“重心回正基础方案”'
                 },
                 posterior_Oblique: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧极端靠前、靠上，形成对角线（斜轴）的卡死状态。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练斜轴方案'
+                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧极端靠前、靠上，形成对角线的卡死状态。',
+                    solutionOrder: '先练“骨盆后侧肌肉放松方案”，再进入“对角线解套方案”'
                 },
                 posterior_Lateral: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，并且骨盆从左下方被向右上方横向顶起，形成明显左高。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练横向方案'
+                    bodyState: '骨盆整体被后侧肌肉推向前方，并且骨盆从左下方被向右上方横向顶起，形成明显的左边偏高。',
+                    solutionOrder: '先练“骨盆后侧肌肉放松方案”，再进入“侧向稳定重建方案”'
                 },
                 anterior_LeftAIC: {
                     bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层依然保留着左侧更靠前的基础不对称。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练基线方案'
+                    solutionOrder: '先练“骨盆前侧肌肉放松方案”，再进入“重心回正基础方案”'
                 },
                 anterior_Oblique: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧骨盆极度靠前且偏高。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练斜轴方案'
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧骨盆极度靠前并且偏高。',
+                    solutionOrder: '先练“骨盆前侧肌肉放松方案”，再进入“对角线解套方案”'
                 },
                 anterior_Lateral: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左侧向上的横向推力，导致左边偏高。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练横向方案'
+                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左侧向上推的横向阻力，导致左边偏高。',
+                    solutionOrder: '先练“骨盆前侧肌肉放松方案”，再进入“侧向稳定重建方案”'
                 }
             };
 
@@ -2102,16 +2105,16 @@
                     ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
                     : 'bg-slate-500/10 text-slate-700 border-slate-400/20';
             const confidenceDetail = confidenceLabel === '高'
-                ? '高匹配度表示：整体压缩方向和左右偏移方向都比较一致，所以这次分型可信度较高。'
+                ? '高匹配度表示：整体前后倾斜和左右高低方向的数据都非常清晰一致，所以这次分型的结果非常可靠。'
                 : confidenceLabel === '中'
-                    ? '中匹配度表示：主要方向已经比较清楚，但还夹杂一些过渡代偿。更适合先按当前方案练，再复测确认。'
-                    : '低匹配度表示：身体现在更像处在过渡期或混合状态。这次报告仍会给出最接近的方向，但更建议结合后续复测一起看。';
+                    ? '中匹配度表示：主要问题方向已经浮现，但还夹杂了一些轻微的身体自我代偿。建议先按这个报告的方案去练，之后再复测对比。'
+                    : '低匹配度表示：身体现在像处在一种混合状态里。这份报告依然抓取了你最核心的问题方向，建议结合实际训练的感受一起验证。';
             const compressionTraining = compressionPattern.key === 'posterior'
-                ? '第一阶段先把骨盆后侧肌肉紧张这层松开，核心是降低后侧顶推感、恢复后下胸廓与骨盆后侧空间。'
-                : '第一阶段先把骨盆前侧肌肉紧张这层松开，核心是降低前侧拉扯感、恢复腹斜肌和腿后侧对骨盆的回收能力。';
+                ? '第一阶段先把骨盆后侧这层“硬壳”给松开，核心是降低后侧往前的顶推感，把骨盆后侧原本该有的空间还给它。'
+                : '第一阶段先把骨盆前侧这层“硬壳”给松开，核心是降低大腿前侧往下的死拽感，让你的腹部和大腿后侧重新获得把骨盆拉回来的能力。';
             const mixedModeNote = testRecords.slr.final < 50 && testRecords.hip.final < 100
-                ? '补充提示：直腿抬高和髋屈曲同时偏低，提示前后双重受压或整体张力偏高。实际训练时仍建议先把整体张力降下来，再进入底层旋转修正。'
-                : '补充提示：姿势模式本身不等于病变，真正要关注的是身体是否被锁在单一策略里，失去了进入其他角度的能力。';
+                ? '补充提示：你的直腿抬高和髋屈曲双双偏低，说明身体前后都承受着压力，整体处于非常紧绷的状态。实际训练时，务必先用呼吸把整体紧绷度降下来，再去调整局部的左右高低。'
+                : '补充提示：我们的身体姿势从来就没有绝对的“标准”。真正需要去调整的，是那些把你的身体死死卡住、让你失去自由活动能力的“僵硬模式”。';
             const rotationEvidenceText = rotationPattern.evidenceLabels.join('，');
             const phaseThreeBlock = rotationPattern.phaseThree
                 ? renderAccordionCard('阶段三', '第 5-6 周', renderExerciseList(rotationPattern.phaseThree), false)
@@ -2120,30 +2123,30 @@
             // 骨盆倾斜朝向高低分析（大白话版块内容生成）
             let horizontalOrientationHtml = '';
             if (['LeftAIC', 'Lateral', 'Oblique'].includes(rotationPattern.key)) {
-                horizontalOrientationHtml = '<p><b class="text-slate-800">骨盆水平朝向：</b>你的骨盆整体在水平方向上<strong class="text-[#0a84ff]">朝向右侧</strong>（因为人体右侧内脏较重且大脑偏好右侧承重，你的身体本能地更依赖右腿支撑）。</p>';
+                horizontalOrientationHtml = '<p><b class="text-slate-800">骨盆的水平朝向：</b>就像我们大多数人习惯用右手一样，人体天生内脏分布不均（右侧肝脏重）且大脑更偏好用右腿支撑。所以，你的骨盆整体在水平方向上<strong class="text-[#0a84ff]">本能地朝向了右侧</strong>。</p>';
             }
 
             let tiltPlainLanguage = horizontalOrientationHtml;
             if (rotationPattern.key === 'LeftAIC') {
                 tiltPlainLanguage += `
-                    <p><b class="text-slate-800">高低与倾斜状态：右高左前（基线模式）</b></p>
-                    <p>这就导致了你的右侧骨盆（臀部）最初变得比左侧高。</p>
-                    <p>为了代偿这种重心偏右、右侧被压高的不平衡，你的左侧骨盆会不由自主地往前转。这就好比你右脚踩在一个高高的台阶上，左脚为了站稳，自然就会往前跨一样。</p>
-                    <p><b class="text-slate-800">训练方向：</b>这是绝大多数人天生自带的“基线”体态，不用过度焦虑。我们的首要任务，是教你的身体怎么舒舒服服地向左侧承重，把过度往前的左侧骨盆给拉回原位。</p>
+                    <p><b class="text-slate-800">高低与倾斜状态：右侧偏高、左侧代偿向前</b></p>
+                    <p>因为刚才说的“右侧承重偏好”，导致你的右侧骨盆（臀部）最初被压得比左侧高。</p>
+                    <p>为了代偿这种重心完全偏右的不平衡，你的左侧骨盆会不由自主地往前转。这就好比你右脚踩在一个高高的台阶上，左脚为了站稳，自然就会往前跨一样。</p>
+                    <p><b class="text-slate-800">训练大方向：</b>这是绝大多数人天生自带的“出厂设置”，不用过度焦虑。我们的首要任务，是教你的身体怎么舒舒服服地向左侧承重，把过度往前的左侧骨盆给拉回原位。</p>
                 `;
             } else if (rotationPattern.key === 'Lateral') {
                 tiltPlainLanguage += `
-                    <p><b class="text-slate-800">高低与倾斜状态：左边被顶高（横向模式）</b></p>
+                    <p><b class="text-slate-800">高低与倾斜状态：左侧骨盆被异常顶高</b></p>
                     <p>你除了拥有基础的左侧骨盆往前转之外，更明显的是，你的左侧臀部现在竟然比右侧还要高了！</p>
                     <p>感觉就像是从骨盆的左下方，有一股极其顽固的力量把你整个左半边向上方硬生生地“推”了起来。这通常是因为身体为了对抗右侧长期承重的压力，反而过度用力产生了侧向的卡死代偿。</p>
-                    <p><b class="text-slate-800">训练方向：</b>现在的重点是：教你高高挂起的“左侧学会如何下降、放松”，同时让原本被压在下面的右侧，重新学会怎么稳稳地承担身体重量。</p>
+                    <p><b class="text-slate-800">训练大方向：</b>现在的重点是：教你高高挂起的“左侧学会如何下降、放松”，同时让原本被压在下面的右侧，重新学会怎么稳稳地承担身体重量。</p>
                 `;
             } else if (rotationPattern.key === 'Oblique') {
                 tiltPlainLanguage += `
-                    <p><b class="text-slate-800">高低与倾斜状态：左边极端往前且偏高（斜轴模式）</b></p>
-                    <p>你的情况比较极端，左侧骨盆不仅比右侧高，而且非常极度地往前跑。</p>
-                    <p>这导致你的骨盆整体被卡在了一个“对角线”的斜向轴上（左前方翘起，右后方沉下）。因为左边实在太靠前了，导致你连基本的把腿向外打开（髋外旋）都极其困难，身体就像拧麻花一样被锁住了。</p>
-                    <p><b class="text-slate-800">训练方向：</b>我们要先用特定的“交叉节奏”动作，帮你把高高翘起并且严重往前的左侧骨盆给“解套”，慢慢把它揉开，让它重新和右侧处于同一水平线上。</p>
+                    <p><b class="text-slate-800">高低与倾斜状态：左侧极度向前且偏高</b></p>
+                    <p>你的情况比较严重，左侧骨盆不仅比右侧高，而且非常极度地往前跑。</p>
+                    <p>这导致你的骨盆整体被卡在了一个“对角线”的斜向轴上（左前方翘起，右后方沉下）。因为左边实在太靠前了，导致你连基本的把腿向外打开都极其困难，身体就像拧麻花一样被死死锁住了。</p>
+                    <p><b class="text-slate-800">训练大方向：</b>我们要先用特定的“交叉节奏”动作，帮你把高高翘起并且严重往前的左侧骨盆给“解套”，慢慢把它揉开，让它重新和右侧处于同一水平线上。</p>
                 `;
             }
             tiltContentEl.innerHTML = tiltPlainLanguage;
@@ -2151,185 +2154,185 @@
             // 大白话：代偿臀型视觉特征推演组合
             const visualCombos = {
                 'posterior_LeftAIC': {
-                    name: '大小塌塌臀 (后压缩 + 基线)',
+                    name: '大小塌塌臀 (后侧紧张 + 右高左前)',
                     visual: '整体扁平，轻微不对称。屁股没肉，侧面看像直线，穿紧身裤撑不起来。仔细看，左右两边屁股大小或高低稍微有点不一样。',
                     explanation: '你的骨盆后侧肌肉太紧，把整个骨盆往前下方“卷”进去了。屁股上的肌肉被拉长，发不上力，自然就塌了。加上人天生有点发力偏好，导致一边塌得更明显一点。'
                 },
                 'posterior_Oblique': {
-                    name: '长短腿扁平臀 (后压缩 + 斜轴)',
+                    name: '长短腿扁平臀 (后侧紧张 + 对角线卡死)',
                     visual: '一边高一边低，走路深浅脚。屁股同样很扁平，但裤腰带永远是歪的。站直的时候感觉一条腿长、一条腿短，有一侧的腰身显得特别短。',
                     explanation: '你的骨盆不仅被“卷”平了，而且左边还死死地卡在了一个偏高的位置。这不仅让屁股没型，还会让你的脊椎和腿长跟着代偿，视觉上就变成了长短腿。'
                 },
                 'posterior_Lateral': {
-                    name: '歪屁股 / 单侧平臀 (后压缩 + 横向)',
+                    name: '歪屁股 / 单侧平臀 (后侧紧张 + 侧向受压)',
                     visual: '重心全压在一边。臀部整体不翘，站立时总喜欢把重心压在一条腿上。承重那边的屁股不仅扁，大腿外侧还会有一块死肉（特别紧）。',
                     explanation: '骨盆后侧卡死的同时，还被一股力量从侧面“顶歪”了。你现在的身体重心严重偏移，一直压着一边的屁股在使用，导致它被压得又扁又僵硬。'
                 },
                 'anterior_LeftAIC': {
-                    name: '经典假翘臀 (前压缩 + 基线)',
+                    name: '经典假翘臀 (前侧紧张 + 右高左前)',
                     visual: '腰酸背痛型。侧面看屁股挺翘，肚子有点往前凸。但经常觉得腰很酸、很僵硬，站久了特别累。',
                     explanation: '你的骨盆过度往前倒了，看起来屁股变翘了，但其实是腰椎被死死卡住代偿出来的假象。骨盆前侧的肌肉太紧，一直把你往前下方拉，背部和腰部肌肉只能死死拽住你防止摔倒，所以站久了腰会特别酸。'
                 },
                 'anterior_Oblique': {
-                    name: '假胯宽撅撅臀 (前压缩 + 斜轴)',
+                    name: '假胯宽撅撅臀 (前侧紧张 + 对角线卡死)',
                     visual: '大腿根突出，腰极度反弓。不仅撅屁股、腰反弓，最要命的是大腿根部两侧有两块肉特别突出（假胯宽），显得腿很短。',
                     explanation: '骨盆过度前倾的同时，一边还严重往上卡死了。为了保持平衡，你的大腿骨只能被迫往内转，这一转，大腿外侧的骨头（大转子）就顶出来了，形成了很难看的假胯宽。'
                 },
                 'anterior_Lateral': {
-                    name: '高低假翘臀 (前压缩 + 横向)',
+                    name: '高低假翘臀 (前侧紧张 + 侧向受压)',
                     visual: '撅屁股 + 扭腰站姿。屁股往后撅，但从背后看，腰部两侧的弧线完全不一样，一边腰侧被挤压出了赘肉，总习惯扭着身子站。',
-                    explanation: '你的骨盆往前倒了，同时还在水平方向上被推移了。这就好比你不仅撅着屁股，还扭着腰。长久下来，不仅两边屁股发力不均，腰两侧的肉也会不对称。'
+                    explanation: '你的骨盆往前倒了，同时还在水平方向上被强行推高了。这就好比你不仅撅着屁股，还扭着腰。长久下来，不仅两边屁股发力不均，腰两侧的肉也会不对称。'
                 }
             };
             
             const comboData = visualCombos[comboKey] || visualCombos['posterior_LeftAIC'];
 
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
-            reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
+            reportConfidenceEl.innerText = `数据匹配度：${confidenceLabel}`;
             reportConfidenceDetailEl.innerText = `匹配度说明：${confidenceDetail}`;
-            reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
+            reportNoteEl.innerHTML = '这份报告更适合用来帮助你理解自己的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先寻找合格的物理治疗师评估。体态和某些动作受限常常是互相关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
             titleEl.innerText = `评估结果：${compressionPattern.alias} + ${rotationPattern.shortLabel}`;
             titleEl.className = 'text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight';
             
-            // 骨盆朝向判断逻辑
+            // 骨盆前后倾判定逻辑
             let pelvicOrientation = '';
             if (compressionPattern.key === 'posterior') {
-                pelvicOrientation = '骨盆整体偏后倾/被后侧推向前';
+                pelvicOrientation = '骨盆整体偏向后倾（被后侧肌肉推向前）';
             } else if (compressionPattern.key === 'anterior') {
-                pelvicOrientation = '骨盆整体偏前倾/被前侧拉向前';
+                pelvicOrientation = '骨盆整体偏向前倾（被前侧肌肉拉向前）';
             } else {
-                pelvicOrientation = '骨盆朝向中立或混合型';
+                pelvicOrientation = '骨盆前后方向偏向中立或混合型';
             }
-            orientationEl.innerHTML = `<b>骨盆前后倾判定：</b> ${pelvicOrientation}。`;
+            orientationEl.innerHTML = `<b>骨盆前后倾倾向：</b> ${pelvicOrientation}。`;
 
-            // 骨盆左右高低差异详细判断
+            // 骨盆左右差异汇总
             let pelvicAsymmetry = '';
             let pelvicHeightDetail = '';
             let pelvicPositionDetail = '';
             
             if (rotationPattern.key === 'LeftAIC') {
-                pelvicAsymmetry = '左侧骨盆相对更靠前';
-                pelvicHeightDetail = '最初右侧骨盆通常较高（重力代偿）';
-                pelvicPositionDetail = '左侧髂骨相对向前旋转，形成基线模式。';
+                pelvicAsymmetry = '左侧骨盆相对更加靠前';
+                pelvicHeightDetail = '因为重心偏好，最初右侧骨盆通常较高';
+                pelvicPositionDetail = '这是人类最常见的右重左前的基础模式。';
             } else if (rotationPattern.key === 'Oblique') {
-                pelvicAsymmetry = '左侧骨盆更靠前且更高';
-                pelvicHeightDetail = '左侧不仅更前，且明显高于右侧';
-                pelvicPositionDetail = '形成极端的斜向轴偏移，左前右上被死死卡住。';
+                pelvicAsymmetry = '左侧骨盆极度靠前并且偏高';
+                pelvicHeightDetail = '左侧明显高于右侧';
+                pelvicPositionDetail = '形成对角线卡死，身体处于极度拧巴的代偿状态。';
             } else if (rotationPattern.key === 'Lateral') {
-                pelvicAsymmetry = '左侧骨盆比右侧高';
+                pelvicAsymmetry = '左侧骨盆被异常顶高';
                 pelvicHeightDetail = '左侧受侧向推力向上顶起';
-                pelvicPositionDetail = '骨盆向左上方顶起倾斜，右侧下沉。';
+                pelvicPositionDetail = '骨盆向左上方倾斜，而右侧随之下沉。';
             }
             
-            asymmetryEl.innerHTML = `<b>骨盆左右差异：</b> ${pelvicAsymmetry}。${pelvicHeightDetail ? ` ${pelvicHeightDetail}。` : ''} ${pelvicPositionDetail}`;
+            asymmetryEl.innerHTML = `<b>骨盆左右差异汇总：</b> ${pelvicAsymmetry}。${pelvicHeightDetail ? ` ${pelvicHeightDetail}。` : ''} ${pelvicPositionDetail}`;
             
-            compressionSummaryEl.innerText = `压缩模式说明：${compressionPattern.summary}`;
-            reportDataEl.innerText = `数据依据：直腿抬高左减右 ${diffSLR.toFixed(1)}°；髋屈左减右 ${diffHip.toFixed(1)}°；肩屈左减右 ${diffSh.toFixed(1)}°；左右显著差异主要参考 10°。整体更接近${compressionPattern.label}，左右差异更接近${rotationPattern.label}`;
-            comboLabelEl.innerText = `整体更像${compressionPattern.label}，左右差异更像${rotationPattern.label}`;
+            compressionSummaryEl.innerText = `动作受限原因说明：${compressionPattern.summary}`;
+            reportDataEl.innerText = `数据分析依据：主动直腿抬高（左侧减右侧）${diffSLR.toFixed(1)}°；主动髋屈曲（左侧减右侧）${diffHip.toFixed(1)}°；主动肩屈（左侧减右侧）${diffSh.toFixed(1)}°。通过比较角度大小，整体属于${compressionPattern.alias}，左右差异呈现出${rotationPattern.shortLabel}的特征。`;
+            comboLabelEl.innerText = `整体特征：${compressionPattern.alias}，外加：${rotationPattern.shortLabel}`;
             bodyStateEl.innerText = comboProfile.bodyState;
             solutionOrderEl.innerText = comboProfile.solutionOrder;
 
             analysisContent.innerHTML = '';
 
             gluteContentEl.innerHTML = `
-                <p><b class="text-slate-800">1. 代偿臀型特征：</b> <strong class="mac-blue">${comboData.name}</strong></p>
-                <p><b class="text-slate-800">2. 照镜子能看到的现象：</b> ${comboData.visual}</p>
-                <p><b class="text-slate-800">3. 讲给你听的身体真相：</b> ${comboData.explanation}</p>
+                <p><b class="text-slate-800">1. 你可能存在的代偿臀型：</b> <strong class="mac-blue">${comboData.name}</strong></p>
+                <p><b class="text-slate-800">2. 照镜子能看到的体态现象：</b> ${comboData.visual}</p>
+                <p><b class="text-slate-800">3. 身体背后的真实原因：</b> ${comboData.explanation}</p>
             `;
 
             const priPostureProfiles = {
                 posterior_LeftAIC: {
-                    postureTend: '重心可能偏向前脚掌，腰背有轻微前拱感，左侧髋关节可能比右侧更难完全放松展开。',
-                    moveTend: '下蹲或弯腰时腰椎可能比臀部先动，左右迈步时躯干摇摆幅度可能不一致。',
-                    hint: '优先降低后侧整体紧绷感，再关注左右承重是否均匀。'
+                    postureTend: '站立时重心容易偏向脚掌前侧，腰背摸起来有轻微的紧绷前拱感。左腿根部的关节可能比右腿更难完全放松和展开。',
+                    moveTend: '做深蹲或弯腰捡东西时，腰可能比屁股先动。走路迈步时，上半身左右摇摆的幅度感觉不一样。',
+                    hint: '不要急着去纠正左右，优先通过呼吸降低大腿后侧和屁股的整体紧绷感，再去关注左右脚受力均不均匀。'
                 },
                 posterior_Oblique: {
-                    postureTend: '重心可能偏向前脚掌，躯干可能有轻微斜向旋转，左侧肩膀与右侧髋部之间张力可能更高。',
-                    moveTend: '旋转类动作（转身、挥臂）可能一侧顺另一侧滞，跑步或快走时步伐节奏可能不对称。',
-                    hint: '先降低整体后侧紧绷，再逐步调整斜向旋转的不均衡。'
+                    postureTend: '不仅重心偏向前脚掌，上半身可能还有轻微的斜向扭转感。左边肩膀和右侧胯部之间的肌肉经常感觉紧绷酸痛。',
+                    moveTend: '做转身或挥臂动作时，一边非常顺畅，另一边就觉得卡卡的。跑步或快走时，左右腿迈出去的步伐节奏不对称。',
+                    hint: '先用基础动作降低整体的背部和臀部紧绷感，再按计划逐步把斜向扭转的躯干给拉正。'
                 },
                 posterior_Lateral: {
-                    postureTend: '重心可能偏向前脚掌，骨盆可能存在轻微侧向高低差，站立时一侧腰可能更紧。',
-                    moveTend: '单腿站立时骨盆可能有轻微侧移，上下楼梯或跑步时左右落地感受可能不同。',
-                    hint: '先降低整体后侧紧绷，再关注左右高低和侧向承重的均衡。'
+                    postureTend: '重心容易偏向前脚掌，骨盆存在比较明显的侧向高低差。站直的时候，某一侧的腰侧肌肉感觉被挤压得很紧。',
+                    moveTend: '单腿站立穿鞋时，胯部容易往一边平移顶出。上下楼梯或跑步落地时，左右脚着地的轻重感受明显不同。',
+                    hint: '首先要把身体后侧紧绷的肌肉给放松下来，然后再去专注练怎么让两边脚均匀踩实地面。'
                 },
                 anterior_LeftAIC: {
-                    postureTend: '腰椎前段可能有轻微过度弯曲，腹部前侧张力可能偏高，左侧髋关节可能比右侧更难向后放松。',
-                    moveTend: '深蹲或抬腿时腰椎可能先于髋发力，左右腿抬起高度和感受可能有差异。',
-                    hint: '先降低前侧牵拉感，再关注左右腿动作的对称性。'
+                    postureTend: '腰椎前弯的弧度有点大（喜欢挺着肚子站）。小腹前侧感觉张力很高，左腿根部比右腿更难向后伸展放松。',
+                    moveTend: '深蹲或高抬腿时，腰部肌肉总是抢先发力代偿。左右腿往上抬起的高度和顺畅度有明显差异。',
+                    hint: '第一步必须先降下大腿前侧和腰部的牵拉感（别再死命撅屁股了），再慢慢关注左右腿动作是否对称。'
                 },
                 anterior_Oblique: {
-                    postureTend: '腰椎前弯可能偏大，躯干可能有轻微斜向旋转，左侧肩部张力可能更明显。',
-                    moveTend: '旋转动作可能一侧灵活一侧受限，大步走或跑步时步幅左右可能不一致。',
-                    hint: '先降低前侧整体紧绷，再逐步调整斜向两端的不均衡。'
+                    postureTend: '喜欢撅屁股挺腰站立，上半身有轻微的向侧边扭转感。左侧肩膀和脖子附近的肌肉张力比右边更明显。',
+                    moveTend: '做转身动作时一边灵活一边卡死。大步快走或跑步时，感觉两条腿迈出去的长度不一样。',
+                    hint: '一定要先降下腰部和大腿前侧的整体紧绷感，再去逐步调整身体两端像麻花一样的扭转。'
                 },
                 anterior_Lateral: {
-                    postureTend: '腰椎前弯可能偏大，骨盆可能有轻微侧向高低差，两侧腰部张力可能不同。',
-                    moveTend: '单腿动作时骨盆可能有侧移倾向，左右迈步节奏可能略有差异。',
-                    hint: '先降低前侧紧绷感，再关注左右高低和侧向稳定。'
+                    postureTend: '习惯撅屁股站立，骨盆有侧向高低差，导致腰部两侧肌肉一侧被拉长，一侧被挤压，酸痛感不一样。',
+                    moveTend: '单腿站立时骨盆很容易往一侧顶出去（假胯宽凸显），左右脚交替迈步的节奏略有不同。',
+                    hint: '先要把腰部死死卡住的紧绷感降下来，再去专项解决左右骨盆高低不平的问题。'
                 }
             };
 
             const priProfile = priPostureProfiles[comboKey] || priPostureProfiles['posterior_LeftAIC'];
 
             priAnalysisEl.innerHTML = `
-                <p><b class="text-slate-800">静态姿势倾向：</b> ${priProfile.postureTend}</p>
-                <p><b class="text-slate-800">动作模式特点：</b> ${priProfile.moveTend}</p>
-                <p><b class="text-slate-800">调整建议：</b> ${priProfile.hint}</p>
+                <p><b class="text-slate-800">日常站姿可能出现的状况：</b> ${priProfile.postureTend}</p>
+                <p><b class="text-slate-800">活动时容易出现的代偿：</b> ${priProfile.moveTend}</p>
+                <p><b class="text-slate-800">给你的专属调整忠告：</b> ${priProfile.hint}</p>
             `;
 
             technicalContentEl.innerHTML = `
-                <p><b class="text-slate-800">1. 压缩模式依据：</b> ${compressionPattern.mechanism} ${compressionPattern.objective}</p>
-                <p><b class="text-slate-800">2. 偏移类型依据：</b> 左右差异最接近 <strong class="mac-blue">${rotationPattern.label}</strong>。${rotationPattern.evidenceText()}</p>
-                <p><b class="text-slate-800">3. 最终收口判断：</b> ${rotationOverrideNote} 骨盆侧倾不是非黑即白，报告优先告诉你"现在最像哪一种"。</p>
+                <p><b class="text-slate-800">1. 判断你骨盆前倾/后倾的依据：</b> ${compressionPattern.mechanism} ${compressionPattern.objective}</p>
+                <p><b class="text-slate-800">2. 判断你骨盆左右旋转的依据：</b> 你的左右差异最符合 <strong class="mac-blue">${rotationPattern.label}</strong>。${rotationPattern.evidenceText()}</p>
+                <p><b class="text-slate-800">3. 最终收口判断：</b> ${rotationOverrideNote} 人的体态很少是非黑即白的绝对标准，这份报告主要是告诉你，你现在的身体最像哪一种受限状态，方便对症下药。</p>
                 <p><b class="text-slate-800">4. 补充提醒：</b> ${mixedModeNote}</p>
             `;
 
             actionContentEl.innerHTML = `
-                ${renderAccordionCard('呼吸基础', '先学会呼吸', `
+                ${renderAccordionCard('呼吸基础', '开始之前，先学会呼吸', `
                     <p><b class="text-slate-800">呼气怎么做：</b> 先放松，再用嘴把气慢慢呼干净。重点不是猛用力，而是把呼气拉长，尽量感觉两侧腹部在参与，而不是只有肚子正前面死撑。</p>
                     <p><b class="text-slate-800">吸气怎么做：</b> 一般用鼻子吸气，先按 5 秒呼、5 秒吸的节奏练最稳妥。</p>
                     <p><b class="text-slate-800">发力别太大：</b> 一开始控制在 3/10 左右就够了，尽量不要超过 5/10。如果一开始就很酸、很烧、很胀，通常不是做得更好，而是太用力了。</p>
                 `, true)}
                 ${renderAccordionCard('阶段一', '第 1-2 周，所有类型通用', `
-                    <p><b class="text-slate-800">这一阶段先做什么：</b> 不管你最后更接近哪一类情况，前 1 到 2 周都先做这套共同基础计划，目的是先把身体带到更容易调整的位置，再进入后面的针对性训练。</p>
+                    <p><b class="text-slate-800">这一阶段先做什么：</b> 不管你最后更接近哪一类情况，前 1 到 2 周都先做这套共同基础计划，目的是先把身体带到更容易调整的放松位置，再进入后面的针对性训练。</p>
                     ${renderExerciseList(phaseOnePlan)}
                 `, true)}
-                ${renderAccordionCard('步骤 1', '先处理外层压缩', `
+                ${renderAccordionCard('步骤 1', '先处理骨盆的前后紧绷', `
                     <p><b class="text-slate-800">第一步先练什么：</b> ${compressionPattern.solutionName}</p>
                     <p><b class="text-slate-800">为什么先练这个：</b> ${compressionTraining}</p>
-                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${compressionPattern.primaryAction.name}</strong></p>
+                    <p><b class="text-slate-800">优先推荐动作：</b> <strong class="mac-blue">${compressionPattern.primaryAction.name}</strong></p>
                     <p><b class="text-slate-800">这个动作主要练什么：</b> ${compressionPattern.primaryAction.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.primaryAction.method}</p>
+                    <p><b class="text-slate-800">动作该怎么做：</b> ${compressionPattern.primaryAction.method}</p>
                     <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.primaryAction.dosage}</p>
                 `, false)}
-                ${renderAccordionCard('步骤 2', '再处理底层旋转', `
+                ${renderAccordionCard('步骤 2', '再处理骨盆的左右高低与旋转', `
                     <p><b class="text-slate-800">第二步再练什么：</b> ${rotationPattern.solutionName}</p>
                     <p><b class="text-slate-800">这一阶段的重点：</b> ${rotationPattern.planSummary}</p>
-                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${rotationPattern.action.name}</strong></p>
+                    <p><b class="text-slate-800">优先推荐动作：</b> <strong class="mac-blue">${rotationPattern.action.name}</strong></p>
                     <p><b class="text-slate-800">这个动作主要练什么：</b> ${rotationPattern.action.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${rotationPattern.action.method}</p>
+                    <p><b class="text-slate-800">动作该怎么做：</b> ${rotationPattern.action.method}</p>
                     <p><b class="text-slate-800">建议做多少：</b> ${rotationPattern.action.dosage}</p>
                 `, false)}
-                ${renderAccordionCard('辅助动作卡', '配套执行', `
+                ${renderAccordionCard('辅助动作卡', '配合主动作执行', `
                     <p><b class="text-slate-800">配套动作：</b> <strong class="mac-blue">${compressionPattern.secondaryAction.name}</strong></p>
                     <p><b class="text-slate-800">主要作用：</b> ${compressionPattern.secondaryAction.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.secondaryAction.method}</p>
+                    <p><b class="text-slate-800">动作该怎么做：</b> ${compressionPattern.secondaryAction.method}</p>
                     <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.secondaryAction.dosage}</p>
                 `, false)}
-                ${renderAccordionCard('阶段二', '第 3-4 周，按分型进入', `
+                ${renderAccordionCard('阶段二', '第 3-4 周，根据你的分型练', `
                     <p><b class="text-slate-800">第 3 到 4 周进入：</b> ${rotationPattern.solutionName}</p>
                     ${renderExerciseList(rotationPattern.phaseTwo)}
                 `, true)}
                 ${phaseThreeBlock}
-                ${renderAccordionCard('解决顺序总览', '调整导航', `<p><b class="text-slate-800">简单说：</b> ${comboProfile.solutionOrder}</p>`, true, 'blue')}
-                ${renderAccordionCard('执行原则', '频率与持续', `
+                ${renderAccordionCard('解决顺序总览', '练功导航图', `<p><b class="text-slate-800">一句话总结你的训练路线：</b> ${comboProfile.solutionOrder}</p>`, true, 'blue')}
+                ${renderAccordionCard('执行原则', '必须要听的训练忠告', `
                     <p><b class="text-slate-800">一周做几次：</b> 每周 3 到 4 次比较合适，3 次已经很好，4 次通常更理想。</p>
                     <p><b class="text-slate-800">每个动作做几组：</b> 先以 3 组为基础；4 组可以更强一点，但一般不建议一天总量超过 5 组。</p>
-                    <p><b class="text-slate-800">能不能分开做：</b> 可以。比如早上 2 组、晚上 2 组，通常比一天只练一次更容易让身体适应新姿势。</p>
-                    <p><b class="text-slate-800">最重要的原则：</b> 不是硬把身体“掰回去”，而是用较轻的发力和正确呼吸，让神经系统慢慢接受新的、更省力的位置。</p>
+                    <p><b class="text-slate-800">能不能分开做：</b> 可以。比如早上 2 组、晚上 2 组，通常比一天只练一次更容易让神经系统适应新的舒服姿势。</p>
+                    <p><b class="text-slate-800">最重要的原则：</b> 绝对不是靠蛮力硬把身体“掰回去”，而是用较轻的发力配合正确呼吸，让神经系统慢慢接受并记住新的、更省力的体态位置。</p>
                 `, false)}
-                ${renderAccordionCard('复测指标', '2-3 周后回看', `<p>复测时不要只看骨盆外观。更重要的是看：整体角度有没有慢慢脱离 ${compressionPattern.label} 的限制、左右差异有没有慢慢脱离 ${rotationPattern.label} 的特征，以及你的姿势是否更对称、肩和髋是否更好动、身体不适有没有减少。</p>`, false)}
+                ${renderAccordionCard('复测指标', '2-3 周后怎么看效果', `<p>复测时千万不要死盯着骨盆外观有没有完美对称。更重要的是观察：你的整体活动角度有没有变大、脱离了原来的限制；左右做动作时的顺畅度有没有变好；以及你平常的站姿是不是感觉更轻松、各种身体的酸痛有没有减少。</p>`, false)}
             `;
 
             saveHistoryToStorage({
