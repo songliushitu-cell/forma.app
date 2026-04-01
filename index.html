@@ -74,13 +74,13 @@
 
             <div class="mt-4 flex flex-col items-center relative z-10">
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
-                <div id="visit-counter-badge" class="mt-3 inline-flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm border border-white shadow-sm px-3.5 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.16em]">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff]">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-10 4h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                    </span>
-                    <span>访问次数</span>
-                    <span id="visit-counter-value" class="text-slate-800 tabular-nums">1122</span>
+                <div id="contact-badge" class="mt-3 inline-flex items-center gap-2 rounded-full bg-white/80 backdrop-blur-sm border border-white shadow-sm px-3.5 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wide text-center">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] shrink-0">🌍</span>
+                    <span>联系方式：<span class="text-slate-800">songjiaotou999</span>（工作微信，闲聊勿扰）</span>
                 </div>
+                <button id="btn-open-saved-reports" class="mt-2 text-[10px] sm:text-[11px] font-bold text-slate-600 bg-white/75 hover:bg-white border border-[#e5e5ea] rounded-full px-3 py-1.5 shadow-sm transition-all active:scale-[0.98] tracking-wide">
+                    查看已保存报告
+                </button>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
                     <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">基础版</span>
@@ -317,6 +317,9 @@
                             <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                             体态评估报告
                         </h2>
+                        <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
+                            评估时间：--
+                        </div>
                         <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight">获取中...</div>
                         <div class="flex flex-wrap gap-2 mb-3">
                             <span id="final-report-confidence" class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/10 text-[#0a84ff] border border-[#0a84ff]/20">模式匹配度：--</span>
@@ -410,6 +413,15 @@
                     <div id="final-action-content" class="report-reading flex flex-col gap-4"></div>
                 </div>
 
+                <div class="flex gap-2.5 z-10">
+                    <button id="btn-save-report" class="flex-1 py-3 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] text-[11px] tracking-widest">
+                        保存本次报告
+                    </button>
+                    <button id="btn-view-saved-reports" class="flex-1 py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-[11px] tracking-widest">
+                        已保存报告
+                    </button>
+                </div>
+
                 <button id="btn-start-over" class="mt-6 w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-xs tracking-widest z-10 flex items-center justify-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     开启新一轮评估
@@ -483,6 +495,22 @@
                 <button id="btn-submit-manual" class="w-full py-3.5 mt-3 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] text-[11px] tracking-widest">
                     保存已填数据 (满6项自动出报告)
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已保存报告 Modal -->
+    <div id="saved-reports-modal" class="fixed inset-0 z-[105] bg-slate-900/40 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
+        <div class="bg-white w-full max-w-[360px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50 transform transition-transform max-h-[82vh]">
+            <div class="p-4 bg-[#f5f5f7] text-slate-800 flex justify-between items-center border-b border-[#e5e5ea]">
+                <h2 class="text-sm font-bold flex items-center gap-2 tracking-widest">
+                    <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 12h14M5 16h10"></path></svg>
+                    已保存报告
+                </h2>
+                <button id="btn-close-saved-reports" class="text-slate-400 hover:text-slate-600 p-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div id="saved-reports-list" class="p-4 overflow-y-auto flex flex-col gap-3 bg-white no-scrollbar">
+                <div class="text-[11px] text-slate-500 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-3 leading-relaxed">还没有保存过报告。完成一次完整测试后，点击“保存本次报告”即可留存。</div>
             </div>
         </div>
     </div>
@@ -568,7 +596,7 @@
         const aiLoadingMessage = document.getElementById('ai-loading-message');
         const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
         const btnRetryAI = document.getElementById('btn-retry-ai');
-        const visitCounterValue = document.getElementById('visit-counter-value');
+        const btnOpenSavedReports = document.getElementById('btn-open-saved-reports');
 
         const btnVoiceToggle = document.getElementById('voice-toggle');
         const btnShowDonate = document.getElementById('btn-show-donate');
@@ -591,6 +619,9 @@
         const manualModal = document.getElementById('manual-modal');
         const btnCloseManual = document.getElementById('btn-close-manual');
         const btnSubmitManual = document.getElementById('btn-submit-manual');
+        const savedReportsModal = document.getElementById('saved-reports-modal');
+        const savedReportsList = document.getElementById('saved-reports-list');
+        const btnCloseSavedReports = document.getElementById('btn-close-saved-reports');
         const demoModal = document.getElementById('demo-modal');
         const btnCloseDemo = document.getElementById('btn-close-demo');
         const btnConfirmDemo = document.getElementById('btn-confirm-demo');
@@ -601,6 +632,9 @@
         const demoTips = document.getElementById('demo-tips');
         const demoActionHint = document.getElementById('demo-action-hint');
         const demoTriggerLabels = document.querySelectorAll('[data-demo-trigger]');
+        const finalReportDateTime = document.getElementById('final-report-datetime');
+        const btnSaveReport = document.getElementById('btn-save-report');
+        const btnViewSavedReports = document.getElementById('btn-view-saved-reports');
         // Start Over
         const btnStartOver = document.getElementById('btn-start-over');
 
@@ -617,6 +651,7 @@
         let currentFinalAngle = 0; 
         let currentFeedbackText = ""; 
         let lastCaptureMethod = null; 
+        let currentReportSnapshot = null;
         
         let voiceEnabled = false;
         let isLiveTracking = false;
@@ -667,13 +702,7 @@
         const levelCtx = levelBuffer.getContext('2d', { willReadFrequently: true });
         const AI_BACKEND_TIMEOUT = 4000;
         const AI_INIT_TIMEOUT = 12000;
-        const VISIT_COUNTER_CONFIG = {
-            seed: 1122,
-            namespace: 'forma-basic-home',
-            mode: 'global',
-            key: 'visits',
-            endpoint: 'https://api.countapi.xyz'
-        };
+        const REPORT_STORAGE_KEY = 'pelvic_report_archive_v1';
         const DEMO_SAFETY_NOTICE = '若出现疼痛、串麻感或明显不适，请立即停止测试。';
         const VOICE_SAFETY_SUFFIX = '如果过程中出现疼痛、串麻感或明显不适，请立即停止测试。';
         const DEMO_ANIMATION_CONFIG = {
@@ -698,8 +727,6 @@
                 }
             }
         };
-        let visitCounterInitPromise = null;
-
         function withTimeout(promise, timeoutMs, message) {
             return new Promise((resolve, reject) => {
                 const timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
@@ -715,52 +742,134 @@
             });
         }
 
-        function renderVisitCount(count) {
-            const numericCount = Number(count);
-            const safeCount = Number.isFinite(numericCount) && numericCount >= VISIT_COUNTER_CONFIG.seed
-                ? Math.round(numericCount)
-                : VISIT_COUNTER_CONFIG.seed;
-            visitCounterValue.textContent = safeCount.toLocaleString('zh-CN');
+        function formatReportDateTime(date = new Date()) {
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
 
-        async function fetchAndIncrementVisitCount() {
-            const requestUrl = `${VISIT_COUNTER_CONFIG.endpoint}/hit/${encodeURIComponent(VISIT_COUNTER_CONFIG.namespace)}/${encodeURIComponent(VISIT_COUNTER_CONFIG.key)}`;
-            const response = await withTimeout(
-                fetch(requestUrl, { method: 'GET', cache: 'no-store' }),
-                5000,
-                '访问计数服务请求超时'
-            );
-
-            if (!response.ok) {
-                throw new Error(`访问计数服务异常：${response.status}`);
+        function loadSavedReports() {
+            try {
+                const raw = localStorage.getItem(REPORT_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (error) {
+                console.warn('[saved-reports] load failed', error);
+                return [];
             }
-
-            const payload = await response.json();
-            const count = payload?.count ?? payload?.value;
-            if (!Number.isFinite(Number(count))) {
-                throw new Error('访问计数服务返回了无效数据');
-            }
-
-            return { count: Math.max(VISIT_COUNTER_CONFIG.seed, Number(count)) };
         }
 
-        function initVisitCounter() {
-            if (visitCounterInitPromise) return visitCounterInitPromise;
+        function persistSavedReports(reports) {
+            localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(reports));
+        }
 
-            renderVisitCount(VISIT_COUNTER_CONFIG.seed);
+        function buildCurrentReportSnapshot() {
+            return {
+                id: Date.now(),
+                savedAt: finalReportDateTime.textContent.replace('评估时间：', '').trim() || formatReportDateTime(),
+                titleText: document.getElementById('final-result-title').textContent,
+                titleClassName: document.getElementById('final-result-title').className,
+                reportDateTimeText: finalReportDateTime.textContent,
+                reportConfidenceText: document.getElementById('final-report-confidence').textContent,
+                reportConfidenceClassName: document.getElementById('final-report-confidence').className,
+                reportConfidenceDetailHtml: document.getElementById('final-report-confidence-detail').innerHTML,
+                reportNoteHtml: document.getElementById('final-report-note').innerHTML,
+                comboLabelText: document.getElementById('final-combo-label').textContent,
+                bodyStateText: document.getElementById('final-body-state').textContent,
+                pelvicOrientationHtml: document.getElementById('final-pelvic-orientation').innerHTML,
+                pelvicAsymmetryHtml: document.getElementById('final-pelvic-asymmetry').innerHTML,
+                compressionSummaryText: document.getElementById('final-compression-summary').textContent,
+                reportDataText: document.getElementById('final-report-data').textContent,
+                priContentHtml: document.getElementById('final-pri-content').innerHTML,
+                gluteContentHtml: document.getElementById('final-glute-content').innerHTML,
+                technicalContentHtml: document.getElementById('final-technical-content').innerHTML,
+                actionContentHtml: document.getElementById('final-action-content').innerHTML
+            };
+        }
 
-            visitCounterInitPromise = fetchAndIncrementVisitCount()
-                .then(({ count }) => {
-                    renderVisitCount(count);
-                    return count;
-                })
-                .catch(error => {
-                    console.warn('[visit-counter]', error);
-                    renderVisitCount(VISIT_COUNTER_CONFIG.seed);
-                    return VISIT_COUNTER_CONFIG.seed;
-                });
+        function applyReportSnapshot(snapshot) {
+            if (!snapshot) return;
+            currentReportSnapshot = snapshot;
+            finalReportDateTime.textContent = snapshot.reportDateTimeText || `评估时间：${snapshot.savedAt || formatReportDateTime()}`;
+            const titleEl = document.getElementById('final-result-title');
+            titleEl.textContent = snapshot.titleText || '已保存报告';
+            if (snapshot.titleClassName) titleEl.className = snapshot.titleClassName;
 
-            return visitCounterInitPromise;
+            const confidenceEl = document.getElementById('final-report-confidence');
+            confidenceEl.textContent = snapshot.reportConfidenceText || '模式匹配度：--';
+            if (snapshot.reportConfidenceClassName) confidenceEl.className = snapshot.reportConfidenceClassName;
+
+            document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '匹配度说明：--';
+            document.getElementById('final-report-note').innerHTML = snapshot.reportNoteHtml || '';
+            document.getElementById('final-combo-label').textContent = snapshot.comboLabelText || '--';
+            document.getElementById('final-body-state').textContent = snapshot.bodyStateText || '--';
+            document.getElementById('final-pelvic-orientation').innerHTML = snapshot.pelvicOrientationHtml || '--';
+            document.getElementById('final-pelvic-asymmetry').innerHTML = snapshot.pelvicAsymmetryHtml || '--';
+            document.getElementById('final-compression-summary').textContent = snapshot.compressionSummaryText || '压缩模式说明：--';
+            document.getElementById('final-report-data').textContent = snapshot.reportDataText || '数据依据：--';
+            document.getElementById('final-pri-content').innerHTML = snapshot.priContentHtml || '';
+            document.getElementById('final-glute-content').innerHTML = snapshot.gluteContentHtml || '';
+            document.getElementById('final-technical-content').innerHTML = snapshot.technicalContentHtml || '';
+            document.getElementById('final-action-content').innerHTML = snapshot.actionContentHtml || '';
+
+            document.getElementById('final-report-section').classList.remove('hidden');
+            scrollToDisplayArea(document.getElementById('final-report-section'));
+        }
+
+        function renderSavedReportsList() {
+            const reports = loadSavedReports();
+            if (!reports.length) {
+                savedReportsList.innerHTML = `<div class="text-[11px] text-slate-500 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-3 leading-relaxed">还没有保存过报告。完成一次完整测试后，点击“保存本次报告”即可留存。</div>`;
+                return;
+            }
+
+            savedReportsList.innerHTML = reports.map(report => `
+                <div class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl p-3.5 flex flex-col gap-2">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-bold text-slate-400 tracking-[0.16em]">${report.savedAt || '--'}</div>
+                            <div class="text-[13px] font-bold text-slate-800 leading-5 mt-1">${report.titleText || '已保存报告'}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" class="flex-1 py-2.5 rounded-xl bg-mac-blue text-white text-[11px] font-bold tracking-wide shadow-mac-blue active:scale-[0.98] transition-transform" data-report-open="${report.id}">
+                            查看
+                        </button>
+                        <button type="button" class="px-3 py-2.5 rounded-xl bg-white border border-[#e5e5ea] text-slate-600 text-[11px] font-bold tracking-wide active:scale-[0.98] transition-transform" data-report-delete="${report.id}">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openSavedReportsModal() {
+            renderSavedReportsList();
+            savedReportsModal.classList.remove('hidden');
+        }
+
+        function closeSavedReportsModal() {
+            savedReportsModal.classList.add('hidden');
+        }
+
+        function saveCurrentReport() {
+            if (!currentReportSnapshot) {
+                alert('请先生成完整报告，再执行保存。');
+                return;
+            }
+
+            const reports = loadSavedReports();
+            const snapshotToSave = {
+                ...currentReportSnapshot,
+                id: Date.now()
+            };
+            reports.unshift(snapshotToSave);
+            persistSavedReports(reports.slice(0, 30));
+            renderSavedReportsList();
+            alert('本次报告已保存到当前浏览器。');
         }
 
         function getSelectedTestType() {
@@ -1299,6 +1408,33 @@
             debugEnabled = !debugEnabled;
             renderDebugPanel();
         });
+        btnOpenSavedReports.addEventListener('click', () => openSavedReportsModal());
+        btnViewSavedReports.addEventListener('click', () => openSavedReportsModal());
+        btnCloseSavedReports.addEventListener('click', () => closeSavedReportsModal());
+        btnSaveReport.addEventListener('click', () => saveCurrentReport());
+        savedReportsModal.addEventListener('click', e => {
+            if (e.target === savedReportsModal) closeSavedReportsModal();
+        });
+        savedReportsList.addEventListener('click', e => {
+            const openButton = e.target.closest('[data-report-open]');
+            if (openButton) {
+                const targetId = Number(openButton.getAttribute('data-report-open'));
+                const targetReport = loadSavedReports().find(report => report.id === targetId);
+                if (targetReport) {
+                    closeSavedReportsModal();
+                    applyReportSnapshot(targetReport);
+                }
+                return;
+            }
+
+            const deleteButton = e.target.closest('[data-report-delete]');
+            if (deleteButton) {
+                const targetId = Number(deleteButton.getAttribute('data-report-delete'));
+                const nextReports = loadSavedReports().filter(report => report.id !== targetId);
+                persistSavedReports(nextReports);
+                renderSavedReportsList();
+            }
+        });
         btnCloseDemo.addEventListener('click', () => closeDemoModal());
         btnConfirmDemo.addEventListener('click', () => closeDemoModal());
         demoModal.addEventListener('click', e => {
@@ -1374,7 +1510,10 @@
             resetCanvasForNewUpload();
             manualModal.classList.add('hidden');
             donateModal.classList.add('hidden');
+            closeSavedReportsModal();
             closeDemoModal();
+            currentReportSnapshot = null;
+            finalReportDateTime.textContent = '评估时间：--';
             document.getElementById('final-report-section').classList.add('hidden');
             
             document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
@@ -1428,7 +1567,6 @@
             return aiEngineState.initPromise;
         }
         document.addEventListener('DOMContentLoaded', () => {
-            initVisitCounter();
             initAI().catch(() => {});
         });
 
@@ -2130,6 +2268,7 @@
             const comboLabelEl = document.getElementById('final-combo-label');
             const bodyStateEl = document.getElementById('final-body-state');
             const solutionOrderEl = document.getElementById('final-solution-order');
+            const reportDateTimeText = `评估时间：${formatReportDateTime()}`;
 
             const diffHip = hipL - hipR;
             const diffSLR = slrL - slrR;
@@ -2425,6 +2564,7 @@
 
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
             reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
+            finalReportDateTime.textContent = reportDateTimeText;
             reportConfidenceDetailEl.innerText = `匹配度说明：${confidenceDetail}`;
             reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
             titleEl.innerText = `评估结果：${compressionPattern.label}，${rotationPattern.label}`;
@@ -2585,6 +2725,7 @@
                 result: titleEl.innerText
             });
 
+            currentReportSnapshot = buildCurrentReportSnapshot();
             document.getElementById('final-report-section').classList.remove('hidden');
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
