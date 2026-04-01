@@ -182,11 +182,23 @@
                     </li>
                     <li class="flex items-start gap-2.5">
                         <span class="text-sm leading-none mt-0.5">👕</span>
-                        <span class="leading-relaxed">着 <strong class="text-slate-800">紧身运动服</strong>，避免衣物遮挡关键关节。</span>
+                        <span class="leading-relaxed">穿 <strong class="text-slate-800">贴身、轮廓清楚</strong> 的服装，避免遮挡关键关节。</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-sm leading-none mt-0.5">🎨</span>
+                        <span class="leading-relaxed">测试时尽量不要穿与 <strong class="text-slate-800">床面或背景相近颜色</strong> 的衣服，防止识别不准确。</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-sm leading-none mt-0.5">🔁</span>
+                        <span class="leading-relaxed">测试环境、拍摄位置和机位尽量保持一致，方便后续 <strong class="text-slate-800">复测对比</strong>。</span>
                     </li>
                     <li class="flex items-start gap-2.5">
                         <span class="text-sm leading-none mt-0.5">🎙️</span>
-                        <span class="leading-relaxed">开启左上角语音，听从 AI 口令停顿防代偿。</span>
+                        <span class="leading-relaxed">开启左上角语音，听从 AI 口令停顿，减少代偿干扰。</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="text-sm leading-none mt-0.5">🛑</span>
+                        <span class="leading-relaxed">如果出现 <strong class="text-slate-800">疼痛、串麻感或明显不适</strong>，请立刻停止测试。</span>
                     </li>
                 </ul>
             </div>
@@ -662,25 +674,27 @@
             key: 'visits',
             endpoint: 'https://api.countapi.xyz'
         };
+        const DEMO_SAFETY_NOTICE = '若出现疼痛、串麻感或明显不适，请立即停止测试。';
+        const VOICE_SAFETY_SUFFIX = '如果过程中出现疼痛、串麻感或明显不适，请立即停止测试。';
         const DEMO_ANIMATION_CONFIG = {
             videos: {
                 slr: {
                     src: '直腿抬高演示.mp4',
                     poster: '',
                     title: '主动直腿抬高演示',
-                    tips: ['仰卧位，测试腿保持伸直向上抬高。', '一旦出现膝盖弯曲、大腿外展或骨盆转动，就停在当下。']
+                    tips: ['仰卧位，测试腿保持伸直向上抬高。', '一旦出现膝盖弯曲、大腿外展或骨盆转动，就停在当下。', DEMO_SAFETY_NOTICE]
                 },
                 hip: {
                     src: '髋屈曲演示.mp4',
                     poster: '',
                     title: '主动髋屈曲演示',
-                    tips: ['将膝盖主动拉向胸口，不要用惯性猛拉。', '出现骨盆卷起或大腿向外打开时，请立即停止。']
+                    tips: ['将膝盖主动拉向胸口，不要用惯性猛拉。', '出现骨盆卷起或大腿向外打开时，请立即停止。', DEMO_SAFETY_NOTICE]
                 },
                 shoulder: {
                     src: '肩屈演示.mp4',
                     poster: '',
                     title: '主动肩屈演示',
-                    tips: ['手臂向后上方平稳抬起，保持身体放松。', '如果开始挺胸、旋转躯干或借力代偿，就停在那个位置。']
+                    tips: ['手臂向后上方平稳抬起，保持身体放松。', '如果开始挺胸、旋转躯干或借力代偿，就停在那个位置。', DEMO_SAFETY_NOTICE]
                 }
             }
         };
@@ -1514,9 +1528,9 @@
                 const tSideName = document.querySelector('input[name="testSide"]:checked').value === 'L' ? '左侧' : '右侧';
                 
                 let speech = "";
-                if (tType === 'slr') speech = `即将进行${tSideName}主动直腿抬高测试。请仰卧平躺，测试腿完全伸直抬高。如果出现膝盖弯曲、大腿外展或骨盆转动，请立即停在代偿瞬间并保持1.5秒。`;
-                else if (tType === 'hip') speech = `即将进行${tSideName}主动髋屈曲测试。将膝盖向胸口拉起。出现骨盆卷起或大腿向外打开时，请立即停止并保持1.5秒。`;
-                else speech = `即将进行${tSideName}主动肩屈测试。手臂向后上方抬起。如果发现手臂旋转或挺胸代偿，请立即停止并保持1.5秒。`;
+                if (tType === 'slr') speech = `即将进行${tSideName}主动直腿抬高测试。请仰卧平躺，测试腿完全伸直抬高。如果出现膝盖弯曲、大腿外展或骨盆转动，请立即停在代偿瞬间并保持1.5秒。${VOICE_SAFETY_SUFFIX}`;
+                else if (tType === 'hip') speech = `即将进行${tSideName}主动髋屈曲测试。将膝盖向胸口拉起。出现骨盆卷起或大腿向外打开时，请立即停止并保持1.5秒。${VOICE_SAFETY_SUFFIX}`;
+                else speech = `即将进行${tSideName}主动肩屈测试。手臂向后上方抬起。如果发现手臂旋转或挺胸代偿，请立即停止并保持1.5秒。${VOICE_SAFETY_SUFFIX}`;
                 speak(speech);
                 
                 livePoseLoop();
