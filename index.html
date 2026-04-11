@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.0</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.1</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1182,16 +1182,12 @@
                 reportConfidenceClassName: document.getElementById('final-report-confidence').className,
                 reportConfidenceDetailHtml: document.getElementById('final-report-confidence-detail').innerHTML,
                 reportNoteHtml: document.getElementById('final-report-note').innerHTML,
+                empathicHtml: document.getElementById('empathic-report-container').innerHTML,
                 comboLabelText: document.getElementById('final-combo-label').textContent,
-                bodyStateText: document.getElementById('final-body-state').textContent,
                 pelvicOrientationHtml: document.getElementById('final-pelvic-orientation').innerHTML,
                 pelvicAsymmetryHtml: document.getElementById('final-pelvic-asymmetry').innerHTML,
-                compressionSummaryText: document.getElementById('final-compression-summary').textContent,
                 reportDataText: document.getElementById('final-report-data').textContent,
-                priContentHtml: document.getElementById('final-pri-content').innerHTML,
-                gluteContentHtml: document.getElementById('final-glute-content').innerHTML,
-                technicalContentHtml: document.getElementById('final-technical-content').innerHTML,
-                actionContentHtml: document.getElementById('final-action-content').innerHTML
+                technicalContentHtml: document.getElementById('final-technical-content').innerHTML
             };
         }
 
@@ -1209,16 +1205,20 @@
 
             document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '匹配度说明：--';
             document.getElementById('final-report-note').innerHTML = snapshot.reportNoteHtml || '';
+            
+            const empathicContainer = document.getElementById('empathic-report-container');
+            if (snapshot.empathicHtml) {
+                empathicContainer.innerHTML = snapshot.empathicHtml;
+                empathicContainer.classList.remove('hidden');
+            } else {
+                empathicContainer.classList.add('hidden');
+            }
+
             document.getElementById('final-combo-label').textContent = snapshot.comboLabelText || '--';
-            document.getElementById('final-body-state').textContent = snapshot.bodyStateText || '--';
             document.getElementById('final-pelvic-orientation').innerHTML = snapshot.pelvicOrientationHtml || '--';
             document.getElementById('final-pelvic-asymmetry').innerHTML = snapshot.pelvicAsymmetryHtml || '--';
-            document.getElementById('final-compression-summary').textContent = snapshot.compressionSummaryText || '压缩模式说明：--';
             document.getElementById('final-report-data').textContent = snapshot.reportDataText || '数据依据：--';
-            document.getElementById('final-pri-content').innerHTML = snapshot.priContentHtml || '';
-            document.getElementById('final-glute-content').innerHTML = snapshot.gluteContentHtml || '';
             document.getElementById('final-technical-content').innerHTML = snapshot.technicalContentHtml || '';
-            document.getElementById('final-action-content').innerHTML = snapshot.actionContentHtml || '';
 
             document.getElementById('final-report-section').classList.remove('hidden');
             scrollToDisplayArea(document.getElementById('final-report-section'));
@@ -1448,7 +1448,8 @@
 
         function formatAngleValue(value, digits = 1) {
             const normalizedValue = normalizeAngleValue(value);
-            return normalizedValue === null ? '--' : normalizedValue.toFixed(digits);
+            if (normalizedValue === null) return '--';
+            return Number(normalizedValue.toFixed(digits)).toString();
         }
 
         function normalizeRadians(value) {
@@ -2719,21 +2720,9 @@
             }
 
             const titleEl = document.getElementById('final-result-title');
-            const orientationEl = document.getElementById('final-pelvic-orientation');
-            const asymmetryEl = document.getElementById('final-pelvic-asymmetry');
-            const compressionSummaryEl = document.getElementById('final-compression-summary');
-            const analysisContent = document.getElementById('analysis-content');
             const reportConfidenceEl = document.getElementById('final-report-confidence');
             const reportConfidenceDetailEl = document.getElementById('final-report-confidence-detail');
             const reportNoteEl = document.getElementById('final-report-note');
-            const reportDataEl = document.getElementById('final-report-data');
-            const gluteContentEl = document.getElementById('final-glute-content');
-            const priAnalysisEl = document.getElementById('final-pri-content');
-            const technicalContentEl = document.getElementById('final-technical-content');
-            const actionContentEl = document.getElementById('final-action-content');
-            const comboLabelEl = document.getElementById('final-combo-label');
-            const bodyStateEl = document.getElementById('final-body-state');
-            const solutionOrderEl = document.getElementById('final-solution-order');
             const reportDateTimeText = `评估时间：${formatReportDateTime()}`;
 
             const diffHip = hipL - hipR;
