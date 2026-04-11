@@ -1,0 +1,11 @@
+name = "forma-license-gate"
+main = "license-worker.js"
+compatibility_date = "2026-04-02"
+workers_dev = true
+
+kv_namespaces = [
+  { binding = "LICENSES", id = "YOUR_KV_NAMESPACE_ID", preview_id = "YOUR_KV_PREVIEW_NAMESPACE_ID" }
+]
+
+[vars]
+ALLOW_ORIGIN = "https://songliushitu-cell.github.io"

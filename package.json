@@ -1,0 +1,11 @@
+{
+  "name": "forma-basic",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "license:server": "node server/license-server.js",
+    "license:create": "node scripts/generate_unlock_code.js",
+    "worker:dev": "npx wrangler dev /Users/songxuan/Desktop/jichuban/worker/license-worker.js --config /Users/songxuan/Desktop/jichuban/worker/wrangler.toml",
+    "worker:deploy": "npx wrangler deploy --config /Users/songxuan/Desktop/jichuban/worker/wrangler.toml"
+  }
+}

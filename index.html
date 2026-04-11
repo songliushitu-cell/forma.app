@@ -12,7 +12,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <style>
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .report-accordion summary::-webkit-details-marker { display: none; }
@@ -90,6 +92,19 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] shrink-0">🌍</span>
                         <span>联系方式：<span class="text-slate-800">songjiaotou999</span>（工作微信，闲聊勿扰）</span>
                     </div>
+                    <div class="mt-3 w-full max-w-[280px] self-start rounded-2xl bg-white/80 backdrop-blur-sm border border-white shadow-sm px-3.5 py-3" style="display:none">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 tracking-[0.18em]">报告使用状态</div>
+                                <div id="usage-gate-status" class="mt-1 text-[11px] sm:text-xs font-bold text-slate-700 leading-relaxed">免费报告剩余 5 次</div>
+                            </div>
+                            <button id="btn-open-payment-unlock" class="shrink-0 rounded-full border border-[#0a84ff]/20 bg-[#0a84ff]/8 px-3 py-1.5 text-[10px] font-bold text-[#0a84ff] shadow-sm active:scale-95 transition-transform">
+                                付费解锁
+                            </button>
+                        </div>
+                        <p id="usage-gate-note" class="mt-2 text-[9px] sm:text-[10px] text-slate-500 leading-relaxed">当前浏览器完整报告前 5 次免费。超出后可扫码付款并输入解锁码继续使用。</p>
+                        <p id="usage-gate-detail" class="mt-1 text-[9px] sm:text-[10px] text-slate-400 leading-relaxed">套餐：月卡 30 天 / 季卡 90 天 / 年卡 365 天，均从首次激活开始计时。</p>
+                    </div>
                     <p class="text-[8px] sm:text-[9px] text-slate-400/80 font-medium italic tracking-widest mt-1">Designed by @宋教头</p>
                 </div>
             </div>
@@ -108,21 +123,30 @@
             
             <!-- 进度追踪面板 -->
             <div class="bg-[#e5e5ea] p-2 rounded-[1.25rem] border border-black/5 flex justify-between gap-1.5 shadow-inner">
-                <div id="tracker-slr" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
+                <div id="tracker-slr" class="relative flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300 group">
+                    <button onclick="resetTrackerItem('slr')" title="重录直腿抬高" class="absolute top-1 right-1 p-1 text-slate-300 hover:text-rose-500 hidden group-hover:block transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动直腿抬高</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
                         <span>L:<span id="score-slr-L">--</span></span> <span>R:<span id="score-slr-R">--</span></span>
                     </div>
                     <span class="text-[11px] sm:text-xs font-black text-slate-300" id="score-slr-final">待完成</span>
                 </div>
-                <div id="tracker-hip" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
+                <div id="tracker-hip" class="relative flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300 group">
+                    <button onclick="resetTrackerItem('hip')" title="重录髋屈曲" class="absolute top-1 right-1 p-1 text-slate-300 hover:text-rose-500 hidden group-hover:block transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动髋屈曲</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
                         <span>L:<span id="score-hip-L">--</span></span> <span>R:<span id="score-hip-R">--</span></span>
                     </div>
                     <span class="text-[11px] sm:text-xs font-black text-slate-300" id="score-hip-final">待完成</span>
                 </div>
-                <div id="tracker-shoulder" class="flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300">
+                <div id="tracker-shoulder" class="relative flex-1 flex flex-col items-center justify-center py-2.5 bg-white rounded-xl border border-transparent shadow-sm transition-all duration-300 group">
+                    <button onclick="resetTrackerItem('shoulder')" title="重录肩屈" class="absolute top-1 right-1 p-1 text-slate-300 hover:text-rose-500 hidden group-hover:block transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 whitespace-nowrap">主动肩屈</span>
                     <div class="flex text-[8px] sm:text-[9px] text-slate-400 mb-1 gap-1.5 font-mono">
                         <span>L:<span id="score-shoulder-L">--</span></span> <span>R:<span id="score-shoulder-R">--</span></span>
@@ -158,12 +182,8 @@
                         <div class="text-center py-2 text-[11px] font-bold rounded-lg text-slate-500 peer-checked:bg-white peer-checked:text-slate-800 peer-checked:shadow-sm transition-all border border-transparent">当前测试: 右侧 (R)</div>
                     </label>
                 </div>
-                <div class="flex items-center justify-between px-1 pt-1">
-                    <span class="text-[10px] font-medium text-slate-400 tracking-wide">调试模式会显示 AI 实际取点和侧别</span>
-                    <button id="btn-toggle-debug" class="text-[10px] font-bold text-slate-600 bg-white border border-[#e5e5ea] rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">
-                        显示调试信息
-                    </button>
-                </div>
+                <!-- 调试开关已通过连续点击标题隐藏触发 -->
+                <button id="btn-toggle-debug" class="hidden"></button>
             </div>
 
             <!-- 测试要求与提示 -->
@@ -317,7 +337,16 @@
                         <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
                             评估时间：--
                         </div>
-                        <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight">获取中...</div>
+                        <!-- 收费功能已根据要求隐藏 report-access-status -->
+                        <div id="report-access-status" class="hidden inline-flex items-center gap-1.5 mb-3 ml-2 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/8 text-[#0a84ff] border border-[#0a84ff]/15 shadow-sm">
+                            免费报告剩余 5 次
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight flex-1">获取中...</div>
+                            <a href="#video-plan-card" title="查看专属训练视频方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
+                                ↓ 专属方案
+                            </a>
+                        </div>
                         <div class="flex flex-wrap gap-2 mb-3">
                             <span id="final-report-confidence" class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/10 text-[#0a84ff] border border-[#0a84ff]/20">模式匹配度：--</span>
                             <span class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-600 border border-[#e5e5ea]">依据：6项动作筛查左右差值</span>
@@ -419,7 +448,51 @@
                     </button>
                 </div>
 
-                <button id="btn-start-over" class="mt-6 w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-xs tracking-widest z-10 flex items-center justify-center gap-1.5">
+                <!-- 专属训练视频方案卡片 -->
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#0a84ff]/20 shadow-lg">
+                    <!-- 渐变头部 -->
+                    <div class="bg-gradient-to-br from-[#0a84ff] to-[#0062cc] px-5 py-4 flex items-start gap-3">
+                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mt-0.5">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[9px] font-bold text-white/70 tracking-[0.22em] mb-0.5">根据你的评估结果定制</div>
+                            <div id="vp-title" class="text-[15px] font-black text-white leading-snug tracking-wide">专属训练视频方案</div>
+                            <div id="vp-tagline" class="text-[10px] text-white/80 mt-1 leading-relaxed">加载中...</div>
+                        </div>
+                    </div>
+                    <!-- 内容区 -->
+                    <div class="bg-white px-5 py-4 flex flex-col gap-3.5">
+                        <!-- 包含视频列表 -->
+                        <div>
+                            <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2">本套方案包含</div>
+                            <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
+                        </div>
+                        <!-- 分割线 -->
+                        <div class="h-px bg-[#f0f0f5]"></div>
+                        <!-- 价格与 CTA -->
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em]">方案价格</div>
+                                <div class="mt-0.5 flex items-baseline gap-1.5">
+                                    <span class="text-[11px] text-slate-400 line-through font-bold">¥499</span>
+                                    <span class="text-xl font-black text-[#0a84ff]">¥299</span>
+                                    <span class="text-[9px] font-bold text-rose-500 bg-rose-50 border border-rose-200 rounded-full px-1.5 py-0.5">限时</span>
+                                </div>
+                            </div>
+                            <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#0a84ff] hover:bg-[#0062cc] active:scale-95 text-white rounded-xl px-5 py-3 text-[11px] font-black tracking-widest shadow-[0_4px_14px_rgba(10,132,255,0.4)] transition-all flex items-center gap-2 animate-pulse">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                获取视频方案
+                            </button>
+                        </div>
+                        <!-- 底部说明 -->
+                        <p class="text-[9px] text-slate-400 leading-relaxed text-center">
+                            扫码付款后，截图发至工作微信 <span class="font-bold text-slate-600">songjiaotou999</span>，即可收到专属视频链接
+                        </p>
+                    </div>
+                </div>
+
+                <button id="btn-start-over" class="mt-4 w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-xs tracking-widest z-10 flex items-center justify-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     开启新一轮评估
                 </button>
@@ -452,6 +525,102 @@
                 </div>
                 <p class="text-sm text-slate-800 font-bold text-center tracking-wider">感谢您的认可与支持</p>
                 <p class="text-[10px] text-slate-500 mt-2 text-center px-4 tracking-wide leading-relaxed">如果您觉得这个工具对您有帮助<br>可以请作者喝杯咖啡 ☕️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 付费解锁 Modal -->
+    <div id="payment-unlock-modal" class="fixed inset-0 z-[108] bg-slate-900/45 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
+        <div class="bg-[#f5f5f7] w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50 transform transition-transform">
+            <div class="p-4 bg-[#f5f5f7] text-slate-800 flex justify-between items-center border-b border-[#e5e5ea]">
+                <h2 class="text-sm font-bold flex items-center gap-2 tracking-widest">
+                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2m-2 0h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"></path></svg>
+                    免费次数已用完
+                </h2>
+                <button id="btn-close-payment-unlock" class="text-slate-400 hover:text-slate-600 p-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-5 flex flex-col gap-4">
+                <div class="rounded-2xl border border-[#e5e5ea] bg-white px-4 py-3.5 text-[11px] text-slate-600 leading-relaxed">
+                    <p id="payment-unlock-summary" class="font-bold text-slate-800">当前浏览器已用完 5 次免费完整报告。</p>
+                    <p class="mt-2">扫码付款后，请联系 <span class="font-bold text-slate-800">songjiaotou999</span> 获取人工解锁码，在当前设备输入后即可继续生成报告。</p>
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="rounded-xl border border-[#0a84ff]/20 bg-[#0a84ff]/5 px-2.5 py-3 text-center shadow-sm">
+                        <div class="text-[10px] font-bold text-[#0a84ff] tracking-[0.16em]">年卡授权</div>
+                        <div class="mt-1 text-sm font-black text-slate-800">365 天</div>
+                    </div>
+                </div>
+                <div class="w-48 h-48 mx-auto bg-white border border-slate-200 p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
+                    <img src="IMG_1456.jpeg" alt="付费解锁收款二维码" class="w-full h-full object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                    <div class="absolute inset-0 flex-col items-center justify-center bg-slate-50 text-slate-400 hidden p-2 text-center flex">
+                        <svg class="w-8 h-8 mb-2 opacity-50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-[10px] leading-tight">未找到二维码<br>请上传同名文件</span>
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-[#e5e5ea] bg-white px-4 py-3.5">
+                    <label for="unlock-code-input" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">输入解锁码</label>
+                    <input id="unlock-code-input" type="text" placeholder="请输入你收到的解锁码" class="w-full bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner">
+                    <p id="unlock-code-status" class="hidden mt-2 text-[10px] leading-relaxed"></p>
+                    <p id="license-api-note" class="mt-2 text-[9px] text-slate-400 leading-relaxed">说明：当前为 H5 版，本地浏览器缓存被清空后，免费次数和解锁状态会被重置。</p>
+                </div>
+                <button id="btn-verify-unlock-code" class="w-full py-3.5 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] text-[11px] tracking-widest">
+                    验证并解锁当前设备
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频方案付费 Modal -->
+    <div id="video-plan-modal" class="fixed inset-0 z-[109] bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
+        <div class="bg-[#f5f5f7] w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50">
+            <!-- 头部 -->
+            <div class="px-5 pt-5 pb-4 bg-gradient-to-br from-[#0a84ff] to-[#0062cc] flex justify-between items-start">
+                <div class="min-w-0">
+                    <div class="text-[9px] font-bold text-white/70 tracking-[0.22em] mb-0.5">专属训练视频方案</div>
+                    <h2 id="vpm-title" class="text-[15px] font-black text-white leading-snug">方案加载中</h2>
+                    <p id="vpm-tagline" class="text-[10px] text-white/80 mt-1 leading-relaxed"></p>
+                </div>
+                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <!-- 内容 -->
+            <div class="p-5 flex flex-col gap-4">
+                <!-- 包含视频 -->
+                <div class="rounded-2xl border border-[#e5e5ea] bg-white px-4 py-3.5">
+                    <div class="text-[10px] font-bold text-slate-400 tracking-[0.18em] mb-2">本套方案包含</div>
+                    <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
+                </div>
+                <!-- 价格 -->
+                <div class="rounded-2xl border border-[#0a84ff]/20 bg-[#0a84ff]/5 px-4 py-3.5 flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-[#0a84ff] tracking-wide">限时特惠价格</span>
+                        <span class="text-[9px] font-bold text-rose-500 bg-rose-50 border border-rose-200 rounded-full px-2 py-0.5">限时特价</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-black text-[#0a84ff]">¥299</span>
+                        <span class="text-[12px] text-slate-400 line-through font-medium">原价 ¥499</span>
+                    </div>
+                </div>
+                <!-- 二维码 -->
+                <div class="flex flex-col items-center gap-3">
+                    <div class="text-[10px] font-bold text-slate-500 tracking-[0.18em]">扫码付款</div>
+                    <div class="w-44 h-44 bg-white border border-slate-200 p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
+                        <img src="IMG_1456.jpeg" alt="付款二维码" class="w-full h-full object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                        <div class="absolute inset-0 flex-col items-center justify-center bg-slate-50 text-slate-400 hidden p-2 text-center flex">
+                            <svg class="w-8 h-8 mb-2 opacity-50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="text-[10px] leading-tight">未找到二维码</span>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 text-center leading-relaxed px-2">
+                        付款完成后，截图发送至工作微信
+                        <span class="font-bold text-slate-800 mx-0.5">songjiaotou999</span>
+                        （闲聊勿扰），客服将为您发送专属训练视频链接。
+                    </div>
+                </div>
+                <button id="btn-close-video-plan-bottom" class="w-full py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-[11px] tracking-widest">
+                    我已了解，关闭
+                </button>
             </div>
         </div>
     </div>
@@ -634,6 +803,18 @@
         const demoActionHint = document.getElementById('demo-action-hint');
         const demoTriggerLabels = document.querySelectorAll('[data-demo-trigger]');
         const finalReportDateTime = document.getElementById('final-report-datetime');
+        const usageGateStatus = document.getElementById('usage-gate-status');
+        const usageGateNote = document.getElementById('usage-gate-note');
+        const usageGateDetail = document.getElementById('usage-gate-detail');
+        const reportAccessStatus = document.getElementById('report-access-status');
+        const btnOpenPaymentUnlock = document.getElementById('btn-open-payment-unlock');
+        const paymentUnlockModal = document.getElementById('payment-unlock-modal');
+        const btnClosePaymentUnlock = document.getElementById('btn-close-payment-unlock');
+        const paymentUnlockSummary = document.getElementById('payment-unlock-summary');
+        const unlockCodeInput = document.getElementById('unlock-code-input');
+        const unlockCodeStatus = document.getElementById('unlock-code-status');
+        const licenseApiNote = document.getElementById('license-api-note');
+        const btnVerifyUnlockCode = document.getElementById('btn-verify-unlock-code');
         const btnSaveReport = document.getElementById('btn-save-report');
         const btnViewSavedReports = document.getElementById('btn-view-saved-reports');
         // Start Over
@@ -660,6 +841,7 @@
         let liveRequestID = null;
         let activeDemoKey = null;
         let demoPlaybackToken = 0;
+        let pendingFinalReportGeneration = false;
         let aiEngineState = {
             status: 'idle',
             error: '',
@@ -704,8 +886,22 @@
         const AI_BACKEND_TIMEOUT = 4000;
         const AI_INIT_TIMEOUT = 12000;
         const REPORT_STORAGE_KEY = 'pelvic_report_archive_v1';
+        const USAGE_GATE_STORAGE_KEY = 'pelvic_usage_gate_v1';
         const DEMO_SAFETY_NOTICE = '若出现疼痛、串麻感或明显不适，请立即停止测试。';
         const VOICE_SAFETY_SUFFIX = '如果过程中出现疼痛、串麻感或明显不适，请立即停止测试。';
+        const LICENSE_PLAN_CONFIG = {
+            year: { label: '年卡', days: 365 },
+            legacy: { label: '历史授权', days: 3650 }
+        };
+        const DEFAULT_LICENSE_ACTIVATE_URL = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
+            ? 'http://127.0.0.1:8787/api/licenses/activate'
+            : 'https://YOUR-WORKER-SUBDOMAIN.workers.dev/api/licenses/activate';
+        const LICENSE_API_CONFIG = {
+            activateUrl: window.__FORMA_LICENSE_ACTIVATE_URL__ || DEFAULT_LICENSE_ACTIVATE_URL
+        };
+        const USAGE_GATE_CONFIG = {
+            freeQuota: 3
+        };
         const DEMO_ANIMATION_CONFIG = {
             videos: {
                 slr: {
@@ -728,6 +924,7 @@
                 }
             }
         };
+        let usageGateState = loadUsageGateState();
         function withTimeout(promise, timeoutMs, message) {
             return new Promise((resolve, reject) => {
                 const timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
@@ -751,6 +948,258 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        }
+
+        function getDefaultUsageGateState() {
+            return {
+                freeQuota: USAGE_GATE_CONFIG.freeQuota,
+                usedCount: 0,
+                license: {
+                    codeId: '',
+                    plan: '',
+                    activatedAt: '',
+                    expiresAt: '',
+                    status: 'inactive'
+                }
+            };
+        }
+
+        function toIsoString(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? '' : date.toISOString();
+        }
+
+        function buildLegacyLicense(parsed) {
+            if (!parsed || !parsed.isUnlocked) return null;
+            const activatedAt = toIsoString(parsed.unlockedAt) || new Date().toISOString();
+            return {
+                codeId: 'legacy-local-unlock',
+                plan: 'legacy',
+                activatedAt,
+                expiresAt: '2099-12-31T23:59:59.000Z',
+                status: 'active'
+            };
+        }
+
+        function normalizeLicense(license, fallbackParsed = null) {
+            const source = license || buildLegacyLicense(fallbackParsed) || {};
+            const activatedAt = toIsoString(source.activatedAt);
+            const expiresAt = toIsoString(source.expiresAt);
+            const now = Date.now();
+            const expiresTime = expiresAt ? new Date(expiresAt).getTime() : 0;
+            const status = expiresTime && expiresTime > now ? 'active' : (expiresAt ? 'expired' : 'inactive');
+            return {
+                codeId: source.codeId || '',
+                plan: source.plan || '',
+                activatedAt,
+                expiresAt,
+                status
+            };
+        }
+
+        function loadUsageGateState() {
+            try {
+                const raw = localStorage.getItem(USAGE_GATE_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : {};
+                return {
+                    freeQuota: USAGE_GATE_CONFIG.freeQuota,
+                    usedCount: Math.max(0, Number(parsed.usedCount) || 0),
+                    license: normalizeLicense(parsed.license, parsed)
+                };
+            } catch (error) {
+                console.warn('[usage-gate] load failed', error);
+                return getDefaultUsageGateState();
+            }
+        }
+
+        function saveUsageGateState() {
+            localStorage.setItem(USAGE_GATE_STORAGE_KEY, JSON.stringify(usageGateState));
+        }
+
+        function getRemainingFreeReports() {
+            return Math.max(0, usageGateState.freeQuota - usageGateState.usedCount);
+        }
+
+        function getActiveLicense() {
+            const license = normalizeLicense(usageGateState.license);
+            usageGateState.license = license;
+            return license.status === 'active' ? license : null;
+        }
+
+        function getLicenseStatus() {
+            const license = normalizeLicense(usageGateState.license);
+            usageGateState.license = license;
+            return license.status;
+        }
+
+        function isLicenseActive() {
+            return getLicenseStatus() === 'active';
+        }
+
+        function isLicenseExpired() {
+            return getLicenseStatus() === 'expired';
+        }
+
+        function canGenerateReport() {
+            return true; // 临时通过，隐藏充值拦截: isLicenseActive() || getRemainingFreeReports() > 0;
+        }
+
+        function getPlanLabel(plan) {
+            return LICENSE_PLAN_CONFIG[plan]?.label || '限时授权';
+        }
+
+        function formatDisplayDateTime(dateLike) {
+            const isoString = toIsoString(dateLike);
+            return isoString ? formatReportDateTime(new Date(isoString)) : '--';
+        }
+
+        function setUnlockCodeStatus(message = '', tone = 'neutral') {
+            if (!message) {
+                unlockCodeStatus.textContent = '';
+                unlockCodeStatus.className = 'hidden mt-2 text-[10px] leading-relaxed';
+                return;
+            }
+
+            const toneClassName = tone === 'success'
+                ? 'mt-2 text-[10px] leading-relaxed text-emerald-600'
+                : tone === 'error'
+                    ? 'mt-2 text-[10px] leading-relaxed text-rose-500'
+                    : 'mt-2 text-[10px] leading-relaxed text-slate-500';
+            unlockCodeStatus.className = toneClassName;
+            unlockCodeStatus.textContent = message;
+        }
+
+        function renderUsageGateStatus() {
+            const remaining = getRemainingFreeReports();
+            const license = getActiveLicense();
+            const summaryText = license
+                ? `当前设备已解锁：${getPlanLabel(license.plan)}有效`
+                : isLicenseExpired()
+                    ? '当前授权已到期，请续费解锁'
+                    : remaining > 0
+                        ? ``
+                        : ``;
+            const noteText = license
+                ? `到期时间：${formatDisplayDateTime(license.expiresAt)}`
+                : isLicenseExpired()
+                    ? `当前浏览器授权已过期，请续费后重新输入新解锁码。`
+                    : remaining > 0
+                        ? `当前浏览器已使用 ${usageGateState.usedCount}/${usageGateState.freeQuota} 次完整报告。`
+                        : '当前浏览器免费次数已用完，扫码付款并输入年卡解锁码后可继续使用。';
+
+            usageGateStatus.textContent = summaryText;
+            usageGateNote.textContent = noteText;
+            usageGateDetail.textContent = license
+                ? `激活时间：${formatDisplayDateTime(license.activatedAt)}，到期后需要重新续费。`
+                : '套餐：年卡 365 天，从首次激活开始计时。';
+            reportAccessStatus.textContent = '';
+            reportAccessStatus.className = 'hidden';
+
+            btnOpenPaymentUnlock.textContent = license ? '查看授权' : (remaining > 0 ? '付费解锁' : '去解锁');
+            btnOpenPaymentUnlock.className = license
+                ? 'shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold text-emerald-600 shadow-sm'
+                : 'shrink-0 rounded-full border border-[#0a84ff]/20 bg-[#0a84ff]/8 px-3 py-1.5 text-[10px] font-bold text-[#0a84ff] shadow-sm active:scale-95 transition-transform';
+
+            paymentUnlockSummary.textContent = license
+                ? `当前设备已激活 ${getPlanLabel(license.plan)}，到期时间为 ${formatDisplayDateTime(license.expiresAt)}。`
+                : isLicenseExpired()
+                    ? '当前设备授权已到期，请续费后输入新的限时解锁码。'
+                    : `当前浏览器已用完 ${usageGateState.freeQuota} 次免费完整报告。`;
+            licenseApiNote.textContent = LICENSE_API_CONFIG.activateUrl.startsWith('/')
+                ? '说明：当前默认调用同域验码接口。若前端部署在 GitHub Pages，请把验码服务单独部署后再改成完整接口地址。'
+                : LICENSE_API_CONFIG.activateUrl.includes('YOUR-WORKER')
+                    ? '说明：线上请先把 Worker 部署地址填进激活配置，否则客户无法完成解锁。'
+                    : '说明：当前为 H5 版，本地浏览器缓存被清空后，免费次数和解锁状态会被重置。';
+        }
+
+        function consumeFreeReportQuota() {
+            if (isLicenseActive()) return;
+            usageGateState.usedCount = Math.min(usageGateState.freeQuota, usageGateState.usedCount + 1);
+            saveUsageGateState();
+            renderUsageGateStatus();
+        }
+
+        function openPaymentUnlockModal() {
+            renderUsageGateStatus();
+            setUnlockCodeStatus('');
+            unlockCodeInput.value = '';
+            paymentUnlockModal.classList.remove('hidden');
+        }
+
+        function closePaymentUnlockModal() {
+            pendingFinalReportGeneration = false;
+            paymentUnlockModal.classList.add('hidden');
+            setUnlockCodeStatus('');
+            unlockCodeInput.value = '';
+        }
+
+        async function requestUnlockCodeActivation(code) {
+            const normalizedCode = String(code || '').trim().toUpperCase();
+            if (!normalizedCode) {
+                return { ok: false, reason: 'invalid' };
+            }
+
+            if (!LICENSE_API_CONFIG.activateUrl || LICENSE_API_CONFIG.activateUrl.includes('YOUR-')) {
+                return { ok: false, reason: 'service_unconfigured' };
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = window.setTimeout(() => controller.abort(), 8000);
+                const response = await fetch(LICENSE_API_CONFIG.activateUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: normalizedCode }),
+                    signal: controller.signal
+                });
+                window.clearTimeout(timeoutId);
+                const rawText = await response.text();
+                let payload;
+                try {
+                    payload = rawText ? JSON.parse(rawText) : { ok: false, reason: 'invalid' };
+                } catch (error) {
+                    payload = {
+                        ok: false,
+                        reason: response.status === 404 ? 'service_unconfigured' : 'invalid'
+                    };
+                }
+                return payload;
+            } catch (error) {
+                return { ok: false, reason: 'network' };
+            }
+        }
+
+        function saveActivatedLicense(license) {
+            usageGateState.license = normalizeLicense(license);
+            saveUsageGateState();
+            renderUsageGateStatus();
+        }
+
+        async function verifyUnlockCode(code) {
+            const normalizedCode = String(code || '').trim().toUpperCase();
+            if (!normalizedCode) {
+                setUnlockCodeStatus('请输入你收到的解锁码。', 'error');
+                return false;
+            }
+
+            const response = await requestUnlockCodeActivation(normalizedCode);
+            if (!response.ok) {
+                const messageMap = {
+                    invalid: '解锁码格式不正确，请核对后重试。',
+                    not_found: '未找到这条解锁码，请确认你收到的是最新授权码。',
+                    used: '这条解锁码已经激活过，不能重复使用。',
+                    expired: '这条解锁码已经过期，请联系我重新续费发码。',
+                    network: '当前验码服务连接失败，请稍后重试或检查接口地址。',
+                    service_unconfigured: '当前页面还没有配置验码服务地址，先部署小服务后才能在线激活。'
+                };
+                setUnlockCodeStatus(messageMap[response.reason] || '验证失败，请稍后重试。', 'error');
+                return false;
+            }
+
+            saveActivatedLicense(response.license);
+            setUnlockCodeStatus(`当前设备已激活 ${getPlanLabel(response.license.plan)}，有效期至 ${formatDisplayDateTime(response.license.expiresAt)}。`, 'success');
+            return true;
         }
 
         function loadSavedReports() {
@@ -1405,6 +1854,8 @@
 
         btnShowDonate.addEventListener('click', () => donateModal.classList.remove('hidden'));
         btnCloseDonate.addEventListener('click', () => donateModal.classList.add('hidden'));
+        btnOpenPaymentUnlock.addEventListener('click', () => openPaymentUnlockModal());
+        btnClosePaymentUnlock.addEventListener('click', () => closePaymentUnlockModal());
         btnToggleDebug.addEventListener('click', () => {
             debugEnabled = !debugEnabled;
             renderDebugPanel();
@@ -1413,8 +1864,33 @@
         btnViewSavedReports.addEventListener('click', () => openSavedReportsModal());
         btnCloseSavedReports.addEventListener('click', () => closeSavedReportsModal());
         btnSaveReport.addEventListener('click', () => saveCurrentReport());
+        btnVerifyUnlockCode.addEventListener('click', async () => {
+            btnVerifyUnlockCode.disabled = true;
+            const originalLabel = btnVerifyUnlockCode.textContent;
+            btnVerifyUnlockCode.textContent = '正在验证...';
+            const unlocked = await verifyUnlockCode(unlockCodeInput.value);
+            btnVerifyUnlockCode.disabled = false;
+            btnVerifyUnlockCode.textContent = originalLabel;
+            if (!unlocked) return;
+
+            const shouldResumeReportGeneration = pendingFinalReportGeneration;
+            paymentUnlockModal.classList.add('hidden');
+            setUnlockCodeStatus('');
+            unlockCodeInput.value = '';
+            pendingFinalReportGeneration = false;
+            if (shouldResumeReportGeneration) generateFinalReport();
+        });
+        unlockCodeInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                btnVerifyUnlockCode.click();
+            }
+        });
         savedReportsModal.addEventListener('click', e => {
             if (e.target === savedReportsModal) closeSavedReportsModal();
+        });
+        paymentUnlockModal.addEventListener('click', e => {
+            if (e.target === paymentUnlockModal) closePaymentUnlockModal();
         });
         savedReportsList.addEventListener('click', e => {
             const openButton = e.target.closest('[data-report-open]');
@@ -1455,6 +1931,7 @@
                 }, 0);
             });
         });
+        renderUsageGateStatus();
 
         // --- Manual Input Actions (Enhanced with smart partial fill) ---
         btnManualInput.addEventListener('click', () => {
@@ -1495,7 +1972,8 @@
 
             const nextTest = getNextMissingTest();
             if (!nextTest) {
-                generateFinalReport();
+                speak("全部采集完成！正在生成报告");
+                setTimeout(() => { generateFinalReport(); }, 800);
             } else {
                 // 如果只填了一部分，聪明地把选项切到下一个空缺项
                 document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
@@ -1506,11 +1984,13 @@
 
         // --- Start Over Action ---
         btnStartOver.addEventListener('click', () => {
+            if (!confirm('确定要清空所有数据并开启新的评估吗？')) return;
             testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
             updateTrackerUI();
             resetCanvasForNewUpload();
             manualModal.classList.add('hidden');
             donateModal.classList.add('hidden');
+            closePaymentUnlockModal();
             closeSavedReportsModal();
             closeDemoModal();
             currentReportSnapshot = null;
@@ -1534,7 +2014,7 @@
 
             aiEngineState.status = 'loading';
             aiEngineState.error = '';
-            updateAIStatus('loading', '正在后台加载视觉引擎，你也可以先手动录入数据。');
+            updateAIStatus('loading', 'AI 引擎准备中，您可以先采用手动录入，同样有效。');
 
             aiEngineState.initPromise = (async () => {
                 if (!window.tf || !window.poseDetection) {
@@ -2184,6 +2664,28 @@
             return null; 
         }
 
+        function resetTrackerItem(type) {
+            const nameMap = { 'slr': '主动直腿抬高', 'hip': '主动髋屈曲', 'shoulder': '主动肩屈' };
+            if (!confirm(`确定要重新录入 ${nameMap[type]} 的数据吗？`)) return;
+            
+            testRecords[type] = { L: null, R: null, final: null };
+            updateTrackerUI();
+            
+            // 自动选中重录项
+            const tRadio = document.querySelector(`input[name="testType"][value="${type}"]`);
+            if(tRadio) tRadio.checked = true;
+            document.querySelector(`input[name="testSide"][value="L"]`).checked = true;
+            
+            updateSaveButtonText();
+            resetCanvasForNewUpload();
+            // 隐藏报表区域
+            document.getElementById('final-report-section').classList.add('hidden');
+            
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            speak(`已重置，请重新录入。`);
+        }
+
         function updateTrackerUI() {
             ['slr', 'hip', 'shoulder'].forEach(t => {
                 const trBox = document.getElementById(`tracker-${t}`);
@@ -2236,7 +2738,8 @@
                 speak(`参数已录入。准备执行，${sName}${tName}。`);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                generateFinalReport();
+                speak("全部采集完成！正在生成报告");
+                setTimeout(() => { generateFinalReport(); }, 800);
             }
         });
 
@@ -2250,6 +2753,13 @@
 
             if ([slrL, slrR, hipL, hipR, shL, shR].some(value => value === null)) {
                 alert('测试数据尚未采集完整，无法生成最终报告。');
+                return;
+            }
+
+            if (!canGenerateReport()) {
+                pendingFinalReportGeneration = true;
+                speak(isLicenseExpired() ? '当前授权已到期，请续费后输入新的解锁码继续使用。' : '免费报告次数已用完，请扫码付费后输入解锁码继续使用。');
+                openPaymentUnlockModal();
                 return;
             }
 
@@ -2727,9 +3237,158 @@
             });
 
             currentReportSnapshot = buildCurrentReportSnapshot();
+            consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
+            renderVideoPlanCard(comboKey);
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
+
+        // ============================================================
+        // 专属训练视频方案配置与渲染
+        // ============================================================
+        const VIDEO_PLAN_CONFIG = {
+            posterior_LeftAIC: {
+                title: '后链减压 · 基线方案',
+                tagline: '适合骨盆被后侧顶推、且左侧骨盆更靠前的人群',
+                videos: [
+                    { name: '第一步：先降低后侧顶推感', desc: '骨盆后侧肌肉持续"顶着"你往前走，第一优先是让这种顶推感降下来，而不是一上来就追角度或翘臀。' },
+                    { name: '第二步：恢复后下胸廓与骨盆后侧空间', desc: '后侧空间被压扁后，呼吸和髋的活动范围都会跟着变差，这一步把空间重新打开。' },
+                    { name: '第三步：修正左侧骨盆更靠前的旋转偏移', desc: '外层顶推感降低后，再针对左侧更靠前这个底层旋转做专项回正，让左右骨盆重新找到更对称的位置。' }
+                ]
+            },
+            posterior_Oblique: {
+                title: '后链减压 · 斜轴方案',
+                tagline: '适合骨盆后侧紧张、且左侧更靠前同时偏高的人群',
+                videos: [
+                    { name: '第一步：先降低后侧顶推感', desc: '后侧肌肉把骨盆整体向前顶，同时左侧又比右侧更高更前，后侧顶推是最外层问题，先把它降下来。' },
+                    { name: '第二步：恢复胸廓与骨盆的对角节奏', desc: '斜轴卡死意味着上下半身已经不在同一个旋转节奏里，让胸廓和骨盆重新建立交叉对齐是关键。' },
+                    { name: '第三步：解除左侧更前更高的斜向锁定', desc: '外层降下来之后，专项纠正左高右低的斜向不均，避免单纯拉伸只处理一端。' }
+                ]
+            },
+            posterior_Lateral: {
+                title: '后链减压 · 横向方案',
+                tagline: '适合骨盆后侧紧张、且左低右高横向偏移的人群',
+                videos: [
+                    { name: '第一步：先降低后侧把骨盆往前顶的力', desc: '后侧顶推是最外层，先把整体往前顶的力松开，骨盆才有空间重新找到更中立的位置。' },
+                    { name: '第二步：减轻将骨盆从左向右横向推起的力量', desc: '横向偏移不能靠对称做两边一样的动作，要专门针对"哪边在抬、哪边在推"来处理。' },
+                    { name: '第三步：重建左右侧向稳定与承重切换', desc: '偏移降低后，恢复两侧轮流承重的能力，避免身体永远偏在一边。' }
+                ]
+            },
+            anterior_LeftAIC: {
+                title: '前链减压 · 基线方案',
+                tagline: '适合骨盆前侧被牵拉、且左侧骨盆更靠前的人群',
+                videos: [
+                    { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '髋屈肌和股四头肌一直在把骨盆往前下方拉，第一步是把这种拉扯感松开，而不是直接去拉伸。' },
+                    { name: '第二步：恢复腹斜肌和腿后侧对骨盆的回收能力', desc: '前侧减压后，还要让"往回收"的力重新工作，不然骨盆会继续往前掉。' },
+                    { name: '第三步：修正左侧骨盆更靠前的底层旋转', desc: '外层前拉降低后，针对左侧更靠前这个不对称做专项回正，让两侧骨盆回到更均衡的位置。' }
+                ]
+            },
+            anterior_Oblique: {
+                title: '前链减压 · 斜轴方案',
+                tagline: '适合骨盆前侧被牵拉、且左侧极度靠前偏高的人群',
+                videos: [
+                    { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧拉扯是外层，先把骨盆不再被一直往前拽的状态建立起来。' },
+                    { name: '第二步：恢复胸廓与骨盆的交叉对齐节奏', desc: '斜轴同时合并前侧拉扯，意味着上下半身已经完全脱节，重建交叉节奏比单独练某块肌肉更重要。' },
+                    { name: '第三步：解除左侧极度靠前且偏高的斜向卡死', desc: '减压完成后，专项修正对角线两端的高低与前后差异，避免训练越练越歪。' }
+                ]
+            },
+            anterior_Lateral: {
+                title: '前链减压 · 横向方案',
+                tagline: '适合骨盆前侧被牵拉、且存在左低右高横向偏移的人群',
+                videos: [
+                    { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧减压先行，骨盆停止被向前拽，才能让后面的横向纠正真正落地。' },
+                    { name: '第二步：减轻将骨盆从左向右横向推起的横向偏移', desc: '前侧拉扯合并横向偏移，两层同时存在，要分清楚哪一层是主导，按顺序处理。' },
+                    { name: '第三步：重建左右侧向稳定与承重的平衡', desc: '偏移改善后，恢复两侧轮流承重的能力，让骨盆真正稳定下来，而不只是暂时调整位置。' }
+                ]
+            }
+        };
+
+        function renderVideoPlanCard(comboKey) {
+            const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
+            const card = document.getElementById('video-plan-card');
+            if (!card) return;
+
+            card.classList.add('animate-fade-in-up');
+            const jumpLink = document.querySelector('.id-jump-video');
+            if(jumpLink) jumpLink.classList.remove('hidden');
+
+            document.getElementById('vp-title').textContent = plan.title;
+            document.getElementById('vp-tagline').textContent = plan.tagline;
+            // price is now static HTML in card template
+
+            const videoList = document.getElementById('vp-video-list');
+            videoList.innerHTML = plan.videos.map((v, i) => `
+                <li class="flex items-start gap-2.5">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] text-[10px] font-black flex items-center justify-center">${i + 1}</span>
+                    <div class="min-w-0">
+                        <div class="text-[11px] font-bold text-slate-800 leading-tight">${v.name}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">${v.desc}</div>
+                    </div>
+                </li>
+            `).join('');
+
+            // 存储当前 comboKey 供弹窗使用
+            card.dataset.comboKey = comboKey;
+            card.classList.remove('hidden');
+        }
+
+        function openVideoPlanModal() {
+            const card = document.getElementById('video-plan-card');
+            const comboKey = card?.dataset.comboKey || 'posterior_LeftAIC';
+            const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
+
+            document.getElementById('vpm-title').textContent = plan.title;
+            document.getElementById('vpm-tagline').textContent = plan.tagline;
+            // price is now static HTML in modal template
+
+            const list = document.getElementById('vpm-video-list');
+            list.innerHTML = plan.videos.map((v, i) => `
+                <li class="flex items-start gap-2.5">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] text-[10px] font-black flex items-center justify-center">${i + 1}</span>
+                    <div class="min-w-0">
+                        <div class="text-[11px] font-bold text-slate-800 leading-tight">${v.name}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">${v.desc}</div>
+                    </div>
+                </li>
+            `).join('');
+
+            document.getElementById('video-plan-modal').classList.remove('hidden');
+        }
+
+        function closeVideoPlanModal(isFromBottomBtn = false) {
+            document.getElementById('video-plan-modal').classList.add('hidden');
+            if (isFromBottomBtn) {
+                const btnGet = document.getElementById('btn-get-video-plan');
+                if (btnGet) {
+                    btnGet.classList.remove('bg-[#0a84ff]', 'hover:bg-[#0062cc]', 'shadow-[0_4px_14px_rgba(10,132,255,0.4)]', 'animate-pulse');
+                    btnGet.classList.add('bg-emerald-500', 'hover:bg-emerald-600', 'shadow-[0_4px_14px_rgba(16,185,129,0.4)]');
+                    btnGet.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>已扫码？等待发送...`;
+                }
+            }
+        }
+
+        // 事件绑定
+        document.getElementById('btn-get-video-plan').addEventListener('click', openVideoPlanModal);
+        document.getElementById('btn-close-video-plan').addEventListener('click', () => closeVideoPlanModal(false));
+        document.getElementById('btn-close-video-plan-bottom').addEventListener('click', () => closeVideoPlanModal(true));
+        // 付费弹窗禁止点击背景遮罩退出来防呆
+        // document.getElementById('video-plan-modal').addEventListener('click', function(e) {
+        //    if (e.target === this) closeVideoPlanModal();
+        // });
+        
+        // 隐藏的调试触发器 (点击顶部主标题 5 次)
+        let headerClickCount = 0;
+        let headerClickTimer = null;
+        document.getElementById('main-header').addEventListener('click', () => {
+            headerClickCount++;
+            if (headerClickTimer) clearTimeout(headerClickTimer);
+            headerClickTimer = setTimeout(() => { headerClickCount = 0; }, 2000);
+            if (headerClickCount >= 5) {
+                document.getElementById('btn-toggle-debug').click();
+                speak("已启用调试模式");
+                headerClickCount = 0;
+            }
+        });
 
     </script>
 </body>
