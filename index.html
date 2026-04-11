@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.2</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2744,10 +2744,10 @@
                     fullLabel: PELVIC_POSTERIOR_LABEL,
                     alias: 'PC',
                     solutionName: '骨盆后侧肌肉紧张方案',
-                    checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高偏低、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
+                    checks: [testRecords.slr.final > 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高相对保留、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
                     mechanism: '后侧肌群更像在持续踩“刹车”。臀大肌、深层外旋肌以及后侧组织过度缩短，把骨盆从后方向前推，身体为了不向前摔倒，只能长期把重心顶在前脚掌。',
-                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
+                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
                     objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆后侧肌肉紧张的判定阈值。`,
                     primaryAction: {
                         name: '靠墙深蹲夹球',
@@ -2768,10 +2768,10 @@
                     fullLabel: PELVIC_ANTERIOR_LABEL,
                     alias: 'AC',
                     solutionName: '骨盆前侧肌肉紧张方案',
-                    checks: [testRecords.slr.final > 50, testRecords.hip.final < 100, testRecords.shoulder.final > 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高相对保留、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向前拉。',
+                    checks: [testRecords.slr.final <= 50, testRecords.hip.final <= 100, testRecords.shoulder.final >= 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高偏低、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向前拉。',
                     mechanism: '前侧肌群更像在持续向前“拉扯”。股四头肌、髋屈肌等前侧组织缩短，把骨盆向前下方牵拉，身体重心因此更容易前移并压在脚趾区域。',
-                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 < 100°、肩屈 > 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
+                    thresholdExplanation: '阈值解释：直腿抬高 ≤ 50°、髋屈曲 ≤ 100°、肩屈 ≥ 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
                     objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆前侧肌肉紧张的判定阈值。`,
                     primaryAction: {
                         name: '90/90 呼吸配合前伸',
