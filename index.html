@@ -341,6 +341,9 @@
                         <div id="report-access-status" class="hidden inline-flex items-center gap-1.5 mb-3 ml-2 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/8 text-[#0a84ff] border border-[#0a84ff]/15 shadow-sm">
                             免费报告剩余 5 次
                         </div>
+                        <div id="final-hero-image-container" class="mb-4 flex flex-col items-center justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80 shadow-sm hidden">
+                            <!-- Image injected via JS -->
+                        </div>
                         <div class="flex justify-between items-start">
                             <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight flex-1">获取中...</div>
                             <a href="#video-plan-card" title="查看专属训练视频方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
@@ -2744,10 +2747,10 @@
                     fullLabel: PELVIC_POSTERIOR_LABEL,
                     alias: 'PC',
                     solutionName: '骨盆后侧肌肉紧张方案',
-                    checks: [testRecords.slr.final > 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高相对保留、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
+                    checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆后侧肌肉紧张：直腿抬高偏低、髋屈曲偏高、肩屈偏低，说明骨盆整体更像被后侧肌肉持续向前推。',
                     mechanism: '后侧肌群更像在持续踩“刹车”。臀大肌、深层外旋肌以及后侧组织过度缩短，把骨盆从后方向前推，身体为了不向前摔倒，只能长期把重心顶在前脚掌。',
-                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
+                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
                     objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆后侧肌肉紧张的判定阈值。`,
                     primaryAction: {
                         name: '靠墙深蹲夹球',
@@ -2768,10 +2771,10 @@
                     fullLabel: PELVIC_ANTERIOR_LABEL,
                     alias: 'AC',
                     solutionName: '骨盆前侧肌肉紧张方案',
-                    checks: [testRecords.slr.final <= 50, testRecords.hip.final <= 100, testRecords.shoulder.final >= 100],
-                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高偏低、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向前拉。',
+                    checks: [testRecords.slr.final > 50, testRecords.hip.final <= 100, testRecords.shoulder.final >= 100],
+                    summary: '外层代偿看整体角度限制，当前更接近骨盆前侧肌肉紧张：直腿抬高相对保留、髋屈曲偏低、肩屈偏高，说明骨盆整体更像被前侧肌肉持续向下牵拉。',
                     mechanism: '前侧肌群更像在持续向前“拉扯”。股四头肌、髋屈肌等前侧组织缩短，把骨盆向前下方牵拉，身体重心因此更容易前移并压在脚趾区域。',
-                    thresholdExplanation: '阈值解释：直腿抬高 ≤ 50°、髋屈曲 ≤ 100°、肩屈 ≥ 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
+                    thresholdExplanation: '阈值解释：直腿抬高 > 50°、髋屈曲 ≤ 100°、肩屈 ≥ 100° 时，更接近骨盆前侧肌肉紧张的整体限制图谱。',
                     objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。这组组合更符合骨盆前侧肌肉紧张的判定阈值。`,
                     primaryAction: {
                         name: '90/90 呼吸配合前伸',
@@ -3060,12 +3063,12 @@
 
             // ---------------- 终极共鸣式大白话渲染逻辑 ----------------
             const EMPATHY_TITLES = {
-                posterior_LeftAIC: '骨盆后侧处于【过度压缩顶推】状态\n且伴发典型的【左侧过度前移】',
-                posterior_Oblique: '骨盆后侧处于【过度压缩顶推】状态\n且深层发生【左侧极度前移且偏高】',
-                posterior_Lateral: '骨盆后侧处于【过度压缩顶推】状态\n且底盘横向发生【左低右高严重偏置】',
-                anterior_LeftAIC: '骨盆前侧处于【过度下坠牵拉】状态\n且伴发典型的【左侧过度前移】',
-                anterior_Oblique: '骨盆前侧处于【过度下坠牵拉】状态\n且深层发生【左侧极度前移且偏高】',
-                anterior_Lateral: '骨盆前侧处于【过度下坠牵拉】状态\n且底盘横向发生【左低右高严重偏置】'
+                posterior_LeftAIC: '骨盆后侧处于【严重挤压紧绷】状态\n且伴发典型的【左侧过度前移】',
+                posterior_Oblique: '骨盆后侧处于【严重挤压紧绷】状态\n且深层发生【左高右低的斜向错位】',
+                posterior_Lateral: '骨盆后侧处于【严重挤压紧绷】状态\n且底盘横向发生【跨整个歪向一边】',
+                anterior_LeftAIC: '骨盆前倾导致【小肚凸出/下腰挤压】\n且伴发典型的【左侧过度前移】',
+                anterior_Oblique: '骨盆前倾导致【小肚凸出/下腰挤压】\n且深层发生【左高右低的斜向错位】',
+                anterior_Lateral: '骨盆前倾导致【小肚凸出/下腰挤压】\n且底盘横向发生【跨整个歪向一边】'
             };
 
             titleEl.innerText = EMPATHY_TITLES[comboKey] || '骨盆体态发现多维代偿倾向';
@@ -3119,14 +3122,15 @@
                 anterior_Lateral: 'images/anterior_lateral.webp'
             };
             const typeImgSrc = imageMap[comboKey] || imageMap['posterior_LeftAIC'];
+            
+            const heroImageContainer = document.getElementById('final-hero-image-container');
+            heroImageContainer.innerHTML = `<img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain transition-all duration-500 ease-in-out" alt="体态分析深度解析图">`;
+            heroImageContainer.classList.remove('hidden');
 
             const deep = CLASS_DEEP_ANALYSIS[comboKey] || CLASS_DEEP_ANALYSIS['posterior_LeftAIC'];
 
             document.getElementById('empathic-report-container').innerHTML = `
-                <div class="mb-4 flex justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/50">
-                    <img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain" alt="体态分析深度解析图">
-                </div>
-                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
+                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)] mt-2">
                     <div class="flex items-center gap-2 mb-3">
                         <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">你的体质正在发生什么？</h3>
                     </div>
