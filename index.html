@@ -358,9 +358,6 @@
                             <div id="final-report-confidence-detail" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
                                 匹配度说明：--
                             </div>
-                            <div id="final-report-note" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
-                                本报告用于体态与功能筛查参考，结论来自动作角度差值与模式匹配，不替代影像学检查或临床诊断。
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -2725,7 +2722,6 @@
             const titleEl = document.getElementById('final-result-title');
             const reportConfidenceEl = document.getElementById('final-report-confidence');
             const reportConfidenceDetailEl = document.getElementById('final-report-confidence-detail');
-            const reportNoteEl = document.getElementById('final-report-note');
             const reportDateTimeText = `评估时间：${formatReportDateTime()}`;
 
             const diffHip = hipL - hipR;
@@ -2954,11 +2950,12 @@
                 : confidenceLabel === '中'
                     ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
                     : 'bg-slate-500/10 text-slate-700 border-slate-400/20';
+            const commonDisclaimer = "这份报告主要用于理解体态与动作限制，不可直接替代医学诊断（有明确疼痛请先就医）。通常，当这些动作受限得到改善后，身体的各种不适感也会逐渐好转。";
             const confidenceDetail = confidenceLabel === '高'
-                ? '高匹配度表示：整体压缩方向和左右偏移方向都比较一致，所以这次分型可信度较高。'
+                ? `高匹配度表示：整体方向高度一致，本次分型可信度非常高。${commonDisclaimer}`
                 : confidenceLabel === '中'
-                    ? '中匹配度表示：主要方向已经比较清楚，但还夹杂一些过渡代偿。更适合先按当前方案练，再复测确认。'
-                    : '低匹配度表示：身体现在更像处在过渡期或混合状态。这次报告仍会给出最接近的方向，但更建议结合后续复测一起看。';
+                    ? `中匹配度表示：主要方向较为清晰，但也夹杂一些过渡代偿。建议先按方案练习，再复测确认。${commonDisclaimer}`
+                    : `低匹配度表示：身体现在更像处在过渡期或混合状态。报告仍会给出最接近的方向，但更建议结合后续复测一起看。${commonDisclaimer}`;
             const compressionTraining = compressionPattern.key === 'posterior'
                 ? '第一阶段先把骨盆后侧肌肉紧张这层松开，核心是降低后侧顶推感、恢复后下胸廓与骨盆后侧空间。'
                 : '第一阶段先把骨盆前侧肌肉紧张这层松开，核心是降低前侧拉扯感、恢复腹斜肌和腿后侧对骨盆的回收能力。';
@@ -3023,8 +3020,7 @@
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
             reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
             finalReportDateTime.textContent = reportDateTimeText;
-            reportConfidenceDetailEl.innerText = `匹配度说明：${confidenceDetail}`;
-            reportNoteEl.innerHTML = '这份报告更适合用来理解你的体态和动作限制，不是用来直接判断疼痛或受伤原因的。如果你已经有疼痛，请优先找合格的物理治疗师评估。体态和某些动作受限常常是有关联的，这些限制改善后，很多人的身体感觉也会跟着变好。';
+            reportConfidenceDetailEl.innerText = `匹配度及注意事项：${confidenceDetail}`;
             // 骨盆朝向判断逻辑 (仅用于底单)
             let pelvicOrientation = '';
             if (compressionPattern.key === 'posterior') {
