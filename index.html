@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.1.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.1.2</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -431,10 +431,10 @@
                     <div id="final-technical-content" class="report-reading flex flex-col gap-4"></div>
                 </div>
 
-                <div class="hidden w-full bg-[#f5f5f7] p-4 rounded-xl border border-black/5 flex-col gap-3 mb-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed">
+                <div class="flex w-full bg-[#f5f5f7] p-4 rounded-xl border border-black/5 flex-col gap-3 mb-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed">
                     <div class="font-bold text-slate-800 border-b border-[#e5e5ea] pb-2.5 flex items-center gap-1.5 text-xs tracking-wider">
-                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        建议干预方向
+                        <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        深度体态解析与风险评估
                     </div>
                     <div id="final-action-content" class="report-reading flex flex-col gap-4"></div>
                 </div>
@@ -3185,52 +3185,54 @@
                 <p><b class="text-slate-800">4. 补充提醒：</b> ${mixedModeNote}</p>
             `;
 
+            const CLASS_DEEP_ANALYSIS = {
+                posterior_LeftAIC: {
+                    cause: '骨盆后侧肌肉持续紧绷，将骨盆整体向前推（后压缩）；同时叠加大脑对右侧的感知与右侧膈肌的解剖学优势，导致左侧骨盆比右侧更加靠前、向外侧打开。这是一种最经典且常见的人类不对称底色。',
+                    appearance: '视觉上表现为“假翘臀”和胸廓前挺。腰背容易有一道明显的深沟，感觉背后始终有一只手将重心向前推。左脚通常习惯性向前迈出，重心更偏向右腿，大腿外侧假胯宽更容易在左侧或受力侧发生。',
+                    pain: '由于腰背与骨盆后束紧绷发力过度，极易引发<strong class="text-rose-500">下背部酸痛或僵硬</strong>；右侧髋关节长期僵死承重，易出现<strong class="text-rose-500">单侧髋侧痛</strong>；左侧骨盆过度靠前则可能引发<strong class="text-rose-500">左侧侧腹股沟卡压或深处锐痛</strong>。'
+                },
+                posterior_Lateral: {
+                    cause: '这是由基线型（Left AIC）进一步代偿发展的侧向偏置态。骨盆后部的顶推力依然存在，但在横向上，骨盆从左下侧向右上方发生推挤变位，导致双腿承重严重失衡。',
+                    appearance: '骨盆与脊柱呈现侧移。视觉上高低肩和高低腰线极为明显。站立时会本能地把绝大部分重量压死在一根腿上，不仅腰臀不对称，甚至脸部两侧线条也会受到筋膜系统牵拉的影响。',
+                    pain: '两侧张力失衡会导致腰侧产生强烈的<strong class="text-rose-500">慢性拉扯痛乃至椎间盘问题</strong>；长期承压的侧髋关节（常为右侧）极易提前磨损，严重时牵引软组织引发<strong class="text-rose-500">单侧膝盖外侧（髂胫束）的摩擦刺痛</strong>。'
+                },
+                posterior_Oblique: {
+                    cause: '后压缩模式中最扭曲的状态。骨盆不仅整体被向前推，而且左侧骨盆极度靠前且向上方抬起，形成“左侧前上，右侧后下”的对角线（斜轴）卡死。',
+                    appearance: '身体在中轴线上呈现拧毛巾般的旋转。从背后看，左侧臀峰明显高于右侧，右侧显得更低更瘪。走路时躯干朝向发生错位，甚至导致手臂摆动出现严重的“一边大一边小”。',
+                    pain: '对角线卡死让脊柱处于可怕的扭转剪切应力中，极易导致一侧<strong class="text-rose-500">腰骶（SI）关节交界处剧痛</strong>；上背部颈椎被迫反向受力代偿，引发持续的<strong class="text-rose-500">单侧肩颈极度僵硬及坐骨神经卡压</strong>。'
+                },
+                anterior_LeftAIC: {
+                    cause: '底层依然带有左侧靠前的非对称底色，但导致骨盆前倾的源头变了：不再是后背往前推，而是大腿前侧、腹股沟和腹前侧的组织过度收紧，把骨盆和胸廓向前方“持续下拉扯”。',
+                    appearance: '整个人给人一种“被往前拽放不开”的拘束感。臀部并不算翘，反而由于下段挂不住而显得扁平掉落。大腿前侧异常活跃饱满，骨盆前倾主要是受到强力下拽，背部可能反而没有那么紧。',
+                    pain: '前侧强力拉扯造成前后重心偏移，极易伴随膝盖正前方的<strong class="text-rose-500">髌骨下方刺痛</strong>；髋骨前侧反复摩擦出现<strong class="text-rose-500">弹响声或腹股沟深部跳痛</strong>；并且极容易引发单纯无力导致的下腰痛。'
+                },
+                anterior_Lateral: {
+                    cause: '身体被大腿前侧链条强行向下拉扯的同时，底层遭受左低右高的横向推移。骨盆像是被斜前方的一条无形绳索死死拽住，并且整个人长期偏向了一侧承重无法归正。',
+                    appearance: '除了明显的高低肩与高低两侧腰部轮廓差之外，某侧的大腿根前侧常有深深的皮肤褶皱。臀部向上支撑力极差，<strong class="text-slate-800">假胯宽、臀凹陷</strong>问题通常在这类人群偏低的那侧爆发得极为严重且难以改善。',
+                    pain: '侧倾与前拖拽交叉受力，导致受拉伸代偿一侧的腰方肌极易遭遇<strong class="text-rose-500">抽筋或急慢性酸痛</strong>；大腿外侧至膝盖外侧容易出现强烈的摩擦痛；一侧足底弓也极易因持续死撑而<strong class="text-rose-500">塌陷或引发足底筋膜炎</strong>。'
+                },
+                anterior_Oblique: {
+                    cause: '前压缩中最复杂的“终极混血态”。前侧组织强力向下拉扯前方，同时骨盆发生“左侧又高又前，右侧又低又后”的扭曲，身体完全被悬吊在一个倾斜偏转的架子上，彻底失去交替旋转能力。',
+                    appearance: '左半屏身体似乎永远无法向后落位放松，左腿也常常显得比右腿短或难以单独平稳发力（长短腿错觉明显）。由于骨盆右侧完全处于悬空未支撑状，右侧臀部常常丧失发力功能、严重向下方空瘪。',
+                    pain: '极易引发全身难以根除的游走性病变，如：左侧屈髋肌群的<strong class="text-rose-500">深层撕裂痛</strong>、右侧臀部深处的<strong class="text-rose-500">长年放射痛</strong>，甚至常常一路延伸导致对侧肩胛骨深部的膏肓痛；关节软骨极易过早不可逆磨损。'
+                }
+            };
+
+            const deepAnalysis = CLASS_DEEP_ANALYSIS[comboKey] || CLASS_DEEP_ANALYSIS['posterior_LeftAIC'];
+
             actionContentEl.innerHTML = `
-                ${renderAccordionCard('呼吸基础', '先学会呼吸', `
-                    <p><b class="text-slate-800">呼气怎么做：</b> 先放松，再用嘴把气慢慢呼干净。重点不是猛用力，而是把呼气拉长，尽量感觉两侧腹部在参与，而不是只有肚子正前面死撑。</p>
-                    <p><b class="text-slate-800">吸气怎么做：</b> 一般用鼻子吸气，先按 5 秒呼、5 秒吸的节奏练最稳妥。</p>
-                    <p><b class="text-slate-800">工具怎么用：</b> 推荐中号气球。用嘴吹气球，停一下，再用鼻子吸气，重复做，目的主要是帮助横膈肌更好参与。</p>
-                    <p><b class="text-slate-800">发力别太大：</b> 一开始控制在 3/10 左右就够了，尽量不要超过 5/10。如果一开始就很酸、很烧、很胀，通常不是做得更好，而是太用力了。</p>
-                `, true)}
-                ${renderAccordionCard('阶段一', '第 1-2 周，所有类型通用', `
-                    <p><b class="text-slate-800">这一阶段先做什么：</b> 不管你最后更接近哪一类情况，前 1 到 2 周都先做这套共同基础计划，目的是先把身体带到更容易调整的位置，再进入后面的针对性训练。</p>
-                    ${renderExerciseList(phaseOnePlan)}
-                `, true)}
-                ${renderAccordionCard('步骤 1', '先处理外层压缩', `
-                    <p><b class="text-slate-800">第一步先练什么：</b> ${compressionPattern.solutionName}</p>
-                    <p><b class="text-slate-800">为什么先练这个：</b> ${compressionTraining}</p>
-                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${compressionPattern.primaryAction.name}</strong></p>
-                    <p><b class="text-slate-800">这个动作主要练什么：</b> ${compressionPattern.primaryAction.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.primaryAction.method}</p>
-                    <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.primaryAction.dosage}</p>
-                `, false)}
-                ${renderAccordionCard('步骤 2', '再处理底层旋转', `
-                    <p><b class="text-slate-800">第二步再练什么：</b> ${rotationPattern.solutionName}</p>
-                    <p><b class="text-slate-800">这一阶段的重点：</b> ${rotationPattern.planSummary}</p>
-                    <p><b class="text-slate-800">优先动作：</b> <strong class="mac-blue">${rotationPattern.action.name}</strong></p>
-                    <p><b class="text-slate-800">这个动作主要练什么：</b> ${rotationPattern.action.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${rotationPattern.action.method}</p>
-                    <p><b class="text-slate-800">建议做多少：</b> ${rotationPattern.action.dosage}</p>
-                `, false)}
-                ${renderAccordionCard('辅助动作卡', '配套执行', `
-                    <p><b class="text-slate-800">配套动作：</b> <strong class="mac-blue">${compressionPattern.secondaryAction.name}</strong></p>
-                    <p><b class="text-slate-800">主要作用：</b> ${compressionPattern.secondaryAction.target}</p>
-                    <p><b class="text-slate-800">动作怎么做：</b> ${compressionPattern.secondaryAction.method}</p>
-                    <p><b class="text-slate-800">建议做多少：</b> ${compressionPattern.secondaryAction.dosage}</p>
-                `, false)}
-                ${renderAccordionCard('阶段二', '第 3-4 周，按分型进入', `
-                    <p><b class="text-slate-800">第 3 到 4 周进入：</b> ${rotationPattern.solutionName}</p>
-                    ${renderExerciseList(rotationPattern.phaseTwo)}
-                `, true)}
-                ${phaseThreeBlock}
-                ${renderAccordionCard('解决顺序总览', '调整导航', `<p><b class="text-slate-800">简单说：</b> ${comboProfile.solutionOrder}</p>`, true, 'blue')}
-                ${renderAccordionCard('执行原则', '频率与持续', `
-                    <p><b class="text-slate-800">一周做几次：</b> 每周 3 到 4 次比较合适，3 次已经很好，4 次通常更理想。</p>
-                    <p><b class="text-slate-800">每个动作做几组：</b> 先以 3 组为基础；4 组可以更强一点，但一般不建议一天总量超过 5 组。</p>
-                    <p><b class="text-slate-800">能不能分开做：</b> 可以。比如早上 2 组、晚上 2 组，通常比一天只练一次更容易让身体适应新姿势。</p>
-                    <p><b class="text-slate-800">最重要的原则：</b> 不是硬把身体“掰回去”，而是用较轻的发力和正确呼吸，让神经系统慢慢接受新的、更省力的位置。</p>
-                `, false)}
-                ${renderAccordionCard('复测指标', '2-3 周后回看', `<p>复测时不要只看骨盆外观。更重要的是看：整体角度有没有慢慢脱离 ${compressionPattern.label} 的限制、左右差异有没有慢慢脱离 ${rotationPattern.label} 的特征，以及你的姿势是否更对称、肩和髋是否更好动、身体不适有没有减少。</p>`, false)}
+                ${renderAccordionCard('第一重：力学发病机制', '到底是什么力量造成了你的体态？', `
+                    <p class="text-slate-700 leading-relaxed text-sm">${deepAnalysis.cause}</p>
+                `, true, 'blue')}
+                ${renderAccordionCard('第二重：肉眼体态与外观追踪', '别人眼里的你，通常表现为：', `
+                    <p class="text-slate-700 leading-relaxed text-sm">${deepAnalysis.appearance}</p>
+                `, true, 'blue')}
+                ${renderAccordionCard('致命警告：潜在代偿与疼痛雷达', '如果盲目拉伸，会引发怎样的疼痛？', `
+                    <p class="text-slate-700 leading-relaxed text-sm">${deepAnalysis.pain}</p>
+                    <div class="mt-3 p-3 bg-rose-50 border border-rose-100 rounded-lg">
+                        <p class="text-rose-600 text-[11px] font-bold tracking-wide italic">⚠ 专家提示：在此分型下，传统的左右对称力量训练不仅无效，甚至会加速上述疼痛的爆发。请务必严格遵照专属于该分型的纠正思路执行。</p>
+                    </div>
+                `, true, 'white')}
             `;
 
             saveHistoryToStorage({
