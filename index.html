@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.2</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.3</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -3110,9 +3110,22 @@
                 }
             };
 
+            const imageMap = {
+                posterior_LeftAIC: 'images/posterior_left_aic.webp',
+                posterior_Oblique: 'images/posterior_oblique.webp',
+                posterior_Lateral: 'images/posterior_lateral.webp',
+                anterior_LeftAIC: 'images/anterior_left_aic.webp',
+                anterior_Oblique: 'images/anterior_oblique.webp',
+                anterior_Lateral: 'images/anterior_lateral.webp'
+            };
+            const typeImgSrc = imageMap[comboKey] || imageMap['posterior_LeftAIC'];
+
             const deep = CLASS_DEEP_ANALYSIS[comboKey] || CLASS_DEEP_ANALYSIS['posterior_LeftAIC'];
 
             document.getElementById('empathic-report-container').innerHTML = `
+                <div class="mb-4 flex justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/50">
+                    <img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain" alt="体态分析深度解析图">
+                </div>
                 <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
                     <div class="flex items-center gap-2 mb-3">
                         <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">你的体质正在发生什么？</h3>
