@@ -548,14 +548,18 @@
                 </div>
                 <!-- 价格 -->
                 <div class="rounded-2xl border border-rose-200 bg-rose-50/50 px-4 py-3.5 flex flex-col gap-1">
-                    <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center justify-between mb-1 gap-2">
                         <span class="text-[11px] font-black text-rose-600 tracking-wider flex items-center gap-1"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg> 终极处方买断特惠</span>
-                        <span class="text-[9px] font-black text-white bg-rose-500 rounded-lg px-2 py-0.5 tracking-widest shadow-sm">倒计时截止</span>
+                        <div class="text-right">
+                            <span class="text-[9px] font-black text-white bg-rose-500 rounded-lg px-2 py-0.5 tracking-widest shadow-sm inline-block">倒计时截止</span>
+                            <div id="vpm-offer-countdown" class="mt-1 text-[11px] font-black text-rose-600 tracking-wide">00:00:00</div>
+                        </div>
                     </div>
                     <div class="flex items-baseline gap-2.5">
                         <span class="text-3xl font-[900] text-rose-600 tracking-tight">¥299</span>
                         <span class="text-[12px] text-slate-400 line-through font-medium">线下指导价 ¥899</span>
                     </div>
+                    <div id="vpm-offer-deadline" class="mt-1 text-[10px] text-rose-700/80 leading-relaxed">本轮优惠截止至 --</div>
                 </div>
                 <!-- 二维码 -->
                 <div class="flex flex-col items-center gap-3">
@@ -772,6 +776,8 @@
         const btnVerifyUnlockCode = document.getElementById('btn-verify-unlock-code');
         const btnSaveReport = document.getElementById('btn-save-report');
         const btnViewSavedReports = document.getElementById('btn-view-saved-reports');
+        const videoPlanOfferCountdown = document.getElementById('vpm-offer-countdown');
+        const videoPlanOfferDeadline = document.getElementById('vpm-offer-deadline');
         // Start Over
         const btnStartOver = document.getElementById('btn-start-over');
 
@@ -797,6 +803,8 @@
         let activeDemoKey = null;
         let demoPlaybackToken = 0;
         let pendingFinalReportGeneration = false;
+        let videoPlanOfferDeadlineAt = null;
+        let videoPlanOfferTimerId = null;
         let aiEngineState = {
             status: 'idle',
             error: '',
@@ -857,6 +865,9 @@
         const USAGE_GATE_CONFIG = {
             freeQuota: 3
         };
+        const VIDEO_PLAN_OFFER_CONFIG = {
+            durationHours: 6
+        };
         const DEMO_ANIMATION_CONFIG = {
             videos: {
                 slr: {
@@ -903,6 +914,57 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        }
+
+        function formatOfferCountdownParts(totalMs) {
+            const clamped = Math.max(0, totalMs);
+            const totalSeconds = Math.floor(clamped / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return {
+                hours: String(hours).padStart(2, '0'),
+                minutes: String(minutes).padStart(2, '0'),
+                seconds: String(seconds).padStart(2, '0')
+            };
+        }
+
+        function getNextOfferDeadline(now = new Date()) {
+            const deadline = new Date(now);
+            deadline.setMinutes(0, 0, 0);
+            deadline.setHours(deadline.getHours() + VIDEO_PLAN_OFFER_CONFIG.durationHours);
+            return deadline;
+        }
+
+        function stopVideoPlanOfferCountdown() {
+            if (videoPlanOfferTimerId) {
+                window.clearInterval(videoPlanOfferTimerId);
+                videoPlanOfferTimerId = null;
+            }
+        }
+
+        function renderVideoPlanOfferCountdown() {
+            if (!videoPlanOfferCountdown || !videoPlanOfferDeadline) return;
+            if (!videoPlanOfferDeadlineAt) {
+                videoPlanOfferDeadlineAt = getNextOfferDeadline();
+            }
+
+            let remainingMs = videoPlanOfferDeadlineAt.getTime() - Date.now();
+            if (remainingMs <= 0) {
+                videoPlanOfferDeadlineAt = getNextOfferDeadline(new Date(Date.now() + 1000));
+                remainingMs = videoPlanOfferDeadlineAt.getTime() - Date.now();
+            }
+
+            const parts = formatOfferCountdownParts(remainingMs);
+            videoPlanOfferCountdown.textContent = `${parts.hours}:${parts.minutes}:${parts.seconds}`;
+            videoPlanOfferDeadline.textContent = `本轮优惠截止至 ${formatReportDateTime(videoPlanOfferDeadlineAt)}，过时将恢复原价。`;
+        }
+
+        function startVideoPlanOfferCountdown() {
+            stopVideoPlanOfferCountdown();
+            videoPlanOfferDeadlineAt = getNextOfferDeadline();
+            renderVideoPlanOfferCountdown();
+            videoPlanOfferTimerId = window.setInterval(renderVideoPlanOfferCountdown, 1000);
         }
 
         function getDefaultUsageGateState() {
@@ -3338,7 +3400,7 @@
 
             document.getElementById('vpm-title').textContent = plan.title;
             document.getElementById('vpm-tagline').textContent = plan.tagline;
-            // price is now static HTML in modal template
+            startVideoPlanOfferCountdown();
 
             const list = document.getElementById('vpm-video-list');
             list.innerHTML = plan.videos.map((v, i) => `
@@ -3356,6 +3418,7 @@
 
         function closeVideoPlanModal(isFromBottomBtn = false) {
             document.getElementById('video-plan-modal').classList.add('hidden');
+            stopVideoPlanOfferCountdown();
             if (isFromBottomBtn) {
                 const btnGet = document.getElementById('btn-get-video-plan');
                 if (btnGet) {
