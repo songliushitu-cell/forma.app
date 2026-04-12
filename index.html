@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.6</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.7</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1181,7 +1181,6 @@
                 reportConfidenceText: document.getElementById('final-report-confidence').textContent,
                 reportConfidenceClassName: document.getElementById('final-report-confidence').className,
                 reportConfidenceDetailHtml: document.getElementById('final-report-confidence-detail').innerHTML,
-                reportNoteHtml: document.getElementById('final-report-note').innerHTML,
                 empathicHtml: document.getElementById('empathic-report-container').innerHTML,
                 comboLabelText: document.getElementById('final-combo-label').textContent,
                 pelvicOrientationHtml: document.getElementById('final-pelvic-orientation').innerHTML,
@@ -1204,7 +1203,6 @@
             if (snapshot.reportConfidenceClassName) confidenceEl.className = snapshot.reportConfidenceClassName;
 
             document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '匹配度说明：--';
-            document.getElementById('final-report-note').innerHTML = snapshot.reportNoteHtml || '';
             
             const empathicContainer = document.getElementById('empathic-report-container');
             if (snapshot.empathicHtml) {
