@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.3</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.5</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -323,11 +323,11 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="hidden fade-in bg-white border border-white px-4 py-5 sm:px-5 sm:py-6 -mx-1 sm:-mx-2 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-3">
+            <div id="final-report-section" class="hidden fade-in bg-white border border-white px-2.5 py-4 sm:px-3 sm:py-5 -mx-3 sm:-mx-3 rounded-[1.8rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-2.5">
                 <div class="absolute -top-20 -right-20 w-48 h-48 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/70 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 w-full report-hero rounded-[1.6rem] border border-white/80 px-4 py-4 sm:px-5 sm:py-5 overflow-hidden">
+                <div class="relative z-10 w-full report-hero rounded-[1.4rem] border border-white/80 px-3.5 py-4 sm:px-4 sm:py-4.5 overflow-hidden">
                     <div class="absolute inset-x-0 top-0 h-20 bg-white/60 blur-2xl pointer-events-none"></div>
                     <div class="relative">
                         <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
@@ -345,18 +345,15 @@
                             <!-- Image injected via JS -->
                         </div>
                         <div class="flex justify-between items-start">
-                            <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight flex-1">获取中...</div>
+                            <div id="final-result-title" class="text-[28px] sm:text-[32px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.25] flex-1">获取中...</div>
                             <a href="#video-plan-card" title="查看下一步服务" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
                                 ↓ 下一步服务
                             </a>
                         </div>
-                        <div class="flex flex-wrap gap-2 mb-3">
-                            <span id="final-report-confidence" class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/10 text-[#0a84ff] border border-[#0a84ff]/20">综合可信度：--</span>
-                            <span class="px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-600 border border-[#e5e5ea]">依据：6项动作筛查左右差值</span>
-                        </div>
                         <div class="flex flex-col gap-3">
-                            <div id="final-report-confidence-detail" class="text-[12px] sm:text-[13px] text-slate-500 leading-6 bg-white/70 border border-white rounded-2xl px-4 py-3.5">
-                                匹配度说明：--
+                            <div id="final-report-confidence" class="hidden">综合可信度：--</div>
+                            <div id="final-report-confidence-detail" class="text-[14px] sm:text-[15px] text-slate-600 leading-7 bg-white/75 border border-white rounded-[1.2rem] px-4 py-3">
+                                报告摘要：--
                             </div>
                         </div>
                     </div>
@@ -366,22 +363,12 @@
                 <div id="empathic-report-container" class="w-full flex flex-col gap-3 z-10 mb-3">
                 </div>
 
-                <!-- 附件：专家数据底单 (折叠在最下方) -->
-                <div class="flex w-full bg-[#f5f5f7] rounded-xl border border-black/5 flex-col mb-3 z-10 text-slate-600 text-[11px] sm:text-xs leading-relaxed shadow-sm overflow-hidden">
-                    <button class="w-full px-4 py-3.5 flex justify-between items-center text-left hover:bg-[#e5e5ea] transition-colors focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg.chevron').classList.toggle('rotate-180')">
-                        <div class="font-bold text-slate-500 flex items-center gap-1.5 text-xs tracking-wider">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            专业数据附录 (点击展开技术依据)
-                        </div>
-                        <svg class="w-4 h-4 text-slate-400 chevron transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="hidden px-4 pb-4 border-t border-black/5 bg-white pt-4 flex flex-col gap-4">
-                        <div><p class="font-bold text-slate-700 mb-1">技术定位标签</p><p id="final-combo-label" class="mac-blue font-bold">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">骨盆朝向判读</p><p id="final-pelvic-orientation">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">骨盆位置差异判读</p><p id="final-pelvic-asymmetry">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">核心数据依据</p><p id="final-report-data">--</p></div>
-                        <div id="final-technical-content" class="mt-2 border-t border-dashed border-slate-200 pt-3 opacity-80"></div>
-                    </div>
+                <div class="hidden">
+                    <div id="final-combo-label">--</div>
+                    <div id="final-pelvic-orientation">--</div>
+                    <div id="final-pelvic-asymmetry">--</div>
+                    <div id="final-report-data">--</div>
+                    <div id="final-technical-content"></div>
                 </div>
 
                 <div class="flex gap-2.5 z-10">
@@ -4060,100 +4047,99 @@
             heroImageContainer.innerHTML = `<img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain transition-all duration-500 ease-in-out" alt="体态分析深度解析图">`;
             heroImageContainer.classList.remove('hidden');
 
-            const pelvicCards = [
+            const rotationValue = rotationLayer.key === 'unclear'
+                ? '有一点左右不对称，这次先不写死方向'
+                : rotationLayer.key === 'Oblique'
+                    ? '有，左边更容易往前，也更容易偏高'
+                    : '有，左边更容易往前';
+            const heightValue = heightLayer.key === 'leftHigh'
+                ? '有，左边偏高，右边相对偏低'
+                : heightLayer.key === 'uneven'
+                    ? '有一点高低不均，这次先不写死哪边更高'
+                    : '这次看不出稳定的高低差';
+            const sideValue = heightLayer.key === 'leftHigh'
+                ? '左侧偏高，右侧相对偏低'
+                : heightLayer.key === 'uneven'
+                    ? '暂时先不写死哪边更高'
+                    : '暂时看不出稳定方向';
+            const frontBackValue = compressionKey === 'posterior'
+                ? '后侧更紧'
+                : compressionKey === 'anterior'
+                    ? '前侧更紧'
+                    : '前后都在参与';
+
+            const userHeadline = reportSafetyBlocked
+                ? '这次先别继续自测或训练，先把安全放前面'
+                : rotationLayer.key === 'Oblique' && heightLayer.key === 'leftHigh'
+                    ? '骨盆有旋转，也有高低差，左边更容易往前、也更容易偏高'
+                    : rotationLayer.key !== 'unclear' && heightLayer.key === 'leftHigh'
+                        ? '骨盆有旋转，也能看到左边偏高'
+                        : rotationLayer.key !== 'unclear'
+                            ? `骨盆有旋转，${compressionKey === 'mixed' ? '前后两边也都在参与' : `${frontBackValue}更明显`}`
+                            : compressionKey === 'mixed'
+                                ? '这次更像骨盆位置还不够稳定，前后两边都在参与'
+                                : `这次更明显的是${frontBackValue}，骨盆也有一点左右不对称`;
+            const userBody = reportSafetyBlocked
+                ? '你勾选了需要优先排查的情况，所以这份报告先只保留安全提醒和基础结果，不继续给训练建议，也不继续推测哪一侧更容易不舒服。'
+                : `${pelvicDimensions.apPosition} ${rotationLayer.orientationExtra}${heightLayer.key === 'leftHigh' ? ' 同时左边还更容易偏高。' : heightLayer.key === 'uneven' ? ' 另外，两边受力高低也不太均匀。' : ''}`;
+            const plainSummaryNote = reportSafetyBlocked
+                ? '先停止继续自测和自行加量训练，尽快做线下评估。'
+                : retestPriorityItems.length
+                    ? `${userHeadline}。${retestGuidance}`
+                    : `${userHeadline}。近期先按当前主线处理，再看 7 到 10 天内的变化。`;
+            const whyItFeelsText = reportSafetyBlocked
+                ? '这次先不继续往下解释动作代偿链，先把安全问题排除掉更重要。'
+                : `${compressionLayer.mechanism} ${rotationLayer.forwardImpact}${heightLayer.key !== 'unclear' ? ` ${heightLayer.impact}` : ''}`.trim();
+            const keyResultCards = [
                 {
-                    label: '骨盆朝向',
-                    conclusion: pelvicDimensions.orientation,
-                    explain: pelvicDimensions.orientationExtra,
-                    impact: pelvicDimensions.orientationImpact
+                    label: '骨盆旋转',
+                    value: rotationValue,
+                    note: rotationLayer.orientationExtra
                 },
                 {
-                    label: '骨盆前后',
-                    conclusion: pelvicDimensions.apShort,
-                    explain: pelvicDimensions.apPosition,
-                    impact: pelvicDimensions.apImpact
+                    label: '骨盆高低',
+                    value: heightValue,
+                    note: heightLayer.explain
                 },
                 {
-                    label: '左右高低',
-                    conclusion: pelvicDimensions.heightShort,
-                    explain: pelvicDimensions.heightStatus,
-                    impact: pelvicDimensions.heightImpact
+                    label: '哪侧更高',
+                    value: sideValue,
+                    note: heightLayer.key === 'leftHigh' ? '目前更像左边偏高。' : '这次先不把左右方向写死。'
                 },
                 {
-                    label: '哪侧更靠前',
-                    conclusion: pelvicDimensions.forwardSide,
-                    explain: pelvicDimensions.forwardExtra,
-                    impact: pelvicDimensions.forwardImpact
+                    label: '前后哪里更紧',
+                    value: frontBackValue,
+                    note: compressionLayer.pelvicAp.explain
                 }
             ];
 
             const summaryHtml = `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                    <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">一句话总判断</div>
-                    <h3 class="text-[17px] sm:text-[18px] font-black text-slate-900 leading-[1.6]">${headline}</h3>
-                    <p class="mt-2 text-[13px] sm:text-[14px] text-slate-600 leading-[1.8]">${bodyState}</p>
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="px-2.5 py-1 rounded-full bg-[#0a84ff]/8 text-[#0a84ff] text-[10px] font-bold border border-[#0a84ff]/10">综合可信度：${confidenceLabelMap[overallConfidenceKey]}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">左右差异度：${assessmentResult.asymmetryMagnitude.label}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">差异分：${assessmentResult.asymmetryMagnitude.score}/6</span>
-                    </div>
-                    <div class="mt-4 grid grid-cols-1 gap-3">
-                        ${renderLayerSummaryRow('前后压缩层', compressionLayer.label, compressionLayer.confidenceKey)}
-                        ${renderLayerSummaryRow('旋转层', rotationLayer.label, rotationLayer.confidenceKey)}
-                        ${renderLayerSummaryRow('高低层', heightLayer.label, heightLayer.confidenceKey)}
-                    </div>
-                    <div class="mt-4">
-                        <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">当前最重要的 3 个点</div>
-                        <div class="flex flex-col gap-2">${renderNumberedHighlights(topFindings.slice(0, 3))}</div>
+                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">一句话结论</div>
+                    <h3 class="text-[21px] sm:text-[23px] font-black text-slate-900 leading-[1.55]">${userHeadline}</h3>
+                    <p class="mt-3 text-[15px] sm:text-[16px] text-slate-600 leading-[1.9]">${userBody}</p>
+                </div>
+            `;
+
+            const coreResultsHtml = `
+                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-3">核心结果</div>
+                    <div class="grid grid-cols-1 gap-3">
+                        ${keyResultCards.map(card => `
+                            <div class="rounded-[1.15rem] border border-[#e5e5ea] px-4 py-3.5 bg-white shadow-sm">
+                                <div class="text-[11px] font-black tracking-[0.16em] text-slate-400">${card.label}</div>
+                                <div class="mt-1.5 text-[19px] sm:text-[20px] font-black text-slate-900 leading-[1.5]">${card.value}</div>
+                                <p class="mt-2 text-[13px] sm:text-[14px] text-slate-500 leading-[1.8]">${card.note}</p>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
 
-            const certaintyHtml = `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">📌</span><h3 class="text-base font-black text-slate-800 tracking-wide">这次判断怎么看</h3>
-                    </div>
-                    <div class="grid grid-cols-1 gap-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        ${layerCertaintyRows.map(row => `
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                <p><span class="font-black text-slate-800">${row.label}：</span>${row.value}</p>
-                                <p class="mt-1 text-slate-500">${row.note}</p>
-                            </div>
-                        `).join('')}
-                        <div class="rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3">
-                            <p><span class="font-black text-slate-800">建议怎么验证：</span>${retestGuidance}</p>
-                            <p class="mt-2"><span class="font-black text-slate-800">补充提醒：</span>${assessmentResult.asymmetryMagnitude.summary}</p>
-                        </div>
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                            <p><span class="font-black text-slate-800">测量完整性：</span>${measurementQuality.recaptureNeeded ? '本次有需要结合复测看的临界项。' : '本次测量质量整体可作为当前趋势参考。'}</p>
-                            <div class="mt-2 flex flex-col gap-1.5">${renderLineList(measurementQualityNotes, { markerClass: 'text-slate-500', itemClass: 'text-[11px] sm:text-[12px] text-slate-600 leading-[1.8]' })}</div>
-                        </div>
-                    </div>
-                    <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] sm:text-[12px] text-slate-500 leading-[1.8]">
-                        <span class="font-black text-slate-700">专业边界说明：</span>${rotationOverrideNote}
-                    </div>
-                </div>
-            `;
-
-            const pelvicAnalysisHtml = `
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🧭</span><h3 class="text-base font-black text-slate-800 tracking-wide">骨盆四维分析</h3>
-                    </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">下面这 4 项对应的是用户最容易问的 4 个问题：骨盆朝向怎样、整体在前还是在后、有没有明显高低差、哪一侧更靠前。</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                        ${pelvicCards.map(card => `
-                            <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
-                                <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">${card.label}</div>
-                                <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${card.conclusion}</div>
-                                <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${card.explain}</p>
-                                <div class="mt-3 rounded-xl bg-slate-50 px-3 py-2.5 text-[11px] sm:text-[12px] text-slate-600 leading-[1.8]">
-                                    <span class="font-black text-slate-800">对你的影响：</span>${card.impact}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
+            const whyHtml = `
+                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
+                    <div class="text-[11px] font-black tracking-[0.18em] text-amber-700 mb-2">为什么会这样</div>
+                    <p class="text-[15px] sm:text-[16px] text-slate-600 leading-[1.9]">${whyItFeelsText}</p>
                 </div>
             `;
 
@@ -4204,38 +4190,30 @@
             `;
 
             const loadRiskHtml = reportSafetyBlocked ? '' : `
-                <div class="bg-white rounded-2xl p-5 border border-[#fde68a] shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🧩</span><h3 class="text-base font-black text-slate-800 tracking-wide">可能更容易出现负担或不适的区域</h3>
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">可信度：${confidenceLabelMap[loadRisk.confidenceKey]}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">口径：负担区域 / 不适倾向</span>
-                    </div>
-                    <div class="rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[12px] sm:text-[13px] text-slate-700 leading-[1.8]">
-                        <p><span class="font-black text-amber-700">怎么看这块：</span>${loadRisk.summary}</p>
-                        <p class="mt-2 text-slate-600">${loadRisk.alignmentNote}</p>
+                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-[#fde68a] shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
+                    <div class="text-[11px] font-black tracking-[0.18em] text-amber-700 mb-3">你更容易累的地方</div>
+                    <div class="rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[14px] sm:text-[15px] text-slate-700 leading-[1.9]">
+                        ${loadRisk.summary}
                     </div>
                     ${loadRisk.available && loadRisk.areas.length ? `
                         <div class="grid grid-cols-1 gap-3 mt-4">
                             ${loadRisk.areas.slice(0, 3).map(area => `
-                                <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                                    <div class="text-[10px] font-black tracking-[0.18em] text-amber-700">区域</div>
-                                    <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${area.area}</div>
-                                    <div class="mt-3 rounded-xl bg-slate-50 px-3 py-2.5 text-[11px] sm:text-[12px] text-slate-600 leading-[1.8]">
-                                        <span class="font-black text-slate-800">为什么更容易累 / 不适：</span>${area.why}
+                                <div class="rounded-[1.15rem] border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
+                                    <div class="text-[18px] sm:text-[19px] font-black text-slate-900 leading-[1.5]">${area.area}</div>
+                                    <div class="mt-3 rounded-xl bg-slate-50 px-3 py-3 text-[13px] sm:text-[14px] text-slate-600 leading-[1.85]">
+                                        <span class="font-black text-slate-800">为什么这里更容易累：</span>${area.why}
                                     </div>
-                                    <p class="mt-3 text-[11px] sm:text-[12px] text-slate-500 leading-[1.8]"><span class="font-black text-slate-700">常见触发场景：</span>${area.triggers}</p>
+                                    <p class="mt-3 text-[13px] sm:text-[14px] text-slate-500 leading-[1.85]"><span class="font-black text-slate-700">什么情况下更容易出现：</span>${area.triggers}</p>
                                 </div>
                             `).join('')}
                         </div>
                     ` : `
-                        <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                            ${loadRisk.note}
+                        <div class="mt-4 rounded-[1.15rem] border border-slate-200 bg-slate-50 px-4 py-3.5 text-[14px] sm:text-[15px] text-slate-600 leading-[1.9]">
+                            这次结果还不适合直接写死到具体哪一侧不舒服。
                         </div>
                     `}
-                    <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] sm:text-[12px] text-slate-500 leading-[1.8]">
-                        <span class="font-black text-slate-700">边界说明：</span>以下区域只表示“更容易累或不适的地方”，不表示你已经患有对应部位的诊断性疼痛。
+                    <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[12px] sm:text-[13px] text-slate-500 leading-[1.85]">
+                        这里只表示更容易累或不舒服的地方，不代表临床诊断。
                     </div>
                 </div>
             `;
@@ -4256,35 +4234,22 @@
             ` : '';
 
             const nextStepsHtml = reportSafetyBlocked ? '' : `
-                <div class="bg-white rounded-2xl p-5 border border-[#0a84ff]/10 shadow-[0_4px_20px_rgba(10,132,255,0.06)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🪜</span><h3 class="text-base font-black text-slate-800 tracking-wide">近期最该做什么</h3>
+                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-[#0a84ff]/10 shadow-[0_4px_20px_rgba(10,132,255,0.06)]">
+                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-3">近期最该做什么</div>
+                    <div class="rounded-[1.15rem] border border-[#0a84ff]/10 bg-[#0a84ff]/5 px-4 py-3.5">
+                        <div class="flex flex-col gap-2">${renderLineList(nextActions, { itemClass: 'text-[14px] sm:text-[15px] text-slate-700 leading-[1.85]' })}</div>
                     </div>
-                    <div class="grid grid-cols-1 gap-3">
-                        <div class="rounded-2xl border border-[#0a84ff]/10 bg-[#0a84ff]/5 px-4 py-3.5">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">优先顺序</div>
-                            <div class="flex flex-col gap-2">${renderLineList(nextActions)}</div>
-                        </div>
-                        <div class="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3.5">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-amber-700 mb-2">暂时不建议做什么</div>
-                            <div class="flex flex-col gap-2">${renderLineList(avoidList, { markerClass: 'text-amber-700' })}</div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                            <p><span class="font-black text-slate-800">当前主线：</span>${compressionLayer.label} → ${rotationLayer.label}${heightLayer.key !== 'unclear' ? ` → ${heightLayer.label}` : ''}</p>
-                            <p class="mt-2"><span class="font-black text-slate-800">复测建议：</span>${retestGuidance}</p>
-                        </div>
+                    <div class="mt-3 rounded-[1.15rem] border border-amber-200 bg-amber-50/70 px-4 py-3.5">
+                        <div class="text-[11px] font-black tracking-[0.16em] text-amber-700 mb-2">这段时间先别急着做</div>
+                        <div class="flex flex-col gap-2">${renderLineList(avoidList, { markerClass: 'text-amber-700', itemClass: 'text-[14px] sm:text-[15px] text-slate-700 leading-[1.85]' })}</div>
+                    </div>
+                    <div class="mt-3 rounded-[1.15rem] border border-slate-200 bg-slate-50 px-4 py-3.5 text-[14px] sm:text-[15px] text-slate-600 leading-[1.9]">
+                        <p>${retestGuidance}</p>
                     </div>
                 </div>
             `;
 
-            const serviceHintHtml = reportSafetyBlocked ? '' : `
-                <div class="bg-white rounded-2xl p-5 border border-[#dbeafe] shadow-sm">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xl">📘</span><h3 class="text-base font-black text-slate-800 tracking-wide">下一步服务建议</h3>
-                    </div>
-                    <p class="text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">${serviceTone}</p>
-                </div>
-            `;
+            const serviceHintHtml = '';
 
             const appendixMetricsHtml = `
                 <div class="mt-3 flex flex-col gap-2">
@@ -4294,13 +4259,15 @@
                 </div>
             `;
 
-            const empathicHtml = [summaryHtml, certaintyHtml, pelvicAnalysisHtml, meaningHtml, loadRiskHtml, safetyHtml, nextStepsHtml, serviceHintHtml].filter(Boolean).join('');
+            const empathicHtml = reportSafetyBlocked
+                ? [summaryHtml, safetyHtml, coreResultsHtml, whyHtml].filter(Boolean).join('')
+                : [summaryHtml, coreResultsHtml, whyHtml, loadRiskHtml, nextStepsHtml, serviceHintHtml].filter(Boolean).join('');
 
             document.getElementById('empathic-report-container').innerHTML = empathicHtml;
             document.getElementById('empathic-report-container').classList.remove('hidden');
 
-            titleEl.innerText = headline;
-            titleEl.className = 'text-lg sm:text-xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-snug';
+            titleEl.innerText = userHeadline;
+            titleEl.className = 'text-[28px] sm:text-[32px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.25]';
 
             document.getElementById('final-pelvic-orientation').innerHTML = `
                 ${pelvicDimensions.orientation}<br>
@@ -4332,17 +4299,12 @@
             `;
 
             finalReportDateTime.textContent = reportDateTimeText;
-            reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneMap[overallConfidenceKey]}`;
-            reportConfidenceEl.innerText = `综合可信度：${confidenceLabelMap[overallConfidenceKey]}`;
+            reportConfidenceEl.className = 'hidden';
+            reportConfidenceEl.innerText = '';
             reportConfidenceDetailEl.innerHTML = `
-                <div class="space-y-1.5">
-                    <p><span class="font-black text-slate-800">前后压缩层：</span>${compressionLayer.label}（${compressionLayer.confidenceLabel}）</p>
-                    <p><span class="font-black text-slate-800">旋转层：</span>${rotationLayer.label}（${rotationLayer.confidenceLabel}）</p>
-                    <p><span class="font-black text-slate-800">高低层：</span>${heightLayer.label}（${heightLayer.confidenceLabel}）</p>
-                    <p><span class="font-black text-slate-800">测量完整性：</span>${measurementQuality.recaptureNeeded ? '需结合复测' : '当前可作趋势参考'}</p>
-                    <p><span class="font-black text-slate-800">负担区域：</span>${reportSafetyBlocked ? '已因红旗项隐藏' : `可信度 ${confidenceLabelMap[loadRisk.confidenceKey]}`}</p>
-                    ${reportSafetyBlocked ? '<p><span class="font-black text-slate-800">安全提示：</span>已触发红旗抑制，报告只保留停止自测与线下评估建议。</p>' : ''}
-                    ${retestPriorityItems.length ? `<p><span class="font-black text-slate-800">优先重测：</span>${retestPriorityItems.join('、')}</p>` : ''}
+                <div class="space-y-2">
+                    <p class="text-[14px] sm:text-[15px] text-slate-700 leading-[1.8]">${plainSummaryNote}</p>
+                    ${measurementQuality.recaptureNeeded && !reportSafetyBlocked ? `<p class="text-[13px] sm:text-[14px] text-slate-500 leading-[1.8]">这次有几项比较接近临界值，复测时尽量保持同一机位和同一动作标准。</p>` : ''}
                 </div>
             `;
 
@@ -4358,14 +4320,10 @@
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
-            if (reportSafetyBlocked) {
-                const videoPlanCard = document.getElementById('video-plan-card');
-                if (videoPlanCard) videoPlanCard.classList.add('hidden');
-                const jumpLink = document.querySelector('.id-jump-video');
-                if (jumpLink) jumpLink.classList.add('hidden');
-            } else {
-                renderVideoPlanCard(planKey);
-            }
+            const videoPlanCard = document.getElementById('video-plan-card');
+            if (videoPlanCard) videoPlanCard.classList.add('hidden');
+            const jumpLink = document.querySelector('.id-jump-video');
+            if (jumpLink) jumpLink.classList.add('hidden');
             if (reportSafetyBlocked) {
                 speak('报告已生成。由于勾选了安全红旗，当前请先停止自测，并尽快做线下评估。');
             } else if (retestPriorityItems.length) {
