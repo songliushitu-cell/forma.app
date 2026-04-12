@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if [ "${SKIP_AUTO_VERSION_BUMP:-0}" = "1" ]; then
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "node is required for automatic version bumping." >&2
+  exit 1
+fi
+
+node "$repo_root/scripts/bump_version.js" >/dev/null
+git add -- "$repo_root/index.html"

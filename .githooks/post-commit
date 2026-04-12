@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+if [ "${SKIP_AUTO_PUSH:-0}" = "1" ]; then
+  exit 0
+fi
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  exit 0
+fi
+
+branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+
+if [ -z "$branch" ]; then
+  exit 0
+fi
+
+git push origin "$branch"

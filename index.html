@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.0</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.1</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -423,7 +423,7 @@
                                 <div>
                                     <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.18em] bg-[#0a84ff]/8 border border-[#0a84ff]/10 rounded px-1.5 py-0.5 inline-block">个性化服务</div>
                                     <div class="mt-1 flex items-baseline gap-1.5">
-                                        <span class="text-[11px] text-slate-400 line-through font-bold">原价 ¥899</span>
+                                        <span class="text-[11px] text-slate-400 line-through font-bold">原价 ¥599</span>
                                         <span class="text-2xl font-black text-slate-900">¥299</span>
                                     </div>
                                 </div>
@@ -550,7 +550,7 @@
                     </div>
                     <div class="flex items-baseline gap-2.5">
                         <span class="text-3xl font-[900] text-slate-900 tracking-tight">¥299</span>
-                        <span class="text-[12px] text-slate-400 line-through font-medium">参考价 ¥899</span>
+                        <span class="text-[12px] text-slate-400 line-through font-medium">参考价 ¥599</span>
                     </div>
                     <div id="vpm-offer-deadline" class="mt-1 text-[10px] text-slate-600 leading-relaxed">本轮服务截止至 --</div>
                 </div>
@@ -2784,7 +2784,7 @@
             const nearThreshold = 5;
             const formatSignedDiff = (value) => `${value > 0 ? '+' : ''}${value.toFixed(1)}°`;
 
-            const PELVIC_POSTERIOR_LABEL = '骨盆后侧肌肉紧张（大家常说的骨盆前移）';
+            const PELVIC_POSTERIOR_LABEL = '身体后侧紧张（骨盆容易被往前推）';
             const PELVIC_ANTERIOR_LABEL = '骨盆前侧肌肉紧张（大家常说的骨盆前倾）';
             const ROT_LEFT_LABEL = '左侧骨盆（髂骨相对）更往前';
             const ROT_OBLIQUE_LABEL = '左侧骨盆（髂骨相对）更往前且更高';
@@ -2794,11 +2794,11 @@
                 posterior: {
                     key: 'posterior',
                     label: PELVIC_POSTERIOR_LABEL,
-                    solutionName: '骨盆后侧肌肉紧张方案',
+                    solutionName: '身体后侧紧张调整方案',
                     checks: [testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100],
-                    summary: '身体更像是被后侧肌肉从后面一直往前顶，骨盆虽然看起来在前，但真正主导问题往往不是前侧太短，而是后侧空间长期被挤压。',
-                    mechanism: '骨盆背后深处的肌肉为了稳住身体而长期夹紧，导致胸廓后侧、骨盆后侧和下肢承重链一起变硬。这样一来，骨盆容易前移，臀部发力空间也会被压缩。',
-                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近骨盆后侧肌肉紧张的整体限制图谱。',
+                    summary: '身体更像是身体后侧一直紧着、撑着，骨盆也更容易被带到前面。表面看起来像站直了，实际常常是后背、下腰和一条腿在帮你硬撑。',
+                    mechanism: '这类情况常见于身体后侧长期比较紧。常见更容易一起参与的有腘绳肌、臀部后侧、腰背竖脊肌，有些人还会连到背阔肌和小腿后侧。它们长期一起用力时，胸廓后侧、骨盆后侧和下肢承重链就会越来越紧，骨盆也更容易被往前带。',
+                    thresholdExplanation: '阈值解释：直腿抬高 < 50°、髋屈曲 > 100°、肩屈 < 100° 时，更接近身体后侧紧张的整体限制图谱。',
                     objective: `整体角度结果：主动直腿抬高 ${formatAngleValue(testRecords.slr.final)}°，主动髋屈曲 ${formatAngleValue(testRecords.hip.final)}°，主动肩屈 ${formatAngleValue(testRecords.shoulder.final)}°。`,
                     primaryAction: {
                         name: '靠墙深蹲夹球',
@@ -2994,30 +2994,33 @@
 
             const certaintyNotes = {
                 high: {
-                    confirmed: '这次报告对整体前后方向和左右偏移的判断已经比较清楚，可以作为当前训练排序和复测对照的主要依据。',
-                    boundary: '这并不等于影像学诊断。具体受限程度、疼痛来源和结构性问题，仍需结合复测表现与线下评估。'
+                    confirmed: '这次已经比较清楚地看出，你目前主要属于哪一类整体方向问题，也能比较稳定地看出左右偏移重点。',
+                    boundary: '它能帮助你确定现在先处理什么，但不等于已经精确到哪一块肌肉就是唯一原因，也不能替代影像学和线下评估。',
+                    retestHint: '如果按建议调整后 7 到 10 天复测，主要方向没有明显跳来跳去，说明这次判断比较稳。'
                 },
                 medium: {
-                    confirmed: '这次报告已经能看出主要方向，但身体里还夹杂一些过渡代偿，所以要更重视“先后顺序”而不是一次性把所有问题都解释完。',
-                    boundary: '先按当前顺序调整 1 到 2 周，再用同一机位复测；如果方向稳定，再继续按这个思路推进。'
+                    confirmed: '这次已经能看出主要方向，但你身体里还夹着一些代偿，所以更适合先抓大方向，不用急着一次把所有细节都解释完。',
+                    boundary: '现阶段最重要的是先按顺序调整，再看身体反应；如果每次测出来的重点都差不多，后面的判断就会更清楚。',
+                    retestHint: '建议先按当前顺序做 5 到 7 天，再用同一机位复测，看主要方向是不是还保持一致。'
                 },
                 low: {
-                    confirmed: '这次更适合先把它当作“当前最接近的方向判断”，先抓大方向，不要过度解读局部细节。',
-                    boundary: '你现在更像处在过渡代偿期。请尽量用同一机位、同一动作标准在短期内复测，优先看趋势而不是一次结果。'
+                    confirmed: '这次更适合当成“目前最接近的方向判断”，先用来抓大方向，不建议把局部细节解读得太满。',
+                    boundary: '你现在更像处在变化期或代偿比较多的阶段，所以这次结果更适合拿来做短期参考，而不是直接下很死的结论。',
+                    retestHint: '建议尽量用同一机位、同一动作标准在 3 到 5 天内复测一次，先看趋势，再看细节。'
                 }
             };
 
             const REPORT_CONTENT_CONFIG = {
                 posterior_LeftAIC: {
-                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，左侧骨盆相对更靠前',
-                    bodyState: '你的骨盆更像是整体被后侧一直向前顶，同时左侧骨盆比右侧更靠前，右侧承担了更多站立和稳定工作。',
+                    headline: '当前最主要的情况：身体后侧比较紧，骨盆被带得偏前，左侧骨盆相对更靠前',
+                    bodyState: '你的骨盆更像是被身体后侧一直绷着往前带，同时左侧骨盆比右侧更靠前，右侧承担了更多站立和稳定工作。常见更紧的地方包括腘绳肌、臀部后侧和腰背肌肉。',
                     topFindings: [
-                        '现在最明显的问题，是骨盆整体被后侧一直向前顶（后侧压缩），不是单纯一边高一边低。',
+                        '现在最明显的问题，不是单纯一边高一边低，而是身体后侧整体比较紧，骨盆也被带得偏前。',
                         '左侧骨盆更靠前（基础旋转偏移），右侧更像主要承重侧。',
                         '当前处理顺序应该是先减轻整体张力，再回正左右差，最后再做力量和线条训练。'
                     ],
                     certainty: '如果近期状态变化很快，请优先相信“整体方向”和左右差，不要急着盯某一块肌肉。',
-                    overview: '这类情况常见于后侧链长期太会顶、太会硬撑。身体表面看起来像“人已经站直了”，但真正承担工作的常常是后背、右腿和下腰，而不是更均匀的胸廓与骨盆配合。',
+                    overview: '这类情况常见于身体后侧长期一直在帮你硬撑。表面上看，你像是已经站直了，但真正一直在出力的，往往是后背、右腿和下腰，而不是胸廓和骨盆在更均匀地配合。',
                     symptoms: [
                         '站久后右侧髋、右侧下腰或右侧臀后侧更容易累和顶。',
                         '左侧腹股沟或左侧前髋容易有被拉着往前的感觉。',
@@ -3039,7 +3042,7 @@
                         '先别把“左右每边做一样多”当成当前第一目标。'
                     ],
                     nextActions: [
-                        '先降低后侧顶推感，让胸廓后侧和骨盆后侧恢复一点空间。',
+                        '先让身体后侧别一直绷着，让胸廓后侧和骨盆后侧恢复一点空间。',
                         '再处理左侧更靠前的旋转偏移，重新建立左右承重切换。',
                         '在动作感觉变顺之前，力量训练以稳定和控制为主。'
                     ],
@@ -3048,8 +3051,8 @@
                     serviceTone: '如果你希望把这份结论进一步落实到具体动作安排、周计划和远程答疑，可以继续查看下一步服务。'
                 },
                 posterior_Oblique: {
-                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，左侧骨盆相对更靠前且更高',
-                    bodyState: '你的骨盆不仅整体被后侧往前顶，左侧还同时更靠前、也更高，所以会出现更明显的对角线卡住感。',
+                    headline: '当前最主要的情况：身体后侧比较紧，骨盆被带得偏前，左侧骨盆相对更靠前且更高',
+                    bodyState: '你的骨盆不仅更像被身体后侧一直带在前面，左侧还同时更靠前、也更高，所以会出现更明显的对角线卡住感。',
                     topFindings: [
                         '这不只是前后顶出来的问题，还叠加了左高右低的斜向差异。',
                         '左侧更靠前且更高，说明旋转差和高低差落在了同一边。',
@@ -3078,7 +3081,7 @@
                         '先别忽略上半身，因为这类问题常常是胸廓和骨盆一起卡住。'
                     ],
                     nextActions: [
-                        '先降低后侧整体张力，避免继续被后侧往前顶。',
+                        '先让身体后侧整体别一直硬撑，避免骨盆继续被带在前面。',
                         '再恢复胸廓和骨盆的对角节奏，让上下半身重新对齐。',
                         '等身体不再一直抢代偿后，再进入更具体的力量训练。'
                     ],
@@ -3087,8 +3090,8 @@
                     serviceTone: '如果你希望把对角线问题拆成更具体的训练顺序和远程答疑内容，可以继续查看下一步服务。'
                 },
                 posterior_Lateral: {
-                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，同时出现左低右高的侧向偏移',
-                    bodyState: '你的骨盆更像是整体被后侧向前顶，同时左右侧向稳定也失衡了，表现为左低右高，但底层仍保留左侧更靠前的旋转偏移。',
+                    headline: '当前最主要的情况：身体后侧比较紧，骨盆被带得偏前，同时出现左低右高的侧向偏移',
+                    bodyState: '你的骨盆更像是被身体后侧一直带在前面，同时左右侧向稳定也失衡了，表现为左低右高，但底层仍保留左侧更靠前的旋转偏移。',
                     topFindings: [
                         '现在不只是前后问题，还合并了比较明显的侧向不稳。',
                         '左低右高只是表面结果，底层仍然保留左侧相对更靠前的旋转偏移。',
@@ -3117,7 +3120,7 @@
                         '先别急着用负重动作去证明自己能站稳。'
                     ],
                     nextActions: [
-                        '先把后侧整体顶推感降下来，给骨盆一点回到中间的空间。',
+                        '先让身体后侧整体别一直硬撑，给骨盆一点回到中间的空间。',
                         '再处理侧向稳定，让高的一侧学会放下来、低的一侧学会接住。',
                         '等站立不再总偏一边后，再逐步恢复更常规的力量训练。'
                     ],
@@ -3250,9 +3253,9 @@
             const pelvicDimensions = (() => {
                 const base = compressionPattern.key === 'posterior'
                     ? {
-                        apShort: '整体更像被后侧往前顶',
-                        apPosition: '整体更像是后侧肌肉把骨盆从后方顶向前方，所以视觉上会出现人往前顶、臀后侧挂不住的感觉。',
-                        apImpact: '这类人常常不是单纯前面短，而是后侧太会硬撑，所以越想站直越容易靠腰背顶住。'
+                        apShort: '整体更像身体后侧偏紧',
+                        apPosition: '整体更像是身体后侧一直紧着、撑着，把骨盆慢慢带到了偏前的位置，所以会出现人像往前顶、臀后侧挂不住的感觉。',
+                        apImpact: '这类人常常不是单纯前面短，而是身体后侧替你撑得太多，所以越想站直，越容易继续用腰背去顶。'
                     }
                     : {
                         apShort: '整体更像被前侧往前下方拉',
@@ -3349,7 +3352,7 @@
                     <p class="mt-2 text-[13px] sm:text-[14px] text-slate-600 leading-[1.8]">${reportProfile.bodyState}</p>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <span class="px-2.5 py-1 rounded-full bg-[#0a84ff]/8 text-[#0a84ff] text-[10px] font-bold border border-[#0a84ff]/10">匹配度：${confidenceLabel}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">${compressionPattern.key === 'posterior' ? '整体更像后侧在顶' : '整体更像前侧在拉'}</span>
+                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">${compressionPattern.key === 'posterior' ? '整体更像身体后侧紧张' : '整体更像前侧在拉'}</span>
                         <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">${rotationPattern.shortLabel}</span>
                     </div>
                     <div class="mt-4">
@@ -3362,15 +3365,22 @@
             const certaintyHtml = `
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">📌</span><h3 class="text-base font-black text-slate-800 tracking-wide">确定度与边界</h3>
+                        <span class="text-xl">📌</span><h3 class="text-base font-black text-slate-800 tracking-wide">这次判断怎么看</h3>
                     </div>
-                    <div class="space-y-2.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        <p><span class="font-black text-slate-800">当前较确定的判断：</span>${certaintyNote.confirmed}</p>
-                        <p><span class="font-black text-slate-800">还需要结合复测看的部分：</span>${certaintyNote.boundary}</p>
-                        <p><span class="font-black text-slate-800">补充说明：</span>${reportProfile.certainty}</p>
+                    <div class="grid grid-cols-1 gap-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
+                        <div class="rounded-xl border border-emerald-100 bg-emerald-50/70 px-4 py-3">
+                            <p><span class="font-black text-slate-800">这次更有把握的部分：</span>${certaintyNote.confirmed}</p>
+                        </div>
+                        <div class="rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3">
+                            <p><span class="font-black text-slate-800">现阶段先不要解读太满的部分：</span>${certaintyNote.boundary}</p>
+                        </div>
+                        <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <p><span class="font-black text-slate-800">建议怎么验证：</span>${certaintyNote.retestHint}</p>
+                            <p class="mt-2"><span class="font-black text-slate-800">补充提醒：</span>${reportProfile.certainty}</p>
+                        </div>
                     </div>
                     <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] sm:text-[12px] text-slate-500 leading-[1.8]">
-                        <span class="font-black text-slate-700">临床边界：</span>${rotationOverrideNote}
+                        <span class="font-black text-slate-700">专业边界说明：</span>${rotationOverrideNote}
                     </div>
                 </div>
             `;
@@ -3403,7 +3413,7 @@
                     </div>
                     <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${reportProfile.overview}</p>
                     <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        <span class="font-black text-amber-700">这一层为什么重要：</span>${compressionPattern.mechanism}
+                        <span class="font-black text-amber-700">为什么会这样：</span>${compressionPattern.mechanism}
                     </div>
                     <div class="grid grid-cols-1 gap-3 mt-4">
                         <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
@@ -3479,7 +3489,7 @@
                 <span class="text-slate-400">前移侧：</span>${pelvicDimensions.forwardSide}
             `;
             document.getElementById('final-report-data').textContent = `直腿抬高：左 ${formatAngleValue(slrL)}° / 右 ${formatAngleValue(slrR)}° / 差值 ${formatSignedDiff(diffSLR)}；髋屈：左 ${formatAngleValue(hipL)}° / 右 ${formatAngleValue(hipR)}° / 差值 ${formatSignedDiff(diffHip)}；肩屈：左 ${formatAngleValue(shL)}° / 右 ${formatAngleValue(shR)}° / 差值 ${formatSignedDiff(diffSh)}。`;
-            document.getElementById('final-combo-label').textContent = `${compressionPattern.key === 'posterior' ? '后侧紧张型（后侧顶推）' : '前侧牵拉型（前侧前顶）'} + ${rotationPattern.shortLabel}`;
+            document.getElementById('final-combo-label').textContent = `${compressionPattern.key === 'posterior' ? '身体后侧紧张型' : '前侧牵拉型（前侧前顶）'} + ${rotationPattern.shortLabel}`;
             document.getElementById('final-technical-content').innerHTML = `
                 <p class="text-[10px]">系统计算逻辑：${compressionPattern.mechanism}</p>
                 <p class="text-[10px] mt-1">一句话结论：${reportProfile.headline}</p>
@@ -3495,7 +3505,7 @@
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
             reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
             reportConfidenceDetailEl.innerHTML = `
-                <p><span class="font-black text-slate-800">阅读提示：</span>当前模式匹配度为${confidenceLabel}，建议先看下面的“一句话总判断”和“3 个最重要发现”；如果你想知道哪些部分更确定、哪些部分需要结合复测来看，请继续查看“确定度与边界”。</p>
+                <p><span class="font-black text-slate-800">阅读提示：</span>当前模式匹配度为${confidenceLabel}，建议先看下面的“一句话总判断”和“3 个最重要发现”；如果你想知道这次结果该怎么理解、哪些部分更稳、哪些部分要结合复测来看，请继续查看“这次判断怎么看”。</p>
             `;
 
             saveHistoryToStorage({
@@ -3520,27 +3530,27 @@
             const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
                 title: '个性化服务 · 基线型',
-                tagline: '适合本次评估表现为后侧顶推，且左侧骨盆相对更靠前的人',
+                tagline: '适合本次评估表现为身体后侧紧张，且左侧骨盆相对更靠前的人',
                 videos: [
-                    { name: '第一步：先降低后侧顶推感', desc: '骨盆后侧肌肉持续"顶着"你往前走，第一优先是让这种顶推感降下来，而不是一上来就追角度或翘臀。' },
+                    { name: '第一步：先让身体后侧别一直绷着', desc: '身体后侧一直在帮你硬撑时，骨盆也更容易被带在前面。第一优先是先把这种紧绷感降下来，而不是一上来就追角度或翘臀。' },
                     { name: '第二步：恢复后下胸廓与骨盆后侧空间', desc: '后侧空间被压扁后，呼吸和髋的活动范围都会跟着变差，这一步把空间重新打开。' },
-                    { name: '第三步：修正左侧骨盆更靠前的旋转偏移', desc: '外层顶推感降低后，再针对左侧更靠前这个底层旋转做专项回正，让左右骨盆重新找到更对称的位置。' }
+                    { name: '第三步：修正左侧骨盆更靠前的旋转偏移', desc: '身体后侧没那么紧之后，再针对左侧更靠前这个底层旋转做专项回正，让左右骨盆重新找到更对称的位置。' }
                 ]
             },
             posterior_Oblique: {
                 title: '个性化服务 · 斜向型',
-                tagline: '适合本次评估表现为后侧顶推，并伴随左侧更靠前且更高的人',
+                tagline: '适合本次评估表现为身体后侧紧张，并伴随左侧更靠前且更高的人',
                 videos: [
-                    { name: '第一步：先降低后侧顶推感', desc: '后侧肌肉把骨盆整体向前顶，同时左侧又比右侧更高更前，后侧顶推是最外层问题，先把它降下来。' },
+                    { name: '第一步：先让身体后侧别一直绷着', desc: '身体后侧一直在帮你硬撑时，骨盆就更容易被带在前面，同时左侧又比右侧更高更前，所以先把这层紧绷感降下来。' },
                     { name: '第二步：恢复胸廓与骨盆的对角节奏', desc: '斜轴卡死意味着上下半身已经不在同一个旋转节奏里，让胸廓和骨盆重新建立交叉对齐是关键。' },
                     { name: '第三步：解除左侧更前更高的斜向锁定', desc: '外层降下来之后，专项纠正左高右低的斜向不均，避免单纯拉伸只处理一端。' }
                 ]
             },
             posterior_Lateral: {
                 title: '个性化服务 · 侧向型',
-                tagline: '适合本次评估表现为后侧顶推，并伴随左低右高侧向偏移的人',
+                tagline: '适合本次评估表现为身体后侧紧张，并伴随左低右高侧向偏移的人',
                 videos: [
-                    { name: '第一步：先降低后侧把骨盆往前顶的力', desc: '后侧顶推是最外层，先把整体往前顶的力松开，骨盆才有空间重新找到更中立的位置。' },
+                    { name: '第一步：先让身体后侧别一直硬撑', desc: '身体后侧的紧绷感是最外层，先把这股一直撑着的力松开，骨盆才有空间重新找到更中立的位置。' },
                     { name: '第二步：减轻将骨盆从左向右横向推起的力量', desc: '横向偏移不能靠对称做两边一样的动作，要专门针对"哪边在抬、哪边在推"来处理。' },
                     { name: '第三步：重建左右侧向稳定与承重切换', desc: '偏移降低后，恢复两侧轮流承重的能力，避免身体永远偏在一边。' }
                 ]
