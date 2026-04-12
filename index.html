@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.7</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.9</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2844,13 +2844,13 @@
                         return hipScore + shoulderScore + slrScore;
                     },
                     evidenceCount: () => [diffHip < -threshold, diffSh > threshold, diffSLR > threshold].filter(Boolean).length,
-                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧小，左侧肩屈通常比右侧大；直腿抬高多数时候左侧也会比右侧大，但过渡期的人不一定完全一样。'
+                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧小，左侧肩屈通常比右侧大（代偿导致的角度假象）；直腿抬高多数时候左侧也会比右侧大。'
                 },
                 {
                     key: 'Lateral',
                     label: ROT_LATERAL_LABEL,
                     shortLabel: '左低右高',
-                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 > 右', '肩屈：左 < 右'],
+                    evidenceLabels: ['髋屈：左 > 右', '直抬：左 < 右', '肩屈：左 < 右'],
                     solutionName: '横向方案',
                     planSummary: '再进入这一类方案，重点减轻把骨盆带成左低右高的力量，重建侧向稳定。',
                     action: {
@@ -2866,12 +2866,12 @@
                     ],
                     score: () => {
                         const hipScore = diffHip > threshold ? 2 : diffHip > nearThreshold ? 1 : 0;
-                        const slrScore = diffSLR > threshold ? 2 : diffSLR > nearThreshold ? 1 : 0;
+                        const slrScore = diffSLR < -threshold ? 2.5 : diffSLR < -nearThreshold ? 1 : 0; 
                         const shoulderScore = diffSh < -threshold ? 2 : diffSh < -nearThreshold ? 1 : 0;
                         return hipScore + slrScore + shoulderScore;
                     },
-                    evidenceCount: () => [diffHip > threshold, diffSLR > threshold, diffSh < -threshold].filter(Boolean).length,
-                    evidenceText: () => '更直白地说，就是左侧髋屈通常比右侧大，左侧直腿抬高通常也比右侧大，而左侧肩屈通常比右侧小。'
+                    evidenceCount: () => [diffHip > threshold, diffSLR < -threshold, diffSh < -threshold].filter(Boolean).length,
+                    evidenceText: () => '更直白地说，横向型在保持左侧更靠前的基础上，左侧臀部会异常增高，导致左右受限差异变得极端。'
                 }
             ];
 
@@ -2908,7 +2908,7 @@
                 .map(candidate => ({ ...candidate, scoreValue: candidate.score(), evidenceHits: candidate.evidenceCount() }))
                 .sort((a, b) => b.scoreValue - a.scoreValue);
             let rotationPattern = rotationRanked[0];
-            const rotationOverrideNote = '当前报告只根据直腿抬高、主动髋屈曲、主动肩屈这 6 项主测试来判断整体方向和左右差异，不再额外加入股骨内外旋作为辅助分流条件。';
+            const rotationOverrideNote = '当前报告只根据直腿抬高、主动髋屈曲、主动肩屈这 6 项主测试来判断平衡倾向。';
 
             const comboProfiles = {
                 posterior_LeftAIC: {
@@ -2948,162 +2948,49 @@
                 : confidenceLabel === '中'
                     ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
                     : 'bg-slate-500/10 text-slate-700 border-slate-400/20';
-            const commonDisclaimer = "这份报告主要用于理解体态与动作限制，不可直接替代医学诊断（有明确疼痛请先就医）。通常，当这些动作受限得到改善后，身体的各种不适感也会逐渐好转。";
+            const commonDisclaimer = "这份报告主要用于理解体态与动作限制，不可直接替代医学诊断。通常，当这些动作受限得到改善后，身体的各种不适感也会逐渐好转。";
             const confidenceDetail = confidenceLabel === '高'
                 ? `高匹配度表示：整体方向高度一致，本次分型可信度非常高。${commonDisclaimer}`
                 : confidenceLabel === '中'
                     ? `中匹配度表示：主要方向较为清晰，但也夹杂一些过渡代偿。建议先按方案练习，再复测确认。${commonDisclaimer}`
                     : `低匹配度表示：身体现在更像处在过渡期或混合状态。报告仍会给出最接近的方向，但更建议结合后续复测一起看。${commonDisclaimer}`;
-            const compressionTraining = compressionPattern.key === 'posterior'
-                ? '第一阶段先把骨盆后侧肌肉紧张这层松开，核心是降低后侧顶推感、恢复后下胸廓与骨盆后侧空间。'
-                : '第一阶段先把骨盆前侧肌肉紧张这层松开，核心是降低前侧拉扯感、恢复腹斜肌和腿后侧对骨盆的回收能力。';
-            const mixedModeNote = testRecords.slr.final < 50 && testRecords.hip.final < 100
-                ? '补充提示：直腿抬高和髋屈曲同时偏低，提示前后双重受压或整体张力偏高。实际训练时仍建议先把整体张力降下来，再进入底层旋转修正。'
-                : '补充提示：姿势模式本身不等于病变，真正要关注的是身体是否被锁在单一策略里，失去了进入其他角度的能力。';
-            const rotationEvidenceText = rotationPattern.evidenceLabels.join('，');
-            const phaseThreeBlock = rotationPattern.phaseThree
-                ? renderAccordionCard('阶段三', '第 5-6 周', renderExerciseList(rotationPattern.phaseThree), false)
-                : '';
-            const gluteCompressionProfiles = {
-                posterior: {
-                    label: '后侧压缩主型',
-                    morphologyTag: '低臀峰锁紧表现',
-                    appearance: '按骨盆后侧压缩和后链锁紧的表现推演，臀后侧与臀下缘更像处在持续收短状态，臀部不容易自然向后展开。外观上更常见后翘感不足、臀线偏平、下缘像被提前收住。',
-                    peak: '臀峰位置更容易显得偏低或偏内收，视觉上不容易形成自然向后、向外的圆弧。',
-                    lowerSupport: '臀下缘支撑常见表现是“紧但不托”，看起来线条收得快，真正的下段饱满度反而不足。',
-                    training: '先把后侧顶推感降下来，再恢复臀中后外侧空间，重点补回臀峰向后展开和臀下缘承托。',
-                    priorities: ['先降后侧顶推和夹紧感，再谈翘度', '优先补臀中后外侧展开，而不是一味夹臀', '训练时重点建立臀下缘承托和向后延展'],
-                    avoid: ['避免一上来就做大重量硬夹臀、把屁股越练越紧', '避免用腰往前顶、用下背抢后伸制造假翘臀', '避免深蹲或后踢时只追求幅度，不管骨盆是否前推']
-                },
-                anterior: {
-                    label: '前侧牵拉主型',
-                    morphologyTag: '高臀峰下段不足表现',
-                    appearance: '按骨盆前侧牵拉和前移策略推演，臀部更像是上缘张力偏高、下段回收不足。外观上更常见腰臀交界更抢眼、臀上缘偏紧，但中下段往后包裹感不够。',
-                    peak: '臀峰位置更容易显得偏上、偏散，容易有“上面紧、下面空”的观感。',
-                    lowerSupport: '臀下缘支撑常见表现是不够稳，站立时下段托举感不足，臀腿交界更容易提前变平。',
-                    training: '先把前侧拉扯感降下来，再补臀中下段承重、回收和向后延展能力，让臀峰和下缘重新连起来。',
-                    priorities: ['先减前侧牵拉，让骨盆别一直往前掉', '优先补臀中下段回收和承重，不先追上缘膨胀感', '训练时把臀峰和下缘连成一体，避免只练上半截'],
-                    avoid: ['避免反复做只会强化髋前顶的臀冲和后踢', '避免站姿训练时膝盖锁死、重心全压前脚掌', '避免只追求臀上缘充血感，忽略下段支撑和稳定']
-                }
-            };
-            const gluteRotationProfiles = {
-                LeftAIC: {
-                    biasTag: '前移偏置型',
-                    asymmetry: '左右差异更像左侧臀部更紧、更难向后铺开，右侧更容易外顶代偿，所以两边圆润度和受力感可能不一致。',
-                    height: '视觉上更常见一侧臀峰不够展开，另一侧外侧更容易先顶出来。',
-                    trainingHint: '做单侧训练时，通常更要盯住左侧是否真的向后展开、右侧是否又偷偷外顶代偿。'
-                },
-                Oblique: {
-                    biasTag: '斜向高低偏置型',
-                    asymmetry: '左右差异更像左上与右下形成斜向不均，常见表现是某一侧上缘更紧，另一侧下缘更容易代偿。',
-                    height: '视觉上更容易出现一边臀峰偏高、另一边下缘更抢眼的斜向差异。',
-                    trainingHint: '训练时要避免只做两边一样的动作量，更要关注斜向两端是否重新平衡。'
-                },
-                Lateral: {
-                    biasTag: '侧向高低偏置型',
-                    asymmetry: '左右差异更像一侧臀峰更高、另一侧下缘承重更多，视觉上更容易出现高低边或左右外扩不一致。',
-                    height: '如果站姿代偿更明显，常会看到一侧臀线偏高，另一侧下段更沉。',
-                    trainingHint: '训练时要优先修正左右承重和高低边，不能只做双侧对称发力。'
-                }
-            };
-            const gluteCompression = gluteCompressionProfiles[compressionPattern.key] || gluteCompressionProfiles.posterior;
-            const gluteRotation = gluteRotationProfiles[rotationPattern.key] || gluteRotationProfiles.LeftAIC;
-            const gluteCombinedTag = `${gluteCompression.label} / ${gluteRotation.biasTag}`;
-            const gluteConfidenceNote = confidenceLabel === '高'
-                ? '这部分趋势和本次动作测试结果一致性较高，可作为当前训练观察重点。'
-                : confidenceLabel === '中'
-                    ? '这部分属于趋势判断，适合先结合训练反馈观察，再和后续复测对照。'
-                    : '这部分先作为方向提示看待，后面如果你补充臀型规则库或外观照片，再进一步细分会更稳。';
-
-            reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
-            reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
-            finalReportDateTime.textContent = reportDateTimeText;
-            reportConfidenceDetailEl.innerText = `匹配度及注意事项：${confidenceDetail}`;
-            // 骨盆朝向判断逻辑 (仅用于底单)
-            let pelvicOrientation = '';
-            if (compressionPattern.key === 'posterior') {
-                pelvicOrientation = '骨盆整体偏后倾/后移';
-            } else if (compressionPattern.key === 'anterior') {
-                pelvicOrientation = '骨盆整体偏前倾/前移';
-            } else {
-                pelvicOrientation = '骨盆朝向中立或混合型';
-            }
-
-            // 骨盆左右高低差异详细判断 (仅用于底单)
-            let pelvicAsymmetry = '';
-            let pelvicHeightDetail = '';
-            let pelvicPositionDetail = '';
             
-            if (rotationPattern.key === 'LeftAIC') {
-                pelvicAsymmetry = '左侧骨盆相对更靠前';
-                pelvicHeightDetail = '高度上两侧相对均衡';
-                pelvicPositionDetail = '左侧髂骨相对向前旋转，可能伴随左侧髋关节活动受限';
-            } else if (rotationPattern.key === 'Oblique') {
-                pelvicAsymmetry = '左侧骨盆更靠前且更高';
-                pelvicHeightDetail = '左侧明显高于右侧';
-                pelvicPositionDetail = '形成斜向轴偏移，左前右后的对角线不平衡';
-            } else if (rotationPattern.key === 'Lateral') {
-                pelvicAsymmetry = '左侧骨盆更低，右侧更高';
-                pelvicHeightDetail = '存在明显的侧向高低差';
-                pelvicPositionDetail = '骨盆向左侧倾斜，右侧代偿性升高';
-            }
-
-            // 填充底部隐藏的技术底单
-            document.getElementById('final-pelvic-orientation').innerText = pelvicOrientation;
-            document.getElementById('final-pelvic-asymmetry').innerText = `${pelvicAsymmetry}。${pelvicHeightDetail ? ` ${pelvicHeightDetail}。` : ''}`;
-            document.getElementById('final-report-data').innerText = `直腿抬高[左-右]=${diffSLR.toFixed(1)}°；髋屈[左-右]=${diffHip.toFixed(1)}°；肩屈[左-右]=${diffSh.toFixed(1)}°`;
-            document.getElementById('final-combo-label').innerText = `${compressionPattern.key === 'posterior' ? '后侧压缩' : '前侧压缩'} + ${rotationPattern.label}`;
-            document.getElementById('final-technical-content').innerHTML = `<p class="text-[10px]">系统计算逻辑：${compressionPattern.mechanism} ${rotationPattern.evidenceText()}</p>`;
-
-            // ---------------- 终极共鸣式大白话渲染逻辑 ----------------
-            const EMPATHY_TITLES = {
-                posterior_LeftAIC: '骨盆后侧处于【严重挤压紧绷】状态\n且伴发典型的【左侧过度前移】',
-                posterior_Oblique: '骨盆后侧处于【严重挤压紧绷】状态\n且深层发生【左高右低的斜向错位】',
-                posterior_Lateral: '骨盆后侧处于【严重挤压紧绷】状态\n且底盘横向发生【跨整个歪向一边】',
-                anterior_LeftAIC: '骨盆前倾导致【小肚凸出/下腰挤压】\n且伴发典型的【左侧过度前移】',
-                anterior_Oblique: '骨盆前倾导致【小肚凸出/下腰挤压】\n且深层发生【左高右低的斜向错位】',
-                anterior_Lateral: '骨盆前倾导致【小肚凸出/下腰挤压】\n且底盘横向发生【跨整个歪向一边】'
-            };
-
-            titleEl.innerText = EMPATHY_TITLES[comboKey] || '骨盆体态发现多维代偿倾向';
-            titleEl.className = 'text-lg sm:text-xl font-black text-slate-800 mb-3 tracking-tight z-10 leading-relaxed bg-amber-200/40 inline-block px-3 py-1.5 rounded-lg';
-
             const CLASS_DEEP_ANALYSIS = {
                 posterior_LeftAIC: {
-                    cause: '身体的重心像被一只无形的手从背后一直往前推。同时，因为人类骨骼天生容易依赖右腿承重，右大腿为了稳住你，不得不向内侧拧紧；而左侧骨盆为了保持平衡，又常不由自主地向前方偏转。这就是最常见的一种不平衡交织状态。',
-                    appearance: '你可能会觉得自己的臀部显得比较鼓，但这很多时候是骨盆前移和腰椎被过度折断导致的“假翘臀”。因为大腿骨为了支撑向内拧得有点过度，骨盆外侧的骨头（大转子）就会鼓出来，显得像“假胯宽”；同时脚掌内侧每天都在死死抠地防摔，容易显得像扁平足。',
-                    pain: '表面上有个“深沟”的下腰背实际上代替了臀部的发力，所以常常容易产生<strong class="text-amber-600">令人酸痛和僵硬的深层疲劳</strong>；右侧髋关节长期死死卡住承重，有时会有<strong class="text-amber-600">单侧弹响或卡顿</strong>。',
-                    habits: '深蹲或弯腰时腰后侧总想更用力去折叠自己；右大腿和脚总觉得比左边承载了更多的全身重量。'
+                    cause: '由于“重型卡车”式的出厂配置，你的重心长期锁定在右腿。这导致右侧骨盆被迫向上提并往后夹紧（内旋），而左侧骨盆为了平衡则不得不向前挺出。这不仅是后侧肌肉的紧绷，更是全身为了稳住右侧重心而产生的代偿。',
+                    appearance: '你正处于典型的“站立中期”力学锁死中。右侧臀部可能显得更高、更靠后，而左侧骨盆明显更往前冲。这种“左移”会让原本用来支撑的肌肉变得难以发力，甚至呈现出一种“假性翘臀”的视觉假象。',
+                    pain: '长期的右侧锁定，会让右侧髋关节在运动时感到一种<strong class="text-amber-600">骨头顶骨头的卡顿感</strong>；而左侧为了代偿前冲，可能会在<strong class="text-amber-600">腹股沟深处产生拉扯酸胀</strong>。',
+                    habits: '站立时几乎无法平稳地将重心完全交给左腿；走路时右脚落地的声音通常比左脚更响、更沉。'
                 },
                 posterior_Lateral: {
-                    cause: '除了整体重心习惯性前倾被锁死（后压缩），你的身体为了保持不倒向一边，在横向上也出现了偏沉的适应性改变。等于上下和左右都在互相较劲。',
-                    appearance: '带着重理不均的偏移，身体像在下意识地靠着一侧休息。照镜子时，肩线、腰部曲线甚至是双手悬垂自然放下的高度差异可能比较明显。由于某侧腿负担的压力极不均衡，那侧腿往往更容易觉得水肿或裤管显紧。',
-                    pain: '张力高度集中在一侧，会让这一侧的腰部像是永远处于紧张状态，容易引发<strong class="text-amber-600">缓慢却常在的腰酸紧绷</strong>；常作为主力支撑的那条腿，外侧很容易拉出类似<strong class="text-amber-600">裤缝线上方酸胀或摩擦的异状</strong>。',
-                    habits: '站在路边等人或者刷手机时，重心永远只习惯垮在一边；站直需要很主观刻意去发力。'
+                    cause: '这是在 Left AIC 基础上的横向升级。你的重心不仅深陷右侧，身体还试图通过将左侧骨盆整个向上推起来“逃避”承重。这通常意味着你曾经有过单侧受力的阴影（比如脚踝旧伤）。',
+                    appearance: '除了明显的长短腿错觉，你会发现左侧腰线被推挤挤压得非常深。这种“横向推起”的力量会让你的骨盆像一个歪掉的盛水盆，水（重心）总是在斜向晃动。',
+                    pain: '由于一侧被强行拔高，该侧的腰方肌（后腰侧面）常会有<strong class="text-amber-600">像被电击或抽筋似的急促紧绷感</strong>；承重的对侧腿膝盖则常伴随<strong class="text-amber-600">外侧摩擦或酸胀</strong>。',
+                    habits: '坐着时如果不习惯向一侧倾斜，就会觉得浑身不自在。'
                 },
                 posterior_Oblique: {
-                    cause: '想象你的底盘像一架稍微歪开方向盘又悬空了一个轮子的小车。骨盆除了前移外，还在深处产生了一条斜向的扭转力，让对角线的两部分互相使足了力气在维持平衡。',
-                    appearance: '身形的中轴存在一种拧毛巾似的轻微交错。这种交错容易让人在背后看时，呈现一侧臀位较高，另一侧却提早扁塌下坠的感觉。转身时两边身体的舒展范围也会大不相同。',
-                    pain: '像拧在一起的毛巾一样，对角线的发力最终常会让力的交汇点——通常在某侧骨盆与腰部的连接处，产生一阵阵<strong class="text-amber-600">深层的闷痛和说不出具体在哪的酸楚</strong>；如果往上累积，有时连着对应的那个肩膀或后脑勺下方也会觉得紧。',
-                    habits: '做对称练臀或者硬拉时，无论怎么调整位置，两边臀部就是发不上均等的力。'
+                    cause: '这是最深层的代偿模式。骨盆在斜轴上发生了彻底的扭转，左侧不仅高，而且疯狂向前冲，已经卡死了关节所有的旋转空间。你的身体正在用一种极度耗能的模式在维持行走。',
+                    appearance: '最奇特的特征是你的左手向上举（肩屈）看起来非常轻松甚至角度过大。别被骗了！那是你的躯干为了代偿骨盆扭转而强行拉长/伸展制造的假象。实际上，你的左侧关节空间已经所剩无几。',
+                    pain: '在这种斜轴扭转下，力的交汇点通常会在<strong class="text-amber-600">骶髂关节（后腰中间两侧）产生难以名状的闷痛</strong>；有时这种扭转力会一直向上延伸到<strong class="text-amber-600">单侧后脑勺下缘的偏头痛</strong>。',
+                    habits: '做几乎所有对称性的练臀动作（如臀桥）时，两边屁股的充血感完全不对等。'
                 },
                 anterior_LeftAIC: {
-                    cause: '腹股沟和大腿前侧像两根极其紧绷的粗橡皮筋，将躯干无情地向前方、下方一直拉扯。在此基础上，由于偏爱右侧发力的本能，右侧深层卡得极紧，左侧则有点挂不住重心。',
-                    appearance: '你会觉得整个人总处于一种难以放松的绷紧感，小肚子有时容易不由自主地往前挺出一点。最苦恼的可能是大腿前侧异常发达或容易长肉，稍微走远点路大腿前侧就像吹气球一样肿胀，而身后的屁股却怎么都找不到收紧的感觉。',
-                    pain: '这种橡皮筋般的下扯力给膝盖加了极大的压力，常常诱发类似膝盖前方髌骨下面的<strong class="text-amber-600">酸软钝痛和受压不适</strong>；如果长时间走路逛街，后侧腰部也常常会有这种像<strong class="text-amber-600">挂了很重东西似的累</strong>。',
-                    habits: '练习深蹲总感觉只有大腿前面累死累活；无论仰面平躺还是稍微往后靠，腰后面大概率会觉得悬空得很。'
+                    cause: '前侧肌肉像紧绷的钢缆，将你那已经向右扭转的骨盆进一步向下方拽。这就像卡车不仅重心偏右，刹车还被焊死在了前半段。',
+                    appearance: '比起后侧紧绷，你更容易观察到“大腿前侧异常粗壮”。因为你的大腿骨被卡在了持续外旋的位置，不得不接管全身的支撑工作。身后的臀部则因为位置不对，永远处于“罢工”状态。',
+                    pain: '这种下拽力直接拉扯着髌骨。你会觉得<strong class="text-amber-600">膝盖骨正下方有种莫名的酸软</strong>，尤其是上下楼梯时；下腰部也常因为前面的拉扯而被迫过度反弓，产生<strong class="text-amber-600">令人焦虑的挤压痛</strong>。',
+                    habits: '睡觉时如果不平躺且在膝盖下垫个枕头，腰后侧就会觉得悬空得难受。'
                 },
                 anterior_Lateral: {
-                    cause: '身体不仅遭受着正面肌肉往下的剧烈拉扯，底盘还不平衡地往一边整个沉去。一边的橡皮筋拉得比另一边还要长、还要紧，整个人像在被两股来自底下的力撕扯。',
-                    appearance: '因为有一边严重下沉且前坠，平时穿衣或照镜子可能会发觉一侧的裤缝总是偏、或者一侧前侧大腿根容易起褶皱。同时由于这层拉力，受力偏低的那一边由于缺乏向上生长的托举力，常常会在胯部外侧暴露比较明显的<strong class="text-slate-800">凹陷或者假胯问题</strong>。',
-                    pain: '左右被撕扯的感觉通常让长期用力把身体提起来的那侧后侧腰部（如腰方肌一带）<strong class="text-amber-600">发紧抗议甚至拉扯变僵</strong>；那侧作为重灾区的脚底足弓大概率也会觉得<strong class="text-amber-600">容易酸麻甚至有时会抗拒站立</strong>。',
-                    habits: '偶尔放松坐着的时候一边不仅腰背塌下去也会自然向着扶手倒下去，两边的站立发力完全不同频。'
+                    cause: '身体前侧的强大拉力合并了横向的偏移。你不仅面临着向下的牵引，还面临着左高右低的不平稳。你的身体在用一种“螺旋下沉”的方式在处理重力。',
+                    appearance: '由于某侧长期处于被“向上推且向下拽”的矛盾受力中，那侧大腿根部的褶皱会非常深，且局部皮肤可能因为挤压而血液循环不畅，稍微受力就容易水肿。',
+                    pain: '这种复杂的撕裂感常见于<strong class="text-amber-600">大腿外侧阔筋膜张肌的极度僵硬</strong>；有时候甚至会牵扯到肋骨边缘，产生一种<strong class="text-amber-600">深呼吸时隐约的卡涩感</strong>。',
+                    habits: '穿裤子或裙子时，总感觉衣服在自动向着某个方向旋转。'
                 },
                 anterior_Oblique: {
-                    cause: '这是一个前倾与斜向交杂的综合模式。一部分试图往下拉拔，另一部分在斜上挑起，让你在做各种换腿交互动作时，身体不得不付出极高层面的神经补偿和体力。',
-                    appearance: '左边和右边的重心存在不在同一水平维度的落差感，不仅体现在裤腰高低的问题上，甚至经常给视觉和体感上带来“两条腿长短不太一样”的错觉。',
-                    pain: '因为身体处于极不舒适的对角拉拽下，哪里力竭哪里就响红灯。有可能是长期吊在那条紧绷牵扯线上的屈髋肌肉（靠近盆腔大腿根深部）觉得<strong class="text-amber-600">一阵强过一阵的隐约抽扯酸感</strong>，抑或是偏向坠落侧后方的臀腰部时不时有点<strong class="text-amber-600">酸楚漫延感</strong>。',
-                    habits: '慢跑或者快走时能明显捕捉到落地的左右脚轻重声音不在一个频道，总在某一次落地感受到关节的轻微不连贯。'
+                    cause: '这是前倾与斜轴扭转的重叠。你的身体像是被两股相反的方向扭干的毛巾。这种状态下，神经系统通常处于高度警戒（战斗或逃跑）状态。',
+                    appearance: '你的一侧肩胛骨看起来会比另一侧更突出、更往前倾。这不仅仅是肩膀的问题，而是你的整个斜向动力链（从左脚到右肩，或反之）为了补偿骨盆的倾斜而变形了。',
+                    pain: '神经系统的紧绷会让这种疼痛带有“游走性”：今天可能是<strong class="text-amber-600">左侧腹股沟深部狠抽一下</strong>，明天可能就变成了<strong class="text-amber-600">右侧臀部深处的放射性酸痛</strong>。',
+                    habits: '运动后的疲劳感极难恢复，睡一觉起来还是觉得身体像打过仗一样沉重。'
                 }
             };
 
@@ -3123,17 +3010,30 @@
 
             const deep = CLASS_DEEP_ANALYSIS[comboKey] || CLASS_DEEP_ANALYSIS['posterior_LeftAIC'];
 
-            document.getElementById('empathic-report-container').innerHTML = `
-                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)] mt-2">
+            const empathicHtml = `
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-lg mb-2 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-4xl">🚛</div>
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">你的体质正在发生什么？</h3>
+                        <span class="text-xl">🧬</span><h3 class="text-base font-black text-amber-200 tracking-wide">为什么我的身体会这样代偿？</h3>
+                    </div>
+                    <div class="text-[12px] sm:text-[13px] text-slate-300 leading-[1.8] space-y-3">
+                        <p>这并非随机的体态崩溃，而是基于人类生理不对称的“出厂配置”。你的肝脏在右边，右侧呼吸肌（膈肌）也更大，就像一辆重型卡车右侧装了更重的油箱和引擎。</p>
+                        <p class="bg-slate-700/50 p-3 rounded-xl border border-slate-600/50 border-dashed">
+                            <span class="text-amber-200 font-bold">重心偏好：</span>为了平衡，大脑指挥身体把大部分体重压在右腿上。右侧骨盆为了撑住重量会向上提并向后夹紧（内旋）；而不用承重的左侧就容易向前挺出。这导致你的整个底盘天然倾向于向右旋转，形成了典型的代偿模式。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">深度解析：当前体质真相</h3>
                     </div>
                     <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${deep.cause}</p>
                 </div>
 
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🪞</span><h3 class="text-base font-black text-slate-800 tracking-wide">如果照镜子，你通常会有这些特征：</h3>
+                        <span class="text-xl">🪞</span><h3 class="text-base font-black text-slate-800 tracking-wide">照镜子时，通常会有这些特征：</h3>
                     </div>
                     <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium bg-slate-50/50 p-3 rounded-xl border border-slate-100">${deep.appearance}</p>
                     <div class="mt-3 flex items-start gap-2 text-[12px] text-slate-500 bg-emerald-50 rounded-lg p-2.5">
@@ -3143,24 +3043,56 @@
 
                 <div class="bg-gradient-to-br from-amber-50 to-white rounded-2xl p-5 border border-amber-200 shadow-[0_4px_20px_rgba(245,158,11,0.08)]">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">💡</span><h3 class="text-base font-black text-amber-700 tracking-wide">温馨提示：身体可能发出的信号</h3>
+                        <span class="text-xl">💡</span><h3 class="text-base font-black text-amber-700 tracking-wide">温馨提示：关于身体的不适信号</h3>
                     </div>
                     <p class="text-[13px] sm:text-[14px] text-slate-700 leading-[1.8] font-medium">${deep.pain}</p>
-                    <div class="mt-3 p-3 bg-amber-600 rounded-xl text-white shadow-sm">
-                        <p class="text-[11px] sm:text-[12px] font-bold tracking-wide leading-relaxed">🌱 真诚建议：在当前体态下，<span class="text-amber-200">传统的左右对称深蹲或盲目拉伸可能不仅效果有限，反而容易让身体感到不适。</span>建议参考专属的纠正思路来逐步调整，给身体一点循序渐进的时间。</p>
+                    <div class="mt-3 p-4 bg-amber-600 rounded-xl text-white shadow-sm">
+                        <p class="text-[11px] sm:text-[12px] font-bold tracking-wide leading-relaxed mb-2">🌱 真诚建议：</p>
+                        <p class="text-[11px] sm:text-[12px] leading-relaxed opacity-95">
+                            修复的核心不是“对抗”或暴力拉伸，而是向神经系统证明新姿势是<span>安全的</span>。过度用力会触发“战斗或逃跑”反应，导致身体拒绝接受改变。
+                        </p>
+                        <p class="mt-2 text-[11px] sm:text-[12px] leading-relaxed opacity-95 border-t border-white/20 pt-2">
+                            别追求绝对对称。我们的目标是解除因长期代偿造成的“运动受限”。当两侧活动度平衡后，绝大部分不适感都会自然消退。
+                        </p>
                     </div>
                 </div>
             `;
+            document.getElementById('empathic-report-container').innerHTML = empathicHtml;
             document.getElementById('empathic-report-container').classList.remove('hidden');
+
+            const EMPATHY_TITLES = {
+                posterior_LeftAIC: '骨盆后侧处于【严重挤压紧绷】状态\n且伴发典型的【左侧过度前移】',
+                posterior_Oblique: '骨盆后侧处于【严重挤压紧绷】状态\n且深层发生【左高右低的斜向错位】',
+                posterior_Lateral: '骨盆后侧处于【严重挤压紧绷】状态\n且底盘横向发生【跨整个歪向一边】',
+                anterior_LeftAIC: '骨盆前倾导致【小肚凸出/下腰挤压】\n且伴发典型的【左侧过度前移】',
+                anterior_Oblique: '骨盆前倾导致【小肚凸出/下腰挤压】\n且深层发生【左高右低的斜向错位】',
+                anterior_Lateral: '骨盆前倾导致【小肚凸出/下腰挤压】\n且底盘横向发生【跨整个歪向一边】'
+            };
+
+            titleEl.innerText = EMPATHY_TITLES[comboKey] || '骨盆体态发现多维代偿倾向';
+            titleEl.className = 'text-lg sm:text-xl font-black text-slate-800 mb-3 tracking-tight z-10 leading-relaxed bg-amber-200/40 inline-block px-3 py-1.5 rounded-lg';
+
+            // 骨盆朝旋转判断逻辑 (仅用于底单)
+            let pelvicOrientation = compressionPattern.key === 'posterior' ? '骨盆整体偏后倾/后移' : '骨盆整体偏前倾/前移';
+            let pelvicAsymmetry = rotationPattern.label;
+
+            // 填充底部隐藏的技术底单
+            document.getElementById('final-pelvic-orientation').innerText = pelvicOrientation;
+            document.getElementById('final-pelvic-asymmetry').innerText = pelvicAsymmetry;
+            document.getElementById('final-report-data').innerText = `直腿抬高[左-右]=${diffSLR.toFixed(1)}°；髋屈[左-右]=${diffHip.toFixed(1)}°；肩屈[左-右]=${diffSh.toFixed(1)}°`;
+            document.getElementById('final-combo-label').innerText = `${compressionPattern.key === 'posterior' ? '后侧压缩' : '前侧压缩'} + ${rotationPattern.label}`;
+            document.getElementById('final-technical-content').innerHTML = `<p class="text-[10px]">系统计算逻辑：${compressionPattern.mechanism}</p>`;
+
+            finalReportDateTime.textContent = reportDateTimeText;
+            reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
+            reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
+            reportConfidenceDetailEl.innerText = `匹配度及注意事项：${confidenceDetail}`;
 
             saveHistoryToStorage({
                 type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                slrL: slrL !== null ? slrL.toFixed(1) : '--',
-                slrR: slrR !== null ? slrR.toFixed(1) : '--',
-                hipL: hipL !== null ? hipL.toFixed(1) : '--',
-                hipR: hipR !== null ? hipR.toFixed(1) : '--',
-                shL: shL !== null ? shL.toFixed(1) : '--',
-                shR: shR !== null ? shR.toFixed(1) : '--',
+                slrL: slrL.toFixed(1), slrR: slrR.toFixed(1),
+                hipL: hipL.toFixed(1), hipR: hipR.toFixed(1),
+                shL: shL.toFixed(1), shR: shR.toFixed(1),
                 result: titleEl.innerText
             });
 
@@ -3170,6 +3102,7 @@
             renderVideoPlanCard(comboKey);
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
+
 
         // ============================================================
         // 专属训练视频方案配置与渲染
