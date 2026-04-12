@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.2.10</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.0</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -346,8 +346,8 @@
                         </div>
                         <div class="flex justify-between items-start">
                             <div id="final-result-title" class="text-xl sm:text-2xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-tight flex-1">获取中...</div>
-                            <a href="#video-plan-card" title="查看专属训练视频方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
-                                ↓ 专属方案
+                            <a href="#video-plan-card" title="查看下一步服务" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
+                                ↓ 下一步服务
                             </a>
                         </div>
                         <div class="flex flex-wrap gap-2 mb-3">
@@ -371,15 +371,15 @@
                     <button class="w-full px-4 py-3.5 flex justify-between items-center text-left hover:bg-[#e5e5ea] transition-colors focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg.chevron').classList.toggle('rotate-180')">
                         <div class="font-bold text-slate-500 flex items-center gap-1.5 text-xs tracking-wider">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            🤖 专家诊疗底表 (点击展开机器测试数据)
+                            专业数据附录 (点击展开技术依据)
                         </div>
                         <svg class="w-4 h-4 text-slate-400 chevron transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="hidden px-4 pb-4 border-t border-black/5 bg-white pt-4 flex flex-col gap-4">
-                        <div><p class="font-bold text-slate-700 mb-1">[技术定位标签]</p><p id="final-combo-label" class="mac-blue font-bold">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">[骨盆朝向判读]</p><p id="final-pelvic-orientation">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">[骨盆左右差异判读]</p><p id="final-pelvic-asymmetry">--</p></div>
-                        <div><p class="font-bold text-slate-700 mb-1">[核心数据依据]</p><p id="final-report-data">--</p></div>
+                        <div><p class="font-bold text-slate-700 mb-1">技术定位标签</p><p id="final-combo-label" class="mac-blue font-bold">--</p></div>
+                        <div><p class="font-bold text-slate-700 mb-1">骨盆朝向判读</p><p id="final-pelvic-orientation">--</p></div>
+                        <div><p class="font-bold text-slate-700 mb-1">骨盆位置差异判读</p><p id="final-pelvic-asymmetry">--</p></div>
+                        <div><p class="font-bold text-slate-700 mb-1">核心数据依据</p><p id="final-report-data">--</p></div>
                         <div id="final-technical-content" class="mt-2 border-t border-dashed border-slate-200 pt-3 opacity-80"></div>
                     </div>
                 </div>
@@ -394,55 +394,48 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#0a84ff]/20 shadow-lg">
-                    <!-- 渐变头部 -->
-                    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-black px-5 py-4 flex items-start gap-3">
-                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-amber-500/20 backdrop-blur-sm border border-amber-500/30 flex items-center justify-center mt-0.5">
-                            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#dbeafe] shadow-sm">
+                    <div class="bg-gradient-to-r from-[#f8fbff] to-white px-5 py-4 flex items-start gap-3 border-b border-[#e5e5ea]">
+                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-[#0a84ff]/10 border border-[#0a84ff]/15 flex items-center justify-center mt-0.5">
+                            <svg class="w-5 h-5 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-[9px] font-bold text-amber-500 tracking-[0.22em] mb-0.5 uppercase">顶级定制 · 核心机密</div>
-                            <div id="vp-title" class="text-[16px] font-black text-amber-400 leading-snug tracking-wide">专属训练视频处方（终极方案）</div>
-                            <div id="vp-tagline" class="text-[10px] text-slate-300 mt-1 leading-relaxed">加载中...</div>
+                            <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.22em] mb-0.5 uppercase">下一步服务建议</div>
+                            <div id="vp-title" class="text-[16px] font-black text-slate-900 leading-snug tracking-wide">个性化方案与远程解读</div>
+                            <div id="vp-tagline" class="text-[10px] text-slate-500 mt-1 leading-relaxed">加载中...</div>
                         </div>
                     </div>
-                    <!-- 内容区 -->
                     <div class="bg-white px-5 py-4 flex flex-col gap-3.5">
-                        <!-- 包含视频列表 -->
                         <div>
-                            <div class="text-[11px] text-amber-900 leading-relaxed bg-gradient-to-r from-amber-50 to-orange-50 p-3.5 rounded-xl border border-amber-200/60 mb-3">
-                                <span class="font-bold text-rose-600">⚠️ 严重警告：</span>针对你的复杂分型代偿，常规的深蹲、死抠左右对称动作很可能会<strong class="text-rose-600">急剧加重体态溃败甚至爆发尖锐疼痛</strong>。我们为你提纯了线下售价 ¥8800 私教课级别的<strong class="font-black tracking-wide text-amber-900 mx-0.5">「核心 3 步纠偏干预法」</strong>：
+                            <div class="text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-3">
+                                这部分不是报告必须购买的内容，而是给希望继续深入的人提供更细的动作顺序、训练解释和远程解读支持。
                             </div>
-                            <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">解冻当前卡死模式，你需要：</div>
+                            <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">服务内容包括</div>
                             <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
                         </div>
-                        <!-- 分割线 -->
                         <div class="h-px bg-[#f0f0f5]"></div>
-                        <!-- 社会认同 -->
                         <div class="flex flex-col gap-3">
-                            <div class="flex items-start gap-2 bg-emerald-50 rounded-lg border border-emerald-100 px-3 py-2">
-                                <span class="text-emerald-500 font-black mt-0.5 shrink-0">✓</span>
-                                <span class="text-[10px] text-emerald-700 leading-tight">基于 10,000+ 线下私教真实案例库，<strong class="font-black">92.4%</strong> 的同类严重代偿者在严格遵循此处方后获得不可思议的力线重建与疼痛缓解。</span>
+                            <div class="flex items-start gap-2 bg-[#f8fbff] rounded-lg border border-[#dbeafe] px-3 py-2">
+                                <span class="text-[#0a84ff] font-black mt-0.5 shrink-0">i</span>
+                                <span class="text-[10px] text-slate-600 leading-tight">适合希望把报告结论进一步落实到训练顺序、动作选择和远程沟通建议中的用户。</span>
                             </div>
-                            <!-- 价格与 CTA -->
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <div class="text-[9px] font-bold text-rose-500 tracking-[0.18em] bg-rose-50 border border-rose-100 rounded px-1.5 py-0.5 inline-block">🔥 粉丝限时买断价</div>
+                                    <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.18em] bg-[#0a84ff]/8 border border-[#0a84ff]/10 rounded px-1.5 py-0.5 inline-block">个性化服务</div>
                                     <div class="mt-1 flex items-baseline gap-1.5">
                                         <span class="text-[11px] text-slate-400 line-through font-bold">原价 ¥899</span>
-                                        <span class="text-2xl font-black text-rose-600">¥299</span>
+                                        <span class="text-2xl font-black text-slate-900">¥299</span>
                                     </div>
                                 </div>
-                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white rounded-xl px-4 py-3 text-[11px] font-black tracking-widest shadow-[0_4px_14px_rgba(245,158,11,0.4)] transition-all flex items-center gap-2 animate-bounce">
+                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#0a84ff] hover:bg-[#0062cc] active:scale-95 text-white rounded-xl px-4 py-3 text-[11px] font-black tracking-widest shadow-[0_4px_14px_rgba(10,132,255,0.28)] transition-all flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                    解锁处方权限
+                                    查看下一步服务
                                 </button>
                             </div>
                         </div>
-                        <!-- 底部说明（稀缺打磨） -->
                         <p class="text-[9px] text-slate-500 leading-relaxed text-center mt-1 bg-slate-50 p-2 rounded-lg">
-                            付款后添加宋教头微信 <b class="text-slate-800 underline decoration-slate-300 underline-offset-2">songjiaotou999</b> 发送由于截图秒开通。<br>
-                            <span class="text-slate-400">(开通后将立即发放专属视频处方权限)</span>
+                            如需继续查看，可完成付款后添加宋教头微信 <b class="text-slate-800 underline decoration-slate-300 underline-offset-2">songjiaotou999</b>，再发送付款截图。<br>
+                            <span class="text-slate-400">(确认后会发送对应的个性化服务内容)</span>
                         </p>
                     </div>
                 </div>
@@ -529,13 +522,13 @@
     <div id="video-plan-modal" class="fixed inset-0 z-[109] bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
         <div class="bg-[#f5f5f7] w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50">
             <!-- 头部 -->
-            <div class="px-5 pt-5 pb-4 bg-gradient-to-br from-slate-900 via-slate-800 to-black flex justify-between items-start">
+            <div class="px-5 pt-5 pb-4 bg-gradient-to-r from-[#f8fbff] to-white flex justify-between items-start border-b border-[#e5e5ea]">
                 <div class="min-w-0">
-                    <div class="text-[9px] font-bold text-amber-500 tracking-[0.22em] mb-1 uppercase">VIP Custom Prescription</div>
-                    <h2 id="vpm-title" class="text-[16px] font-black text-amber-400 leading-snug">方案加载中</h2>
-                    <p id="vpm-tagline" class="text-[10px] text-slate-300 mt-1 leading-relaxed"></p>
+                    <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.22em] mb-1 uppercase">下一步服务建议</div>
+                    <h2 id="vpm-title" class="text-[16px] font-black text-slate-900 leading-snug">方案加载中</h2>
+                    <p id="vpm-tagline" class="text-[10px] text-slate-500 mt-1 leading-relaxed"></p>
                 </div>
-                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-rose-500 transition-colors">
+                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-white border border-[#e5e5ea] flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -543,23 +536,23 @@
             <div class="p-5 flex flex-col gap-4">
                 <!-- 包含视频 -->
                 <div class="rounded-2xl border border-[#e5e5ea] bg-white px-4 py-3.5">
-                    <div class="text-[10px] font-bold text-slate-400 tracking-[0.18em] mb-2">本套方案包含</div>
+                    <div class="text-[10px] font-bold text-slate-400 tracking-[0.18em] mb-2">本次服务包括</div>
                     <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
                 </div>
                 <!-- 价格 -->
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/50 px-4 py-3.5 flex flex-col gap-1">
+                <div class="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3.5 flex flex-col gap-1">
                     <div class="flex items-center justify-between mb-1 gap-2">
-                        <span class="text-[11px] font-black text-rose-600 tracking-wider flex items-center gap-1"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg> 终极处方买断特惠</span>
+                        <span class="text-[11px] font-black text-[#0a84ff] tracking-wider flex items-center gap-1"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg> 本次服务价格</span>
                         <div class="text-right">
-                            <span class="text-[9px] font-black text-white bg-rose-500 rounded-lg px-2 py-0.5 tracking-widest shadow-sm inline-block">倒计时截止</span>
-                            <div id="vpm-offer-countdown" class="mt-1 text-[11px] font-black text-rose-600 tracking-wide">00:00:00</div>
+                            <span class="text-[9px] font-black text-white bg-[#0a84ff] rounded-lg px-2 py-0.5 tracking-widest shadow-sm inline-block">本轮截止</span>
+                            <div id="vpm-offer-countdown" class="mt-1 text-[11px] font-black text-[#0a84ff] tracking-wide">00:00:00</div>
                         </div>
                     </div>
                     <div class="flex items-baseline gap-2.5">
-                        <span class="text-3xl font-[900] text-rose-600 tracking-tight">¥299</span>
-                        <span class="text-[12px] text-slate-400 line-through font-medium">线下指导价 ¥899</span>
+                        <span class="text-3xl font-[900] text-slate-900 tracking-tight">¥299</span>
+                        <span class="text-[12px] text-slate-400 line-through font-medium">参考价 ¥899</span>
                     </div>
-                    <div id="vpm-offer-deadline" class="mt-1 text-[10px] text-rose-700/80 leading-relaxed">本轮优惠截止至 --</div>
+                    <div id="vpm-offer-deadline" class="mt-1 text-[10px] text-slate-600 leading-relaxed">本轮服务截止至 --</div>
                 </div>
                 <!-- 二维码 -->
                 <div class="flex flex-col items-center gap-3">
@@ -572,7 +565,7 @@
                         </div>
                     </div>
                     <div class="text-[10px] text-slate-500 text-center leading-relaxed px-2">
-                        扫码支付后，请截屏该弹窗并添加微信 <span class="font-black text-slate-800 mx-0.5 border-b-2 border-amber-300">songjiaotou999</span>，将立即为您发送该体态专属训练流。
+                        扫码支付后，请添加微信 <span class="font-black text-slate-800 mx-0.5 border-b-2 border-[#bfdbfe]">songjiaotou999</span>，并发送付款截图。我会根据本次评估结果为你发送对应的个性化服务内容。
                         <!-- 留白用于补充 -->
                         <div class="h-1"></div>
                     </div>
@@ -2959,6 +2952,24 @@
                     <p class="mt-1 text-[11px] text-slate-500 leading-relaxed">${hint}</p>
                 </div>
             `;
+            const renderLineList = (items, options = {}) => {
+                const itemClass = options.itemClass || 'text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]';
+                const markerClass = options.markerClass || 'text-[#0a84ff]';
+                return items.map(item => `
+                    <div class="flex items-start gap-2.5">
+                        <span class="mt-[2px] ${markerClass} font-black">•</span>
+                        <span class="${itemClass}">${item}</span>
+                    </div>
+                `).join('');
+            };
+            const renderNumberedHighlights = (items) => items.map((item, index) => `
+                <div class="rounded-xl border border-slate-100 bg-slate-50/80 px-3.5 py-3 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0a84ff]/10 text-[11px] font-black text-[#0a84ff]">${index + 1}</span>
+                        <p class="text-[12px] sm:text-[13px] text-slate-700 leading-[1.8]">${item}</p>
+                    </div>
+                </div>
+            `).join('');
 
             const compressionPattern = Object.values(compressionCandidates)
                 .map(candidate => ({ ...candidate, score: candidate.checks.filter(Boolean).length }))
@@ -2969,35 +2980,7 @@
             const rotationPattern = rotationRanked[0];
             const rotationOverrideNote = '说明：骨盆朝向、前后、左右高低与前移侧，都是根据直腿抬高、主动髋屈曲、主动肩屈这 6 项动作差值推测出来的力学倾向，不等同于影像学诊断。';
 
-            const comboProfiles = {
-                posterior_LeftAIC: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆比右侧更加靠前。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练基线方案。'
-                },
-                posterior_Oblique: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，且左侧同时更靠前、也更高，形成斜向卡住的状态。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练斜轴方案。'
-                },
-                posterior_Lateral: {
-                    bodyState: '骨盆整体被后侧肌肉推向前方，同时骨盆横向出现左低右高的侧倾，底层仍保留左侧更靠前的旋转偏移。',
-                    solutionOrder: '先练骨盆后侧肌肉紧张方案，再练横向方案。'
-                },
-                anterior_LeftAIC: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层保留着左侧更靠前的基础不对称。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练基线方案。'
-                },
-                anterior_Oblique: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时左侧极度靠前且偏高。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练斜轴方案。'
-                },
-                anterior_Lateral: {
-                    bodyState: '骨盆整体被前侧肌肉拉向前方，同时底层承受着从左向右的横向推力，表现为左低右高且左侧仍偏前。',
-                    solutionOrder: '先练骨盆前侧肌肉紧张方案，再练横向方案。'
-                }
-            };
-
             const comboKey = `${compressionPattern.key}_${rotationPattern.key}`;
-            const comboProfile = comboProfiles[comboKey] || comboProfiles[`${compressionPattern.key}_LeftAIC`];
             const compressionEvidenceCount = compressionPattern.score;
             const rotationEvidenceCount = rotationPattern.evidenceHits;
             const evidenceCount = compressionEvidenceCount + rotationEvidenceCount;
@@ -3007,52 +2990,309 @@
                 : confidenceLabel === '中'
                     ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
                     : 'bg-slate-500/10 text-slate-700 border-slate-400/20';
-            const commonDisclaimer = '这份报告主要用于理解体态与动作限制，不可直接替代医学诊断。通常，当这些动作受限得到改善后，身体的不适感也会跟着下降。';
-            const confidenceDetail = confidenceLabel === '高'
-                ? `高匹配度表示：整体方向高度一致，本次分型可信度较高。${commonDisclaimer}`
-                : confidenceLabel === '中'
-                    ? `中匹配度表示：主要方向较为清晰，但也夹杂一些过渡代偿。建议先按方案练习，再复测确认。${commonDisclaimer}`
-                    : `低匹配度表示：身体现在更像处在过渡期或混合状态。报告仍会给出最接近的方向，但更建议结合后续复测一起看。${commonDisclaimer}`;
+            const confidenceKey = confidenceLabel === '高' ? 'high' : (confidenceLabel === '中' ? 'medium' : 'low');
+
+            const certaintyNotes = {
+                high: {
+                    confirmed: '这次报告对整体前后方向和左右偏移的判断已经比较清楚，可以作为当前训练排序和复测对照的主要依据。',
+                    boundary: '这并不等于影像学诊断。具体受限程度、疼痛来源和结构性问题，仍需结合复测表现与线下评估。'
+                },
+                medium: {
+                    confirmed: '这次报告已经能看出主要方向，但身体里还夹杂一些过渡代偿，所以要更重视“先后顺序”而不是一次性把所有问题都解释完。',
+                    boundary: '先按当前顺序调整 1 到 2 周，再用同一机位复测；如果方向稳定，再继续按这个思路推进。'
+                },
+                low: {
+                    confirmed: '这次更适合先把它当作“当前最接近的方向判断”，先抓大方向，不要过度解读局部细节。',
+                    boundary: '你现在更像处在过渡代偿期。请尽量用同一机位、同一动作标准在短期内复测，优先看趋势而不是一次结果。'
+                }
+            };
+
+            const REPORT_CONTENT_CONFIG = {
+                posterior_LeftAIC: {
+                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，左侧骨盆相对更靠前',
+                    bodyState: '你的骨盆更像是整体被后侧一直向前顶，同时左侧骨盆比右侧更靠前，右侧承担了更多站立和稳定工作。',
+                    topFindings: [
+                        '现在最明显的问题，是骨盆整体被后侧一直向前顶（后侧压缩），不是单纯一边高一边低。',
+                        '左侧骨盆更靠前（基础旋转偏移），右侧更像主要承重侧。',
+                        '当前处理顺序应该是先减轻整体张力，再回正左右差，最后再做力量和线条训练。'
+                    ],
+                    certainty: '如果近期状态变化很快，请优先相信“整体方向”和左右差，不要急着盯某一块肌肉。',
+                    overview: '这类情况常见于后侧链长期太会顶、太会硬撑。身体表面看起来像“人已经站直了”，但真正承担工作的常常是后背、右腿和下腰，而不是更均匀的胸廓与骨盆配合。',
+                    symptoms: [
+                        '站久后右侧髋、右侧下腰或右侧臀后侧更容易累和顶。',
+                        '左侧腹股沟或左侧前髋容易有被拉着往前的感觉。',
+                        '走路时右脚落地更重，左腿像不太敢真正接住身体。'
+                    ],
+                    appearance: [
+                        '右侧臀部更像往后上方卡住，左侧骨盆更往前冲。',
+                        '裤腰、裙摆或腰线容易慢慢转向同一边。',
+                        '明明站直了，但看上去还是不太像完全站在中间。'
+                    ],
+                    compensation: [
+                        '做桥、深蹲或站姿动作时，重量更容易跑到右腿。',
+                        '左边看起来在发力，实际更多是在往前抢位置。',
+                        '越想做得对称，越容易用腰背去顶住动作。'
+                    ],
+                    avoidList: [
+                        '先别急着上大重量臀推、宽站深蹲或追求“屁股发力感”。',
+                        '先别反复暴力拉髋前侧或硬压下腰。',
+                        '先别把“左右每边做一样多”当成当前第一目标。'
+                    ],
+                    nextActions: [
+                        '先降低后侧顶推感，让胸廓后侧和骨盆后侧恢复一点空间。',
+                        '再处理左侧更靠前的旋转偏移，重新建立左右承重切换。',
+                        '在动作感觉变顺之前，力量训练以稳定和控制为主。'
+                    ],
+                    retest: '建议 7 到 10 天后，用同一机位和同一动作标准复测；如果这几天变化很快，可 3 到 5 天复测一次。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把这份结论进一步落实到具体动作安排、周计划和远程答疑，可以继续查看下一步服务。'
+                },
+                posterior_Oblique: {
+                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，左侧骨盆相对更靠前且更高',
+                    bodyState: '你的骨盆不仅整体被后侧往前顶，左侧还同时更靠前、也更高，所以会出现更明显的对角线卡住感。',
+                    topFindings: [
+                        '这不只是前后顶出来的问题，还叠加了左高右低的斜向差异。',
+                        '左侧更靠前且更高，说明旋转差和高低差落在了同一边。',
+                        '当前最关键的不是追柔韧，而是先把整体张力降下来，再恢复对角线节奏。'
+                    ],
+                    certainty: '如果你最近出现左右变化很快的感觉，这类斜轴型更要结合复测去看，不要只凭一次外观判断。',
+                    overview: '这一型比基础的左侧更靠前更复杂，因为高低差和前后差叠在同一侧。身体会更频繁地用躯干、颈肩和对角线去补位，所以常常会觉得“哪里都没完全放松过”。',
+                    symptoms: [
+                        '骶髂关节两侧、单侧下腰或颈枕部更容易反复闷紧。',
+                        '一侧肩颈或一侧臀深处更容易先累。',
+                        '站着或走着时，会觉得某条对角线一直拉着你。'
+                    ],
+                    appearance: [
+                        '左侧骨盆看起来更往前、更高，肩和骨盆也更容易呈现斜向不对称。',
+                        '一侧肩胛骨更容易突出或更往前。',
+                        '镜子里会觉得整个人不是单纯歪，而像是被拧着。'
+                    ],
+                    compensation: [
+                        '手臂上举、弯腰或转身时，一侧看起来特别轻松，但那常常是代偿换来的。',
+                        '对称动作做起来会更明显出现“左右完全不是一回事”的感觉。',
+                        '一旦疲劳，身体更容易用脖子、腰和一侧臀去接管。'
+                    ],
+                    avoidList: [
+                        '先别一上来做大量对称臀桥、对称深蹲或追求角度极限。',
+                        '先别把问题理解成“只要拉松高的一边就好了”。',
+                        '先别忽略上半身，因为这类问题常常是胸廓和骨盆一起卡住。'
+                    ],
+                    nextActions: [
+                        '先降低后侧整体张力，避免继续被后侧往前顶。',
+                        '再恢复胸廓和骨盆的对角节奏，让上下半身重新对齐。',
+                        '等身体不再一直抢代偿后，再进入更具体的力量训练。'
+                    ],
+                    retest: '建议 5 到 7 天复测一次，尤其是在你开始做呼吸和对角线训练之后，更要看左右差是否真的在缩小。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把对角线问题拆成更具体的训练顺序和远程答疑内容，可以继续查看下一步服务。'
+                },
+                posterior_Lateral: {
+                    headline: '当前最主要的情况：骨盆整体被后侧向前顶，同时出现左低右高的侧向偏移',
+                    bodyState: '你的骨盆更像是整体被后侧向前顶，同时左右侧向稳定也失衡了，表现为左低右高，但底层仍保留左侧更靠前的旋转偏移。',
+                    topFindings: [
+                        '现在不只是前后问题，还合并了比较明显的侧向不稳。',
+                        '左低右高只是表面结果，底层仍然保留左侧相对更靠前的旋转偏移。',
+                        '当前最重要的不是单纯拉一边，而是先处理整体张力，再恢复左右侧向稳定。'
+                    ],
+                    certainty: '如果你有旧伤、崴脚史或长期单侧习惯，这类横向型更常见，也更容易被外观看成“单纯长短腿”。',
+                    overview: '这一型往往会让人强烈觉得自己“一边高一边低”，但真正的问题不只是高低差，而是身体同时存在前后偏移和侧向偏移，所以重心更难安稳地落在中间。',
+                    symptoms: [
+                        '一侧下腰侧面、外侧臀或外侧大腿更容易抽紧。',
+                        '站久后更容易觉得某条腿像一直在顶住身体。',
+                        '坐着、站着或走路时，很难真正觉得两边一样稳。'
+                    ],
+                    appearance: [
+                        '腰线深浅不一样，一侧髋更像被提起来。',
+                        '裤腿或裙摆的长短感会更明显，容易出现“假性长短腿”的视觉。',
+                        '站立时看起来像身体总在往一边滑。'
+                    ],
+                    compensation: [
+                        '上下楼或单腿站时，一侧更容易发飘或更想借腰借肩。',
+                        '深蹲或站姿动作里，身体容易向一边躲。',
+                        '越想平均用力，越容易用外侧和腰去硬撑。'
+                    ],
+                    avoidList: [
+                        '先别把它简单当成“拉高的一边、压低的一边”来处理。',
+                        '先别做大量侧弯拉伸或两边完全一样的纠正动作。',
+                        '先别急着用负重动作去证明自己能站稳。'
+                    ],
+                    nextActions: [
+                        '先把后侧整体顶推感降下来，给骨盆一点回到中间的空间。',
+                        '再处理侧向稳定，让高的一侧学会放下来、低的一侧学会接住。',
+                        '等站立不再总偏一边后，再逐步恢复更常规的力量训练。'
+                    ],
+                    retest: '建议 5 到 7 天复测一次，重点看左右高低感和站立稳定感是否同时改善。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把侧向稳定问题拆成更具体的动作安排和远程解读，可以继续查看下一步服务。'
+                },
+                anterior_LeftAIC: {
+                    headline: '当前最主要的情况：骨盆整体被前侧持续拉着向前，左侧骨盆相对更靠前',
+                    bodyState: '你的骨盆更像是被前侧链持续往前下方拉，同时左侧骨盆相对更靠前，右侧承担了更多站立稳定任务。',
+                    topFindings: [
+                        '现在最明显的问题，是骨盆被前侧持续往前下方拉，而不是单纯腰太紧。',
+                        '左侧骨盆更靠前（基础旋转偏移），右侧仍然更像主要承重侧。',
+                        '当前处理顺序应该是先减轻前侧牵拉，再恢复回收能力，最后再做力量训练。'
+                    ],
+                    certainty: '这类前侧牵拉型容易被误以为只是“髋前紧、腰太弓”，但真正关键是骨盆一直回不来。',
+                    overview: '这一型常见于腿前侧和髋前侧太会接管工作。表面上像骨盆前倾、小腹前顶、下腰挤，但更深一层其实是腹斜肌和腿后侧很难把骨盆重新收回来。',
+                    symptoms: [
+                        '下腰更容易挤、酸或有悬着的感觉。',
+                        '大腿前侧和髋前侧容易长期忙碌、发紧。',
+                        '上下楼、久站或练腿后，膝盖前方更容易累。'
+                    ],
+                    appearance: [
+                        '小腹更容易前顶，下腰线更明显。',
+                        '大腿前侧更容易显得发达，但臀部轮廓不容易挂住。',
+                        '站着时像整个人被前面往下拽。'
+                    ],
+                    compensation: [
+                        '做动作时更容易用大腿前侧顶着完成，而不是用下腹和腿后侧配合。',
+                        '越想把腰挺直，越容易让下腰更挤。',
+                        '很多训练做完以后，感觉累的是腿前和腰，而不是更稳定的中段。'
+                    ],
+                    avoidList: [
+                        '先别反复猛拉髋前侧或不断压腰去“摆正姿势”。',
+                        '先别一上来用大腿前侧主导的练腿方式堆量。',
+                        '先别把“把腰挺起来”当成纠正前倾的办法。'
+                    ],
+                    nextActions: [
+                        '先减少前侧肌肉对骨盆的持续拉扯。',
+                        '再恢复腹斜肌和腿后侧把骨盆往回收的能力。',
+                        '等骨盆不再一直前顶后，再逐步恢复更完整的力量训练。'
+                    ],
+                    retest: '建议 7 到 10 天后复测；如果你最近刚开始做呼吸和前侧减压训练，可 5 天左右先看一次变化。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把“前侧先减压、后侧再接管”的顺序落到更具体的动作和周计划里，可以继续查看下一步服务。'
+                },
+                anterior_Oblique: {
+                    headline: '当前最主要的情况：骨盆整体被前侧拉着向前，左侧骨盆相对更靠前且更高',
+                    bodyState: '你的骨盆不仅被前侧持续往前下方拉，左侧还同时更靠前、也更高，所以更容易形成明显的斜向紧张和上下半身脱节。',
+                    topFindings: [
+                        '这不只是前倾，还叠加了左侧更靠前且更高的斜向差异。',
+                        '左侧同时出现前后差和高低差，说明代偿已经落在整条对角线上。',
+                        '当前应该先减轻前侧牵拉，再恢复胸廓与骨盆的交叉节奏。'
+                    ],
+                    certainty: '这类前倾合并斜轴的问题，常常会让用户觉得“浑身都不对”，所以更需要按顺序拆解，而不是一次纠正全部。',
+                    overview: '这类情况常见于前侧链一直在拉、上半身又不得不跟着补位。结果是骨盆、胸廓、肩胛和颈肩都容易卷进来，所以整个人会很容易进入“又紧又累”的状态。',
+                    symptoms: [
+                        '一侧腹股沟深部、一侧下腰或一侧臀深处更容易反复不舒服。',
+                        '颈肩和胸口也更容易跟着紧，疲劳感不容易退。',
+                        '运动后恢复慢，第二天仍像身体没回正。'
+                    ],
+                    appearance: [
+                        '肩和骨盆更容易呈现对角线不对称，一侧肩胛更突出。',
+                        '站姿像身体被斜着拧住，不只是前顶。',
+                        '一侧更容易显得往前、往高，整个人线条不顺。'
+                    ],
+                    compensation: [
+                        '手臂上举、走路摆臂或深蹲时，身体更容易走斜线。',
+                        '你会觉得某些动作“看上去能做”，但做完更累。',
+                        '一旦疲劳，躯干、颈肩和一侧髋会很快出来接管。'
+                    ],
+                    avoidList: [
+                        '先别只盯着髋前侧或肩胛去局部拉伸。',
+                        '先别做大量对称性强、节奏快、代偿空间大的动作。',
+                        '先别把“角度变大了”直接等同于变好了。'
+                    ],
+                    nextActions: [
+                        '先降低前侧持续拉扯的感觉，让骨盆不再一直往前掉。',
+                        '再恢复胸廓与骨盆的交叉对齐节奏，减少整条斜向链的抢代偿。',
+                        '等上下半身不再互相顶着干活后，再安排更完整的力量训练。'
+                    ],
+                    retest: '建议 5 到 7 天复测一次，重点看疲劳感、左右差和动作顺滑度是否一起改善。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把这类斜向问题拆成更清晰的动作顺序和远程解读建议，可以继续查看下一步服务。'
+                },
+                anterior_Lateral: {
+                    headline: '当前最主要的情况：骨盆整体被前侧拉着向前，同时出现左低右高的侧向偏移',
+                    bodyState: '你的骨盆更像是被前侧一直往前下方拉，同时侧向稳定也不够，表现为左低右高，但底层仍保留左侧更靠前的旋转偏移。',
+                    topFindings: [
+                        '现在不只是前倾，还合并了比较明显的侧向不稳。',
+                        '左低右高只是表面结果，底层仍有左侧相对更靠前的旋转偏移。',
+                        '当前最重要的是先减轻前侧牵拉，再恢复侧向稳定，而不是只盯着高低差。'
+                    ],
+                    certainty: '这类前侧牵拉合并横向型，外观上很容易看成“单纯歪胯”，但真正需要处理的是前后和侧向两个层面。',
+                    overview: '这一型会让人同时感受到前顶和侧倾。身体既像被前面往下拉，又像在一边硬撑，所以越想站稳，越容易用腿前、外侧和下腰去顶住。',
+                    symptoms: [
+                        '一侧大腿外侧、髋外侧或下腰侧面更容易紧和酸。',
+                        '站久后会觉得一边更短、一边更塞，或者总想换边站。',
+                        '走路和上下楼时，一侧更容易发飘或顶住。'
+                    ],
+                    appearance: [
+                        '腰线、裤线和骨盆高度感都更不对称。',
+                        '小腹前顶、下腰挤压和侧向歪斜会同时出现。',
+                        '一侧大腿根部褶皱更深，站姿更像往一边沉。'
+                    ],
+                    compensation: [
+                        '深蹲、站姿训练和单腿动作里，身体更容易往一边躲。',
+                        '越用力，越容易用腿前和外侧去接管。',
+                        '很多动作做完以后，真正累的是下腰和大腿外侧。'
+                    ],
+                    avoidList: [
+                        '先别只靠侧弯拉伸或单边硬掰去处理高低差。',
+                        '先别做大量腿前侧主导、节奏快的力量动作。',
+                        '先别把“看起来站直”当成已经稳定下来。'
+                    ],
+                    nextActions: [
+                        '先减轻前侧持续拉扯，让骨盆停止一直往前掉。',
+                        '再处理侧向稳定，让身体逐渐回到更中间的承重位置。',
+                        '等站姿和走路不再总偏向一边后，再逐步恢复更完整的力量训练。'
+                    ],
+                    retest: '建议 5 到 7 天复测一次，重点看前顶感和左右侧向不稳是否同时缓解。',
+                    ctaTone: 'professional',
+                    serviceTone: '如果你希望把这类前顶合并侧向偏移的问题拆成更细的训练顺序和远程答疑内容，可以继续查看下一步服务。'
+                }
+            };
+
+            const reportProfile = REPORT_CONTENT_CONFIG[comboKey] || REPORT_CONTENT_CONFIG[`${compressionPattern.key}_LeftAIC`];
+            const certaintyNote = certaintyNotes[confidenceKey];
 
             const pelvicDimensions = (() => {
                 const base = compressionPattern.key === 'posterior'
                     ? {
-                        orientationLabel: '后侧压缩驱动的前移型',
-                        orientationDetail: '当前更像是后侧肌肉把骨盆从后方顶向前方，视觉上会像骨盆整体前移或人站得很顶。',
-                        apPosition: '整体偏前移，主因是后侧链挤压与顶推，不是单纯前侧短缩。',
-                        apShort: '整体偏前移'
+                        apShort: '整体更像被后侧往前顶',
+                        apPosition: '整体更像是后侧肌肉把骨盆从后方顶向前方，所以视觉上会出现人往前顶、臀后侧挂不住的感觉。',
+                        apImpact: '这类人常常不是单纯前面短，而是后侧太会硬撑，所以越想站直越容易靠腰背顶住。'
                     }
                     : {
-                        orientationLabel: '前侧牵拉驱动的前倾型',
-                        orientationDetail: '当前更像是前侧链持续把骨盆往前下方拉，视觉上会更接近骨盆前倾、下腰挤压或小腹前顶。',
-                        apPosition: '整体偏前倾/前顶，主因是前侧链牵拉过强。',
-                        apShort: '整体偏前倾/前顶'
+                        apShort: '整体更像被前侧往前下方拉',
+                        apPosition: '整体更像是前侧链持续把骨盆往前下方拉，所以更容易出现前顶、小腹前送和下腰挤压。',
+                        apImpact: '这类人常常不是只要拉髋前就能解决，而是要先让前侧少一点拉扯、让骨盆有机会收回来。'
                     };
 
                 const rotationMap = {
                     LeftAIC: {
                         orientation: '骨盆整体更容易停在右旋偏置位',
                         orientationExtra: '左侧骨盆相对更靠前，右侧更像主要承重侧。',
-                        heightStatus: '这次更明显的是前后旋转差，高低差暂时不是最主要的问题',
-                        heightShort: '高低差不是最主要的问题',
+                        orientationImpact: '这会让你在站立和走路时更容易把重量留在右腿，越想站正越可能用腰背去顶。',
+                        heightStatus: '现在最明显的问题不是一边高一边低，而是前后旋转不对称。',
+                        heightShort: '前后旋转差更明显',
+                        heightImpact: '所以当前不需要把重点放在“纠正长短腿”上，而是先把前后旋转差和承重顺序理顺。',
                         forwardSide: '左侧骨盆相对更靠前',
-                        forwardExtra: '左侧更容易向前顶出，右侧更容易停在后方承重位。'
+                        forwardExtra: '左侧更容易向前顶出，右侧更容易停在后方承重位。',
+                        forwardImpact: '这会让左边像一直往前抢位置，右边像一直在撑，所以动作里很难真正平均用力。'
                     },
                     Oblique: {
                         orientation: '骨盆整体更容易停在右旋合并斜轴位',
                         orientationExtra: '除了左前右后的旋转差，还叠加了左高右低的斜向卡住。',
+                        orientationImpact: '这类情况更容易牵动肩颈、胸廓和一整条对角线，所以身体会觉得“不只是骨盆有问题”。',
                         heightStatus: '左高右低',
                         heightShort: '左高右低',
+                        heightImpact: '高低差和旋转差叠在同一侧时，更容易出现骶髂关节、下腰和对角线代偿。',
                         forwardSide: '左侧骨盆相对更靠前',
-                        forwardExtra: '左侧既更靠前也更高，说明前后差与高低差叠加在同一侧。'
+                        forwardExtra: '左侧既更靠前也更高，说明前后差与高低差叠加在同一侧。',
+                        forwardImpact: '这种叠加会让身体更难找到中线，很多动作看起来能做，但做完会更累。'
                     },
                     Lateral: {
                         orientation: '骨盆整体更容易停在横向侧倾合并旋转位',
                         orientationExtra: '当前除了左前右后的旋转底色，还合并了更明显的横向侧倾。',
+                        orientationImpact: '这类人不只是左右歪，而是前后和侧向同时失衡，所以稳定感会明显变差。',
                         heightStatus: '左低右高',
                         heightShort: '左低右高',
+                        heightImpact: '高低差会让你更容易觉得一边长一边短，也更容易把腰和外侧拿出来硬撑。',
                         forwardSide: '左侧骨盆相对更靠前',
-                        forwardExtra: '虽然最醒目的是高低差，但前后旋转底色仍然表现为左侧相对更靠前。'
+                        forwardExtra: '虽然最醒目的是高低差，但前后旋转底色仍然表现为左侧相对更靠前。',
+                        forwardImpact: '如果只盯着高低差而忽略前后旋转，很多动作会越练越偏。'
                     }
                 };
 
@@ -3061,45 +3301,6 @@
                     ...(rotationMap[rotationPattern.key] || rotationMap.LeftAIC)
                 };
             })();
-
-            const CLASS_DEEP_ANALYSIS = {
-                posterior_LeftAIC: {
-                    cause: '由于“重型卡车”式的出厂配置，你的重心长期锁定在右腿。这导致右侧骨盆被迫向上提并往后夹紧（内旋），而左侧骨盆为了平衡则不得不向前挺出。这不仅是后侧肌肉的紧绷，更是全身为了稳住右侧重心而产生的代偿。',
-                    appearance: '你正处于典型的“站立中期”力学锁死中。右侧臀部可能显得更高、更靠后，而左侧骨盆明显更往前冲。这种“左移”会让原本用来支撑的肌肉变得难以发力，甚至呈现出一种“假性翘臀”的视觉假象。',
-                    pain: '长期的右侧锁定，会让右侧髋关节在运动时感到一种<strong class="text-amber-600">骨头顶骨头的卡顿感</strong>；而左侧为了代偿前冲，可能会在<strong class="text-amber-600">腹股沟深处产生拉扯酸胀</strong>。',
-                    habits: '站立时几乎无法平稳地将重心完全交给左腿；走路时右脚落地的声音通常比左脚更响、更沉。'
-                },
-                posterior_Lateral: {
-                    cause: '这是在 Left AIC 基础上的横向升级。你的重心不仅深陷右侧，身体还试图通过将左侧骨盆整个向上推起来“逃避”承重。这通常意味着你曾经有过单侧受力的阴影（比如脚踝旧伤）。',
-                    appearance: '除了明显的长短腿错觉，你会发现左侧腰线被推挤得更深，骨盆像一个歪掉的盛水盆，重心总在侧向晃动。',
-                    pain: '由于一侧被强行拔高，该侧的腰方肌常会有<strong class="text-amber-600">像被电击或抽筋似的急促紧绷感</strong>；承重的对侧腿膝盖则常伴随<strong class="text-amber-600">外侧摩擦或酸胀</strong>。',
-                    habits: '坐着时如果不习惯向一侧倾斜，就会觉得浑身不自在。'
-                },
-                posterior_Oblique: {
-                    cause: '这是更深层的代偿模式。骨盆在斜轴上发生了明显扭转，左侧不仅高，而且向前冲，整条对角线的旋转空间都被占满。',
-                    appearance: '比较有迷惑性的特征是：左侧肩和左手上举时看起来可能更轻松，但那往往是躯干为了补偿骨盆扭转而制造出来的假象。',
-                    pain: '在这种斜轴扭转下，力的交汇点通常会在<strong class="text-amber-600">骶髂关节两侧产生难以名状的闷痛</strong>；有时这种扭转力会继续往上窜，带来<strong class="text-amber-600">单侧颈枕部紧绷或偏头痛</strong>。',
-                    habits: '做对称性的练臀动作时，两边臀部的发力感和充血感往往完全不对等。'
-                },
-                anterior_LeftAIC: {
-                    cause: '前侧肌肉像紧绷的钢缆，将你那已经向右扭转的骨盆进一步向下方拽。这会让骨盆前顶、腿前侧接管、臀部更难“挂上力”。',
-                    appearance: '比起后侧紧绷的人，你更容易观察到大腿前侧异常忙碌、下腰更容易挤、臀部轮廓反而挂不住。',
-                    pain: '这种下拽力会让<strong class="text-amber-600">膝盖正下方或髌腱区域更容易酸软</strong>，上下楼时尤其明显；下腰也会因为前面的拉扯而出现<strong class="text-amber-600">持续的压迫感</strong>。',
-                    habits: '睡觉时如果不平躺且在膝盖下垫个枕头，腰后侧就会觉得悬空得难受。'
-                },
-                anterior_Lateral: {
-                    cause: '身体前侧的强大拉力合并了横向偏移。你不仅面临着向下的牵引，还面临着左高右低或左低右高式的不平稳，身体会用更费力的方式去找平衡。',
-                    appearance: '某侧大腿根部褶皱更深、腰线更不对称、站立时总感觉一边更短或一边更塞，这些都更容易在这一型里出现。',
-                    pain: '这种复杂的撕裂感常见于<strong class="text-amber-600">大腿外侧阔筋膜张肌的极度僵硬</strong>；有时候甚至会牵扯到肋骨边缘，产生<strong class="text-amber-600">深呼吸时隐约的卡涩感</strong>。',
-                    habits: '穿裤子或裙子时，总感觉衣服在自动向着某个方向旋转。'
-                },
-                anterior_Oblique: {
-                    cause: '这是前倾与斜轴扭转的重叠。身体像是被两股不同方向的力量同时拧住，导致上下半身都很难真正对齐。',
-                    appearance: '你的一侧肩胛骨往往会比另一侧更突出、更往前倾。这不仅仅是肩膀的问题，而是整个斜向动力链都在补偿骨盆的倾斜。',
-                    pain: '神经系统的紧绷会让疼痛带有“游走性”：今天可能是<strong class="text-amber-600">左侧腹股沟深部抽一下</strong>，明天可能就变成了<strong class="text-amber-600">右侧臀部深处的放射性酸痛</strong>。',
-                    habits: '运动后的疲劳感极难恢复，睡一觉起来还是觉得身体像打过仗一样沉重。'
-                }
-            };
 
             const imageMap = {
                 posterior_LeftAIC: 'images/posterior_left_aic.webp',
@@ -3114,158 +3315,163 @@
             const heroImageContainer = document.getElementById('final-hero-image-container');
             heroImageContainer.innerHTML = `<img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain transition-all duration-500 ease-in-out" alt="体态分析深度解析图">`;
             heroImageContainer.classList.remove('hidden');
+            const pelvicCards = [
+                {
+                    label: '骨盆朝向',
+                    conclusion: pelvicDimensions.orientation,
+                    explain: pelvicDimensions.orientationExtra,
+                    impact: pelvicDimensions.orientationImpact
+                },
+                {
+                    label: '骨盆前后',
+                    conclusion: pelvicDimensions.apShort,
+                    explain: pelvicDimensions.apPosition,
+                    impact: pelvicDimensions.apImpact
+                },
+                {
+                    label: '左右高低',
+                    conclusion: pelvicDimensions.heightShort,
+                    explain: pelvicDimensions.heightStatus,
+                    impact: pelvicDimensions.heightImpact
+                },
+                {
+                    label: '哪侧更靠前',
+                    conclusion: pelvicDimensions.forwardSide,
+                    explain: pelvicDimensions.forwardExtra,
+                    impact: pelvicDimensions.forwardImpact
+                }
+            ];
 
-            const deep = CLASS_DEEP_ANALYSIS[comboKey] || CLASS_DEEP_ANALYSIS.posterior_LeftAIC;
-
-            const slrHint = diffSLR <= -nearThreshold
-                ? '左侧直腿抬高更小，提示左侧后侧链与骨盆回旋空间更受限。'
-                : diffSLR >= nearThreshold
-                    ? '右侧直腿抬高更小，提示右侧后侧链与骨盆回旋空间更受限。'
-                    : '两侧直腿抬高差异不大，说明这一项不是最突出的限制来源。';
-            const hipHint = diffHip >= nearThreshold
-                ? '左侧髋屈更大，常见于左侧骨盆相对更靠前、右侧更偏承重的模式。'
-                : diffHip <= -nearThreshold
-                    ? '右侧髋屈更大，常见于斜轴或更复杂的旋转代偿。'
-                    : '两侧髋屈差异不大，说明髋屈这项目前不是最强证据。';
-            const shoulderHint = diffSh >= nearThreshold
-                ? '左侧肩屈更大，往往提示躯干正在为骨盆扭转做上层补偿。'
-                : diffSh <= -nearThreshold
-                    ? '左侧肩屈更小，常见于左侧旋转空间被持续占用的模式。'
-                    : '两侧肩屈接近，说明上层代偿暂时没有明显偏向。';
-
-            const pelvicDimensionHtml = `
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                    <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
-                        <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">骨盆朝向</div>
-                        <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${pelvicDimensions.orientation}</div>
-                        <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${pelvicDimensions.orientationExtra}</p>
+            const summaryHtml = `
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                    <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">一句话总判断</div>
+                    <h3 class="text-[17px] sm:text-[18px] font-black text-slate-900 leading-[1.6]">${reportProfile.headline}</h3>
+                    <p class="mt-2 text-[13px] sm:text-[14px] text-slate-600 leading-[1.8]">${reportProfile.bodyState}</p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span class="px-2.5 py-1 rounded-full bg-[#0a84ff]/8 text-[#0a84ff] text-[10px] font-bold border border-[#0a84ff]/10">匹配度：${confidenceLabel}</span>
+                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">${compressionPattern.key === 'posterior' ? '整体更像后侧在顶' : '整体更像前侧在拉'}</span>
+                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">${rotationPattern.shortLabel}</span>
                     </div>
-                    <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
-                        <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">骨盆前后</div>
-                        <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${pelvicDimensions.apShort}</div>
-                        <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${pelvicDimensions.apPosition}</p>
+                    <div class="mt-4">
+                        <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">当前最重要的 3 个点</div>
+                        <div class="flex flex-col gap-2">${renderNumberedHighlights(reportProfile.topFindings)}</div>
                     </div>
-                    <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
-                        <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">左右高低</div>
-                        <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${pelvicDimensions.heightShort}</div>
-                        <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${pelvicDimensions.heightStatus}</p>
-                    </div>
-                    <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
-                        <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">哪侧更靠前</div>
-                        <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${pelvicDimensions.forwardSide}</div>
-                        <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${pelvicDimensions.forwardExtra}</p>
-                    </div>
-                </div>
-                <div class="mt-4 rounded-2xl border border-[#0a84ff]/15 bg-[#0a84ff]/5 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                    <span class="font-black text-[#0a84ff]">综合结论：</span>${comboProfile.bodyState}
                 </div>
             `;
 
-            const evidenceHtml = `
-                <div class="grid grid-cols-1 gap-3 mt-4">
-                    ${renderMetricCard('主动直腿抬高', slrL, slrR, diffSLR, slrHint)}
-                    ${renderMetricCard('主动髋屈曲', hipL, hipR, diffHip, hipHint)}
-                    ${renderMetricCard('主动肩屈', shL, shR, diffSh, shoulderHint)}
-                </div>
-                <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                    <p><span class="font-black text-slate-800">分型依据：</span>${compressionPattern.objective}</p>
-                    <p class="mt-2"><span class="font-black text-slate-800">旋转推断：</span>${rotationPattern.evidenceText()}</p>
-                    <p class="mt-2 text-slate-500">${rotationOverrideNote}</p>
-                </div>
-            `;
-
-            const strategyHtml = `
-                ${renderAccordionCard('第一层：先处理整体前后张力', compressionPattern.solutionName, `
-                    <p><b class="text-slate-800">当前主导问题：</b>${compressionPattern.summary}</p>
-                    <p><b class="text-slate-800">机制解释：</b>${compressionPattern.mechanism}</p>
-                    <p><b class="text-slate-800">阈值判断：</b>${compressionPattern.thresholdExplanation}</p>
-                    <p><b class="text-slate-800">建议优先动作：</b>${compressionPattern.primaryAction.name}。${compressionPattern.primaryAction.method}</p>
-                    <p><b class="text-slate-800">建议剂量：</b>${compressionPattern.primaryAction.dosage}</p>
-                `, true, 'blue')}
-                ${renderAccordionCard('第二层：再处理骨盆朝向与左右差', rotationPattern.solutionName, `
-                    <p><b class="text-slate-800">当前回正重点：</b>${rotationPattern.planSummary}</p>
-                    <p><b class="text-slate-800">为什么要这样排顺序：</b>${comboProfile.solutionOrder}</p>
-                    <p><b class="text-slate-800">专项动作：</b>${rotationPattern.action.name}。${rotationPattern.action.method}</p>
-                    <p><b class="text-slate-800">建议剂量：</b>${rotationPattern.action.dosage}</p>
-                `)}
-            `;
-
-            const empathicHtml = `
-                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-lg mb-2 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 text-4xl">🚛</div>
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🧬</span><h3 class="text-base font-black text-amber-200 tracking-wide">为什么我的身体会这样代偿？</h3>
-                    </div>
-                    <div class="text-[12px] sm:text-[13px] text-slate-300 leading-[1.8] space-y-3">
-                        <p>这并非随机的体态崩溃，而是基于人类生理不对称的“出厂配置”。你的肝脏在右边，右侧呼吸肌也更大，就像一辆重型卡车右侧装了更重的油箱和引擎。</p>
-                        <p class="bg-slate-700/50 p-3 rounded-xl border border-slate-600/50 border-dashed">
-                            <span class="text-amber-200 font-bold">重心偏好：</span>为了平衡，大脑会更愿意把体重压到右腿。右侧骨盆为了撑住重量会向上提并向后夹紧，而左侧更容易向前挺出，于是形成了你现在看到的骨盆旋转与承重失衡。
-                        </p>
-                    </div>
-                </div>
-
+            const certaintyHtml = `
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🧭</span><h3 class="text-base font-black text-slate-800 tracking-wide">骨盆详细分析</h3>
+                        <span class="text-xl">📌</span><h3 class="text-base font-black text-slate-800 tracking-wide">确定度与边界</h3>
                     </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">这次报告不只给出分型，还把骨盆的朝向、前后位置、左右高低和哪一侧更靠前拆开说明，方便你直接看懂“到底歪在哪里”。</p>
-                    ${pelvicDimensionHtml}
+                    <div class="space-y-2.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
+                        <p><span class="font-black text-slate-800">当前较确定的判断：</span>${certaintyNote.confirmed}</p>
+                        <p><span class="font-black text-slate-800">还需要结合复测看的部分：</span>${certaintyNote.boundary}</p>
+                        <p><span class="font-black text-slate-800">补充说明：</span>${reportProfile.certainty}</p>
+                    </div>
+                    <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] sm:text-[12px] text-slate-500 leading-[1.8]">
+                        <span class="font-black text-slate-700">临床边界：</span>${rotationOverrideNote}
+                    </div>
                 </div>
+            `;
 
+            const pelvicAnalysisHtml = `
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">🧭</span><h3 class="text-base font-black text-slate-800 tracking-wide">骨盆四维分析</h3>
+                    </div>
+                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">下面这 4 项对应的是用户最容易问的 4 个问题：骨盆朝向怎样、整体在前还是在后、有没有明显高低差、哪一侧更靠前。</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        ${pelvicCards.map(card => `
+                            <div class="report-key-card rounded-2xl border border-[#e5e5ea] p-4 shadow-sm">
+                                <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff]">${card.label}</div>
+                                <div class="mt-1 text-[13px] sm:text-[14px] font-black text-slate-800 leading-relaxed">${card.conclusion}</div>
+                                <p class="mt-2 text-[11px] sm:text-[12px] text-slate-500 leading-relaxed">${card.explain}</p>
+                                <div class="mt-3 rounded-xl bg-slate-50 px-3 py-2.5 text-[11px] sm:text-[12px] text-slate-600 leading-[1.8]">
+                                    <span class="font-black text-slate-800">对你的影响：</span>${card.impact}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            const meaningHtml = `
                 <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">深度解析：当前体质真相</h3>
+                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">这意味着什么</h3>
                     </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${deep.cause}</p>
+                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${reportProfile.overview}</p>
                     <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
                         <span class="font-black text-amber-700">这一层为什么重要：</span>${compressionPattern.mechanism}
                     </div>
-                </div>
-
-                <div class="bg-white rounded-2xl p-5 border border-[#0a84ff]/10 shadow-[0_4px_20px_rgba(10,132,255,0.06)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🪜</span><h3 class="text-base font-black text-slate-800 tracking-wide">修正优先顺序</h3>
-                    </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium mb-4">这类体态不能只盯着一块肌肉拉一拉，而是要按“先松外层主导，再回正左右差，最后带进动作”的顺序处理。</p>
-                    <div class="flex flex-col gap-3">${strategyHtml}</div>
-                </div>
-
-                <div class="bg-gradient-to-br from-amber-50 to-white rounded-2xl p-5 border border-amber-200 shadow-[0_4px_20px_rgba(245,158,11,0.08)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🪞</span><h3 class="text-base font-black text-slate-800 tracking-wide">照镜子与日常体感，通常会出现这些特征</h3>
-                    </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-700 leading-[1.8] font-medium bg-white/70 p-3 rounded-xl border border-amber-100">${deep.appearance}</p>
-                    <div class="mt-3 flex items-start gap-2 text-[12px] text-slate-500 bg-emerald-50 rounded-lg p-2.5">
-                        <span>👀</span><span class="leading-relaxed">日常习惯捕捉：${deep.habits}</span>
-                    </div>
-                    <div class="mt-3 p-4 bg-amber-600 rounded-xl text-white shadow-sm">
-                        <p class="text-[11px] sm:text-[12px] font-bold tracking-wide leading-relaxed mb-2">关于不适信号：</p>
-                        <p class="text-[11px] sm:text-[12px] leading-relaxed opacity-95">${deep.pain}</p>
-                        <p class="mt-2 text-[11px] sm:text-[12px] leading-relaxed opacity-95 border-t border-white/20 pt-2">
-                            修复的核心不是“对抗”或暴力拉伸，而是向神经系统证明新姿势是安全的。别急着追绝对对称，先把卡住的空间与承重顺序理顺更重要。
-                        </p>
+                    <div class="grid grid-cols-1 gap-3 mt-4">
+                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
+                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">你可能会出现的体感</div>
+                            <div class="flex flex-col gap-2">${renderLineList(reportProfile.symptoms, { markerClass: 'text-amber-600' })}</div>
+                        </div>
+                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
+                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">照镜子时常见的表现</div>
+                            <div class="flex flex-col gap-2">${renderLineList(reportProfile.appearance, { markerClass: 'text-emerald-600' })}</div>
+                        </div>
+                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
+                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">动作里最常见的代偿</div>
+                            <div class="flex flex-col gap-2">${renderLineList(reportProfile.compensation, { markerClass: 'text-[#0a84ff]' })}</div>
+                        </div>
                     </div>
                 </div>
             `;
+
+            const nextStepsHtml = `
+                <div class="bg-white rounded-2xl p-5 border border-[#0a84ff]/10 shadow-[0_4px_20px_rgba(10,132,255,0.06)]">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">🪜</span><h3 class="text-base font-black text-slate-800 tracking-wide">近期最该做什么</h3>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="rounded-2xl border border-[#0a84ff]/10 bg-[#0a84ff]/5 px-4 py-3.5">
+                            <div class="text-[10px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">优先顺序</div>
+                            <div class="flex flex-col gap-2">${renderLineList(reportProfile.nextActions)}</div>
+                        </div>
+                        <div class="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3.5">
+                            <div class="text-[10px] font-black tracking-[0.18em] text-amber-700 mb-2">暂时不建议做什么</div>
+                            <div class="flex flex-col gap-2">${renderLineList(reportProfile.avoidList, { markerClass: 'text-amber-700' })}</div>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
+                            <p><span class="font-black text-slate-800">当前顺序：</span>${compressionPattern.solutionName} → ${rotationPattern.solutionName}</p>
+                            <p class="mt-2"><span class="font-black text-slate-800">复测建议：</span>${reportProfile.retest}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const serviceHintHtml = `
+                <div class="bg-white rounded-2xl p-5 border border-[#dbeafe] shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">📘</span><h3 class="text-base font-black text-slate-800 tracking-wide">下一步服务建议</h3>
+                    </div>
+                    <p class="text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">${reportProfile.serviceTone}</p>
+                </div>
+            `;
+
+            const appendixMetricsHtml = `
+                <div class="mt-3 flex flex-col gap-2">
+                    ${renderMetricCard('主动直腿抬高', slrL, slrR, diffSLR, diffSLR <= -nearThreshold ? '左侧直腿抬高更受限。' : (diffSLR >= nearThreshold ? '右侧直腿抬高更受限。' : '两侧差异不大。'))}
+                    ${renderMetricCard('主动髋屈曲', hipL, hipR, diffHip, diffHip >= nearThreshold ? '左侧髋屈更大，常见于左侧更靠前的模式。' : (diffHip <= -nearThreshold ? '右侧髋屈更大，常见于更复杂的旋转代偿。' : '两侧差异不大。'))}
+                    ${renderMetricCard('主动肩屈', shL, shR, diffSh, diffSh >= nearThreshold ? '左侧肩屈更大，提示上层补偿较明显。' : (diffSh <= -nearThreshold ? '左侧肩屈更小，提示左侧旋转空间被占用。' : '两侧差异不大。'))}
+                </div>
+            `;
+
+            const empathicHtml = [summaryHtml, certaintyHtml, pelvicAnalysisHtml, meaningHtml, nextStepsHtml, serviceHintHtml].join('');
 
             document.getElementById('empathic-report-container').innerHTML = empathicHtml;
             document.getElementById('empathic-report-container').classList.remove('hidden');
 
-            const EMPATHY_TITLES = {
-                posterior_LeftAIC: '后侧压缩主导，骨盆整体前移，左侧骨盆相对更靠前',
-                posterior_Oblique: '后侧压缩主导，骨盆整体前移，左侧骨盆相对更靠前且更高',
-                posterior_Lateral: '后侧压缩主导，骨盆整体前移，左低右高，左侧仍相对更靠前',
-                anterior_LeftAIC: '前侧牵拉主导，骨盆整体前倾/前顶，左侧骨盆相对更靠前',
-                anterior_Oblique: '前侧牵拉主导，骨盆整体前倾/前顶，左侧骨盆相对更靠前且更高',
-                anterior_Lateral: '前侧牵拉主导，骨盆整体前倾/前顶，左低右高，左侧仍相对更靠前'
-            };
-
-            titleEl.innerText = EMPATHY_TITLES[comboKey] || '骨盆体态发现多维代偿倾向';
-            titleEl.className = 'text-lg sm:text-xl font-black text-slate-800 mb-3 tracking-tight z-10 leading-relaxed bg-amber-200/40 inline-block px-3 py-1.5 rounded-lg';
+            titleEl.innerText = reportProfile.headline;
+            titleEl.className = 'text-lg sm:text-xl font-black text-slate-900 mb-4 tracking-tight z-10 leading-snug';
 
             document.getElementById('final-pelvic-orientation').innerHTML = `
                 ${pelvicDimensions.orientation}<br>
-                <span class="text-slate-400">${pelvicDimensions.orientationDetail}</span>
+                <span class="text-slate-400">${pelvicDimensions.orientationExtra}</span>
             `;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `
                 <span class="text-slate-400">前后方位：</span>${pelvicDimensions.apPosition}<br>
@@ -3273,20 +3479,24 @@
                 <span class="text-slate-400">前移侧：</span>${pelvicDimensions.forwardSide}
             `;
             document.getElementById('final-report-data').textContent = `直腿抬高：左 ${formatAngleValue(slrL)}° / 右 ${formatAngleValue(slrR)}° / 差值 ${formatSignedDiff(diffSLR)}；髋屈：左 ${formatAngleValue(hipL)}° / 右 ${formatAngleValue(hipR)}° / 差值 ${formatSignedDiff(diffHip)}；肩屈：左 ${formatAngleValue(shL)}° / 右 ${formatAngleValue(shR)}° / 差值 ${formatSignedDiff(diffSh)}。`;
-            document.getElementById('final-combo-label').textContent = `${compressionPattern.key === 'posterior' ? '后侧压缩(Shift)' : '前侧压缩(Tilt)'} + ${rotationPattern.label}`;
+            document.getElementById('final-combo-label').textContent = `${compressionPattern.key === 'posterior' ? '后侧紧张型（后侧顶推）' : '前侧牵拉型（前侧前顶）'} + ${rotationPattern.shortLabel}`;
             document.getElementById('final-technical-content').innerHTML = `
                 <p class="text-[10px]">系统计算逻辑：${compressionPattern.mechanism}</p>
+                <p class="text-[10px] mt-1">一句话结论：${reportProfile.headline}</p>
                 <p class="text-[10px] mt-1">骨盆朝向：${pelvicDimensions.orientation}。${pelvicDimensions.orientationExtra}</p>
                 <p class="text-[10px] mt-1">前后：${pelvicDimensions.apPosition}</p>
                 <p class="text-[10px] mt-1">高低：${pelvicDimensions.heightStatus}</p>
                 <p class="text-[10px] mt-1">前移侧：${pelvicDimensions.forwardSide}</p>
                 <p class="text-[10px] mt-1">数据依据：依据直腿抬高、髋屈曲、肩屈三项六测的差值得出。5°~10°为疑似，>10°为更明确的偏向。</p>
+                ${appendixMetricsHtml}
             `;
 
             finalReportDateTime.textContent = reportDateTimeText;
             reportConfidenceEl.className = `px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide border ${confidenceToneClass}`;
             reportConfidenceEl.innerText = `模式匹配度：${confidenceLabel}`;
-            reportConfidenceDetailEl.innerText = `匹配度及注意事项：${confidenceDetail}`;
+            reportConfidenceDetailEl.innerHTML = `
+                <p><span class="font-black text-slate-800">阅读提示：</span>当前模式匹配度为${confidenceLabel}，建议先看下面的“一句话总判断”和“3 个最重要发现”；如果你想知道哪些部分更确定、哪些部分需要结合复测来看，请继续查看“确定度与边界”。</p>
+            `;
 
             saveHistoryToStorage({
                 type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
@@ -3307,10 +3517,10 @@
         // ============================================================
         // 专属训练视频方案配置与渲染
         // ============================================================
-        const VIDEO_PLAN_CONFIG = {
+            const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
-                title: '后链减压 · 基线方案',
-                tagline: '适合骨盆被后侧顶推、且左侧骨盆更靠前的人群',
+                title: '个性化服务 · 基线型',
+                tagline: '适合本次评估表现为后侧顶推，且左侧骨盆相对更靠前的人',
                 videos: [
                     { name: '第一步：先降低后侧顶推感', desc: '骨盆后侧肌肉持续"顶着"你往前走，第一优先是让这种顶推感降下来，而不是一上来就追角度或翘臀。' },
                     { name: '第二步：恢复后下胸廓与骨盆后侧空间', desc: '后侧空间被压扁后，呼吸和髋的活动范围都会跟着变差，这一步把空间重新打开。' },
@@ -3318,8 +3528,8 @@
                 ]
             },
             posterior_Oblique: {
-                title: '后链减压 · 斜轴方案',
-                tagline: '适合骨盆后侧紧张、且左侧更靠前同时偏高的人群',
+                title: '个性化服务 · 斜向型',
+                tagline: '适合本次评估表现为后侧顶推，并伴随左侧更靠前且更高的人',
                 videos: [
                     { name: '第一步：先降低后侧顶推感', desc: '后侧肌肉把骨盆整体向前顶，同时左侧又比右侧更高更前，后侧顶推是最外层问题，先把它降下来。' },
                     { name: '第二步：恢复胸廓与骨盆的对角节奏', desc: '斜轴卡死意味着上下半身已经不在同一个旋转节奏里，让胸廓和骨盆重新建立交叉对齐是关键。' },
@@ -3327,8 +3537,8 @@
                 ]
             },
             posterior_Lateral: {
-                title: '后链减压 · 横向方案',
-                tagline: '适合骨盆后侧紧张、且左低右高横向偏移的人群',
+                title: '个性化服务 · 侧向型',
+                tagline: '适合本次评估表现为后侧顶推，并伴随左低右高侧向偏移的人',
                 videos: [
                     { name: '第一步：先降低后侧把骨盆往前顶的力', desc: '后侧顶推是最外层，先把整体往前顶的力松开，骨盆才有空间重新找到更中立的位置。' },
                     { name: '第二步：减轻将骨盆从左向右横向推起的力量', desc: '横向偏移不能靠对称做两边一样的动作，要专门针对"哪边在抬、哪边在推"来处理。' },
@@ -3336,8 +3546,8 @@
                 ]
             },
             anterior_LeftAIC: {
-                title: '前链减压 · 基线方案',
-                tagline: '适合骨盆前侧被牵拉、且左侧骨盆更靠前的人群',
+                title: '个性化服务 · 基线型',
+                tagline: '适合本次评估表现为前侧牵拉，且左侧骨盆相对更靠前的人',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '髋屈肌和股四头肌一直在把骨盆往前下方拉，第一步是把这种拉扯感松开，而不是直接去拉伸。' },
                     { name: '第二步：恢复腹斜肌和腿后侧对骨盆的回收能力', desc: '前侧减压后，还要让"往回收"的力重新工作，不然骨盆会继续往前掉。' },
@@ -3345,8 +3555,8 @@
                 ]
             },
             anterior_Oblique: {
-                title: '前链减压 · 斜轴方案',
-                tagline: '适合骨盆前侧被牵拉、且左侧极度靠前偏高的人群',
+                title: '个性化服务 · 斜向型',
+                tagline: '适合本次评估表现为前侧牵拉，并伴随左侧更靠前且更高的人',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧拉扯是外层，先把骨盆不再被一直往前拽的状态建立起来。' },
                     { name: '第二步：恢复胸廓与骨盆的交叉对齐节奏', desc: '斜轴同时合并前侧拉扯，意味着上下半身已经完全脱节，重建交叉节奏比单独练某块肌肉更重要。' },
@@ -3354,8 +3564,8 @@
                 ]
             },
             anterior_Lateral: {
-                title: '前链减压 · 横向方案',
-                tagline: '适合骨盆前侧被牵拉、且存在左低右高横向偏移的人群',
+                title: '个性化服务 · 侧向型',
+                tagline: '适合本次评估表现为前侧牵拉，并伴随左低右高侧向偏移的人',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧减压先行，骨盆停止被向前拽，才能让后面的横向纠正真正落地。' },
                     { name: '第二步：减轻将骨盆从左向右横向推起的横向偏移', desc: '前侧拉扯合并横向偏移，两层同时存在，要分清楚哪一层是主导，按顺序处理。' },
