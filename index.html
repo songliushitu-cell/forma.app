@@ -2872,15 +2872,6 @@
                 }
             ];
 
-            const phaseOnePlan = [
-                { name: 'PRI 短静坐呼吸训练', dosage: '3 组，每组 5 次呼吸' },
-                { name: 'PRI 侧卧夹球剪切力训练', dosage: '3 组，每组 5 次呼吸' },
-                { name: '推球四足呼吸', dosage: '3 组，每组 5 次呼吸' },
-                { name: 'PRI 股直肌的仰卧半伸展', dosage: '3 组，每侧 15 次' },
-                { name: 'TFL 抑制训练', dosage: '3 组，10 次' }
-            ];
-
-            const renderExerciseList = (items) => items.map((item, index) => `<p>${index + 1}. <b class="text-slate-800">${item.name}</b>：${item.dosage}</p>`).join('');
             const renderAccordionCard = (title, subtitle, bodyHtml, isOpen = false, tone = 'white') => {
                 const palette = tone === 'blue'
                     ? 'bg-[#0a84ff]/5 border-[#0a84ff]/15'
@@ -3134,13 +3125,6 @@
                     <p><b class="text-slate-800">为什么要这样排顺序：</b>${comboProfile.solutionOrder}</p>
                     <p><b class="text-slate-800">专项动作：</b>${rotationPattern.action.name}。${rotationPattern.action.method}</p>
                     <p><b class="text-slate-800">建议剂量：</b>${rotationPattern.action.dosage}</p>
-                `)}
-                ${renderAccordionCard('第三层：起步动作库', '如果刚开始完全没头绪，可以先从低刺激动作做起', `
-                    <p><b class="text-slate-800">${compressionPattern.secondaryAction.name}</b>：${compressionPattern.secondaryAction.method}</p>
-                    <p><b class="text-slate-800">建议剂量：</b>${compressionPattern.secondaryAction.dosage}</p>
-                    <div class="mt-2 border-t border-dashed border-slate-200 pt-2">
-                        ${renderExerciseList(phaseOnePlan)}
-                    </div>
                 `)}
             `;
 
