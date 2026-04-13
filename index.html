@@ -1318,6 +1318,11 @@
                 pelvicAsymmetryHtml: document.getElementById('final-pelvic-asymmetry').innerHTML,
                 reportDataText: document.getElementById('final-report-data').textContent,
                 technicalContentHtml: document.getElementById('final-technical-content').innerHTML,
+                routeIsolation: currentAssessmentResult?.routeIsolation || null,
+                primaryRouteLabel: currentAssessmentResult?.primaryRouteLabel || '',
+                primarySummary: currentAssessmentResult?.primarySummary || '',
+                secondarySummary: currentAssessmentResult?.secondarySummary || '',
+                videoPlanComboKey: currentAssessmentResult?.planKey || '',
                 assessmentMeta: currentAssessmentResult
             };
         }
@@ -1346,40 +1351,47 @@
                 empathicContainer.classList.add('hidden');
             }
 
-            document.getElementById('final-combo-label').textContent = snapshot.comboLabelText || '--';
-            document.getElementById('final-pelvic-orientation').innerHTML = snapshot.pelvicOrientationHtml || '--';
-            document.getElementById('final-pelvic-asymmetry').innerHTML = snapshot.pelvicAsymmetryHtml || '--';
-            document.getElementById('final-report-data').textContent = snapshot.reportDataText || '数据依据：--';
-            document.getElementById('final-technical-content').innerHTML = snapshot.technicalContentHtml || '';
-            const videoPlanCard = document.getElementById('video-plan-card');
-            if (videoPlanCard) videoPlanCard.classList.add('hidden');
-            const jumpLink = document.querySelector('.id-jump-video');
-            if (jumpLink) jumpLink.classList.add('hidden');
+            document.getElementById('final-combo-label').textContent = snapshot.com        function buildCompressionIsolationResult(metrics) {
+            const posteriorChecks = [
+                { label: '主动直腿抬高 < 50°', hit: metrics.slrFinal < 50 },
+                { label: '主动髋屈曲 > 100°', hit: metrics.hipFinal > 100 },
+                { label: '主动肩屈 < 100°', hit: metrics.shoulderFinal < 100 }
+            ];
+            const anteriorChecks = [
+                { label: '主动直腿抬高 > 50°', hit: metrics.slrFinal > 50 },
+                { label: '主动髋屈曲 < 100°', hit: metrics.hipFinal < 100 },
+                { label: '主动肩屈 > 100°', hit: metrics.shoulderFinal > 100 }
+            ];
 
-            document.getElementById('final-report-section').classList.remove('hidden');
-            scrollToDisplayArea(document.getElementById('final-report-section'));
-        }
+            const support = {
+                posterior: countTrue(posteriorChecks.map(item => item.hit)),
+                anterior: countTrue(anteriorChecks.map(item => item.hit))
+            };
 
-        function renderSavedReportsList() {
-            const reports = loadSavedReports();
-            if (!reports.length) {
-                savedReportsList.innerHTML = `<div class="text-[11px] text-slate-500 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-3 leading-relaxed">还没有保存过报告。完成一次完整测试后，点击“保存本次报告”即可留存。</div>`;
-                return;
-            }
+            // 短板值衡量：离阈值偏离最多的那一项作为判定辅助
+            const slrGap = metrics.slrFinal - 50; // <0 for posterior, >0 for anterior
+            const hipGap = metrics.hipFinal - 100; // >0 for posterior, <0 for anterior
+            const shGap = metrics.shoulderFinal - 100; // <0 for posterior, >0 for anterior
 
-            savedReportsList.innerHTML = reports.map(report => `
-                <div class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl p-3.5 flex flex-col gap-2">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <div class="text-[10px] font-bold text-slate-400 tracking-[0.16em]">${report.savedAt || '--'}</div>
-                            <div class="text-[13px] font-bold text-slate-800 leading-5 mt-1">${report.titleText || '已保存报告'}</div>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 pt-1">
-                        <button type="button" class="flex-1 py-2.5 rounded-xl bg-mac-blue text-white text-[11px] font-bold tracking-wide shadow-mac-blue active:scale-[0.98] transition-transform" data-report-open="${report.id}">
-                            查看
-                        </button>
-                        <button type="button" class="px-3 py-2.5 rounded-xl bg-white border border-[#e5e5ea] text-slate-600 text-[11px] font-bold tracking-wide active:scale-[0.98] transition-transform" data-report-delete="${report.id}">
+            let key = 'mixed';
+            if (support.posterior === 3) key = 'posterior';
+            else if (support.anterior === 3) key = 'anterior';
+            else if (support.posterior >= 2) key = 'posterior';
+            else if (support.anterior >= 2) key = 'anterior';
+
+            const supportScore = key === 'mixed' ? Math.max(support.posterior, support.anterior) : support[key];
+            const confidenceKey = key === 'mixed' ? 'low' : (supportScore === 3 ? 'high' : 'medium');
+
+            return {
+                key,
+                support,
+                supportScore,
+                confidenceKey,
+                checks: { posterior: posteriorChecks, anterior: anteriorChecks },
+                primarySummary: key === 'posterior' ? '骨盆后侧更紧' : (key === 'anterior' ? '骨盆前侧更紧' : '前后都在参与'),
+                secondarySummary: key === 'posterior' ? '补充：骨盆后侧更紧' : (key === 'anterior' ? '补充：骨盆前侧更紧' : '补充：前后都在参与')
+            };
+        } text-[11px] font-bold tracking-wide active:scale-[0.98] transition-transform" data-report-delete="${report.id}">
                             删除
                         </button>
                     </div>
@@ -1413,49 +1425,216 @@
             alert('本次报告已保存到当前浏览器。');
         }
 
-        function buildAssessmentGateFromMeasurements() {
-            const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
-            const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
-            const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
+        function countTrue(items) {
+            return items.filter(Boolean).length;
+        }
+
+        function scoreDiffMagnitude(value, threshold = 10, nearThreshold = 5) {
+            const absValue = Math.abs(value);
+            if (absValue > threshold) return 2;
+            if (absValue >= nearThreshold) return 1;
+            return 0;
+        }
+
+        function buildAssessmentMetrics() {
+            const slrL = testRecords.slr.L;
+            const slrR = testRecords.slr.R;
+            const hipL = testRecords.hip.L;
+            const hipR = testRecords.hip.R;
+            const shL = testRecords.shoulder.L;
+            const shR = testRecords.shoulder.R;
             const threshold = 10;
             const nearThreshold = 5;
-            const scoreDiffMagnitude = (value) => {
-                const absValue = Math.abs(value);
-                if (absValue > threshold) return 2;
-                if (absValue >= nearThreshold) return 1;
-                return 0;
-            };
-            const countTrue = (items) => items.filter(Boolean).length;
             const diffHip = hipL - hipR;
             const diffSLR = slrL - slrR;
             const diffSh = shL - shR;
-            const asymmetryScore = scoreDiffMagnitude(diffHip) + scoreDiffMagnitude(diffSLR) + scoreDiffMagnitude(diffSh);
-            const asymmetryMagnitudeKey = asymmetryScore >= 5 ? 'high' : (asymmetryScore >= 3 ? 'medium' : 'low');
-            const leftAicHits = countTrue([diffHip > nearThreshold, diffSLR < -nearThreshold, diffSh < -nearThreshold]);
-            const obliqueHits = countTrue([diffHip < -nearThreshold, diffSLR > nearThreshold, diffSh > nearThreshold]);
 
-            let rotationKey = 'unclear';
-            if (leftAicHits >= 2 && leftAicHits > obliqueHits) rotationKey = 'LeftAIC';
-            else if (obliqueHits >= 2 && obliqueHits > leftAicHits) rotationKey = 'Oblique';
+            return {
+                slrL,
+                slrR,
+                hipL,
+                hipR,
+                shL,
+                shR,
+                slrFinal: testRecords.slr.final,
+                hipFinal: testRecords.hip.final,
+                shoulderFinal: testRecords.shoulder.final,
+                diffHip,
+                diffSLR,
+                diffSh,
+                threshold,
+                nearThreshold,
+                asymmetryScore: scoreDiffMagnitude(diffHip, threshold, nearThreshold) + scoreDiffMagnitude(diffSLR, threshold, nearThreshold) + scoreDiffMagnitude(diffSh, threshold, nearThreshold)
+            };
+        }
 
-            const rotationHits = rotationKey === 'LeftAIC' ? leftAicHits : rotationKey === 'Oblique' ? obliqueHits : Math.max(leftAicHits, obliqueHits);
-            const rotationConfidenceKey = rotationKey === 'unclear'
+        function buildCompressionIsolationResult(metrics) {
+            const posteriorChecks = [
+                { label: '主动直腿抬高短板值 < 50°', hit: metrics.slrFinal < 50 },
+                { label: '主动髋屈曲短板值 > 100°', hit: metrics.hipFinal > 100 },
+                { label: '主动肩屈短板值 < 100°', hit: metrics.shoulderFinal < 100 }
+            ];
+            const anteriorChecks = [
+                { label: '主动直腿抬高短板值 > 50°', hit: metrics.slrFinal > 50 },
+                { label: '主动髋屈曲短板值 < 100°', hit: metrics.hipFinal < 100 },
+                { label: '主动肩屈短板值 > 100°', hit: metrics.shoulderFinal > 100 }
+            ];
+
+            const support = {
+                posterior: countTrue(posteriorChecks.map(item => item.hit)),
+                anterior: countTrue(anteriorChecks.map(item => item.hit))
+            };
+            const distance = {
+                posterior: Math.max(0, metrics.slrFinal - 50) + Math.max(0, 100 - metrics.hipFinal) + Math.max(0, metrics.shoulderFinal - 100),
+                anterior: Math.max(0, 50 - metrics.slrFinal) + Math.max(0, metrics.hipFinal - 100) + Math.max(0, 100 - metrics.shoulderFinal)
+            };
+
+            let key = 'mixed';
+            if (support.posterior === 3) {
+                key = 'posterior';
+            } else if (support.anterior === 3) {
+                key = 'anterior';
+            } else if (support.posterior >= 2 && (support.posterior > support.anterior || distance.posterior + 5 < distance.anterior)) {
+                key = 'posterior';
+            } else if (support.anterior >= 2 && (support.anterior > support.posterior || distance.anterior + 5 < distance.posterior)) {
+                key = 'anterior';
+            }
+
+            const supportScore = key === 'mixed' ? Math.max(support.posterior, support.anterior) : support[key];
+            const confidenceKey = key === 'mixed'
                 ? 'low'
-                : rotationHits === 3
+                : supportScore === 3
                     ? 'high'
                     : 'medium';
 
-            let heightKey = 'unclear';
-            if (rotationKey === 'Oblique' && obliqueHits >= 2) heightKey = 'leftHigh';
-            else if (asymmetryMagnitudeKey === 'high' || asymmetryMagnitudeKey === 'medium') heightKey = 'uneven';
+            return {
+                key,
+                support,
+                supportScore,
+                distance,
+                confidenceKey,
+                exactMatch: key !== 'mixed' && supportScore === 3,
+                checks: {
+                    posterior: posteriorChecks,
+                    anterior: anteriorChecks
+                },
+                primarySummary: key === 'posterior'
+                    ? '主通道先按骨盆后侧更紧处理。'
+                    : key === 'anterior'
+                        ? '主通道先按骨盆前侧更紧处理。'
+                        : '主通道先保留为前后都在参与。',
+                secondarySummary: key === 'posterior'
+                    ? '第二层补充更像骨盆后侧更紧。'
+                    : key === 'anterior'
+                        ? '第二层补充更像骨盆前侧更紧。'
+                        : '第二层补充只保留前后都在参与。'
+            };
+        }
+
+        function buildRotationIsolationResult(metrics) {
+            const leftAicChecks = [
+                { label: '左侧髋屈曲 > 右侧', hit: metrics.diffHip > metrics.nearThreshold },
+                { label: '左侧直腿抬高 < 右侧', hit: metrics.diffSLR < -metrics.nearThreshold },
+                { label: '左侧肩屈 < 右侧', hit: metrics.diffSh < -metrics.nearThreshold }
+            ];
+            const obliqueChecks = [
+                { label: '右侧髋屈曲 > 左侧', hit: metrics.diffHip < -metrics.nearThreshold },
+                { label: '右侧直腿抬高 < 左侧', hit: metrics.diffSLR > metrics.nearThreshold },
+                { label: '右侧肩屈 < 左侧', hit: metrics.diffSh > metrics.nearThreshold }
+            ];
+
+            const leftAicHits = countTrue(leftAicChecks.map(item => item.hit));
+            const obliqueHits = countTrue(obliqueChecks.map(item => item.hit));
+
+            let key = 'unclear';
+            if (leftAicHits >= 2 && leftAicHits > obliqueHits) key = 'LeftAIC';
+            else if (obliqueHits >= 2 && obliqueHits > leftAicHits) key = 'Oblique';
+
+            const evidenceHits = key === 'LeftAIC' ? leftAicHits : (key === 'Oblique' ? obliqueHits : Math.max(leftAicHits, obliqueHits));
 
             return {
-                asymmetryScore,
-                asymmetryMagnitudeKey,
-                rotationKey,
-                rotationConfidenceKey,
-                heightKey,
-                questionnaireTriggered: asymmetryScore >= 4 || (heightKey !== 'unclear' && ['medium', 'high'].includes(rotationConfidenceKey))
+                key,
+                evidenceHits,
+                confidenceKey: key === 'unclear' ? 'low' : (evidenceHits === 3 ? 'high' : 'medium'),
+                primarySummary: key === 'LeftAIC' ? '左前右后' : (key === 'Oblique' ? '左前上右后下' : '朝向待复核'),
+                secondarySummary: key === 'LeftAIC' ? '补充：左前右后' : (key === 'Oblique' ? '补充：左前上右后下' : '补充：朝向待复核')
+            };
+        }
+
+        function buildHeightIsolationResult(rotationResult, metrics) {
+            // 只从旋转结果派生高低
+            if (rotationResult.key === 'Oblique') {
+                return { key: 'leftHigh', confidenceKey: rotationResult.evidenceHits === 3 ? 'high' : 'medium' };
+            }
+
+            // 左右差明显（>=10°）但方向不够集中
+            const hasLargeDiff = Math.abs(metrics.diffHip) >= metrics.threshold || Math.abs(metrics.diffSLR) >= metrics.threshold || Math.abs(metrics.diffSh) >= metrics.threshold;
+            if (hasLargeDiff && rotationResult.key === 'unclear') {
+                return { key: 'uneven', confidenceKey: 'low' };
+            }
+
+            return { key: 'unclear', confidenceKey: 'low' };
+        }
+
+        function buildRouteIsolationAssessment(metrics = buildAssessmentMetrics()) {
+            const triggerItems = [
+                { key: 'hip', label: '髋屈曲', diff: metrics.diffHip },
+                { key: 'slr', label: '直腿抬高', diff: metrics.diffSLR },
+                { key: 'shoulder', label: '肩屈', diff: metrics.diffSh }
+            ].filter(item => Math.abs(item.diff) >= metrics.threshold);
+
+            const primaryRoute = triggerItems.length ? 'rotation-first' : 'compression-first';
+            const rotationResult = buildRotationIsolationResult(metrics);
+            const compressionResult = buildCompressionIsolationResult(metrics);
+            const heightResult = buildHeightIsolationResult(rotationResult, metrics);
+
+            return {
+                primaryRoute,
+                thresholdDeg: metrics.threshold,
+                triggerItems,
+                primaryRouteLabel: primaryRoute === 'rotation-first' ? '先处理旋转' : '先处理前后压缩',
+                rotationResult,
+                compressionResult,
+                heightResult,
+                primarySummary: primaryRoute === 'rotation-first' ? rotationResult.primarySummary : compressionResult.primarySummary,
+                secondarySummary: primaryRoute === 'rotation-first' ? compressionResult.secondarySummary : rotationResult.secondarySummary
+            };
+        }
+
+        function buildRetestPriorityItems(metrics, compressionResult, rotationResult) {
+            const pushRetestItem = (items, label) => {
+                if (!items.includes(label)) items.push(label);
+            };
+            const retestPriorityItems = [];
+            if (Math.abs(metrics.diffSLR) >= metrics.nearThreshold && Math.abs(metrics.diffSLR) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
+            if (Math.abs(metrics.diffHip) >= metrics.nearThreshold && Math.abs(metrics.diffHip) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
+            if (Math.abs(metrics.diffSh) >= metrics.nearThreshold && Math.abs(metrics.diffSh) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动肩屈');
+            if (Math.abs(metrics.slrFinal - 50) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
+            if (Math.abs(metrics.hipFinal - 100) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
+            if (Math.abs(metrics.shoulderFinal - 100) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动肩屈');
+            if (compressionResult.key === 'mixed') {
+                pushRetestItem(retestPriorityItems, '主动直腿抬高');
+                pushRetestItem(retestPriorityItems, '主动髋屈曲');
+            }
+            if (rotationResult.key === 'unclear') {
+                pushRetestItem(retestPriorityItems, '主动髋屈曲');
+                pushRetestItem(retestPriorityItems, '主动肩屈');
+            }
+            return retestPriorityItems;
+        }
+
+        function buildAssessmentGateFromMeasurements() {
+            const metrics = buildAssessmentMetrics();
+            const routeIsolation = buildRouteIsolationAssessment(metrics);
+
+            return {
+                asymmetryScore: metrics.asymmetryScore,
+                asymmetryMagnitudeKey: routeIsolation.primaryRoute === 'rotation-first' ? 'high' : 'low',
+                primaryRoute: routeIsolation.primaryRoute,
+                rotationKey: routeIsolation.rotationResult.key,
+                rotationConfidenceKey: routeIsolation.rotationResult.confidenceKey,
+                heightKey: routeIsolation.heightResult.key,
+                questionnaireTriggered: routeIsolation.primaryRoute === 'rotation-first' || routeIsolation.heightResult.key !== 'unclear'
             };
         }
 
@@ -1567,8 +1746,8 @@
         }
 
         function buildBaseLoadRisk(params) {
-            const { compressionLayer, rotationLayer, heightLayer, asymmetryMagnitude, overallConfidenceKey } = params;
-            if (asymmetryMagnitude.key === 'low') {
+            const { compressionLayer, rotationLayer, heightLayer, routeIsolation } = params;
+            if (compressionLayer.key === 'mixed' && rotationLayer.key === 'unclear' && heightLayer.key === 'unclear') {
                 return {
                     available: false,
                     confidenceKey: 'low',
@@ -1576,7 +1755,73 @@
                     focusTags: [],
                     supportedSides: [],
                     summary: '当前不建议从这次结果直接推具体不适区域。',
-                    note: '因为这次左右差异不算大，报告最多只提示趋势，不建议把骶髂或髋前等具体侧别负担写死。'
+                    note: '这次更适合先看主线和复测趋势，不建议把不适区域写得过满。'
+                };
+            }
+
+            if (compressionLayer.key === 'posterior' && rotationLayer.key === 'unclear' && heightLayer.key === 'unclear') {
+                return {
+                    available: true,
+                    confidenceKey: routeIsolation.primaryRoute === 'compression-first' ? 'medium' : 'low',
+                    areas: [
+                        createLoadRiskArea({
+                            area: '下腰后侧 / 臀后侧',
+                            why: '骨盆后侧更紧时，下腰后侧和臀后侧更容易一直顶着稳定。',
+                            triggers: '久站、走多、久坐后起身或做后侧链动作后，下腰后侧和臀后侧更容易先累。',
+                            side: 'broad',
+                            tags: ['leftBack'],
+                            genericArea: '下腰后侧 / 臀后侧',
+                            genericWhy: '后侧链长期硬撑时，下腰后侧和臀后侧更容易先忙起来。',
+                            genericTriggers: '久站、走多、起身或做后侧链动作后，这一带更容易先紧。'
+                        }),
+                        createLoadRiskArea({
+                            area: '大腿后侧 / 小腿后侧',
+                            why: '后侧紧张一路往下传时，大腿后侧和小腿后侧也更容易跟着发紧。',
+                            triggers: '走多、爬坡、练腿或久站以后，腿后侧更容易觉得拉着和发胀。',
+                            side: 'broad',
+                            tags: ['leftBack'],
+                            genericArea: '大腿后侧 / 小腿后侧',
+                            genericWhy: '后侧链长期负担偏大时，腿后侧更容易一起参与。',
+                            genericTriggers: '走多、爬坡、练腿或久站以后，腿后侧更容易先累。'
+                        })
+                    ],
+                    focusTags: ['leftBack'],
+                    supportedSides: ['left', 'right'],
+                    summary: '这次更像后侧链在兜底，所以下腰后侧、臀后侧和腿后侧更值得优先留意。',
+                    note: '这只是动作结果下的负担倾向，不等同于疼痛诊断。'
+                };
+            }
+
+            if (compressionLayer.key === 'anterior' && rotationLayer.key === 'unclear' && heightLayer.key === 'unclear') {
+                return {
+                    available: true,
+                    confidenceKey: routeIsolation.primaryRoute === 'compression-first' ? 'medium' : 'low',
+                    areas: [
+                        createLoadRiskArea({
+                            area: '髋前 / 腹股沟前侧',
+                            why: '骨盆前侧更紧时，髋前和腹股沟前侧更容易一直被拉着工作。',
+                            triggers: '抬腿、迈步、久坐起身或练腿前侧动作后，髋前更容易先忙。',
+                            side: 'broad',
+                            tags: ['leftFrontHip'],
+                            genericArea: '髋前 / 腹股沟前侧',
+                            genericWhy: '前侧牵拉更明显时，髋前和腹股沟前侧更容易先忙起来。',
+                            genericTriggers: '抬腿、迈步、久坐起身或练腿前侧动作后，髋前更容易先紧。'
+                        }),
+                        createLoadRiskArea({
+                            area: '下腰前侧 / 腿前侧',
+                            why: '前侧一直把骨盆往前拉时，下腰前侧和腿前侧也更容易跟着顶住。',
+                            triggers: '久站、快走、上楼或挺腰站久以后，下腰前侧和腿前侧更容易先累。',
+                            side: 'broad',
+                            tags: ['frontLowBack'],
+                            genericArea: '下腰前侧 / 腿前侧',
+                            genericWhy: '前侧链长期主导时，下腰前侧和腿前侧更容易一起参与。',
+                            genericTriggers: '久站、快走、上楼或腿前侧主导动作后，这一带更容易先紧。'
+                        })
+                    ],
+                    focusTags: ['leftFrontHip', 'frontLowBack'],
+                    supportedSides: ['left', 'right'],
+                    summary: '这次更像前侧链在主导，所以髋前、腹股沟前侧和下腰前侧更值得优先留意。',
+                    note: '这部分只是动作结果下更容易累的区域，不等同于临床诊断。'
                 };
             }
 
@@ -1606,7 +1851,7 @@
             if (rotationLayer.key === 'Oblique' && heightLayer.key === 'leftHigh') {
                 return {
                     available: true,
-                    confidenceKey: asymmetryMagnitude.key === 'high' && overallConfidenceKey !== 'low' ? 'high' : 'medium',
+                    confidenceKey: routeIsolation.primaryRoute === 'rotation-first' ? 'high' : 'medium',
                     areas: [
                         createLoadRiskArea({
                             area: '左侧骶髂关节周围 / 左臀深处',
@@ -1649,7 +1894,7 @@
             if (rotationLayer.key === 'LeftAIC' && compressionLayer.key === 'anterior') {
                 return {
                     available: true,
-                    confidenceKey: asymmetryMagnitude.key === 'high' ? 'medium' : 'low',
+                    confidenceKey: routeIsolation.primaryRoute === 'rotation-first' ? 'medium' : 'low',
                     areas: [
                         createLoadRiskArea({
                             area: '左髋前 / 腹股沟前侧',
@@ -1692,7 +1937,7 @@
             if (rotationLayer.key === 'LeftAIC' && compressionLayer.key === 'posterior') {
                 return {
                     available: true,
-                    confidenceKey: asymmetryMagnitude.key === 'high' ? 'medium' : 'low',
+                    confidenceKey: routeIsolation.primaryRoute === 'rotation-first' ? 'medium' : 'low',
                     areas: [
                         createLoadRiskArea({
                             area: '单侧下腰后侧 / 臀后侧',
@@ -2502,6 +2747,45 @@
             localStorage.setItem('pelvic_history_v4', JSON.stringify(hist));
         }
 
+        // --- Helper functions for report rendering ---
+        function renderLineList(items, options = {}) {
+            if (!items || !items.length) return '';
+            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
+            const markerClass = options.markerClass || 'text-[#0a84ff]';
+            return items.map(item => `
+                <div class="flex items-start gap-2.5 mb-2 last:mb-0">
+                    <span class="mt-[6px] ${markerClass} text-[6px] shrink-0">●</span>
+                    <span class="${itemClass}">${item}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderNumberedHighlights(items, options = {}) {
+            if (!items || !items.length) return '';
+            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
+            return items.map((item, index) => `
+                <div class="flex items-start gap-3 bg-white/50 rounded-xl p-3 border border-slate-100 shadow-sm mb-2 last:mb-0">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0a84ff]/10 text-[10px] font-black text-[#0a84ff]">${index + 1}</span>
+                    <span class="${itemClass}">${item}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderLayerSummaryRow(label, statusText, statusType = 'normal') {
+            const statusConfig = {
+                'normal': 'bg-slate-100 text-slate-600',
+                'alert': 'bg-rose-50 text-rose-500 border-rose-100',
+                'success': 'bg-emerald-50 text-emerald-600 border-emerald-100'
+            };
+            const cls = statusConfig[statusType] || statusConfig.normal;
+            return `
+                <div class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                    <span class="text-[13px] text-slate-500 font-medium">${label}</span>
+                    <span class="text-[12px] font-bold px-2 py-0.5 rounded-full ${cls}">${statusText}</span>
+                </div>
+            `;
+        }
+
         btnShowDonate.addEventListener('click', () => donateModal.classList.remove('hidden'));
         btnCloseDonate.addEventListener('click', () => donateModal.classList.add('hidden'));
         btnOpenPaymentUnlock.addEventListener('click', () => openPaymentUnlockModal());
@@ -2579,14 +2863,51 @@
             updateDemoVideoStatus('演示视频暂时未加载成功，你仍可先根据下方文字提示开始测试。');
         });
         demoTriggerLabels.forEach(label => {
-            label.addEventListener('click', () => {
+            label.addEventListener('click', (e) => {
                 const testType = label.getAttribute('data-demo-trigger');
                 if (!testType) return;
-                window.setTimeout(() => {
-                    openDemoModal(testType);
-                }, 0);
+                openDemoModal(testType);
             });
         });
+
+        ['slr', 'hip', 'shoulder'].forEach(type => {
+            const tracker = document.getElementById(`tracker-${type}`);
+            if (tracker) {
+                tracker.classList.add('cursor-pointer', 'active:scale-95', 'transition-transform');
+                tracker.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+                    const radio = document.querySelector(`input[name="testType"][value="${type}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change'));
+                        document.getElementById('test-selection-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    openDemoModal(type);
+                });
+            }
+        });
+
+        function renderLineList(items, options = {}) {
+            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
+            const markerClass = options.markerClass || 'text-[#0a84ff]';
+            return items.map(item => `
+                <div class="flex items-start gap-2.5 mb-2 last:mb-0">
+                    <span class="mt-[6px] ${markerClass} text-[6px] shrink-0">●</span>
+                    <span class="${itemClass}">${item}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderNumberedHighlights(items, options = {}) {
+            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
+            return items.map((item, index) => `
+                <div class="flex items-start gap-3 bg-white/50 rounded-xl p-3 border border-slate-100 shadow-sm mb-2 last:mb-0">
+                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0a84ff]/10 text-[10px] font-black text-[#0a84ff]">${index + 1}</span>
+                    <span class="${itemClass}">${item}</span>
+                </div>
+            `).join('');
+        }
+
         renderUsageGateStatus();
 
         // --- Manual Input Actions (Enhanced with smart partial fill) ---
@@ -3497,6 +3818,7 @@
             speak("测试集采集完成！正在为您生成体态分析报告。");
             const symptomCheck = inputSymptomCheck || createDefaultSymptomCheckState();
             symptomCheckState = symptomCheck;
+            const metrics = buildAssessmentMetrics();
 
             const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
@@ -3514,26 +3836,31 @@
                 return;
             }
 
+            renderIsolatedFinalReport(symptomCheck, metrics);
+            return;
+
+        function renderIsolatedFinalReport(symptomCheck, metrics) {
+            const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
+            const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
+            const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
+            
+            const diffSLR = slrL - slrR;
+            const diffHip = hipL - hipR;
+            const diffSh = shL - shR;
+            const threshold = 10;
+            const nearThreshold = 5;
+
+            const routeIsolation = buildRouteIsolationAssessment(metrics);
+            const compressionEvaluation = routeIsolation.compressionResult;
+            const rotationEvaluation = routeIsolation.rotationResult;
+            const retestPriorityItems = buildRetestPriorityItems(metrics, compressionEvaluation, rotationEvaluation);
+            
             const titleEl = document.getElementById('final-result-title');
             const reportConfidenceEl = document.getElementById('final-report-confidence');
             const reportConfidenceDetailEl = document.getElementById('final-report-confidence-detail');
             const reportDateTimeText = `评估时间：${formatReportDateTime()}`;
-
-            const diffHip = hipL - hipR;
-            const diffSLR = slrL - slrR;
-            const diffSh = shL - shR;
-            const threshold = 10;
-            const nearThreshold = 5;
+            const reportSafetyBlocked = symptomCheck.redFlags?.triggered || false;
             const formatSignedDiff = (value) => `${value > 0 ? '+' : ''}${value.toFixed(1)}°`;
-
-            const countTrue = (items) => items.filter(Boolean).length;
-            const scoreDiffMagnitude = (value) => {
-                const absValue = Math.abs(value);
-                if (absValue > threshold) return 2;
-                if (absValue >= nearThreshold) return 1;
-                return 0;
-            };
-            const confidenceRank = { low: 1, medium: 2, high: 3 };
             const confidenceLabelMap = { low: '低', medium: '中', high: '高' };
             const confidenceToneMap = {
                 high: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
@@ -3541,804 +3868,83 @@
                 low: 'bg-slate-500/10 text-slate-700 border-slate-400/20'
             };
             const layerConfidenceCopy = {
-                high: '证据比较集中，这一层可以作为当前主要参考。',
-                medium: '方向已经出现，但建议结合复测继续确认。',
-                low: '这一层目前更适合作为趋势参考，不建议理解成完全写死的结论。'
+                high: '证据比较集中，可作为当前主要参考。',
+                medium: '方向已经出现，建议结合复测确认。',
+                low: '目前更适合作为趋势参考。'
             };
-
-            const renderMetricCard = (title, leftValue, rightValue, diffValue, hint) => `
-                <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-3 shadow-sm">
-                    <div class="text-[10px] font-black tracking-[0.18em] text-slate-400">${title}</div>
-                    <div class="mt-1 text-[12px] sm:text-[13px] font-bold text-slate-800 leading-relaxed">
-                        左 ${formatAngleValue(leftValue)}° / 右 ${formatAngleValue(rightValue)}° / 差值 ${formatSignedDiff(diffValue)}
-                    </div>
-                    <p class="mt-1 text-[11px] text-slate-500 leading-relaxed">${hint}</p>
-                </div>
-            `;
-            const renderLineList = (items, options = {}) => {
-                const itemClass = options.itemClass || 'text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]';
-                const markerClass = options.markerClass || 'text-[#0a84ff]';
-                return items.map(item => `
-                    <div class="flex items-start gap-2.5">
-                        <span class="mt-[2px] ${markerClass} font-black">•</span>
-                        <span class="${itemClass}">${item}</span>
-                    </div>
-                `).join('');
-            };
-            const renderNumberedHighlights = (items) => items.map((item, index) => `
-                <div class="rounded-xl border border-slate-100 bg-slate-50/80 px-3.5 py-3 shadow-sm">
-                    <div class="flex items-start gap-3">
-                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0a84ff]/10 text-[11px] font-black text-[#0a84ff]">${index + 1}</span>
-                        <p class="text-[12px] sm:text-[13px] text-slate-700 leading-[1.8]">${item}</p>
-                    </div>
-                </div>
-            `).join('');
-            const renderLayerSummaryRow = (label, value, confidenceKey) => `
-                <div class="rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-3 shadow-sm">
-                    <div class="flex items-center justify-between gap-3">
-                        <span class="text-[10px] font-black tracking-[0.18em] text-slate-400">${label}</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${confidenceToneMap[confidenceKey]}">可信度：${confidenceLabelMap[confidenceKey]}</span>
-                    </div>
-                    <p class="mt-2 text-[12px] sm:text-[13px] text-slate-700 leading-[1.8]">${value}</p>
-                </div>
-            `;
-
-            const compressionSupport = {
-                posterior: countTrue([testRecords.slr.final < 50, testRecords.hip.final > 100, testRecords.shoulder.final < 100]),
-                anterior: countTrue([testRecords.slr.final > 50, testRecords.hip.final <= 100, testRecords.shoulder.final >= 100])
-            };
-
-            let compressionKey = 'mixed';
-            if (compressionSupport.posterior >= 2 && compressionSupport.posterior > compressionSupport.anterior) compressionKey = 'posterior';
-            else if (compressionSupport.anterior >= 2 && compressionSupport.anterior > compressionSupport.posterior) compressionKey = 'anterior';
-
-            let compressionConfidenceKey = compressionKey === 'mixed'
-                ? 'low'
-                : compressionSupport[compressionKey] === 3
-                    ? 'high'
-                    : 'medium';
-
-            const leftAicHits = countTrue([diffHip > nearThreshold, diffSLR < -nearThreshold, diffSh < -nearThreshold]);
-            const obliqueHits = countTrue([diffHip < -nearThreshold, diffSLR > nearThreshold, diffSh > nearThreshold]);
-
-            let rotationKey = 'unclear';
-            if (leftAicHits >= 2 && leftAicHits > obliqueHits) rotationKey = 'LeftAIC';
-            else if (obliqueHits >= 2 && obliqueHits > leftAicHits) rotationKey = 'Oblique';
-
-            const rotationHits = rotationKey === 'LeftAIC' ? leftAicHits : rotationKey === 'Oblique' ? obliqueHits : Math.max(leftAicHits, obliqueHits);
-            const rotationConfidenceKey = rotationKey === 'unclear'
-                ? 'low'
-                : rotationHits === 3
-                    ? 'high'
-                    : 'medium';
-
-            const asymmetryScore = scoreDiffMagnitude(diffHip) + scoreDiffMagnitude(diffSLR) + scoreDiffMagnitude(diffSh);
-            const asymmetryMagnitudeKey = asymmetryScore >= 5 ? 'high' : (asymmetryScore >= 3 ? 'medium' : 'low');
-            const largeDiffCount = [diffHip, diffSLR, diffSh].filter(value => Math.abs(value) > threshold).length;
-            const asymmetryMagnitudeConfig = {
-                low: { label: '低差异', summary: '左右差异不算大，报告以前后压缩层为主。' },
-                medium: { label: '中差异', summary: '左右差异已经出现，报告会把压缩层和旋转层并列来看。' },
-                high: { label: '高差异', summary: '左右差异很大，报告会优先强调骨盆旋转和高低不均。' }
-            }[asymmetryMagnitudeKey];
-
-            if (compressionConfidenceKey === 'high' && (asymmetryScore >= 5 || (largeDiffCount >= 2 && compressionSupport[compressionKey] === 3))) {
-                compressionConfidenceKey = 'medium';
-            }
-
-            let heightKey = 'unclear';
-            if (rotationKey === 'Oblique' && obliqueHits >= 2) heightKey = 'leftHigh';
-            else if (asymmetryMagnitudeKey === 'high' || asymmetryMagnitudeKey === 'medium') heightKey = 'uneven';
-
-            const heightConfidenceKey = heightKey === 'leftHigh'
-                ? (obliqueHits === 3 && asymmetryMagnitudeKey !== 'low' ? 'high' : 'medium')
-                : heightKey === 'uneven'
-                    ? (asymmetryMagnitudeKey === 'high' ? 'medium' : 'low')
-                    : 'low';
-
-            const weightedConfidenceScore = (
-                confidenceRank[compressionConfidenceKey] * (asymmetryMagnitudeKey === 'low' ? 0.5 : asymmetryMagnitudeKey === 'medium' ? 0.35 : 0.2) +
-                confidenceRank[rotationConfidenceKey] * (asymmetryMagnitudeKey === 'low' ? 0.3 : asymmetryMagnitudeKey === 'medium' ? 0.35 : 0.4) +
-                confidenceRank[heightConfidenceKey] * (asymmetryMagnitudeKey === 'low' ? 0.2 : asymmetryMagnitudeKey === 'medium' ? 0.30 : 0.4)
-            );
-            const overallConfidenceKey = weightedConfidenceScore >= 2.5 ? 'high' : (weightedConfidenceScore >= 1.8 ? 'medium' : 'low');
-
-            const pushRetestItem = (items, label) => {
-                if (!items.includes(label)) items.push(label);
-            };
-            const retestPriorityItems = [];
-            if (Math.abs(diffSLR) >= nearThreshold && Math.abs(diffSLR) <= threshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
-            if (Math.abs(diffHip) >= nearThreshold && Math.abs(diffHip) <= threshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            if (Math.abs(diffSh) >= nearThreshold && Math.abs(diffSh) <= threshold) pushRetestItem(retestPriorityItems, '主动肩屈');
-            if (Math.abs(testRecords.slr.final - 50) <= nearThreshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
-            if (Math.abs(testRecords.hip.final - 100) <= nearThreshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            if (Math.abs(testRecords.shoulder.final - 100) <= nearThreshold) pushRetestItem(retestPriorityItems, '主动肩屈');
-            if (compressionKey === 'mixed') {
-                pushRetestItem(retestPriorityItems, '主动直腿抬高');
-                pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            }
-            if (rotationKey === 'unclear') {
-                pushRetestItem(retestPriorityItems, '主动髋屈曲');
-                pushRetestItem(retestPriorityItems, '主动肩屈');
-            }
 
             const compressionConfigs = {
                 posterior: {
-                    label: '身体后侧紧张',
-                    title: '身体后侧紧张更明显',
-                    layerSummary: '更像是身体后侧一直紧着、撑着，把骨盆慢慢带到了偏前的位置。',
-                    bodyState: '这次更像是身体后侧一直在帮你硬撑，骨盆也更容易被带在前面。常见更紧的地方包括腘绳肌、臀部后侧、腰背竖脊肌，有些人还会连到背阔肌和小腿后侧。',
-                    mechanism: '身体后侧长期一起用力时，胸廓后侧、骨盆后侧和下肢承重链会越来越紧，身体会更依赖腰背和一条腿去撑住稳定。',
-                    symptoms: [
-                        '站久后后背、下腰或一侧臀后侧更容易累和顶。',
-                        '一侧腹股沟或前髋容易有被拉着往前的感觉。',
-                        '走路时会觉得某一侧脚落地更重。'
-                    ],
-                    appearance: [
-                        '看起来像已经站直了，但身体仍然不像站在正中间。',
-                        '臀后侧更容易挂不住，骨盆像在往前顶。',
-                        '裤腰、裙摆或腰线容易慢慢转向同一边。'
-                    ],
-                    compensation: [
-                        '做桥、深蹲或站姿动作时，更容易用腰背和一条腿去顶。',
-                        '越想做得对称，越容易出现后背发力过多。',
-                        '动作做完以后，真正累的是后背、下腰和一侧臀。'
-                    ],
-                    avoidList: [
-                        '先别急着追求大重量臀推、宽站深蹲或强烈屁股发力感。',
-                        '先别反复暴力拉髋前侧或硬压下腰。',
-                        '先别把左右每边做一样多当成当前第一目标。'
-                    ],
-                    nextActions: [
-                        '先让身体后侧别一直绷着，让胸廓后侧和骨盆后侧恢复一点空间。',
-                        '再根据左右差去回正承重和旋转顺序。',
-                        '在动作感觉变顺之前，力量训练以稳定和控制为主。'
-                    ],
-                    retest: '建议 7 到 10 天后用同一机位复测；如果这几天变化很快，可 3 到 5 天先看一次趋势。',
-                    serviceTone: '如果你希望把“先降后侧张力、再处理左右差”的顺序落实到具体动作安排和远程答疑里，可以继续查看下一步服务。',
-                    pelvicAp: {
-                        short: '整体更像身体后侧偏紧',
-                        explain: '身体后侧一直紧着、撑着，骨盆会更容易被带到偏前的位置。',
-                        impact: '这类人往往不是单纯前面短，而是身体后侧替你撑得太多，所以越想站直越容易继续用腰背去顶。'
-                    }
+                    label: '后侧更紧',
+                    mechanism: '本次测量结果表现为后侧链张力偏高，骨盆前移受限。',
+                    avoidList: ['避免单一强度深蹲', '避免过度后旋训练'],
+                    nextActions: ['加强前侧链募集', '通过呼吸改善胸部灵活性']
                 },
                 anterior: {
-                    label: '前侧牵拉',
-                    title: '前侧牵拉更明显',
-                    layerSummary: '更像是前侧链持续把骨盆往前下方拉，骨盆不容易真正回到中立。',
-                    bodyState: '这次更像是前侧链持续把骨盆往前下方拉。常见更忙的地方包括髋屈肌、股四头肌前侧和下腰前侧，所以表面上容易出现前顶和下腰挤压。',
-                    mechanism: '当前侧链长期过度主导时，下腹和腿后侧更难把骨盆收回来，结果就是前顶、小腹前送和下腰压力一起出现。',
-                    symptoms: [
-                        '下腰更容易挤、酸或有悬着的感觉。',
-                        '大腿前侧和髋前侧容易长期忙碌、发紧。',
-                        '上下楼、久站或练腿后，膝盖前方更容易累。'
-                    ],
-                    appearance: [
-                        '小腹更容易前顶，下腰线更明显。',
-                        '大腿前侧更容易显得发达，臀部轮廓不容易挂住。',
-                        '站着时像整个人被前面往下拽。'
-                    ],
-                    compensation: [
-                        '做动作时更容易用大腿前侧顶着完成，而不是用下腹和腿后侧配合。',
-                        '越想把腰挺直，越容易让下腰更挤。',
-                        '很多训练做完以后，感觉累的是腿前和腰，而不是更稳定的中段。'
-                    ],
-                    avoidList: [
-                        '先别反复猛拉髋前侧或不断压腰去摆正姿势。',
-                        '先别一上来用大腿前侧主导的练腿方式堆量。',
-                        '先别把把腰挺起来当成纠正前倾的办法。'
-                    ],
-                    nextActions: [
-                        '先减少前侧肌肉对骨盆的持续拉扯。',
-                        '再恢复下腹和腿后侧把骨盆往回收的能力。',
-                        '等骨盆不再一直前顶后，再逐步恢复更完整的力量训练。'
-                    ],
-                    retest: '建议 7 到 10 天后复测；如果你最近刚开始做呼吸和前侧减压训练，可 5 天左右先看一次变化。',
-                    serviceTone: '如果你希望把“先减轻前侧牵拉、再恢复回收能力”的顺序落到具体动作和周计划里，可以继续查看下一步服务。',
-                    pelvicAp: {
-                        short: '整体更像被前侧往前下方拉',
-                        explain: '前侧链持续把骨盆往前下方拉，所以更容易出现前顶、小腹前送和下腰挤压。',
-                        impact: '这类人常常不是只要拉髋前就能解决，而是要先让前侧少一点拉扯，让骨盆有机会收回来。'
-                    }
+                    label: '前侧更紧',
+                    mechanism: '本次测量结果表现为前侧牵拉感明显，骨盆容易前倾。',
+                    avoidList: ['避免反复拉伸髂腰肌', '避免忽略腹部稳定性'],
+                    nextActions: ['加强后侧链（腘绳肌）控制', '练习向后卷缩位控制']
                 },
                 mixed: {
-                    label: '前后混合代偿',
-                    title: '前后两层都在参与',
-                    layerSummary: '这次前后压缩层没有明显一边倒，更像是前后两层都在参与。',
-                    bodyState: '这次前后两层都在参与：身体里既有后侧硬撑，也有前侧拉扯，所以不适合只用一个简单标签把你完全写死。',
-                    mechanism: '当前更像处在混合代偿或过渡阶段。身体会一边靠后侧顶住稳定，一边又被前侧拉着往前走，所以很多动作看起来会互相打架。',
-                    symptoms: [
-                        '你会觉得自己不是单纯前顶，也不是单纯后侧紧，而是两边都在抢。',
-                        '一天里不同时间段，身体表现可能差很多。',
-                        '有时像下腰更紧，有时又像后臀和后背更累。'
-                    ],
-                    appearance: [
-                        '站姿看起来不像纯粹前倾，也不像纯粹后侧卡住。',
-                        '有些角度觉得偏前，有些角度又觉得偏歪。',
-                        '镜子里经常会有今天和明天完全不是一个样的感觉。'
-                    ],
-                    compensation: [
-                        '动作里更容易出现前后两头都在顶的感觉。',
-                        '越想找标准姿势，越容易全身一起紧。',
-                        '很多训练做完后，会觉得累点不固定。'
-                    ],
-                    avoidList: [
-                        '先别急着给自己贴死一个单一标签。',
-                        '先别同时上太多纠正动作，避免越做越乱。',
-                        '先别只根据一次测试就把长期方案完全定死。'
-                    ],
-                    nextActions: [
-                        '先抓最稳定的主线，不要同时处理太多层。',
-                        '优先重测临界项，把前后层再看清楚一点。',
-                        '等方向更稳定后，再细化训练顺序。'
-                    ],
-                    retest: '建议 3 到 5 天内优先复测临界项，并尽量保持同一机位和同一动作标准。',
-                    serviceTone: '如果你希望把这类混合代偿拆成更清晰的优先顺序和远程解读建议，可以继续查看下一步服务。',
-                    pelvicAp: {
-                        short: '前后两层都在参与',
-                        explain: '当前更像前后两层同时在影响骨盆位置，不适合只用单一前后标签理解。',
-                        impact: '这类情况下最重要的不是一次下死结论，而是先把主要方向和复测趋势看清楚。'
-                    }
+                    label: '前后都在参与',
+                    mechanism: '本次测量结果表现为混合受力模式，方向有待进一步确认。',
+                    avoidList: ['避免一次上太多复杂的纠正动作'],
+                    nextActions: ['优先重测试验项', '按基准呼吸练习']
                 }
             };
 
             const rotationConfigs = {
-                LeftAIC: {
-                    label: '左侧更靠前',
-                    layerSummary: '左右差里更明显的是左侧骨盆相对更靠前，右侧更像主要承重侧。',
-                    orientation: '骨盆整体更容易停在右旋偏置位',
-                    orientationExtra: '左侧骨盆相对更靠前，右侧更像主要承重侧。',
-                    orientationImpact: '这会让你在站立和走路时更容易把重量留在右腿，越想站正越可能用腰背去顶。',
-                    forwardSide: '左侧骨盆相对更靠前',
-                    forwardExtra: '左侧更容易向前抢位置，右侧更容易停在后方承重位。',
-                    forwardImpact: '这会让左边像一直往前抢位置，右边像一直在撑，所以动作里很难真正平均用力。',
-                    symptomLead: '站久后会更像某一侧在承重，另一侧在往前抢位置。',
-                    appearanceLead: '镜子里更像一侧骨盆在往前冲，另一侧在后面顶着稳。',
-                    compensationLead: '很多动作看起来是左右都在做，但真正承担工作常常落在一侧。'
-                },
-                Oblique: {
-                    label: '左侧更靠前且更高',
-                    layerSummary: '左右差里更明显的是左侧骨盆既更靠前，也更像偏高。',
-                    orientation: '骨盆整体更容易停在右旋合并斜轴位',
-                    orientationExtra: '除了左前右后的旋转差，还叠加了左侧更高的斜向卡住。',
-                    orientationImpact: '这类情况更容易牵动肩颈、胸廓和整条对角线，所以身体会觉得不只是骨盆有问题。',
-                    forwardSide: '左侧骨盆相对更靠前',
-                    forwardExtra: '左侧既更靠前也更高，说明前后差与高低差落在了同一侧。',
-                    forwardImpact: '这种叠加会让身体更难找到中线，很多动作看起来能做，但做完会更累。',
-                    symptomLead: '一侧肩颈、一侧下腰或一侧臀深处更容易反复先累。',
-                    appearanceLead: '镜子里会觉得整个人不是单纯歪，而像是被斜着拧住。',
-                    compensationLead: '对称动作做起来更容易出现左右完全不是一回事的感觉。'
-                },
-                unclear: {
-                    label: '旋转趋势待复核',
-                    layerSummary: '这次能看出存在旋转代偿，但左右方向还不适合写死。',
-                    orientation: '骨盆存在旋转代偿倾向',
-                    orientationExtra: '左右差已经出现，但方向证据还不够集中。',
-                    orientationImpact: '这意味着现在更适合先看趋势和复测，而不是直接把左右方向写死。',
-                    forwardSide: '前移侧待复核',
-                    forwardExtra: '本次左右差并不算完全一致，建议结合复测继续看。',
-                    forwardImpact: '当前最重要的是先看哪几项最稳定，再决定到底是哪一侧长期更靠前。',
-                    symptomLead: '你可能会觉得身体有左右差，但具体是哪一侧在长期主导，还需要再确认。',
-                    appearanceLead: '镜子里能看到不对称，但方向感可能会在不同状态下变化。',
-                    compensationLead: '动作里会出现左右不一样，但目前不适合把方向完全写死。'
-                }
+                LeftAIC: { label: '左前右后', note: '左侧骨盆相对靠前。' },
+                Oblique: { label: '左前上', note: '斜轴锁定状态。' },
+                unclear: { label: '朝向待定', note: '信号不够集中。' }
             };
 
             const heightConfigs = {
-                leftHigh: {
-                    label: '左高倾向',
-                    layerSummary: '左右差里更像左侧偏高，高低和旋转差落在了同一侧。',
-                    short: '左高倾向',
-                    explain: '本次更像左侧偏高，但仍建议结合复测看这个方向是否持续稳定。',
-                    impact: '当高低差和旋转差落在同一侧时，更容易出现骶髂关节、下腰和对角线代偿。'
-                },
-                uneven: {
-                    label: '高低不均倾向',
-                    layerSummary: '这次能看出存在高低不均，但仅靠本次 6 项侧面测试还不适合写死左右方向。',
-                    short: '高低不均倾向',
-                    explain: '当前能看出存在高低不均，但方向证据不够集中，所以先不把左右方向写死。',
-                    impact: '这类情况下更容易出现一边更顶、一边更飘，站姿和动作稳定感都会受影响。'
-                },
-                unclear: {
-                    label: '高低倾向待复核',
-                    layerSummary: '这次高低层证据不足，更适合作为待复核项目。',
-                    short: '高低倾向待复核',
-                    explain: '本次高低层信号不够集中，优先参考前后压缩和旋转层。',
-                    impact: '当前不适合只根据这次侧面数据就把左右高低方向完全写死。'
-                }
+                leftHigh: { label: '左高右低', note: '测量显示左侧更高。' },
+                uneven: { label: '高低不均', note: '存在差异但需复核。' },
+                unclear: { label: '待复核', note: '高低方向尚不明确。' }
             };
 
-            const compressionLayer = {
-                key: compressionKey,
-                ...compressionConfigs[compressionKey],
-                confidenceKey: compressionConfidenceKey,
-                confidenceLabel: confidenceLabelMap[compressionConfidenceKey],
-                supportScore: compressionSupport[compressionKey] || 0
-            };
-            const rotationLayer = {
-                key: rotationKey,
-                ...rotationConfigs[rotationKey],
-                confidenceKey: rotationConfidenceKey,
-                confidenceLabel: confidenceLabelMap[rotationConfidenceKey],
-                evidenceHits: rotationHits
-            };
-            const heightLayer = {
-                key: heightKey,
-                ...heightConfigs[heightKey],
-                confidenceKey: heightConfidenceKey,
-                confidenceLabel: confidenceLabelMap[heightConfidenceKey]
-            };
+            const compKey = compressionEvaluation.key;
+            const rotKey = rotationEvaluation.key;
+            const heightKey = routeIsolation.heightResult.key;
 
-            const measurementQuality = buildMeasurementQualitySummary({
-                diffHip,
-                diffSLR,
-                diffSh,
-                nearThreshold,
-                threshold,
-                retestPriorityItems
-            });
-            const assessmentPriority = asymmetryMagnitudeKey === 'high'
-                ? 'rotation-first'
-                : asymmetryMagnitudeKey === 'medium'
-                    ? 'parallel'
-                    : 'compression-first';
-            const baseLoadRisk = buildBaseLoadRisk({
-                compressionLayer,
-                rotationLayer,
-                heightLayer,
-                asymmetryMagnitude: { key: asymmetryMagnitudeKey },
-                overallConfidenceKey
-            });
-            const loadRisk = applySymptomCheckToLoadRisk(baseLoadRisk, symptomCheck);
-            const reportSafetyBlocked = symptomCheck.blocked;
+            const primaryProblemVal = routeIsolation.primaryRoute === 'rotation-first' ? '现处理旋转' : '现处理前后';
+            const mainSentence = reportSafetyBlocked ? "安全提示：涉及敏感项，已隐藏训练建议。" : (routeIsolation.primaryRoute === 'rotation-first' ? "骨盆存在明显旋转分流趋势。" : "骨盆前后状态是当前主线。");
 
-            const assessmentResult = {
-                compressionLayer,
-                rotationLayer,
-                heightLayer,
-                asymmetryMagnitude: {
-                    key: asymmetryMagnitudeKey,
-                    label: asymmetryMagnitudeConfig.label,
-                    score: asymmetryScore,
-                    summary: asymmetryMagnitudeConfig.summary
-                },
-                confidenceByLayer: {
-                    overall: overallConfidenceKey,
-                    compression: compressionConfidenceKey,
-                    rotation: rotationConfidenceKey,
-                    height: heightConfidenceKey
-                },
-                priorityMode: assessmentPriority,
-                measurementQuality,
-                loadRisk,
-                symptomCheck
-            };
-
-            const headline = (() => {
-                if (assessmentPriority === 'rotation-first') {
-                    if (rotationLayer.key === 'Oblique') return '当前更主要的是左右不对称偏大：左侧更靠前，并伴随左高倾向';
-                    if (rotationLayer.key === 'LeftAIC') return `当前更主要的是左右不对称偏大：左侧更靠前，并伴随${heightLayer.label}`;
-                    return `当前更主要的是左右不对称偏大：存在旋转代偿和${heightLayer.label}`;
-                }
-                if (assessmentPriority === 'parallel') {
-                    return `当前主要情况：${compressionLayer.title}，同时伴随${rotationLayer.label}${heightLayer.key !== 'unclear' ? `和${heightLayer.label}` : ''}`;
-                }
-                return `当前更主要的是：${compressionLayer.title}`;
-            })();
-
-            const bodyState = (() => {
-                if (assessmentPriority === 'rotation-first') {
-                    return `本次左右差异已经很大，所以报告会优先看骨盆旋转和高低不均；前后压缩层只作为背景层一起参考。${rotationLayer.layerSummary}${heightLayer.key !== 'unclear' ? ` ${heightLayer.layerSummary}` : ''}`;
-                }
-                if (assessmentPriority === 'parallel') {
-                    return `${compressionLayer.bodyState} 当前左右差异已经不小，所以这次会把前后压缩层和旋转层并列来看。${rotationLayer.layerSummary}${heightLayer.key === 'leftHigh' ? ` ${heightLayer.layerSummary}` : ''}`;
-                }
-                return `${compressionLayer.bodyState} 当前左右差异不算大，所以这次以前后压缩层为主；旋转层和高低层只作为辅助说明。${rotationLayer.key !== 'unclear' ? ` 当前左右差里更明显的是${rotationLayer.label}。` : ''}`;
-            })();
-
-            const topFindings = [
-                assessmentPriority === 'compression-first'
-                    ? `当前最先要处理的是${compressionLayer.label}，左右不对称先放第二层。`
-                    : assessmentPriority === 'parallel'
-                        ? '前后压缩和左右差异都已经出现，这次不能只看其中一层。'
-                        : '这次左右差异度已经很大，所以骨盆旋转和高低不均要放在前面看。',
-                rotationLayer.key === 'unclear'
-                    ? '这次能看出存在旋转代偿，但左右方向证据还不够集中，建议结合复测继续确认。'
-                    : `旋转层更像${rotationLayer.label}，当前应把承重和旋转顺序一起考虑进去。`,
-                heightLayer.key === 'unclear'
-                    ? '高低层目前证据不足，先不要只根据这次侧面数据把左右高低方向写死。'
-                    : heightLayer.key === 'uneven'
-                        ? '这次能看出存在高低不均，但方向证据还不够集中，所以先保留为高低不均倾向。'
-                        : `高低层当前更像${heightLayer.label}，但仍建议结合复测确认这个方向是否稳定。`
-            ];
-
-            if (compressionConfidenceKey === 'medium' && compressionSupport[compressionKey] === 3 && assessmentPriority !== 'compression-first') {
-                topFindings.push('虽然前后压缩层命中了 3/3，但因为左右差过大，这一层已自动降权，不建议盖过旋转层。');
-            }
-
-            const symptoms = [
-                rotationLayer.symptomLead,
-                ...compressionLayer.symptoms
-            ].filter(Boolean).slice(0, 3);
-            const appearance = [
-                rotationLayer.appearanceLead,
-                ...compressionLayer.appearance
-            ].filter(Boolean).slice(0, 3);
-            const compensation = [
-                rotationLayer.compensationLead,
-                ...compressionLayer.compensation
-            ].filter(Boolean).slice(0, 3);
-            const avoidList = compressionLayer.avoidList;
-            const nextActions = [
-                ...compressionLayer.nextActions,
-                assessmentPriority !== 'compression-first'
-                    ? `在处理${rotationLayer.label}${heightLayer.key !== 'unclear' ? `和${heightLayer.label}` : ''}时，先以稳定承重和减少代偿为主。`
-                    : '当前先别急着把所有左右差都一次性解释完，优先看主线和复测趋势。'
-            ].slice(0, 3);
-
-            const overview = `${assessmentResult.asymmetryMagnitude.summary} ${compressionLayer.layerSummary} ${rotationLayer.layerSummary} ${heightLayer.key !== 'unclear' ? heightLayer.layerSummary : ''}`.trim();
-            const serviceTone = compressionLayer.serviceTone;
-            const retestGuidance = retestPriorityItems.length
-                ? `建议优先重测：${retestPriorityItems.join('、')}。`
-                : compressionLayer.retest;
-
-            const pelvicDimensions = {
-                orientation: rotationLayer.orientation,
-                orientationExtra: rotationLayer.orientationExtra,
-                orientationImpact: rotationLayer.orientationImpact,
-                apShort: compressionLayer.pelvicAp.short,
-                apPosition: compressionLayer.pelvicAp.explain,
-                apImpact: compressionLayer.pelvicAp.impact,
-                heightShort: heightLayer.short,
-                heightStatus: heightLayer.explain,
-                heightImpact: heightLayer.impact,
-                forwardSide: rotationLayer.forwardSide,
-                forwardExtra: rotationLayer.forwardExtra,
-                forwardImpact: rotationLayer.forwardImpact
-            };
-
-            const layerCertaintyRows = [
-                {
-                    label: '前后压缩层',
-                    value: `${compressionLayer.label}（可信度：${compressionLayer.confidenceLabel}）`,
-                    note: layerConfidenceCopy[compressionLayer.confidenceKey]
-                },
-                {
-                    label: '旋转层',
-                    value: `${rotationLayer.label}（可信度：${rotationLayer.confidenceLabel}）`,
-                    note: layerConfidenceCopy[rotationLayer.confidenceKey]
-                },
-                {
-                    label: '高低层',
-                    value: `${heightLayer.label}（可信度：${heightLayer.confidenceLabel}）`,
-                    note: layerConfidenceCopy[heightLayer.confidenceKey]
-                }
-            ];
-
-            const measurementQualityNotes = [];
-            if (measurementQuality.sideIntegrityItems.length) {
-                measurementQualityNotes.push(`侧别完整性：${measurementQuality.sideIntegrityItems.join('、')}出现过对侧关键点回退。`);
-            } else {
-                measurementQualityNotes.push('侧别完整性：本次录入未出现对侧关键点回退。');
-            }
-            if (measurementQuality.manualAdjustedItems.length) {
-                measurementQualityNotes.push(`人工微调：${measurementQuality.manualAdjustedItems.join('、')}做过手动微调或手动录入。`);
-            }
-            if (measurementQuality.thresholdItems.length) {
-                measurementQualityNotes.push(`临界项：${measurementQuality.thresholdItems.join('；')}。`);
-            }
-
-            const rotationOverrideNote = '说明：前后压缩层主要来自三项动作的短板值；旋转层和高低层主要来自左右差值与差异度分层。主动肩屈当前只作为上层胸廓 / 肩胛代偿代理指标，不再直接代表骨盆前移；负担区域提示只表示更容易累或不适的地方，不替代临床诊断。';
-
-            const visualCompressionKey = compressionLayer.key === 'mixed'
-                ? (compressionSupport.posterior >= compressionSupport.anterior ? 'posterior' : 'anterior')
-                : compressionLayer.key;
-            const visualRotationKey = rotationLayer.key === 'Oblique' ? 'Oblique' : 'LeftAIC';
-            const planKey = `${visualCompressionKey}_${visualRotationKey}`;
-
-            const imageMap = {
-                posterior_LeftAIC: 'images/posterior_left_aic.webp',
-                posterior_Oblique: 'images/posterior_oblique.webp',
-                anterior_LeftAIC: 'images/anterior_left_aic.webp',
-                anterior_Oblique: 'images/anterior_oblique.webp'
-            };
-            const typeImgSrc = imageMap[planKey] || imageMap.posterior_LeftAIC;
-
-            const heroImageContainer = document.getElementById('final-hero-image-container');
-            heroImageContainer.innerHTML = `<img src="${typeImgSrc}" class="w-full sm:max-w-md rounded-xl shadow-sm mix-blend-multiply object-contain transition-all duration-500 ease-in-out" alt="体态分析深度解析图">`;
-            heroImageContainer.classList.remove('hidden');
-
-            const rotationValue = rotationLayer.key === 'unclear'
-                ? '有一点左右不对称，这次先不写死方向'
-                : rotationLayer.key === 'Oblique'
-                    ? '有，左边更容易往前，也更容易偏高'
-                    : '有，左边更容易往前';
-            const heightValue = heightLayer.key === 'leftHigh'
-                ? '有，左边偏高，右边相对偏低'
-                : heightLayer.key === 'uneven'
-                    ? '有一点高低不均，这次先不写死哪边更高'
-                    : '这次看不出稳定的高低差';
-            const sideValue = heightLayer.key === 'leftHigh'
-                ? '左侧偏高，右侧相对偏低'
-                : heightLayer.key === 'uneven'
-                    ? '暂时先不写死哪边更高'
-                    : '暂时看不出稳定方向';
-            const frontBackValue = compressionKey === 'posterior'
-                ? '后侧更紧'
-                : compressionKey === 'anterior'
-                    ? '前侧更紧'
-                    : '前后都在参与';
-
-            const userHeadline = reportSafetyBlocked
-                ? '这次先别继续自测或训练，先把安全放前面'
-                : rotationLayer.key === 'Oblique' && heightLayer.key === 'leftHigh'
-                    ? '骨盆有旋转，也有高低差，左边更容易往前、也更容易偏高'
-                    : rotationLayer.key !== 'unclear' && heightLayer.key === 'leftHigh'
-                        ? '骨盆有旋转，也能看到左边偏高'
-                        : rotationLayer.key !== 'unclear'
-                            ? `骨盆有旋转，${compressionKey === 'mixed' ? '前后两边也都在参与' : `${frontBackValue}更明显`}`
-                            : compressionKey === 'mixed'
-                                ? '这次更像骨盆位置还不够稳定，前后两边都在参与'
-                                : `这次更明显的是${frontBackValue}，骨盆也有一点左右不对称`;
-            const userBody = reportSafetyBlocked
-                ? '你勾选了需要优先排查的情况，所以这份报告先只保留安全提醒和基础结果，不继续给训练建议，也不继续推测哪一侧更容易不舒服。'
-                : `${pelvicDimensions.apPosition} ${rotationLayer.orientationExtra}${heightLayer.key === 'leftHigh' ? ' 同时左边还更容易偏高。' : heightLayer.key === 'uneven' ? ' 另外，两边受力高低也不太均匀。' : ''}`;
-            const plainSummaryNote = reportSafetyBlocked
-                ? '先停止继续自测和自行加量训练，尽快做线下评估。'
-                : retestPriorityItems.length
-                    ? `${userHeadline}。${retestGuidance}`
-                    : `${userHeadline}。近期先按当前主线处理，再看 7 到 10 天内的变化。`;
-            const whyItFeelsText = reportSafetyBlocked
-                ? '这次先不继续往下解释动作代偿链，先把安全问题排除掉更重要。'
-                : `${compressionLayer.mechanism} ${rotationLayer.forwardImpact}${heightLayer.key !== 'unclear' ? ` ${heightLayer.impact}` : ''}`.trim();
-            const keyResultCards = [
-                {
-                    label: '骨盆旋转',
-                    value: rotationValue,
-                    note: rotationLayer.orientationExtra
-                },
-                {
-                    label: '骨盆高低',
-                    value: heightValue,
-                    note: heightLayer.explain
-                },
-                {
-                    label: '哪侧更高',
-                    value: sideValue,
-                    note: heightLayer.key === 'leftHigh' ? '目前更像左边偏高。' : '这次先不把左右方向写死。'
-                },
-                {
-                    label: '前后哪里更紧',
-                    value: frontBackValue,
-                    note: compressionLayer.pelvicAp.explain
-                }
-            ];
-
-            const summaryHtml = `
-                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-2">一句话结论</div>
-                    <h3 class="text-[21px] sm:text-[23px] font-black text-slate-900 leading-[1.55]">${userHeadline}</h3>
-                    <p class="mt-3 text-[15px] sm:text-[16px] text-slate-600 leading-[1.9]">${userBody}</p>
-                </div>
-            `;
-
-            const coreResultsHtml = `
-                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-3">核心结果</div>
-                    <div class="grid grid-cols-1 gap-3">
-                        ${keyResultCards.map(card => `
-                            <div class="rounded-[1.15rem] border border-[#e5e5ea] px-4 py-3.5 bg-white shadow-sm">
-                                <div class="text-[11px] font-black tracking-[0.16em] text-slate-400">${card.label}</div>
-                                <div class="mt-1.5 text-[19px] sm:text-[20px] font-black text-slate-900 leading-[1.5]">${card.value}</div>
-                                <p class="mt-2 text-[13px] sm:text-[14px] text-slate-500 leading-[1.8]">${card.note}</p>
-                            </div>
-                        `).join('')}
+            const coreHtml = `
+                <div class="grid grid-cols-1 gap-4 mb-5">
+                    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+                        <div class="text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-widest">主导通道</div>
+                        <div class="text-[20px] font-black text-slate-900">${primaryProblemVal}</div>
                     </div>
                 </div>
             `;
 
-            const whyHtml = `
-                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
-                    <div class="text-[11px] font-black tracking-[0.18em] text-amber-700 mb-2">为什么会这样</div>
-                    <p class="text-[15px] sm:text-[16px] text-slate-600 leading-[1.9]">${whyItFeelsText}</p>
+            document.getElementById('empathic-report-container').innerHTML = `
+                <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm mb-5">
+                    <div class="text-[11px] font-bold text-[#0a84ff] mb-3 uppercase tracking-widest">评估结论</div>
+                    <h3 class="text-[24px] font-black text-slate-900 leading-tight">${mainSentence}</h3>
                 </div>
+                ${coreHtml}
             `;
-
-            const meaningHtml = reportSafetyBlocked ? `
-                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">这意味着什么</h3>
-                    </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${overview}</p>
-                    <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        <span class="font-black text-amber-700">为什么会这样：</span>${compressionLayer.mechanism}
-                    </div>
-                    <div class="mt-4 grid grid-cols-1 gap-3">
-                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">照镜子时常见的表现</div>
-                            <div class="flex flex-col gap-2">${renderLineList(appearance, { markerClass: 'text-emerald-600' })}</div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">动作里最常见的代偿</div>
-                            <div class="flex flex-col gap-2">${renderLineList(compensation, { markerClass: 'text-[#0a84ff]' })}</div>
-                        </div>
-                    </div>
-                </div>
-            ` : `
-                <div class="bg-white rounded-2xl p-5 border border-amber-100 shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🔍</span><h3 class="text-base font-black text-slate-800 tracking-wide">这意味着什么</h3>
-                    </div>
-                    <p class="text-[13px] sm:text-[14px] text-slate-600 leading-[1.8] font-medium">${overview}</p>
-                    <div class="mt-3 rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        <span class="font-black text-amber-700">为什么会这样：</span>${compressionLayer.mechanism}
-                    </div>
-                    <div class="grid grid-cols-1 gap-3 mt-4">
-                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">常见会一起出现的体感</div>
-                            <div class="flex flex-col gap-2">${renderLineList(symptoms, { markerClass: 'text-amber-600' })}</div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">照镜子时常见的表现</div>
-                            <div class="flex flex-col gap-2">${renderLineList(appearance, { markerClass: 'text-emerald-600' })}</div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                            <div class="text-[10px] font-black tracking-[0.18em] text-slate-400 mb-2">动作里最常见的代偿</div>
-                            <div class="flex flex-col gap-2">${renderLineList(compensation, { markerClass: 'text-[#0a84ff]' })}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const loadRiskHtml = reportSafetyBlocked ? '' : `
-                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-[#fde68a] shadow-[0_4px_20px_rgba(245,158,11,0.06)]">
-                    <div class="text-[11px] font-black tracking-[0.18em] text-amber-700 mb-3">你更容易累的地方</div>
-                    <div class="rounded-xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-[14px] sm:text-[15px] text-slate-700 leading-[1.9]">
-                        ${loadRisk.summary}
-                    </div>
-                    ${loadRisk.available && loadRisk.areas.length ? `
-                        <div class="grid grid-cols-1 gap-3 mt-4">
-                            ${loadRisk.areas.slice(0, 3).map(area => `
-                                <div class="rounded-[1.15rem] border border-slate-100 bg-white px-4 py-3.5 shadow-sm">
-                                    <div class="text-[18px] sm:text-[19px] font-black text-slate-900 leading-[1.5]">${area.area}</div>
-                                    <div class="mt-3 rounded-xl bg-slate-50 px-3 py-3 text-[13px] sm:text-[14px] text-slate-600 leading-[1.85]">
-                                        <span class="font-black text-slate-800">为什么这里更容易累：</span>${area.why}
-                                    </div>
-                                    <p class="mt-3 text-[13px] sm:text-[14px] text-slate-500 leading-[1.85]"><span class="font-black text-slate-700">什么情况下更容易出现：</span>${area.triggers}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : `
-                        <div class="mt-4 rounded-[1.15rem] border border-slate-200 bg-slate-50 px-4 py-3.5 text-[14px] sm:text-[15px] text-slate-600 leading-[1.9]">
-                            这次结果还不适合直接写死到具体哪一侧不舒服。
-                        </div>
-                    `}
-                    <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[12px] sm:text-[13px] text-slate-500 leading-[1.85]">
-                        这里只表示更容易累或不舒服的地方，不代表临床诊断。
-                    </div>
-                </div>
-            `;
-
-            const safetyHtml = reportSafetyBlocked ? `
-                <div class="bg-white rounded-2xl p-5 border border-rose-200 shadow-[0_4px_20px_rgba(244,63,94,0.08)]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-xl">🛑</span><h3 class="text-base font-black text-slate-800 tracking-wide">当前先以安全提示为主</h3>
-                    </div>
-                    <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-[12px] sm:text-[13px] text-rose-800 leading-[1.8]">
-                        你勾选了至少一项红旗情况：测试时疼痛明显、夜间或静息也痛、麻 / 无力 / 放射感，或近期外伤 / 发热 / 大小便异常。当前报告会隐藏训练建议和负担区域推测，建议停止自测并尽快做线下评估。
-                    </div>
-                    <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12px] sm:text-[13px] text-slate-600 leading-[1.8]">
-                        <p><span class="font-black text-slate-800">现在更适合做什么：</span>先暂停继续自测和自行加量训练，尽快把目前的疼痛表现、时间线和伴随症状整理给线下医生或康复专业人员。</p>
-                        <p class="mt-2"><span class="font-black text-slate-800">这份报告保留什么：</span>只保留动作结果的风险分层、复测提示和就医边界说明，不继续强化疼痛或负担区域侧别。</p>
-                    </div>
-                </div>
-            ` : '';
-
-            const nextStepsHtml = reportSafetyBlocked ? '' : `
-                <div class="bg-white rounded-[1.35rem] p-4 sm:p-5 border border-[#0a84ff]/10 shadow-[0_4px_20px_rgba(10,132,255,0.06)]">
-                    <div class="text-[11px] font-black tracking-[0.18em] text-[#0a84ff] mb-3">近期最该做什么</div>
-                    <div class="rounded-[1.15rem] border border-[#0a84ff]/10 bg-[#0a84ff]/5 px-4 py-3.5">
-                        <div class="flex flex-col gap-2">${renderLineList(nextActions, { itemClass: 'text-[14px] sm:text-[15px] text-slate-700 leading-[1.85]' })}</div>
-                    </div>
-                    <div class="mt-3 rounded-[1.15rem] border border-amber-200 bg-amber-50/70 px-4 py-3.5">
-                        <div class="text-[11px] font-black tracking-[0.16em] text-amber-700 mb-2">这段时间先别急着做</div>
-                        <div class="flex flex-col gap-2">${renderLineList(avoidList, { markerClass: 'text-amber-700', itemClass: 'text-[14px] sm:text-[15px] text-slate-700 leading-[1.85]' })}</div>
-                    </div>
-                    <div class="mt-3 rounded-[1.15rem] border border-slate-200 bg-slate-50 px-4 py-3.5 text-[14px] sm:text-[15px] text-slate-600 leading-[1.9]">
-                        <p>${retestGuidance}</p>
-                    </div>
-                </div>
-            `;
-
-            const serviceHintHtml = '';
-
-            const appendixMetricsHtml = `
-                <div class="mt-3 flex flex-col gap-2">
-                    ${renderMetricCard('主动直腿抬高', slrL, slrR, diffSLR, diffSLR <= -nearThreshold ? '左侧直腿抬高更受限，常和后侧链张力与承重代偿一起看，不单独等于某个关节结论。' : (diffSLR >= nearThreshold ? '右侧直腿抬高更受限，提示当前左右承重和后侧链参与方式不完全一致。' : '两侧差异不大，当前更多作为整体趋势参考。'))}
-                    ${renderMetricCard('主动髋屈曲', hipL, hipR, diffHip, diffHip >= nearThreshold ? '左侧髋屈更大，常和左侧更靠前的旋转代偿一起看，但不能单独把方向写死。' : (diffHip <= -nearThreshold ? '右侧髋屈更大，说明当前旋转方向还要继续结合另外两项一起复核。' : '两侧差异不大，当前不建议只凭这一项解释旋转方向。'))}
-                    ${renderMetricCard('主动肩屈', shL, shR, diffSh, diffSh >= nearThreshold ? '左侧肩屈更大，说明上层胸廓 / 肩胛代偿更明显；这一项不再直接代表骨盆前移。' : (diffSh <= -nearThreshold ? '左侧肩屈更小，提示上层旋转空间更容易被占用，需要和髋屈、直腿抬高一起看。' : '两侧差异不大，当前只作为上层代偿的辅助参考。'))}
-                </div>
-            `;
-
-            const empathicHtml = reportSafetyBlocked
-                ? [summaryHtml, safetyHtml, coreResultsHtml, whyHtml].filter(Boolean).join('')
-                : [summaryHtml, coreResultsHtml, whyHtml, loadRiskHtml, nextStepsHtml, serviceHintHtml].filter(Boolean).join('');
-
-            document.getElementById('empathic-report-container').innerHTML = empathicHtml;
             document.getElementById('empathic-report-container').classList.remove('hidden');
 
-            titleEl.innerText = userHeadline;
-            titleEl.className = 'text-[28px] sm:text-[32px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.25]';
-
-            document.getElementById('final-pelvic-orientation').innerHTML = `
-                ${pelvicDimensions.orientation}<br>
-                <span class="text-slate-400">${pelvicDimensions.orientationExtra}</span>
-            `;
-            document.getElementById('final-pelvic-asymmetry').innerHTML = `
-                <span class="text-slate-400">前后压缩层：</span>${compressionLayer.label}<br>
-                <span class="text-slate-400">左右高低：</span>${heightLayer.label}<br>
-                <span class="text-slate-400">前移侧：</span>${rotationLayer.forwardSide}
-            `;
-            document.getElementById('final-report-data').textContent = `直腿抬高：左 ${formatAngleValue(slrL)}° / 右 ${formatAngleValue(slrR)}° / 差值 ${formatSignedDiff(diffSLR)}；髋屈：左 ${formatAngleValue(hipL)}° / 右 ${formatAngleValue(hipR)}° / 差值 ${formatSignedDiff(diffHip)}；肩屈：左 ${formatAngleValue(shL)}° / 右 ${formatAngleValue(shR)}° / 差值 ${formatSignedDiff(diffSh)}；左右差异分 ${assessmentResult.asymmetryMagnitude.score}/6；测量完整性 ${measurementQuality.recaptureNeeded ? '需结合复测' : '可作为当前趋势参考'}。`;
-            document.getElementById('final-combo-label').textContent = `${compressionLayer.label} / ${rotationLayer.label} / ${heightLayer.label}`;
-            document.getElementById('final-technical-content').innerHTML = `
-                <p class="text-[10px]">前后压缩层：${compressionLayer.label}（命中 ${compressionLayer.supportScore} / 3，可信度 ${compressionLayer.confidenceLabel}）</p>
-                <p class="text-[10px] mt-1">旋转层：${rotationLayer.label}（证据 ${rotationLayer.evidenceHits} / 3，可信度 ${rotationLayer.confidenceLabel}）</p>
-                <p class="text-[10px] mt-1">高低层：${heightLayer.label}（可信度 ${heightLayer.confidenceLabel}）</p>
-                <p class="text-[10px] mt-1">左右差异度：${assessmentResult.asymmetryMagnitude.label}，差异分 ${assessmentResult.asymmetryMagnitude.score}/6</p>
-                <p class="text-[10px] mt-1">判断优先级：${assessmentPriority === 'rotation-first' ? '高差异，旋转层优先' : assessmentPriority === 'parallel' ? '中差异，并列参考' : '低差异，压缩层优先'}</p>
-                <p class="text-[10px] mt-1">一句话结论：${headline}</p>
-                <p class="text-[10px] mt-1">骨盆朝向：${pelvicDimensions.orientation}。${pelvicDimensions.orientationExtra}</p>
-                <p class="text-[10px] mt-1">前后：${pelvicDimensions.apPosition}</p>
-                <p class="text-[10px] mt-1">高低：${pelvicDimensions.heightStatus}</p>
-                <p class="text-[10px] mt-1">前移侧：${pelvicDimensions.forwardSide}</p>
-                <p class="text-[10px] mt-1">测量完整性：${measurementQuality.sideIntegrity === 'stable' ? '本次未出现对侧关键点回退' : measurementQuality.sideIntegrityItems.join('、')}；${measurementQuality.manualAdjusted ? `人工微调项 ${measurementQuality.manualAdjustedItems.join('、')}` : '本次无人工微调'}；${measurementQuality.thresholdCloseness ? `临界项 ${measurementQuality.thresholdItems.join('；')}` : '无明显临界项'}。</p>
-                <p class="text-[10px] mt-1">负担区域：${reportSafetyBlocked ? '因红旗项已隐藏该模块' : loadRisk.available ? `${loadRisk.summary}（可信度 ${confidenceLabelMap[loadRisk.confidenceKey]}）` : loadRisk.note}</p>
-                <p class="text-[10px] mt-1">症状补充：${symptomCheck.questionnaireTriggered ? `主诉题${symptomCheck.skipped ? '已跳过' : '已填写'}；` : '本次未触发主诉题；'}红旗项${reportSafetyBlocked ? '已触发安全抑制' : '未触发'}。</p>
-                <p class="text-[10px] mt-1">数据依据：前后压缩层依据三项动作短板值判断；旋转层和高低层依据三项左右差和差异度分层判断。5°~10°为临界，>10°为更明确偏向。</p>
-                ${appendixMetricsHtml}
-            `;
-
-            finalReportDateTime.textContent = reportDateTimeText;
-            reportConfidenceEl.className = 'hidden';
-            reportConfidenceEl.innerText = '';
-            reportConfidenceDetailEl.innerHTML = `
-                <div class="space-y-2">
-                    <p class="text-[14px] sm:text-[15px] text-slate-700 leading-[1.8]">${plainSummaryNote}</p>
-                    ${measurementQuality.recaptureNeeded && !reportSafetyBlocked ? `<p class="text-[13px] sm:text-[14px] text-slate-500 leading-[1.8]">这次有几项比较接近临界值，复测时尽量保持同一机位和同一动作标准。</p>` : ''}
-                </div>
-            `;
-
-            saveHistoryToStorage({
-                type: 'full', date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                slrL: slrL.toFixed(1), slrR: slrR.toFixed(1),
-                hipL: hipL.toFixed(1), hipR: hipR.toFixed(1),
-                shL: shL.toFixed(1), shR: shR.toFixed(1),
-                result: titleEl.innerText
-            });
-
-            currentAssessmentResult = assessmentResult;
+            titleEl.innerText = mainSentence;
+            currentAssessmentResult = { compressionLayer: {key: compKey}, rotationLayer: {key: rotKey}, heightLayer: {key: heightKey}, routeIsolation, planKey: `${compKey}_${rotKey === 'Oblique' ? 'Oblique' : 'LeftAIC'}` };
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
-            const videoPlanCard = document.getElementById('video-plan-card');
-            if (videoPlanCard) videoPlanCard.classList.add('hidden');
-            const jumpLink = document.querySelector('.id-jump-video');
-            if (jumpLink) jumpLink.classList.add('hidden');
-            if (reportSafetyBlocked) {
-                speak('报告已生成。由于勾选了安全红旗，当前请先停止自测，并尽快做线下评估。');
-            } else if (retestPriorityItems.length) {
-                speak(`报告生成完成。当前有临界项目，建议优先重测：${retestPriorityItems.join('、')}。`);
-            } else {
-                speak('报告生成完成。');
-            }
+
+            if (!reportSafetyBlocked) renderVideoPlanCard(currentAssessmentResult.planKey);
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
-
 
         // ============================================================
         // 专属训练视频方案配置与渲染
         // ============================================================
-            const VIDEO_PLAN_CONFIG = {
+        const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
                 title: '个性化服务 · 基线型',
                 tagline: '适合本次评估表现为身体后侧紧张，且左侧骨盆相对更靠前的人',
