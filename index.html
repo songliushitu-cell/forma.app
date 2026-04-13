@@ -78,7 +78,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.4.4</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.4.5</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -3016,20 +3016,22 @@
             return aiEngineState.initPromise;
         }
         const _aiPollStart = Date.now();
+        let _aiDomReady = document.readyState !== 'loading';
+        if (!_aiDomReady) {
+            document.addEventListener('DOMContentLoaded', () => { _aiDomReady = true; });
+        }
         (function _pollAndInitAI() {
             if (window.tf && window.poseDetection) {
                 initAI().catch(() => {});
                 return;
             }
-            if (document.readyState !== 'loading') {
+            const elapsed = Date.now() - _aiPollStart;
+            if (_aiDomReady && elapsed > 3000) {
                 updateAIStatus('failed', '视觉引擎脚本未能加载成功，请刷新页面或先使用手动录入。');
                 return;
             }
-            if (Date.now() - _aiPollStart > 20000) {
+            if (elapsed > 20000) {
                 updateAIStatus('failed', '视觉引擎脚本加载超时，你可以先手动录入，或刷新页面重试。');
-                document.addEventListener('DOMContentLoaded', () => {
-                    if (window.tf && window.poseDetection) initAI().catch(() => {});
-                });
                 return;
             }
             setTimeout(_pollAndInitAI, 500);
