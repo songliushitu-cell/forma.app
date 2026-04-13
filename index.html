@@ -78,7 +78,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.4.3</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.4.4</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2880,27 +2880,6 @@
                 });
             }
         });
-
-        function renderLineList(items, options = {}) {
-            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
-            const markerClass = options.markerClass || 'text-[#0a84ff]';
-            return items.map(item => `
-                <div class="flex items-start gap-2.5 mb-2 last:mb-0">
-                    <span class="mt-[6px] ${markerClass} text-[6px] shrink-0">●</span>
-                    <span class="${itemClass}">${item}</span>
-                </div>
-            `).join('');
-        }
-
-        function renderNumberedHighlights(items, options = {}) {
-            const itemClass = options.itemClass || 'text-[14px] sm:text-[15px] text-slate-700 leading-relaxed';
-            return items.map((item, index) => `
-                <div class="flex items-start gap-3 bg-white/50 rounded-xl p-3 border border-slate-100 shadow-sm mb-2 last:mb-0">
-                    <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0a84ff]/10 text-[10px] font-black text-[#0a84ff]">${index + 1}</span>
-                    <span class="${itemClass}">${item}</span>
-                </div>
-            `).join('');
-        }
 
         renderUsageGateStatus();
 
