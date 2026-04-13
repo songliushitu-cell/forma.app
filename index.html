@@ -78,7 +78,7 @@
                 <h1 class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.3.4</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.4.0</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -3577,89 +3577,142 @@
                 ctx.fillText(alignText, alignX + alignPadX, alignYPos + alignH / 2 + 0.5);
                 ctx.restore();
             }
+        function renderIsolatedFinalReport(symptomCheck, metrics) {
+            const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
+            const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
+            const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
+            
+            const routeIsolation = buildRouteIsolationAssessment(metrics);
+            const compressionEvaluation = routeIsolation.compressionResult;
+            const rotationEvaluation = routeIsolation.rotationResult;
+            const heightEvaluation = routeIsolation.heightResult;
 
-            if(!isLiveTracking) {
-                const tType = document.querySelector('input[name="testType"]:checked').value, tSide = document.querySelector('input[name="testSide"]:checked').value;
-                displayAngle.innerText = formatAngleValue(Math.max(0, currentFinalAngle)) + '°';
-                currentBoardTitle.innerText = `测量结果 [ ${tSide === 'L' ? '左侧' : '右侧'} ]`;
-                btnSaveText.innerText = tSide === 'L' ? '确认存入 L，切换 R 侧' : '确认存入 R，完成项';
-                renderThresholdFeedback(tType, tSide, currentFinalAngle);
-            }
-        }
+            const titleEl = document.getElementById('final-result-title');
+            const reportSafetyBlocked = symptomCheck.redFlags?.triggered || false;
 
-        function getAngle(p1, p2, p3) {
-            const a = Math.sqrt(Math.pow(p2.x-p1.x,2)+Math.pow(p2.y-p1.y,2)), b = Math.sqrt(Math.pow(p2.x-p3.x,2)+Math.pow(p2.y-p3.y,2)), c = Math.sqrt(Math.pow(p3.x-p1.x,2)+Math.pow(p3.y-p1.y,2));
-            if (a === 0 || b === 0) return 0;
-            const cosine = Math.max(-1, Math.min(1, (a*a+b*b-c*c)/(2*a*b)));
-            return Math.acos(cosine) * (180/Math.PI) || 0;
-        }
-        function getKeypoint(kp, name) { return kp.find(k => k.name === name) || {x:0, y:0, score:0}; }
-
-        function renderThresholdFeedback(testType, testSide, angleDeg) {
-            currentMeasurementContext = {
-                ...currentMeasurementContext,
-                type: testType,
-                side: testSide,
-                selectedSide: testSide,
-                manualAdjusted: isCurrentMeasurementManuallyAdjusted(),
-                captureMethod: currentMeasurementContext.captureMethod || lastCaptureMethod || 'manual',
-                angle: normalizeAngleValue(angleDeg)
+            const compressionConfigs = {
+                posterior: {
+                    label: '后侧链受限',
+                    mechanism: '身体后侧张力偏高，骨盆前移受限。',
+                    avoidList: ['避免负重深蹲', '避免过度挺胸'],
+                    nextActions: ['加强深层核心募集', '练习背部呼吸扩张']
+                },
+                anterior: {
+                    label: '前侧链受限',
+                    mechanism: '前侧牵拉感明显，骨盆容易处于前移位。',
+                    avoidList: ['避免反复拉伸髂腰肌', '避免忽略臀部激活'],
+                    nextActions: ['加强后侧链（腘绳肌）控制', '练习核心卷缩控制']
+                },
+                mixed: {
+                    label: '混合模式',
+                    mechanism: '混合受力模式，方向有待进一步确认。',
+                    avoidList: ['避免单次训练量过大'],
+                    nextActions: ['优先重测试验项', '执行基础呼吸练习']
+                }
             };
 
-            if (currentMeasurementContext.sideIntegrity !== 'stable') {
-                currentFeedbackText = '侧别识别不稳：本次识别回退到了对侧关键点，请重拍或改用手动录入。';
-                thresholdFeedback.className = 'mt-2 w-full py-2.5 px-3 rounded-lg text-center font-bold text-[11px] border border-rose-200 bg-rose-50 text-rose-700 z-10 tracking-wide';
-                thresholdFeedback.innerText = currentFeedbackText;
-                updateDebugState({ mode: isLiveTracking ? debugState.mode : '侧别识别待重录' });
-                return;
-            }
+            const rotationConfigs = {
+                LeftAIC: { label: '左侧骨盆靠前', note: '左侧骨盆相对于右侧有向前旋转的趋势。' },
+                Oblique: { label: '斜向模式', note: '骨盆处于一种斜向交叉的偏位状态。' },
+                unclear: { label: '待持续观察', note: '旋转信号目前不够集中。' }
+            };
 
-            const correlationCopy = testType === 'slr'
-                ? '更常和后侧链张力、承重代偿一起看，不单独等于髋内旋能力。'
-                : (testType === 'hip'
-                    ? '更常和前侧牵拉、骨盆前后与旋转代偿一起看，不单独等于髋外旋能力。'
-                    : '当前只作为上层胸廓 / 肩胛代偿的代理指标，不直接代表骨盆前移。');
-            currentFeedbackText = `系统标定：${formatAngleValue(angleDeg)}°。相关性提示：${correlationCopy}`;
-            thresholdFeedback.className = 'mt-2 w-full py-2.5 px-3 rounded-lg text-center font-bold text-[11px] border border-[#0a84ff]/30 bg-[#0a84ff]/10 text-[#0a84ff] z-10 tracking-wide';
-            thresholdFeedback.innerText = currentFeedbackText;
-            updateDebugState({ mode: isLiveTracking ? debugState.mode : '静态结果可微调' });
-        }
+            const heightConfigs = {
+                leftHigh: { label: '左侧偏高', note: '测量显示左侧骨盆更高。' },
+                rightHigh: { label: '右侧偏高', note: '测量显示右侧骨盆更高。' },
+                uneven: { label: '存在高低差', note: '有高低差异但建议结合触诊复核。' },
+                unclear: { label: '暂无明显差', note: '双侧高低表现基本接近。' }
+            };
 
-        // --- Dragging ---
-        function getEventCoords(e) {
-            const rect = canvas.getBoundingClientRect(), scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-            let cx = 0, cy = 0; 
-            if (e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
-            else { cx = e.clientX; cy = e.clientY; }
-            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
-        }
+            const compKey = compressionEvaluation.key;
+            const rotKey = rotationEvaluation.key;
+            const heightKey = heightEvaluation.key;
+            const conf = compressionEvaluation.confidence || 'medium';
 
-        function handlePointerDown(e) {
-            if (activePoints.length !== 3 || isLiveTracking) return;
-            const {x, y} = getEventCoords(e);
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const touchTargetCanvasRadius = Math.max(50 * scaleX, canvas.width * 0.08); 
+            const compDetails = compressionConfigs[compKey] || compressionConfigs.mixed;
+            const rotDetails = rotationConfigs[rotKey] || rotationConfigs.unclear;
+            const heightDetails = heightConfigs[heightKey] || heightConfigs.unclear;
 
-            draggingPointIndex = activePoints.findIndex(p => Math.sqrt(Math.pow(p.x-x,2)+Math.pow(p.y-y,2)) <= touchTargetCanvasRadius);
-            if (draggingPointIndex !== -1) { e.preventDefault(); renderCanvasAndResult(staticImageBuffer); }
-        }
+            const primaryProblemVal = routeIsolation.primaryRoute === 'rotation-first' ? '旋转优先路径' : '前后受限路径';
+            const mainSentence = reportSafetyBlocked ? "安全提示：检测到潜在风险项，已隐藏建议。" : (routeIsolation.primaryRoute === 'rotation-first' ? "骨盆旋转分流可能是当前的主导因素。" : "骨盆的前后张力模式是当前的处理主线。");
 
-        function handlePointerMove(e) {
-            if (draggingPointIndex === -1 || isLiveTracking) return;
-            e.preventDefault(); const {x, y} = getEventCoords(e);
-            if (draggingPointIndex === 0) {
-                const pivot = activePoints[1];
-                const rawAngle = Math.atan2(y - pivot.y, x - pivot.x);
-                const offset = clampReferenceAngleOffset(normalizeRadians(rawAngle - getHorizontalBaseAngle(referenceGuideState.dirX)));
-                referenceGuideState.enabled = true;
-                referenceGuideState.angleOffset = offset;
-                referenceGuideState.manualAdjusted = true;
-                referenceGuideState.mode = 'manual';
-                referenceGuideState.length = Math.max(referenceGuideState.length, canvas.width * 0.18, 80);
-                activePoints[0] = buildReferencePoint(pivot, referenceGuideState.dirX, referenceGuideState.length, referenceGuideState.angleOffset);
-            } else {
-                activePoints[draggingPointIndex].x = Math.max(0, Math.min(x, canvas.width));
+            // --- 构建 Layered Breakdown HTML ---
+            const breakdownHtml = `
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm mb-5">
+                    <div class="text-[11px] font-bold text-slate-400 mb-4 uppercase tracking-widest border-b border-slate-50 pb-2">骨盆体态拆解</div>
+                    <div class="flex flex-col gap-4">
+                        ${renderLayerSummaryRow('当前朝向', rotDetails.label, 'success')}
+                        ${renderLayerSummaryRow('高低状态', heightDetails.label, heightKey === 'unclear' ? 'normal' : 'alert')}
+                        ${renderLayerSummaryRow('张力受限', compDetails.label, 'alert')}
+                        <div class="mt-2 p-3.5 bg-slate-50 rounded-2xl flex flex-col gap-1">
+                            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">诊断逻辑摘要</span>
+                            <p class="text-[13px] text-slate-600 leading-relaxed italic">${rotDetails.note} ${compDetails.mechanism}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // --- 构建 Action Plan HTML ---
+            const actionPlanHtml = reportSafetyBlocked ? '' : `
+                <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm mb-5">
+                    <div class="text-[11px] font-bold text-slate-400 mb-4 uppercase tracking-widest border-b border-slate-50 pb-2">近期建议清单</div>
+                    <div class="flex flex-col gap-5">
+                        <section>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <span class="text-[13px] font-black text-slate-800">应当避免 (AVOID)</span>
+                            </div>
+                            ${renderNumberedHighlights(compDetails.avoidList, { itemClass: 'text-[14px] text-slate-600 leading-normal' })}
+                        </section>
+                        <section>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <span class="text-[13px] font-black text-slate-800">建议练习 (NEXT STEPS)</span>
+                            </div>
+                            <div class="space-y-2">
+                                ${renderLineList(compDetails.nextActions)}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            `;
+
+            const container = document.getElementById('empathic-report-container');
+            container.innerHTML = `
+                <div class="p-6 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm mb-5">
+                    <div class="text-[11px] font-bold text-[#0a84ff] mb-3 uppercase tracking-widest">最终评估结论</div>
+                    <h3 class="text-[26px] font-black text-slate-900 leading-tight tracking-tight">${mainSentence}</h3>
+                    <div class="mt-4 flex items-center gap-3">
+                        <div class="px-3 py-1 bg-[#0a84ff]/5 border border-[#0a84ff]/10 rounded-full text-[#0a84ff] text-[11px] font-bold">
+                            主导：${primaryProblemVal}
+                        </div>
+                        <div class="px-3 py-1 bg-slate-50 border border-slate-100 rounded-full text-slate-500 text-[11px] font-bold">
+                            可信度：${conf === 'high' ? '显著' : '一般'}
+                        </div>
+                    </div>
+                </div>
+                ${breakdownHtml}
+                ${actionPlanHtml}
+            `;
+            container.classList.remove('hidden');
+
+            titleEl.innerText = "评估完成 - 已生成报告";
+            currentAssessmentResult = { 
+                compressionLayer: {key: compKey}, 
+                rotationLayer: {key: rotKey}, 
+                heightLayer: {key: heightKey}, 
+                routeIsolation, 
+                planKey: `${compKey}_${rotKey === 'Oblique' ? 'Oblique' : 'LeftAIC'}` 
+            };
+            currentReportSnapshot = buildCurrentReportSnapshot();
+            consumeFreeReportQuota();
+            document.getElementById('final-report-section').classList.remove('hidden');
+
+            if (!reportSafetyBlocked) renderVideoPlanCard(currentAssessmentResult.planKey);
+            
+            // 确保滚动到报告页眉
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } Math.max(0, Math.min(x, canvas.width));
                 activePoints[draggingPointIndex].y = Math.max(0, Math.min(y, canvas.height));
                 if (draggingPointIndex === 1 && referenceGuideState.enabled) {
                     activePoints[0] = buildReferencePoint(activePoints[1], referenceGuideState.dirX, referenceGuideState.length, referenceGuideState.angleOffset);
