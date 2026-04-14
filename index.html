@@ -82,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.7</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.8</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1551,15 +1551,16 @@
         }
 
         function buildRotationIsolationResult(metrics) {
+            // 遵照 Conor 文档：左右差 < 10° 不认定为有意义的侧倾，统一使用 threshold(10°)
             const leftAicChecks = [
-                { label: '左侧髋屈曲 > 右侧', hit: metrics.diffHip > metrics.nearThreshold },
-                { label: '左侧直腿抬高 < 右侧', hit: metrics.diffSLR < -metrics.nearThreshold },
-                { label: '左侧肩屈 < 右侧', hit: metrics.diffSh < -metrics.nearThreshold }
+                { label: '左侧髋屈曲 > 右侧 ≥10°', hit: metrics.diffHip > metrics.threshold },
+                { label: '左侧直腿抬高 < 右侧 ≥10°', hit: metrics.diffSLR < -metrics.threshold },
+                { label: '左侧肩屈 < 右侧 ≥10°', hit: metrics.diffSh < -metrics.threshold }
             ];
             const obliqueChecks = [
-                { label: '右侧髋屈曲 > 左侧', hit: metrics.diffHip < -metrics.nearThreshold },
-                { label: '右侧直腿抬高 < 左侧', hit: metrics.diffSLR > metrics.nearThreshold },
-                { label: '右侧肩屈 < 左侧', hit: metrics.diffSh > metrics.nearThreshold }
+                { label: '右侧髋屈曲 > 左侧 ≥10°', hit: metrics.diffHip < -metrics.threshold },
+                { label: '右侧直腿抬高 < 左侧 ≥10°', hit: metrics.diffSLR > metrics.threshold },
+                { label: '右侧肩屈 < 左侧 ≥10°', hit: metrics.diffSh > metrics.threshold }
             ];
 
             const leftAicHits = countTrue(leftAicChecks.map(item => item.hit));
@@ -1607,10 +1608,22 @@
             const compressionResult = buildCompressionIsolationResult(metrics);
             const heightResult = buildHeightIsolationResult(rotationResult, metrics);
 
+            // 是否存在有意义的左右侧倾（任意测试差值 ≥ 10°）
+            const hasMeaningfulLateral = primaryRoute === 'rotation-first';
+
+            // 模块八三阶段入口判定：
+            // Stage 1：SLR 短板 < 45° 且 肩屈 短板 < 90° → 双侧基础问题为主
+            // Stage 3：有明显左右侧倾 → 偏移修正为主
+            // Stage 2：其余情况 → 前后压缩修复为主
+            const stage1Entry = metrics.slrFinal < 45 && metrics.shoulderFinal < 90;
+            const trainingStage = stage1Entry ? 1 : (hasMeaningfulLateral ? 3 : 2);
+
             return {
                 primaryRoute,
                 thresholdDeg: metrics.threshold,
                 triggerItems,
+                hasMeaningfulLateral,
+                trainingStage,
                 primaryRouteLabel: primaryRoute === 'rotation-first' ? '先处理旋转' : '先处理前后压缩',
                 rotationResult,
                 compressionResult,
@@ -4143,6 +4156,8 @@
             const compKey = compressionEvaluation.key;
             const rotKey = rotationEvaluation.key;
             const heightKey = routeIsolation.heightResult.key;
+            const hasMeaningfulLateral = routeIsolation.hasMeaningfulLateral;
+            const trainingStage = routeIsolation.trainingStage;
 
             // ---- 六类分型判定 ----
             let subType;
@@ -4244,11 +4259,29 @@
 
             const report = REPORT[comboKey] || REPORT['mixed_baseline'];
             const compLabel = compKey === 'posterior' ? '骨盆后侧肌肉紧张' : compKey === 'anterior' ? '骨盆前侧肌肉紧张' : '方向待确认';
-            const rotLabel = rotKey === 'LeftAIC' ? '左侧骨盆略靠前' : rotKey === 'Oblique' ? '左侧骨盆又高又靠前' : '待复核';
+            const rotLabel = !hasMeaningfulLateral
+                ? '三项差值均 < 10°，无明显侧倾'
+                : rotKey === 'LeftAIC' ? '左侧骨盆略靠前'
+                : rotKey === 'Oblique' ? '左侧骨盆又高又靠前'
+                : '待复核';
             const heightLabel = heightKey === 'leftHigh' ? '左高右低' : heightKey === 'uneven' ? '存在高低差' : '暂无明显差异';
-            const subTypeLabel = subType === 'oblique' ? '骨盆斜向偏移' : subType === 'lateral' ? '骨盆左高右低' : '左前右后不对称';
+            const subTypeLabel = !hasMeaningfulLateral
+                ? '主要是前后压缩，左右差值均在 10° 以内'
+                : subType === 'oblique' ? '骨盆斜向偏移'
+                : subType === 'lateral' ? '骨盆左高右低'
+                : '左前右后不对称';
             const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
+
+            // ---- 训练阶段配置（模块八三阶段） ----
+            const STAGE_LABEL = { 1: '第一阶段 · 建立基础', 2: '第二阶段 · 压缩修复', 3: '第三阶段 · 偏移修正' };
+            const STAGE_COLOR = { 1: '#8e8e93', 2: compKey === 'anterior' ? '#ff9500' : '#0a84ff', 3: '#7c3aed' };
+            const STAGE_TIP = {
+                1: '直腿抬高和肩屈均低于基础阈值（SLR < 45°、肩屈 < 90°），优先建立双侧呼吸基础和骨盆底色，再处理前后与左右问题。',
+                2: '三项左右差值均 < 10°，本次骨盆问题主要在前后压缩层，暂无明显左右侧倾。先用呼吸和骨盆重定位处理前后问题，待差值拉开再针对左右偏移。',
+                3: '至少一项差值 ≥ 10°，左右偏移方向已明确。在前后压缩修复的基础上，重点处理左右不对称。'
+            };
+            const stageC = STAGE_COLOR[trainingStage];
 
             // ---- 骨盆3D动画配置（弧度） ----
             const PELVIS_ANIM = {
@@ -4289,10 +4322,12 @@
 
             const typeHtml = `
             <div class="rounded-[2rem] p-5 border shadow-sm mb-4" style="${cardStyle}">
-                <div class="flex items-center gap-2 mb-3">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
                     <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${pC};background:${pC}18">${report.typeTag}</span>
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
+                    <span class="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
                 </div>
+                ${trainingStage !== 3 ? `<div class="mb-3 px-3.5 py-2.5 rounded-xl text-[11px] leading-relaxed" style="color:${stageC};background:${stageC}12;border:1px solid ${stageC}30">${STAGE_TIP[trainingStage]}</div>` : ''}
                 <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;">
                     <canvas id="pelvis-canvas" style="width:100%;height:200px;display:block;border-radius:1rem;"></canvas>
                 </div>
