@@ -82,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.8</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.9</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4277,8 +4277,8 @@
             const STAGE_LABEL = { 1: '第一阶段 · 建立基础', 2: '第二阶段 · 压缩修复', 3: '第三阶段 · 偏移修正' };
             const STAGE_COLOR = { 1: '#8e8e93', 2: compKey === 'anterior' ? '#ff9500' : '#0a84ff', 3: '#7c3aed' };
             const STAGE_TIP = {
-                1: '直腿抬高和肩屈均低于基础阈值（SLR < 45°、肩屈 < 90°），优先建立双侧呼吸基础和骨盆底色，再处理前后与左右问题。',
-                2: '三项左右差值均 < 10°，本次骨盆问题主要在前后压缩层，暂无明显左右侧倾。先用呼吸和骨盆重定位处理前后问题，待差值拉开再针对左右偏移。',
+                1: '直腿抬高和肩屈均低于基础阈值（SLR < 45°、肩屈 < 90°），优先建立双侧呼吸基础和骨盆底色，再处理前后与左右问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈 > 90°、直腿抬高 > 45°、髋屈 > 90°，达到后即可进入第二阶段。</span>',
+                2: '三项左右差值均 < 10°，主要问题在前后压缩层，暂无明显左右侧倾。此阶段<strong>允许左右活动度不对称依然存在</strong>，无需刻意纠正——先通过呼吸和骨盆重定位解决前后问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈达到 120°、直腿抬高达到 60–70°、髋屈达到 120° 以上，达到后即可进入偏移修正阶段。</span>',
                 3: '至少一项差值 ≥ 10°，左右偏移方向已明确。在前后压缩修复的基础上，重点处理左右不对称。'
             };
             const stageC = STAGE_COLOR[trainingStage];
