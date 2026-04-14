@@ -82,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.6</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.7</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2636,34 +2636,18 @@
             const boneMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e2d5c5'), roughness: 0.60, metalness: 0.0 });
             const cartMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#a8cce0'), roughness: 0.4, metalness: 0.0, transparent: true, opacity: 0.72 });
 
-            // 需要保留的骨盆节点名称
-            const KEEP = new Set([
-                'Hip bone.r', 'Sacrum', 'Coccyx',
-                'Lumbar vertebra (L5)',
-                'Art cart of sacroiliac joint on hip bone',
-                'Art cart of sacroiliac joint on sacrum',
-                'Art cart of hip bone pubis.r ',
-            ]);
-
             function applyGLBModel(gltf) {
                 const model = gltf.scene;
-                // 隐藏非骨盆节点，应用材质
+                // 对所有 Mesh 应用统一骨骼材质
                 model.traverse(child => {
                     if (!child.isMesh) return;
-                    if (!KEEP.has(child.name)) { child.visible = false; return; }
-                    child.material = child.name.startsWith('Art cart') ? cartMat : boneMat;
+                    const isCart = /cart|cartilage|labrum|meniscus|ligament/i.test(child.name);
+                    child.material = isCart ? cartMat : boneMat;
                     child.castShadow = true;
+                    child.receiveShadow = true;
                 });
-                // 镜像右髋骨 → 左髋骨
-                const rHip = model.getObjectByName('Hip bone.r');
-                if (rHip) {
-                    const lHip = rHip.clone(true);
-                    lHip.scale.x *= -1;
-                    model.add(lHip);
-                }
-                // 自动居中 + 缩放
-                const box = new THREE.Box3();
-                model.traverse(c => { if (c.isMesh && c.visible) box.expandByObject(c); });
+                // 自动居中 + 缩放至标准视野
+                const box = new THREE.Box3().setFromObject(model);
                 if (!box.isEmpty()) {
                     const center = box.getCenter(new THREE.Vector3());
                     const size = box.getSize(new THREE.Vector3()).length();
