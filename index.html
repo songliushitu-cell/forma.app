@@ -78,7 +78,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.2</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.3</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -638,36 +638,57 @@
                 </button>
             </div>
             <div class="p-5 overflow-y-auto flex flex-col gap-4">
-                <div id="symptom-check-trigger-hint" class="hidden rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3 text-[11px] text-slate-600 leading-relaxed">
-                    当前左右差异或旋转/高低证据比较集中，所以这 3 题会帮助系统决定要不要强化某一侧的“负担区域”提示。
+                <div class="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3 text-[11px] text-slate-600 leading-relaxed">
+                    以下 5 题帮助系统推断你的身体可能存在哪些具体问题，回答越准确，推断越精准。
                 </div>
-                <div id="symptom-questions-block" class="hidden flex flex-col gap-3">
+                <div class="flex flex-col gap-3">
                     <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
-                        <label for="symptom-primary-zone" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">哪里最容易先不舒服</label>
-                        <select id="symptom-primary-zone" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                        <label for="symptom-q-back" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">腰部哪里最容易不舒服</label>
+                        <select id="symptom-q-back" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
                             <option value="">跳过这题</option>
-                            <option value="leftBack">左侧下腰 / 左臀深处</option>
-                            <option value="leftFrontHip">左髋前 / 腹股沟前侧</option>
-                            <option value="rightLoadChain">右腿外侧 / 膝外侧</option>
-                            <option value="unclear">说不准 / 都不是</option>
+                            <option value="backCenter">后腰正中或偏左，站久或弯腰起来容易酸</option>
+                            <option value="beltLike">腰两侧像勒着一圈紧</option>
+                            <option value="frontPull">小腹下方或腰前方有牵拉感</option>
+                            <option value="leftMore">左侧腰明显比右侧更紧或更累</option>
+                            <option value="none">没有腰部不适</option>
                         </select>
                     </div>
                     <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
-                        <label for="symptom-standing-side" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">久站久走哪边更明显</label>
-                        <select id="symptom-standing-side" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                        <label for="symptom-q-sit" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">久坐起身后，最明显的感觉</label>
+                        <select id="symptom-q-sit" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
                             <option value="">跳过这题</option>
-                            <option value="left">左侧更明显</option>
-                            <option value="right">右侧更明显</option>
-                            <option value="same">两边差不多</option>
-                            <option value="unclear">说不准</option>
+                            <option value="backStiff">后腰发僵，需要慢慢直起来</option>
+                            <option value="hipTight">大腿根/髋前很紧，走几步才能松开</option>
+                            <option value="shifted">感觉重心偏向某一侧</option>
+                            <option value="nothing">没什么特别感觉</option>
                         </select>
                     </div>
                     <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
-                        <label for="symptom-single-leg-side" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">单腿 / 上台阶哪边更接不住</label>
-                        <select id="symptom-single-leg-side" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                        <label for="symptom-q-breath" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">深呼吸时的感受</label>
+                        <select id="symptom-q-breath" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
                             <option value="">跳过这题</option>
-                            <option value="left">左侧更接不住</option>
-                            <option value="right">右侧更接不住</option>
+                            <option value="backCant">后背很难扩开，主要靠前胸在吸气</option>
+                            <option value="bellyHold">小腹和前肋总是收着，呼气放不下来</option>
+                            <option value="uneven">左右肋骨明显不对称</option>
+                            <option value="nothing">没什么特别感觉</option>
+                        </select>
+                    </div>
+                    <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
+                        <label for="symptom-q-glute" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">臀部的感受</label>
+                        <select id="symptom-q-glute" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                            <option value="">跳过这题</option>
+                            <option value="fakeButt">看着翘但经常腰酸（感觉是被顶出来的）</option>
+                            <option value="flat">扁/不饱满/使不上劲</option>
+                            <option value="asymm">左右臀明显不一样大或高低不一样</option>
+                            <option value="nothing">没什么特别感觉</option>
+                        </select>
+                    </div>
+                    <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
+                        <label for="symptom-q-side" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">左右两边的差异感</label>
+                        <select id="symptom-q-side" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                            <option value="">跳过这题</option>
+                            <option value="leftTired">左边腰/髋/臀更容易累</option>
+                            <option value="rightWeak">右边更不稳/更使不上劲</option>
                             <option value="same">两边差不多</option>
                             <option value="unclear">说不准</option>
                         </select>
@@ -804,14 +825,14 @@
         const btnCloseSavedReports = document.getElementById('btn-close-saved-reports');
         const symptomCheckModal = document.getElementById('symptom-check-modal');
         const symptomCheckSubtitle = document.getElementById('symptom-check-subtitle');
-        const symptomCheckTriggerHint = document.getElementById('symptom-check-trigger-hint');
-        const symptomQuestionsBlock = document.getElementById('symptom-questions-block');
         const btnCloseSymptomCheck = document.getElementById('btn-close-symptom-check');
         const btnSkipSymptomCheck = document.getElementById('btn-skip-symptom-check');
         const btnSubmitSymptomCheck = document.getElementById('btn-submit-symptom-check');
-        const symptomPrimaryZone = document.getElementById('symptom-primary-zone');
-        const symptomStandingSide = document.getElementById('symptom-standing-side');
-        const symptomSingleLegSide = document.getElementById('symptom-single-leg-side');
+        const symptomQBack = document.getElementById('symptom-q-back');
+        const symptomQSit = document.getElementById('symptom-q-sit');
+        const symptomQBreath = document.getElementById('symptom-q-breath');
+        const symptomQGlute = document.getElementById('symptom-q-glute');
+        const symptomQSide = document.getElementById('symptom-q-side');
         const symptomFlagTestPain = document.getElementById('symptom-flag-test-pain');
         const symptomFlagRestPain = document.getElementById('symptom-flag-rest-pain');
         const symptomFlagNeuro = document.getElementById('symptom-flag-neuro');
@@ -1628,14 +1649,16 @@
                 rotationKey: routeIsolation.rotationResult.key,
                 rotationConfidenceKey: routeIsolation.rotationResult.confidenceKey,
                 heightKey: routeIsolation.heightResult.key,
-                questionnaireTriggered: routeIsolation.primaryRoute === 'rotation-first' || routeIsolation.heightResult.key !== 'unclear'
+                questionnaireTriggered: true
             };
         }
 
         function resetSymptomCheckModalFields(state = createDefaultSymptomCheckState()) {
-            symptomPrimaryZone.value = state.answers?.primaryZone || '';
-            symptomStandingSide.value = state.answers?.standingSide || '';
-            symptomSingleLegSide.value = state.answers?.singleLegSide || '';
+            symptomQBack.value = state.answers?.back || '';
+            symptomQSit.value = state.answers?.sit || '';
+            symptomQBreath.value = state.answers?.breath || '';
+            symptomQGlute.value = state.answers?.glute || '';
+            symptomQSide.value = state.answers?.side || '';
             symptomFlagTestPain.checked = Boolean(state.redFlags?.testPain);
             symptomFlagRestPain.checked = Boolean(state.redFlags?.restPain);
             symptomFlagNeuro.checked = Boolean(state.redFlags?.neuro);
@@ -1644,11 +1667,6 @@
 
         function openSymptomCheckModal(options = buildAssessmentGateFromMeasurements()) {
             pendingAssessmentOptions = options;
-            symptomCheckTriggerHint.classList.toggle('hidden', !options.questionnaireTriggered);
-            symptomQuestionsBlock.classList.toggle('hidden', !options.questionnaireTriggered);
-            symptomCheckSubtitle.textContent = options.questionnaireTriggered
-                ? '这一步是可选补充，只用于上调或下调“负担区域”可信度，不会反向改写动作分型。'
-                : '本次左右差异不算特别集中，所以主诉题默认不展开；如果你有红旗情况，请直接勾选。';
             resetSymptomCheckModalFields(symptomCheckState);
             symptomCheckModal.classList.remove('hidden');
         }
@@ -1659,13 +1677,15 @@
 
         function collectSymptomCheckState(questionnaireTriggered, skipped = false) {
             const nextState = {
-                questionnaireTriggered,
+                questionnaireTriggered: true,
                 skipped,
                 answered: false,
                 answers: {
-                    primaryZone: questionnaireTriggered ? symptomPrimaryZone.value : '',
-                    standingSide: questionnaireTriggered ? symptomStandingSide.value : '',
-                    singleLegSide: questionnaireTriggered ? symptomSingleLegSide.value : ''
+                    back: symptomQBack.value,
+                    sit: symptomQSit.value,
+                    breath: symptomQBreath.value,
+                    glute: symptomQGlute.value,
+                    side: symptomQSide.value
                 },
                 redFlags: {
                     testPain: symptomFlagTestPain.checked,
@@ -2345,13 +2365,15 @@
 
         function createDefaultSymptomCheckState() {
             return {
-                questionnaireTriggered: false,
+                questionnaireTriggered: true,
                 skipped: false,
                 answered: false,
                 answers: {
-                    primaryZone: '',
-                    standingSide: '',
-                    singleLegSide: ''
+                    back: '',
+                    sit: '',
+                    breath: '',
+                    glute: '',
+                    side: ''
                 },
                 redFlags: {
                     testPain: false,
@@ -2378,6 +2400,117 @@
                 if (!originalPoint) return false;
                 return Math.abs(point.x - originalPoint.x) > 0.5 || Math.abs(point.y - originalPoint.y) > 0.5;
             });
+        }
+
+        function buildProblemInference(comboKey, answers) {
+            const a = answers || {};
+            const results = [];
+
+            const add = (title, detail, confirmCond) => {
+                results.push({ title, detail, confirmed: Boolean(confirmCond) });
+            };
+
+            const isPosterior = comboKey.startsWith('posterior');
+            const isAnterior = comboKey.startsWith('anterior');
+            const isLateral = comboKey.endsWith('lateral');
+            const isOblique = comboKey.endsWith('oblique');
+            const isMixed = comboKey.startsWith('mixed');
+
+            if (isPosterior) {
+                add(
+                    '腰后侧肌肉长期过度工作——容易出现疲劳性酸痛',
+                    '竖脊肌、腰方肌、背阔肌持续高张力撑着骨盆，久站或弯腰起身后腰部特别容易酸胀，不是力量不够，而是这些肌肉一直没有机会真正放松。',
+                    a.back === 'backCenter' || a.back === 'beltLike' || a.sit === 'backStiff'
+                );
+                add(
+                    '后背呼吸受限——胸椎活动度可能不足',
+                    '骨盆后侧紧张会连带让后背的肋骨活动变小，吸气时后背扩不开，只能靠前胸和脖子代偿呼吸，时间长了颈肩也更容易紧。',
+                    a.breath === 'backCant'
+                );
+                add(
+                    '假性翘臀——臀部是被顶出来的，不是真正发力',
+                    '后侧肌肉群把骨盆往前顶，臀部在外观上会凸出，但实际上臀大肌并没有在主动工作。做下蹲类动作时臀部很难感受到发力，练完后腰更累。',
+                    a.glute === 'fakeButt'
+                );
+                if (a.sit === 'backStiff') {
+                    add(
+                        '久坐后起身腰部僵硬——竖脊肌/腰方肌容易"锁住"',
+                        '久坐时后侧肌肉处于缩短位，再加上持续高张力，起身时肌肉来不及快速恢复弹性，出现明显的晨僵或坐久后僵硬。',
+                        true
+                    );
+                }
+            }
+
+            if (isAnterior) {
+                add(
+                    '髂腰肌、股直肌过度紧张——髋前/腹股沟容易紧痛',
+                    '前侧肌肉一直在拉着骨盆，髋屈肌群处于缩短的高张力状态。走路迈步、抬腿、久坐起身时，髋前和腹股沟内侧容易有紧绷甚至轻微牵痛感。',
+                    a.back === 'frontPull' || a.sit === 'hipTight'
+                );
+                add(
+                    '臀大肌、腘绳肌功能减弱——臀部不饱满、使不上力',
+                    '前侧肌肉过于主动时，后侧的臀大肌和腘绳肌相对被抑制，臀部看起来扁平不饱满，做深蹲或臀桥时臀部很难感受到真正发力。',
+                    a.glute === 'flat'
+                );
+                add(
+                    '腹内压分配不均——小腹容易持续绷紧',
+                    '前侧肌肉群持续紧张会让腹部肌肉也跟着收缩，形成小腹一直"收着"的状态，不是在主动收腹，而是无意识的持续紧绷，影响呼吸质量和核心协调。',
+                    a.breath === 'bellyHold'
+                );
+                if (a.back === 'frontPull') {
+                    add(
+                        '腰椎被前侧肌肉持续牵拉——腰前方可能有隐隐不适',
+                        '髂腰肌附着在腰椎前侧，长期高张力会在腰椎1-4节前方形成慢性牵拉，部分人会感受到小腹下方或腰前方的隐约紧感，容易被误认为腹部问题。',
+                        true
+                    );
+                }
+            }
+
+            if (isLateral) {
+                add(
+                    '骨盆左高右低——左侧腰方肌过度紧张，单侧腰痛风险偏高',
+                    '骨盆左边被上提时，左侧腰方肌是主要"托举者"，长期过度工作会让左侧腰部比右侧更容易出现疲劳性酸痛甚至慢性腰痛。右侧则相反，因为一直被压低，右侧腰会感觉"空空的"。',
+                    a.back === 'leftMore' || a.side === 'leftTired'
+                );
+                add(
+                    '右侧臀中肌/臀小肌功能不足——右侧稳定性明显偏弱',
+                    '骨盆右边偏低时，右侧的外展肌群（臀中肌、臀小肌）更难稳定骨盆，单腿站立或上楼梯时右侧更容易晃动或塌陷，长期下去膝关节和踝关节也会代偿。',
+                    a.side === 'rightWeak'
+                );
+                add(
+                    '骨盆两侧高低不均——骶髂关节受力分配不均匀',
+                    '骶髂关节左右本应对称承重，骨盆倾斜后一侧长期受力更大，可能出现骶髂关节周围的隐痛或久站后一侧屁股"顶着"的感觉。',
+                    a.glute === 'asymm' || a.breath === 'uneven'
+                );
+            }
+
+            if (isOblique) {
+                add(
+                    '骨盆斜向偏移——左侧整体负荷过大',
+                    '左边骨盆既高又靠前，意味着左侧的腰、髋前、臀上缘、外髋都在同时代偿，是身体里最"忙"的一侧。左边容易累、左边容易紧、左边更难真正放松，是这种情况最典型的表现。',
+                    a.side === 'leftTired' || a.back === 'leftMore'
+                );
+                add(
+                    '右侧从承重到稳定全面不足——容易被忽视的"沉默"一侧',
+                    '右边骨盆偏低、偏后，右侧的肌肉一直处于被动伸长状态，既不容易发力也不容易感知到。做任何单侧动作时，右边都更容易塌、更接不住，但因为右边不累，往往不会引起注意。',
+                    a.side === 'rightWeak'
+                );
+                add(
+                    '骶髂关节和腰椎旋转负担——斜向锁定带来的连锁反应',
+                    '骨盆斜向偏移会让腰椎随之产生代偿性旋转，骶髂关节一侧受压更大，长期可能出现骶髂关节区域的隐痛，或腰椎小关节的不对称磨损。',
+                    a.sit === 'shifted'
+                );
+            }
+
+            if (isMixed || results.length === 0) {
+                add(
+                    '前后方向尚不明确——建议关注整体骨盆稳定性',
+                    '当前数据还不足以明确判断是后侧还是前侧肌肉更紧张，但骨盆区域的不对称已经存在。建议先通过基础呼吸训练改善骨盆底层稳定性，2-4周后复测方向会更清晰。',
+                    false
+                );
+            }
+
+            return results;
         }
 
         function hasAnyRedFlag(symptomCheck) {
@@ -3842,7 +3975,7 @@
             const compressionEvaluation = routeIsolation.compressionResult;
             const rotationEvaluation = routeIsolation.rotationResult;
             const titleEl = document.getElementById('final-result-title');
-            const reportSafetyBlocked = symptomCheck.redFlags?.triggered || false;
+            const reportSafetyBlocked = hasAnyRedFlag(symptomCheck);
             const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}°`;
             const compKey = compressionEvaluation.key;
             const rotKey = rotationEvaluation.key;
@@ -4032,6 +4165,27 @@
                 <p class="text-[13px] text-slate-600 leading-relaxed">${report.feel}</p>
             </div>`;
 
+            const inferredProblems = buildProblemInference(comboKey, symptomCheck.answers);
+            const problemHtml = reportSafetyBlocked ? '' : (() => {
+                const items = inferredProblems.map(p => `
+                    <div class="rounded-xl border ${p.confirmed ? 'border-emerald-200 bg-emerald-50/60' : 'border-slate-100 bg-slate-50'} p-3.5">
+                        <div class="flex items-start gap-2.5">
+                            <span class="mt-1 w-2 h-2 rounded-full ${p.confirmed ? 'bg-emerald-500' : 'bg-slate-300'} shrink-0"></span>
+                            <div>
+                                <div class="text-[12px] font-bold ${p.confirmed ? 'text-emerald-800' : 'text-slate-700'} mb-1">${p.title}</div>
+                                <p class="text-[11px] ${p.confirmed ? 'text-emerald-700' : 'text-slate-500'} leading-relaxed">${p.detail}</p>
+                                ${p.confirmed ? '<div class="mt-1.5 text-[10px] text-emerald-600 font-bold">✓ 与你的感受一致</div>' : ''}
+                            </div>
+                        </div>
+                    </div>`).join('');
+                return `
+                <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">你的身体可能存在的问题</div>
+                    <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">以下为根据分型结果和你的体感回答综合推断，绿色表示与你的实际感受吻合。</p>
+                    <div class="flex flex-col gap-2.5">${items}</div>
+                </div>`;
+            })();
+
             const avoidHtml = reportSafetyBlocked ? '' : `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
                 <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">当前应当注意</div>
@@ -4057,7 +4211,7 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
+            container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
             container.classList.remove('hidden');
 
             const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
