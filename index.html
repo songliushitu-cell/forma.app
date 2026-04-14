@@ -54,6 +54,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
@@ -81,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.5</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.6</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2591,56 +2592,103 @@
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(38, W/H, 0.1, 20);
-            camera.position.set(0, 1.6, 2.8);
+            camera.position.set(0, 1.8, 3.0);
             camera.lookAt(0, 0, 0);
 
-            // 灯光
-            scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-            const dLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const dLight = new THREE.DirectionalLight(0xfff5e0, 1.3);
             dLight.position.set(2, 3, 2); dLight.castShadow = true;
             scene.add(dLight);
-            const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.4);
+            const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.45);
             fillLight.position.set(-2, 1, -1);
             scene.add(fillLight);
+            const rimLight = new THREE.DirectionalLight(0xffffff, 0.25);
+            rimLight.position.set(0, -1, -2);
+            scene.add(rimLight);
 
-            // 地面网格
             const gridHelper = new THREE.GridHelper(3, 12, 0x334455, 0x222d38);
-            gridHelper.position.y = -0.45;
+            gridHelper.position.y = -0.72;
             scene.add(gridHelper);
 
-            // 骨盆模型
-            const pelvis = buildPelvisMesh(cfg.color);
-            pelvis.rotation.set(0, 0, 0);
-            scene.add(pelvis);
-
-            // OrbitControls
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true; controls.dampingFactor = 0.08;
-            controls.minDistance = 1.5; controls.maxDistance = 6;
+            controls.minDistance = 1.2; controls.maxDistance = 7;
             controls.target.set(0, 0, 0);
 
-            // 入场动画：从中立位 easeOutBack 到目标
-            const startTime = performance.now();
-            const duration = 1300;
-            const targetRx = cfg.rx, targetRy = cfg.ry, targetRz = cfg.rz;
             function easeOutBack(t) { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
-
             let rafId;
-            function animate() {
-                rafId = requestAnimationFrame(animate);
-                const elapsed = performance.now() - startTime;
-                if (elapsed < duration) {
-                    const t = easeOutBack(Math.min(elapsed/duration, 1));
-                    pelvis.rotation.set(targetRx*t, targetRy*t, targetRz*t);
-                } else {
-                    pelvis.rotation.set(targetRx, targetRy, targetRz);
-                }
-                controls.update();
-                renderer.render(scene, camera);
-            }
-            animate();
 
-            // 清理旧 RAF（换报告时）
+            function startAnim(pelvisGroup) {
+                const t0 = performance.now(), dur = 1400;
+                const { rx: tRx, ry: tRy, rz: tRz } = cfg;
+                function animate() {
+                    rafId = requestAnimationFrame(animate);
+                    const el = performance.now() - t0;
+                    const p = easeOutBack(Math.min(el / dur, 1));
+                    pelvisGroup.rotation.set(tRx*p, tRy*p, tRz*p);
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+                animate();
+            }
+
+            // 材质
+            const boneMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e2d5c5'), roughness: 0.60, metalness: 0.0 });
+            const cartMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#a8cce0'), roughness: 0.4, metalness: 0.0, transparent: true, opacity: 0.72 });
+
+            // 需要保留的骨盆节点名称
+            const KEEP = new Set([
+                'Hip bone.r', 'Sacrum', 'Coccyx',
+                'Lumbar vertebra (L5)',
+                'Art cart of sacroiliac joint on hip bone',
+                'Art cart of sacroiliac joint on sacrum',
+                'Art cart of hip bone pubis.r ',
+            ]);
+
+            function applyGLBModel(gltf) {
+                const model = gltf.scene;
+                // 隐藏非骨盆节点，应用材质
+                model.traverse(child => {
+                    if (!child.isMesh) return;
+                    if (!KEEP.has(child.name)) { child.visible = false; return; }
+                    child.material = child.name.startsWith('Art cart') ? cartMat : boneMat;
+                    child.castShadow = true;
+                });
+                // 镜像右髋骨 → 左髋骨
+                const rHip = model.getObjectByName('Hip bone.r');
+                if (rHip) {
+                    const lHip = rHip.clone(true);
+                    lHip.scale.x *= -1;
+                    model.add(lHip);
+                }
+                // 自动居中 + 缩放
+                const box = new THREE.Box3();
+                model.traverse(c => { if (c.isMesh && c.visible) box.expandByObject(c); });
+                if (!box.isEmpty()) {
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3()).length();
+                    model.position.sub(center);
+                    model.scale.setScalar(1.9 / (size || 1));
+                }
+                const group = new THREE.Group();
+                group.add(model);
+                scene.add(group);
+                startAnim(group);
+            }
+
+            if (typeof THREE.GLTFLoader !== 'undefined') {
+                new THREE.GLTFLoader().load(
+                    'pelvis.glb',
+                    applyGLBModel,
+                    undefined,
+                    () => { const fb = buildPelvisMesh(cfg.color); scene.add(fb); startAnim(fb); }
+                );
+            } else {
+                const fb = buildPelvisMesh(cfg.color);
+                scene.add(fb);
+                startAnim(fb);
+            }
+
             canvas._pelvisCleanup = () => { cancelAnimationFrame(rafId); if(_pelvisRenderer){_pelvisRenderer.dispose();_pelvisRenderer=null;} };
         }
 
