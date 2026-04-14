@@ -78,7 +78,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.2</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -3857,100 +3857,100 @@
             const planKeyMap = { baseline: 'LeftAIC', lateral: 'Lateral', oblique: 'Oblique' };
             const planKey = `${compKey}_${planKeyMap[subType]}`;
 
-            // ---- 六类详细内容配置 ----
+            // ---- 详细内容配置 ----
             const REPORT = {
                 posterior_baseline: {
-                    typeName: '后压缩 + 基线型', typeNumber: '第一类',
-                    oneLiner: '后侧太紧，把骨盆从后面往前"推"',
-                    what: '你的身体后侧链（背部、腰部、臀部后方的肌肉群）张力偏高，像有一双手从后面一直推着你的骨盆往前走。这不是"后面松了"，恰恰相反——是后面太紧、太会干活、太习惯撑着你了。同时，你的骨盆保持着大多数人天生就有的默认不对称底色：左侧稍微靠前，右侧稍微偏高，整体重心略偏右。',
-                    front: '左侧骨盆可能略微靠前，右侧稍微高一点。整个人有一种"后背在顶着你往前走"的感觉——不是你自己想前倾，而是后面那条链一直在推。',
-                    back: '后背和腰部看起来比较紧绷、有力。臀部可能有一种"假性翘臀"——不是臀肌真的很强，而是骨盆被后面的肌肉群顶出来了。',
+                    typeName: '骨盆后侧肌肉紧张 · 基础左右不对称', typeTag: '后侧紧张',
+                    oneLiner: '背部和腰部肌肉太紧，一直从后面把骨盆往前推',
+                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌、腰髂肋肌等）张力偏高，像有一双手从后面一直推着你的骨盆往前走。这不是"后面松了"，恰恰相反——是后面太紧、太会干活、太习惯撑着你了。同时，你的骨盆有大多数人天生都有的左右不对称：左侧稍微靠前，右侧稍微偏高，整体重心略偏右。',
+                    front: '左侧骨盆可能略微靠前，右侧稍微高一点。整个人有一种"后背在顶着你往前走"的感觉——不是你自己想前倾，而是后面的肌肉一直在推。',
+                    back: '后背和腰部看起来比较紧绷、有力。臀部可能有一种"假性翘臀"——不是臀肌真的很强，而是骨盆被后面的肌肉群（背阔肌、竖脊肌等）顶出来了。',
                     side: '整个人偏前顶，胸口有点前飘，下面的肋骨容易打开，腰背一直像在"撑住你"。',
                     feel: '日常中你可能觉得后背和腰总是很紧、很累，站久了腰部容易酸胀。深呼吸时后背扩不开，更多是靠前胸呼吸。弯腰后直起来那一瞬间，腰背特别"顶"。',
                     avoid: ['避免使劲拉伸腰背——后面已经够紧了，硬拉只会让它应激得更紧', '避免大量需要后背持续发力的训练（如硬拉大重量）', '避免忽视呼吸训练——让后背学会扩张是最关键的第一步'],
-                    direction: '先通过呼吸让后侧链不再那么紧绷 → 再恢复骨盆后侧的活动空间 → 最后针对左前右后的底层做微调。'
+                    direction: '先通过呼吸让后侧肌肉（背阔肌、竖脊肌等）不再那么紧绷 → 再恢复骨盆后侧的活动空间 → 最后针对左前右后的不对称做微调。'
                 },
                 posterior_lateral: {
-                    typeName: '后压缩 + 横向型', typeNumber: '第二类',
-                    oneLiner: '后侧太紧，同时左边被推高、右边被压低',
-                    what: '你的身体后侧链张力偏高（和第一类一样），但骨盆不只是简单的左前右后——左边已经明显被往上推、右边被往下压，出现了清晰的横向高低差。这比第一类多了一层"左高右低"的侧向倾斜，身体不再只是前后方向的问题，左右的不对称也很明显。',
-                    front: '左肩可能更高，左骨盆更高，左侧腰线更短，右侧腰线更长。整体不只是往前顶，还带着一种"横着歪"的感觉——不是微微的，而是比较清晰的左高右低。',
-                    back: '左臀峰更高，左侧腰背更紧、更"上提"。右边更低、更扁、更不挂。能明显看出两边不在一个水平面上。',
-                    side: '整个人前顶的同时，身体还有往一边偏的趋势。后背一样很紧，腰背一直在撑，但和第一类比，歪的感觉更明显。',
+                    typeName: '骨盆后侧肌肉紧张 · 左高右低', typeTag: '后侧紧张 + 左高右低',
+                    oneLiner: '后背和腰部肌肉太紧，同时骨盆左边高、右边低',
+                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌等）张力偏高，同时骨盆不只是左前右后——左边已经明显被往上推、右边被往下压，出现了清晰的左高右低。这意味着你的身体不光是前后方向在紧，左右的不对称也很明显。',
+                    front: '左肩可能更高，左侧骨盆更高，左侧腰线更短，右侧腰线更长。整体不只是往前顶，还带着一种"横着歪"的感觉——比较清晰的左边高、右边低。',
+                    back: '左臀峰更高，左侧腰背更紧、更"上提"。右边更低、更扁、更不挂。能明显看出两侧骨盆不在同一个水平面上。',
+                    side: '整个人前顶的同时，身体还有往一边偏的趋势。后背一样很紧，腰背一直在撑，但歪的感觉比单纯后侧紧张更明显。',
                     feel: '你可能觉得左边腰部和髋部总是比右边紧，右边感觉"空空的、使不上劲"。站着时身体容易往左边挂，左侧腰和髋前容易累。做单腿动作时，右边明显比左边不稳。',
                     avoid: ['避免只做左右对称的训练——你的两边已经不一样了，对称练只会加重差距', '避免大量侧弯拉伸——可能反而加重偏移', '避免忽视右侧承重能力的恢复——右边需要重新学会接住体重'],
-                    direction: '先让后侧链不再那么紧 → 再针对左高右低做专项调整 → 同时恢复右侧的承重能力和存在感。'
+                    direction: '先让后侧肌肉（背阔肌、腰方肌等）不再那么紧 → 再针对骨盆左高右低做专项调整 → 同时恢复右侧的承重能力和存在感。'
                 },
                 posterior_oblique: {
-                    typeName: '后压缩 + 斜轴型', typeNumber: '第三类',
-                    oneLiner: '后侧太紧，同时左边又高又前——斜着拧出去了',
-                    what: '你的身体后侧链紧绷的同时，骨盆不只是左高右低，左边还明显更靠前。整个骨盆像沿着一条对角线"拧"出去了——左边被拎起来的同时，还被拉到了前面去。这是六种类型里体态上最容易"看着别扭但很难一口说准"的一种，因为它的歪不是横着歪，而是斜着歪，同时还往前顶。',
-                    front: '左肩更高、左骨盆更高、左侧腰线更短。但和第二类不同的是，身体中轴不只是向左偏，而像左边这半边身体整体更往前、更往上。骨盆两边看起来不在一个平面上。',
-                    back: '左臀峰更高，左侧腰背更紧，左侧臀上缘更高、更方。右边更低、更扁、更薄。和横向型最大的区别：横向型像"左边横着高"，斜轴型像"左边斜着又高又前"。',
-                    side: '整个人前顶，胸廓前飘，下肋打开，腰背在顶。换个角度看左右两侧，会发现左边那一侧明显更"前"——这就是斜轴型最典型的标志。',
+                    typeName: '骨盆后侧肌肉紧张 · 左边又高又靠前', typeTag: '后侧紧张 + 斜向偏移',
+                    oneLiner: '后背腰部肌肉太紧，同时左边骨盆又高又往前冲',
+                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌等）紧绷的同时，骨盆不只是左高右低——左边还明显更靠前。整个骨盆像沿着一条对角线"拧"出去了：左边被拎起来的同时，还被拉到了前面去。这种偏移是斜着的，不只是横向歪，所以体态上容易"看着别扭但说不准哪里不对"。',
+                    front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是向左偏，而像左半边身体整体更往前、更往上。骨盆两边看起来不在一个平面上。',
+                    back: '左臀峰更高，左侧腰背更紧，左侧臀上缘更高、更方。右边更低、更扁、更薄。和单纯左高右低不同的是：这里左边不只是高，还明显更靠前。',
+                    side: '整个人前顶，胸廓前飘，下肋打开，腰背在顶。换个角度看左右两侧，会发现左边那一侧明显更"前"——这是骨盆斜向偏移最典型的标志。',
                     feel: '左边特别会顶、会挂、会提——左边的腰、髋前、臀上缘、外髋很容易累。右边经常是"没感觉""接不住""发不上力"。做单腿动作时右边更容易塌，做双腿动作时身体又会跑回左前侧去稳定。',
                     avoid: ['避免只想着把左边压下来——左边不只是高，还往前冲，两个维度都要处理', '避免大量对称深蹲——会加重左前偏移', '避免太早追求力量进阶——先让骨盆位置回来'],
-                    direction: '先释放后侧链紧绷 → 再同时处理左边的"高"和"前"两个维度 → 然后重建右边的承重能力和后侧参与。'
+                    direction: '先释放后侧肌肉（背阔肌、腰方肌、竖脊肌等）的紧绷 → 再同时处理左边的"高"和"前"两个维度 → 然后重建右边的承重能力和后侧参与。'
                 },
                 anterior_baseline: {
-                    typeName: '前压缩 + 基线型', typeNumber: '第四类',
-                    oneLiner: '前侧太紧，一直拽着骨盆往前走',
-                    what: '和第一类的骨盆底层一样（还是左前右后的基线型），但外面那层"壳"完全换了——不是后面推你，而是前面拽你。前压缩的意思是：前侧组织太紧、前侧肌肉太会抢活，身体越来越靠前面来维持稳定。如果后压缩是"后面推着你往前"，那前压缩就是"前面拽着你往前"。这两类最容易混淆，但处理方向完全不同。',
-                    front: '左边可能仍略前、略外，右边相对略高。但整体不是那种"很顶、很撑"的感觉，更像前面一直收着、拉着。第一类给人感觉是"后背撑着、整个人顶着"；第四类更像"前面那几条线一直没松开"。',
-                    back: '没有第一类那种"后背很紧、臀部像被顶出来"的感觉。后侧更多表现为不够挂、不够饱满——臀部不一定假翘，反而更容易不够饱满、不够挂。',
+                    typeName: '骨盆前侧肌肉紧张 · 基础左右不对称', typeTag: '前侧紧张',
+                    oneLiner: '髋前和大腿前侧肌肉太紧，一直拽着骨盆往前走',
+                    what: '你的骨盆前侧肌肉群（髂腰肌、股直肌、腹直肌、内收肌群等）张力偏高——不是后面推你，而是前面拽你。这些肌肉太会抢活，身体越来越靠前面来维持稳定。如果"后侧紧张"是后面推着你往前，那"前侧紧张"就是前面拽着你往前。骨盆底层还是左侧稍微靠前、右侧略偏高的基础不对称。虽然看起来都是往前偏，但处理方向完全不同。',
+                    front: '左边可能仍略前、略外，右边相对略高。但整体不是那种"很顶、很撑"的感觉，更像前面一直收着、拉着。后侧紧张的人给人感觉是"后背撑着、整个人顶着"；前侧紧张更像"前面那几条线一直没松开"。',
+                    back: '后背没有那种特别紧绷、臀部像被顶出来的感觉。后侧更多表现为不够挂、不够饱满——臀部不一定假翘，反而更容易不够饱满、不够挂。',
                     side: '大腿前侧和髋前比较紧，小腹像是一直在"收着"。臀部不是被顶出来的，反而更像后面接不住、挂不出来。',
-                    feel: '大腿前侧紧、髋前紧、小腹总是绷着，后面的臀部和腰方反而使不上劲。和第一类最大的不同：你不是后背撑着累，而是前面一直绷着累。',
-                    avoid: ['避免反复拉伸髂腰肌——它已经在过度工作了，硬拉只会更紧', '避免大量做卷腹、仰卧起坐等加重前侧收紧的动作', '避免忽略后侧链的激活——后面需要重新开始接上线'],
-                    direction: '先让前侧链不再一直拽着 → 再逐步唤醒后侧链（特别是臀后侧）→ 最后微调左前右后的底层。'
+                    feel: '大腿前侧紧、髋前紧、小腹总是绷着，后面的臀部和腰方反而使不上劲。最大的体感区别：你不是后背撑着累，而是前面一直绷着累。',
+                    avoid: ['避免反复拉伸髂腰肌——它已经在过度工作了，硬拉只会更紧', '避免大量做卷腹、仰卧起坐等加重前侧收紧的动作', '避免忽略后侧肌肉的激活——后面的臀肌和腘绳肌需要重新开始接上线'],
+                    direction: '先让前侧肌肉群（髂腰肌、股直肌等）不再一直拽着 → 再逐步唤醒后侧肌肉（特别是臀大肌、腘绳肌）→ 最后微调左前右后的不对称。'
                 },
                 anterior_lateral: {
-                    typeName: '前压缩 + 横向型', typeNumber: '第五类',
-                    oneLiner: '前侧拽着，同时左边被提高、右边被压低',
-                    what: '和第二类（后压缩+横向型）的区别在于：第二类是后面推你，第五类是前面拉你。同样都有左高右低的横向倾斜，但身体维持稳定的方式完全不同。这类看起来不是"很顶、很撑、往前冲"，而是"被前面拉住、被吊住、被拽着走"。',
-                    front: '左肩略高、左骨盆更高、左侧腰线更短、右侧腰线更长。但不是那种"左边高又很顶"的感觉，更像左边一直被提着，前面还在拉着。你从正面看会觉得：不是她自己在用后背顶住，而是前面有根绳子在把她往前吊——歪着，同时被前面吊着。',
-                    back: '左臀峰更高，但没有后压缩横向型那种后背硬撑的味道。后侧整体偏薄、偏挂不住，不够饱满。',
-                    side: '髋前和腹前比较紧，但后背不像后压缩那样绷着。整个人更像被前侧链牵引着走，而不是被后侧链推着走。',
+                    typeName: '骨盆前侧肌肉紧张 · 左高右低', typeTag: '前侧紧张 + 左高右低',
+                    oneLiner: '髋前和大腿前侧肌肉紧，同时骨盆左边高、右边低',
+                    what: '和"后侧紧张+左高右低"的区别在于：后侧紧张是后面推你，前侧紧张是前面拉你。同样都有骨盆左边高、右边低的倾斜，但身体维持稳定的方式完全不同。这种情况看起来不是"很顶、很撑、往前冲"，而是"被前面拉住、被吊住、被拽着走"。',
+                    front: '左肩略高、左侧骨盆更高、左侧腰线更短、右侧腰线更长。但不是那种"左边高又很顶"的感觉，更像左边一直被提着，前面还在拉着。你从正面看会觉得：不是她自己在用后背顶住，而是前面有根绳子在把她往前吊——歪着，同时被前面吊着。',
+                    back: '左臀峰更高，但没有后侧紧张那种后背硬撑的味道。后侧整体偏薄、偏挂不住，不够饱满。',
+                    side: '髋前和腹前比较紧，但后背不像后侧紧张那样绷着。整个人更像被前侧肌肉群（髂腰肌、股直肌等）牵引着走，而不是被后背推着走。',
                     feel: '左侧髋前和腹前容易紧，右边感觉空、接不住。不是后背累，而是前面一直收着的那种疲劳感，同时左右还有明显的不对称体感。',
                     avoid: ['避免只处理左右高低差而忽略前侧的持续拉扯', '避免大量做前侧收紧的训练（如卷腹）', '避免忽视右侧的承重恢复——右边需要重新接住体重'],
-                    direction: '先释放前侧链的持续牵拉 → 再处理左高右低的横向偏移 → 同时恢复右侧承重能力和后侧链的参与。'
+                    direction: '先释放前侧肌肉群（髂腰肌、股直肌等）的持续牵拉 → 再处理骨盆左高右低的偏移 → 同时恢复右侧承重能力和后侧肌肉的参与。'
                 },
                 anterior_oblique: {
-                    typeName: '前压缩 + 斜轴型', typeNumber: '第六类',
-                    oneLiner: '前侧拽着，同时左边又高又前——最复杂的一种',
-                    what: '这是六类里最复杂的一种——三件事叠在一起：左高、左前、前侧拉扯主导。里面是斜轴型（左边不只是高，还更靠前），外面是前压缩（不是后面推你，而是前面拽你）。一句话说清楚：左边又高又前，身体还被前侧链吊着走。',
-                    front: '左肩更高、左骨盆更高、左侧腰线更短。身体中轴不只是偏左，而是左边整半边更在"前上方"的位置。',
-                    back: '左臀峰更高、左侧臀上缘更高更方，右侧臀峰更低，右边更薄、更掉。比第三类少一点"后背顶住"的硬撑味道，更多是"左边高又前，右边低又后"。',
-                    side: '不是"后背顶出来的前倾"，而更像前面那条链一直在拉。髋前和腹前很紧，臀后侧和臀下缘更挂不出来。左半边从侧面看会明显更前。',
+                    typeName: '骨盆前侧肌肉紧张 · 左边又高又靠前', typeTag: '前侧紧张 + 斜向偏移',
+                    oneLiner: '髋前肌肉紧张拉着骨盆，同时左边又高又往前冲',
+                    what: '这是最复杂的一种情况——三件事叠在一起：骨盆左边高、左边靠前、前侧肌肉一直在拉。骨盆不只是左高右低，左边还明显更往前冲；同时不是后面推你，而是前面的髂腰肌、股直肌等一直在拽。一句话说清楚：左边又高又前，身体还被前侧肌肉群吊着走。',
+                    front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是偏左，而是左边整半边更在"前上方"的位置。',
+                    back: '左臀峰更高、左侧臀上缘更高更方，右侧臀峰更低，右边更薄、更掉。后背没有那种硬撑的味道，更多是"左边高又前，右边低又后"。',
+                    side: '不是"后背顶出来的前倾"，而更像前面那些肌肉一直在拉。髋前和腹前很紧，臀后侧和臀下缘更挂不出来。左半边从侧面看会明显更前。',
                     feel: '左髋前、左腹股沟、左前侧特别紧，左边更容易累。右边更难真正承重，一做动作身体又回到左前方去挂住。关键感觉不是"后面顶"，而是"左前挂，右后掉"。',
                     avoid: ['避免太早修臀型——顺序错了会让左边更高更前、假胯宽更明显', '避免大量对称训练——你的不对称需要针对性处理', '避免只想着把左边压下来——还要同时处理前冲和高度两个维度'],
-                    direction: '先拆前压缩外层壳（让前面别一直拽）→ 再拆左边的"高+前" → 然后建立右边承重能力 → 最后才修饰臀型。'
+                    direction: '先让前侧肌肉群（髂腰肌、股直肌等）别一直拽着 → 再处理左边的"高+前" → 然后建立右边承重能力 → 最后才修饰臀型。'
                 }
             };
 
-            // mixed compression fallback
+            // mixed fallback
             if (!REPORT[comboKey]) {
                 REPORT['mixed_baseline'] = {
-                    typeName: '混合模式 + 基线型', typeNumber: '待确认',
-                    oneLiner: '前后方向还不够明确，建议复测确认',
-                    what: '目前测量数据显示前后方向的信号不够集中——不能明确判断是后压缩还是前压缩。但骨盆的基线不对称底色（左侧略前、右侧略高）依然存在。建议在保持基础呼吸和核心训练的同时，过段时间重新测试以获得更明确的方向。',
+                    typeName: '紧张方向待确认 · 基础左右不对称', typeTag: '方向待确认',
+                    oneLiner: '前后哪侧更紧还不够明确，建议过段时间复测',
+                    what: '目前测量数据显示，还不能明确判断是骨盆后侧肌肉更紧（背阔肌、腰方肌等）还是前侧肌肉更紧（髂腰肌、股直肌等）。但骨盆基础的左右不对称（左侧略靠前、右侧略偏高）依然存在。建议保持基础呼吸和核心训练，过段时间重新测试。',
                     front: '可能存在轻微的左右不对称，但前后方向的特征目前不够典型。', back: '暂无法明确后侧是更紧还是更弱。', side: '前后方向的倾向需要进一步确认。',
                     feel: '你可能感觉身体有些不对称，但具体是"后面顶"还是"前面拽"还不够明确。建议记录日常感受，下次复测时作为参考。',
                     avoid: ['避免一次上太多复杂的纠正动作', '避免在方向不明确时强行做单方向矫正'],
                     direction: '先做基础呼吸训练和核心稳定练习 → 过 2-4 周后复测 → 根据更明确的数据调整方向。'
                 };
-                REPORT['mixed_lateral'] = { ...REPORT['mixed_baseline'], typeName: '混合模式 + 横向型', oneLiner: '前后方向待确认，但左高右低的横向倾斜已经出现',
-                    what: '前后压缩方向还不够明确，但左高右低的横向偏移是清晰的。目前优先关注横向的不对称，同时通过复测进一步确认前后方向。'
+                REPORT['mixed_lateral'] = { ...REPORT['mixed_baseline'], typeName: '紧张方向待确认 · 左高右低', oneLiner: '前后哪侧更紧待确认，但骨盆左边高、右边低已经出现',
+                    what: '前后哪侧肌肉更紧还不够明确，但骨盆左高右低的偏移是清晰的。目前优先关注左右的不对称，同时通过复测进一步确认前后方向。'
                 };
-                REPORT['mixed_oblique'] = { ...REPORT['mixed_baseline'], typeName: '混合模式 + 斜轴型', oneLiner: '前后方向待确认，但骨盆存在斜向锁定趋势',
-                    what: '前后压缩方向还不够明确，但骨盆已经出现左高且左前的斜轴趋势。目前优先关注斜轴的纠正方向，同时通过复测进一步确认前后压缩。'
+                REPORT['mixed_oblique'] = { ...REPORT['mixed_baseline'], typeName: '紧张方向待确认 · 左边又高又靠前', oneLiner: '前后哪侧更紧待确认，但骨盆已出现斜向偏移趋势',
+                    what: '前后哪侧肌肉更紧还不够明确，但骨盆已经出现左边又高又靠前的斜向偏移趋势。目前优先关注这个斜向偏移的纠正方向，同时通过复测进一步确认。'
                 };
             }
 
             const report = REPORT[comboKey] || REPORT['mixed_baseline'];
-            const compLabel = compKey === 'posterior' ? '后压缩（后侧更紧）' : compKey === 'anterior' ? '前压缩（前侧更紧）' : '混合模式（方向待确认）';
-            const rotLabel = rotKey === 'LeftAIC' ? '基线型（左前右后）' : rotKey === 'Oblique' ? '斜轴型（左高+左前）' : '待复核';
+            const compLabel = compKey === 'posterior' ? '骨盆后侧肌肉紧张' : compKey === 'anterior' ? '骨盆前侧肌肉紧张' : '方向待确认';
+            const rotLabel = rotKey === 'LeftAIC' ? '左侧骨盆略靠前' : rotKey === 'Oblique' ? '左侧骨盆又高又靠前' : '待复核';
             const heightLabel = heightKey === 'leftHigh' ? '左高右低' : heightKey === 'uneven' ? '存在高低差' : '暂无明显差异';
-            const subTypeLabel = subType === 'oblique' ? '斜轴型' : subType === 'lateral' ? '横向型（左高右低）' : '基线型';
+            const subTypeLabel = subType === 'oblique' ? '骨盆斜向偏移' : subType === 'lateral' ? '骨盆左高右低' : '左前右后不对称';
             const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
 
@@ -3981,7 +3981,7 @@
             const typeHtml = `
             <div class="bg-gradient-to-br from-[#0a84ff]/5 to-white rounded-[2rem] p-5 border border-[#0a84ff]/10 shadow-sm mb-4">
                 <div class="flex items-center gap-2 mb-3">
-                    <span class="text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 px-2.5 py-1 rounded-full">${report.typeNumber}</span>
+                    <span class="text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 px-2.5 py-1 rounded-full">${report.typeTag}</span>
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
                 </div>
                 <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-3">${report.oneLiner}</h3>
@@ -3994,11 +3994,11 @@
                 <div class="flex flex-col gap-3">
                     <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
                         <span class="mt-0.5 w-2 h-2 rounded-full bg-[#0a84ff] shrink-0"></span>
-                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">前后张力：${compLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">判定可信度：<span class="${confTone} font-bold">${confLabel}</span></div></div>
+                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">肌肉紧张方向：${compLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">判定可信度：<span class="${confTone} font-bold">${confLabel}</span></div></div>
                     </div>
                     <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
                         <span class="mt-0.5 w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
-                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">旋转朝向：${rotLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">方向分型：${subTypeLabel}</div></div>
+                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">骨盆朝向：${rotLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">左右特征：${subTypeLabel}</div></div>
                     </div>
                     <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
                         <span class="mt-0.5 w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
@@ -4060,11 +4060,11 @@
             container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
             container.classList.remove('hidden');
 
-            const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : `${report.typeNumber}：${report.oneLiner}`;
+            const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-confidence').textContent = `综合可信度：${confLabel}`;
-            document.getElementById('final-report-confidence-detail').innerHTML = `前后张力 ${compLabel} · 旋转 ${rotLabel} · 高低 ${heightLabel}`;
+            document.getElementById('final-report-confidence-detail').innerHTML = `${compLabel} · ${rotLabel} · 高低：${heightLabel}`;
             document.getElementById('final-combo-label').textContent = `${report.typeName}`;
             document.getElementById('final-pelvic-orientation').innerHTML = rotLabel;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
