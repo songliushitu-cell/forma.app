@@ -50,6 +50,19 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { appearance: textfield; -moz-appearance: textfield; }
+        .pelvis-stage { perspective: 480px; display: flex; align-items: center; justify-content: center; height: 150px; }
+        .pelvis-3d {
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.34, 1.4, 0.64, 1);
+            transform: rotateX(-52deg) rotateY(0deg) rotateZ(0deg);
+            filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+            will-change: transform;
+        }
+        @keyframes pelvisFloat {
+            0%, 100% { filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18)); }
+            50% { filter: drop-shadow(0 14px 22px rgba(0,0,0,0.12)); }
+        }
+        .pelvis-3d.settled { animation: pelvisFloat 4s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
@@ -78,7 +91,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.3</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.4</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2513,6 +2526,24 @@
             return results;
         }
 
+        function initPelvisAnim(key, animMap) {
+            if (!animMap) return;
+            const cfg = animMap[key];
+            if (!cfg) return;
+            const el = document.querySelector('.pelvis-3d');
+            if (!el) return;
+            el.classList.remove('settled');
+            el.style.transition = 'none';
+            el.style.transform = 'rotateX(-52deg) rotateY(0deg) rotateZ(0deg)';
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    el.style.transition = '';
+                    el.style.transform = `rotateX(${cfg.rx}deg) rotateY(${cfg.ry}deg) rotateZ(${cfg.rz}deg)`;
+                    el.addEventListener('transitionend', () => el.classList.add('settled'), { once: true });
+                });
+            });
+        }
+
         function hasAnyRedFlag(symptomCheck) {
             if (!symptomCheck?.redFlags) return false;
             return Object.values(symptomCheck.redFlags).some(Boolean);
@@ -4087,6 +4118,21 @@
             const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
 
+            // ---- 骨盆动画配置 ----
+            const PELVIS_ANIM = {
+                posterior_baseline: { rx: -44, ry: -8,  rz: 3,  color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
+                posterior_lateral:  { rx: -44, ry: -8,  rz: 15, color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
+                posterior_oblique:  { rx: -44, ry: -20, rz: 12, color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
+                anterior_baseline:  { rx: -42, ry: -8,  rz: 3,  color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
+                anterior_lateral:   { rx: -42, ry: -8,  rz: 15, color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
+                anterior_oblique:   { rx: -42, ry: -20, rz: 12, color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
+            };
+            const pelvisCfg = PELVIS_ANIM[comboKey] || { rx: -46, ry: 0, rz: 0, color: '#8e8e93', fill: 'rgba(142,142,147,0.12)' };
+            const pC = pelvisCfg.color;
+            const pF = pelvisCfg.fill;
+            const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
+            const pelvisSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 120" width="200" height="108"><ellipse cx="52" cy="58" rx="42" ry="28" fill="${pF}" stroke="${pC}" stroke-width="1.8"/><ellipse cx="168" cy="58" rx="42" ry="28" fill="${pF}" stroke="${pC}" stroke-width="1.8"/><rect x="84" y="13" width="52" height="26" rx="9" fill="${pC}" fill-opacity="0.25" stroke="${pC}" stroke-width="1.8"/><rect x="90" y="81" width="40" height="18" rx="7" fill="${pC}" fill-opacity="0.18" stroke="${pC}" stroke-width="1.5"/><path d="M84,26 Q68,32 52,32" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M136,26 Q152,32 168,32" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M52,83 Q72,91 90,91" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M168,83 Q148,91 130,91" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><text x="40" y="63" text-anchor="middle" font-size="11" font-weight="700" fill="${pC}" font-family="system-ui,sans-serif">L</text><text x="180" y="63" text-anchor="middle" font-size="11" font-weight="700" fill="${pC}" font-family="system-ui,sans-serif">R</text><text x="110" y="29" text-anchor="middle" font-size="9" font-weight="600" fill="${pC}" font-family="system-ui,sans-serif">后</text><text x="110" y="96" text-anchor="middle" font-size="9" font-weight="600" fill="${pC}" font-family="system-ui,sans-serif">前</text></svg>`;
+
             // ---- 构建报告 HTML ----
             const dataHtml = `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
@@ -4112,10 +4158,17 @@
             </div>`;
 
             const typeHtml = `
-            <div class="bg-gradient-to-br from-[#0a84ff]/5 to-white rounded-[2rem] p-5 border border-[#0a84ff]/10 shadow-sm mb-4">
+            <div class="rounded-[2rem] p-5 border shadow-sm mb-4" style="${cardStyle}">
                 <div class="flex items-center gap-2 mb-3">
-                    <span class="text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 px-2.5 py-1 rounded-full">${report.typeTag}</span>
+                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${pC};background:${pC}18">${report.typeTag}</span>
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
+                </div>
+                <div class="pelvis-stage mb-3 relative rounded-2xl bg-white/60 border" style="border-color:${pC}18">
+                    <div class="pelvis-3d">${pelvisSvg}</div>
+                    <div class="absolute bottom-1.5 left-0 right-0 flex justify-between px-4 pointer-events-none">
+                        <span class="text-[9px] font-bold" style="color:${pC}99">← L 左</span>
+                        <span class="text-[9px] font-bold" style="color:${pC}99">R 右 →</span>
+                    </div>
                 </div>
                 <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-3">${report.oneLiner}</h3>
                 <p class="text-[13px] text-slate-600 leading-relaxed">${report.what}</p>
@@ -4213,6 +4266,7 @@
             const container = document.getElementById('empathic-report-container');
             container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
             container.classList.remove('hidden');
+            initPelvisAnim(comboKey, PELVIS_ANIM);
 
             const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
             titleEl.innerText = mainSentence;
