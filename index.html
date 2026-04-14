@@ -50,20 +50,10 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { appearance: textfield; -moz-appearance: textfield; }
-        .pelvis-stage { perspective: 480px; display: flex; align-items: center; justify-content: center; height: 150px; }
-        .pelvis-3d {
-            transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.34, 1.4, 0.64, 1);
-            transform: rotateX(-52deg) rotateY(0deg) rotateZ(0deg);
-            filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
-            will-change: transform;
-        }
-        @keyframes pelvisFloat {
-            0%, 100% { filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18)); }
-            50% { filter: drop-shadow(0 14px 22px rgba(0,0,0,0.12)); }
-        }
-        .pelvis-3d.settled { animation: pelvisFloat 4s ease-in-out infinite; }
+        .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 200px; overflow: hidden; border-radius: 1rem; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
@@ -91,7 +81,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.4</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.5</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2526,22 +2516,132 @@
             return results;
         }
 
-        function initPelvisAnim(key, animMap) {
-            if (!animMap) return;
-            const cfg = animMap[key];
-            if (!cfg) return;
-            const el = document.querySelector('.pelvis-3d');
-            if (!el) return;
-            el.classList.remove('settled');
-            el.style.transition = 'none';
-            el.style.transform = 'rotateX(-52deg) rotateY(0deg) rotateZ(0deg)';
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    el.style.transition = '';
-                    el.style.transform = `rotateX(${cfg.rx}deg) rotateY(${cfg.ry}deg) rotateZ(${cfg.rz}deg)`;
-                    el.addEventListener('transitionend', () => el.classList.add('settled'), { once: true });
-                });
-            });
+        let _pelvisRenderer = null;
+
+        function buildPelvisMesh(color) {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
+            const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
+            function addMesh(geo, m, x, y, z, rx, ry, rz) {
+                const mesh = new THREE.Mesh(geo, m);
+                mesh.position.set(x||0, y||0, z||0);
+                if (rx) mesh.rotation.x = rx;
+                if (ry) mesh.rotation.y = ry;
+                if (rz) mesh.rotation.z = rz;
+                mesh.castShadow = true; mesh.receiveShadow = true;
+                group.add(mesh); return mesh;
+            }
+            // 骶骨
+            addMesh(new THREE.CylinderGeometry(0.18, 0.28, 0.55, 5, 1), mat, 0, 0, -0.38, Math.PI*0.08);
+            // 髂翼
+            function makeWing(side) {
+                const pts = [];
+                for (let i=0; i<=10; i++) {
+                    const t=i/10;
+                    pts.push(new THREE.Vector3(side*(0.25+t*0.52), 0.12-t*0.05+Math.sin(t*Math.PI)*0.1, -0.12+t*0.22-Math.sin(t*Math.PI)*0.28));
+                }
+                const curve = new THREE.CatmullRomCurve3(pts);
+                const shape = new THREE.Shape();
+                shape.moveTo(-0.01,0); shape.bezierCurveTo(-0.01,0.18,0.01,0.22,0,0.26); shape.bezierCurveTo(-0.01,0.22,0.01,0.18,0,0);
+                return new THREE.ExtrudeGeometry(shape, { steps:14, extrudePath:curve, bevelEnabled:false });
+            }
+            addMesh(makeWing(1), mat, 0,0,0);
+            addMesh(makeWing(-1), mat, 0,0,0);
+            // 髂嵴管
+            function makeCrest(side) {
+                const pts = [new THREE.Vector3(side*0.25,0.22,-0.12),new THREE.Vector3(side*0.50,0.26,-0.05),new THREE.Vector3(side*0.72,0.20,0.12),new THREE.Vector3(side*0.65,0.10,0.28),new THREE.Vector3(side*0.42,0.06,0.38)];
+                return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.038, 7, false);
+            }
+            addMesh(makeCrest(1), mat, 0,0,0);
+            addMesh(makeCrest(-1), mat, 0,0,0);
+            // 坐骨结节
+            const isGeo = new THREE.SphereGeometry(0.11,10,8); isGeo.scale(1,0.7,1.1);
+            addMesh(isGeo, mat, 0.48,-0.18,0.35);
+            const isGeo2 = new THREE.SphereGeometry(0.11,10,8); isGeo2.scale(1,0.7,1.1);
+            addMesh(isGeo2, mat, -0.48,-0.18,0.35);
+            // 耻骨联合
+            addMesh(new THREE.BoxGeometry(0.30,0.14,0.12), mat, 0,-0.05,0.44);
+            // 耻骨支弧
+            function makePubRamus(side) {
+                const pts=[new THREE.Vector3(side*0.12,-0.04,0.44),new THREE.Vector3(side*0.28,0.00,0.42),new THREE.Vector3(side*0.42,0.04,0.38)];
+                return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,0.045,6,false);
+            }
+            addMesh(makePubRamus(1), mat, 0,0,0);
+            addMesh(makePubRamus(-1), mat, 0,0,0);
+            // L/R 标记球
+            const mkGeo = new THREE.SphereGeometry(0.045,8,6);
+            addMesh(mkGeo, markerMat,  0.78,0.22,0.0);
+            addMesh(new THREE.SphereGeometry(0.045,8,6), markerMat, -0.78,0.22,0.0);
+            return group;
+        }
+
+        function initPelvisScene(comboKey, pelvisAnimMap) {
+            if (typeof THREE === 'undefined') return;
+            const canvas = document.getElementById('pelvis-canvas');
+            if (!canvas) return;
+            if (_pelvisRenderer) { _pelvisRenderer.dispose(); _pelvisRenderer = null; }
+
+            const cfg = (pelvisAnimMap||{})[comboKey] || { rx:0.28, ry:-0.14, rz:0.05, color:'#8e8e93' };
+            const W = canvas.parentElement.clientWidth || 340, H = 200;
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+            renderer.setSize(W, H); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+            renderer.shadowMap.enabled = true;
+            renderer.setClearColor(0x0d1117, 1);
+            _pelvisRenderer = renderer;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(38, W/H, 0.1, 20);
+            camera.position.set(0, 1.6, 2.8);
+            camera.lookAt(0, 0, 0);
+
+            // 灯光
+            scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+            const dLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
+            dLight.position.set(2, 3, 2); dLight.castShadow = true;
+            scene.add(dLight);
+            const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.4);
+            fillLight.position.set(-2, 1, -1);
+            scene.add(fillLight);
+
+            // 地面网格
+            const gridHelper = new THREE.GridHelper(3, 12, 0x334455, 0x222d38);
+            gridHelper.position.y = -0.45;
+            scene.add(gridHelper);
+
+            // 骨盆模型
+            const pelvis = buildPelvisMesh(cfg.color);
+            pelvis.rotation.set(0, 0, 0);
+            scene.add(pelvis);
+
+            // OrbitControls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; controls.dampingFactor = 0.08;
+            controls.minDistance = 1.5; controls.maxDistance = 6;
+            controls.target.set(0, 0, 0);
+
+            // 入场动画：从中立位 easeOutBack 到目标
+            const startTime = performance.now();
+            const duration = 1300;
+            const targetRx = cfg.rx, targetRy = cfg.ry, targetRz = cfg.rz;
+            function easeOutBack(t) { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
+
+            let rafId;
+            function animate() {
+                rafId = requestAnimationFrame(animate);
+                const elapsed = performance.now() - startTime;
+                if (elapsed < duration) {
+                    const t = easeOutBack(Math.min(elapsed/duration, 1));
+                    pelvis.rotation.set(targetRx*t, targetRy*t, targetRz*t);
+                } else {
+                    pelvis.rotation.set(targetRx, targetRy, targetRz);
+                }
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // 清理旧 RAF（换报告时）
+            canvas._pelvisCleanup = () => { cancelAnimationFrame(rafId); if(_pelvisRenderer){_pelvisRenderer.dispose();_pelvisRenderer=null;} };
         }
 
         function hasAnyRedFlag(symptomCheck) {
@@ -4118,20 +4218,18 @@
             const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
 
-            // ---- 骨盆动画配置 ----
+            // ---- 骨盆3D动画配置（弧度） ----
             const PELVIS_ANIM = {
-                posterior_baseline: { rx: -44, ry: -8,  rz: 3,  color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
-                posterior_lateral:  { rx: -44, ry: -8,  rz: 15, color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
-                posterior_oblique:  { rx: -44, ry: -20, rz: 12, color: '#0a84ff', fill: 'rgba(10,132,255,0.12)'  },
-                anterior_baseline:  { rx: -42, ry: -8,  rz: 3,  color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
-                anterior_lateral:   { rx: -42, ry: -8,  rz: 15, color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
-                anterior_oblique:   { rx: -42, ry: -20, rz: 12, color: '#ff9500', fill: 'rgba(255,149,0,0.12)'   },
+                posterior_baseline: { rx:  0.28, ry: -0.14, rz: 0.05, color: '#0a84ff' },
+                posterior_lateral:  { rx:  0.28, ry: -0.14, rz: 0.26, color: '#0a84ff' },
+                posterior_oblique:  { rx:  0.28, ry: -0.35, rz: 0.21, color: '#0a84ff' },
+                anterior_baseline:  { rx:  0.38, ry: -0.14, rz: 0.05, color: '#ff9500' },
+                anterior_lateral:   { rx:  0.38, ry: -0.14, rz: 0.26, color: '#ff9500' },
+                anterior_oblique:   { rx:  0.38, ry: -0.35, rz: 0.21, color: '#ff9500' },
             };
-            const pelvisCfg = PELVIS_ANIM[comboKey] || { rx: -46, ry: 0, rz: 0, color: '#8e8e93', fill: 'rgba(142,142,147,0.12)' };
+            const pelvisCfg = PELVIS_ANIM[comboKey] || { rx: 0.28, ry: 0, rz: 0, color: '#8e8e93' };
             const pC = pelvisCfg.color;
-            const pF = pelvisCfg.fill;
             const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
-            const pelvisSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 120" width="200" height="108"><ellipse cx="52" cy="58" rx="42" ry="28" fill="${pF}" stroke="${pC}" stroke-width="1.8"/><ellipse cx="168" cy="58" rx="42" ry="28" fill="${pF}" stroke="${pC}" stroke-width="1.8"/><rect x="84" y="13" width="52" height="26" rx="9" fill="${pC}" fill-opacity="0.25" stroke="${pC}" stroke-width="1.8"/><rect x="90" y="81" width="40" height="18" rx="7" fill="${pC}" fill-opacity="0.18" stroke="${pC}" stroke-width="1.5"/><path d="M84,26 Q68,32 52,32" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M136,26 Q152,32 168,32" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M52,83 Q72,91 90,91" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><path d="M168,83 Q148,91 130,91" fill="none" stroke="${pC}" stroke-width="1.5" stroke-opacity="0.55"/><text x="40" y="63" text-anchor="middle" font-size="11" font-weight="700" fill="${pC}" font-family="system-ui,sans-serif">L</text><text x="180" y="63" text-anchor="middle" font-size="11" font-weight="700" fill="${pC}" font-family="system-ui,sans-serif">R</text><text x="110" y="29" text-anchor="middle" font-size="9" font-weight="600" fill="${pC}" font-family="system-ui,sans-serif">后</text><text x="110" y="96" text-anchor="middle" font-size="9" font-weight="600" fill="${pC}" font-family="system-ui,sans-serif">前</text></svg>`;
 
             // ---- 构建报告 HTML ----
             const dataHtml = `
@@ -4163,12 +4261,8 @@
                     <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${pC};background:${pC}18">${report.typeTag}</span>
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
                 </div>
-                <div class="pelvis-stage mb-3 relative rounded-2xl bg-white/60 border" style="border-color:${pC}18">
-                    <div class="pelvis-3d">${pelvisSvg}</div>
-                    <div class="absolute bottom-1.5 left-0 right-0 flex justify-between px-4 pointer-events-none">
-                        <span class="text-[9px] font-bold" style="color:${pC}99">← L 左</span>
-                        <span class="text-[9px] font-bold" style="color:${pC}99">R 右 →</span>
-                    </div>
+                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;">
+                    <canvas id="pelvis-canvas" style="width:100%;height:200px;display:block;border-radius:1rem;"></canvas>
                 </div>
                 <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-3">${report.oneLiner}</h3>
                 <p class="text-[13px] text-slate-600 leading-relaxed">${report.what}</p>
@@ -4266,7 +4360,8 @@
             const container = document.getElementById('empathic-report-container');
             container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
             container.classList.remove('hidden');
-            initPelvisAnim(comboKey, PELVIS_ANIM);
+            const _ck = comboKey, _pa = PELVIS_ANIM;
+            requestAnimationFrame(() => initPelvisScene(_ck, _pa));
 
             const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
             titleEl.innerText = mainSentence;
