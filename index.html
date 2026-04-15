@@ -82,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.11</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.12</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4365,27 +4365,42 @@
             const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
 
             // ---- 构建报告 HTML ----
-            const dataHtml = `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">测量数据一览</div>
+            const appendixHtml = `
+            <div class="bg-slate-50/80 rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">你的测量记录</div>
                 <div class="grid grid-cols-3 gap-3 text-center mb-3">
-                    <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="bg-white rounded-xl p-3">
                         <div class="text-[10px] text-slate-400 font-bold mb-1">直腿抬高</div>
                         <div class="text-[13px] font-black text-slate-800">左 ${slrL.toFixed(1)}° / 右 ${slrR.toFixed(1)}°</div>
                         <div class="text-[10px] ${Math.abs(diffSLR) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSLR)}</div>
                     </div>
-                    <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="bg-white rounded-xl p-3">
                         <div class="text-[10px] text-slate-400 font-bold mb-1">髋屈曲</div>
                         <div class="text-[13px] font-black text-slate-800">左 ${hipL.toFixed(1)}° / 右 ${hipR.toFixed(1)}°</div>
                         <div class="text-[10px] ${Math.abs(diffHip) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffHip)}</div>
                     </div>
-                    <div class="bg-slate-50 rounded-xl p-3">
+                    <div class="bg-white rounded-xl p-3">
                         <div class="text-[10px] text-slate-400 font-bold mb-1">肩屈</div>
                         <div class="text-[13px] font-black text-slate-800">左 ${shL.toFixed(1)}° / 右 ${shR.toFixed(1)}°</div>
                         <div class="text-[10px] ${Math.abs(diffSh) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSh)}</div>
                     </div>
                 </div>
-                <div class="text-[10px] text-slate-400 leading-relaxed">左右差值 ≥ 10° 标红，代表该项存在较明显的左右不对称。短板值 = 左右中较小的一侧。</div>
+                <div class="text-[10px] text-slate-400 leading-relaxed mb-3">左右差值 ≥ 10° 标红，代表该项存在较明显的左右不对称。</div>
+                <div class="flex flex-col gap-2 pt-2 border-t border-slate-200/60">
+                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#0a84ff] shrink-0"></span>
+                        <span class="text-[11px] text-slate-600">肌肉紧张方向：<span class="font-bold text-slate-800">${compLabel}</span></span>
+                        <span class="ml-auto text-[10px] ${confTone} font-bold">可信度 ${confLabel}</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0"></span>
+                        <span class="text-[11px] text-slate-600">骨盆朝向：<span class="font-bold text-slate-800">${rotLabel}</span></span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                        <span class="text-[11px] text-slate-600">骨盆高低：<span class="font-bold text-slate-800">${heightLabel}</span></span>
+                    </div>
+                </div>
             </div>`;
 
             const typeHtml = `
@@ -4399,62 +4414,32 @@
                 <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;">
                     <canvas id="pelvis-canvas" style="width:100%;height:200px;display:block;border-radius:1rem;"></canvas>
                 </div>
-                <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-3">${report.oneLiner}</h3>
-                <p class="text-[13px] text-slate-600 leading-relaxed">${report.what}</p>
+                <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-2">${report.oneLiner}</h3>
+                <p class="text-[12px] text-slate-500 leading-relaxed">${report.what.split('。')[0]}。</p>
             </div>`;
 
-            const pelvisHtml = `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-[0.15em]">骨盆状态拆解</div>
-                <div class="flex flex-col gap-3">
-                    <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
-                        <span class="mt-0.5 w-2 h-2 rounded-full bg-[#0a84ff] shrink-0"></span>
-                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">肌肉紧张方向：${compLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">判定可信度：<span class="${confTone} font-bold">${confLabel}</span></div></div>
-                    </div>
-                    <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
-                        <span class="mt-0.5 w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
-                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">骨盆朝向：${rotLabel}</div><div class="text-[11px] text-slate-500 leading-relaxed">左右特征：${subTypeLabel}</div></div>
-                    </div>
-                    <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3.5">
-                        <span class="mt-0.5 w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-                        <div><div class="text-[11px] font-bold text-slate-800 mb-0.5">骨盆高低：${heightLabel}</div></div>
-                    </div>
-                </div>
-            </div>`;
-
-            const postureHtml = `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-[0.15em]">体态特征分析</div>
-                <div class="flex flex-col gap-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">正面看</span></div>
-                        <p class="text-[13px] text-slate-600 leading-relaxed pl-0.5">${report.front}</p>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">背面看</span></div>
-                        <p class="text-[13px] text-slate-600 leading-relaxed pl-0.5">${report.back}</p>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">侧面看</span></div>
-                        <p class="text-[13px] text-slate-600 leading-relaxed pl-0.5">${report.side}</p>
-                    </div>
-                </div>
-            </div>`;
+            // pelvisHtml and postureHtml merged into mirrorCheckHtml + appendixHtml
 
             const feelHtml = `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">你可能的日常感受</div>
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">你是不是也有这些感受？</div>
                 <p class="text-[13px] text-slate-600 leading-relaxed">${report.feel}</p>
             </div>`;
 
+            const whatHtml = `
+            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">这是怎么发生的</div>
+                <p class="text-[13px] text-slate-600 leading-relaxed">${report.what}</p>
+            </div>`;
+
             const bodyFeatures = buildBodyFeatureInference(comboKey, metrics);
-            const bodyFeatureHtml = reportSafetyBlocked || bodyFeatures.length === 0 ? '' : (() => {
+            const mirrorCheckHtml = (() => {
                 const sideLabel = { left: '左侧', right: '右侧', both: '双侧', null: '' };
                 const probConfig = {
                     likely:   { text: '高度吻合',   bg: 'bg-violet-50',  border: 'border-violet-200', tag: 'bg-violet-100 text-violet-700', dot: 'bg-violet-500' },
                     possible: { text: '可能存在',   bg: 'bg-slate-50',   border: 'border-slate-200',  tag: 'bg-slate-100 text-slate-500',   dot: 'bg-slate-300'  }
                 };
-                const cards = bodyFeatures.map(f => {
+                const featureCards = bodyFeatures.length === 0 ? '' : bodyFeatures.map(f => {
                     const cfg = probConfig[f.prob];
                     const sideTag = f.side ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 ml-1">${sideLabel[f.side]}</span>` : '';
                     return `
@@ -4468,11 +4453,28 @@
                         <p class="text-[11px] text-slate-500 leading-relaxed pl-4">${f.why}</p>
                     </div>`;
                 }).join('');
+                const featureSection = featureCards ? `
+                    <div class="flex flex-col gap-2.5 mb-4">${featureCards}</div>
+                    <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">以上特征由测试数据推断，仅供参考，实际以评估师观察为准。</p>` : '';
                 return `
                 <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">外观体态特征推断</div>
-                    <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">以下特征由测试数据推断，仅供参考，实际情况以评估师观察为准。</p>
-                    <div class="flex flex-col gap-2.5">${cards}</div>
+                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">对镜自查 · 你可能已经注意到这些</div>
+                    <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">试着对镜观察，看看以下描述是否符合你的体态</p>
+                    ${featureSection}
+                    <div class="flex flex-col gap-3 ${featureCards ? 'pt-2 border-t border-slate-100' : ''}">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">正面看</span></div>
+                            <p class="text-[12px] text-slate-600 leading-relaxed pl-0.5">${report.front}</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">背面看</span></div>
+                            <p class="text-[12px] text-slate-600 leading-relaxed pl-0.5">${report.back}</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-2"><span class="text-[11px] font-black text-slate-700">侧面看</span></div>
+                            <p class="text-[12px] text-slate-600 leading-relaxed pl-0.5">${report.side}</p>
+                        </div>
+                    </div>
                 </div>`;
             })();
 
@@ -4491,7 +4493,7 @@
                     </div>`).join('');
                 return `
                 <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">你的身体可能存在的问题</div>
+                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">这会带来哪些影响</div>
                     <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">以下为根据分型结果和你的体感回答综合推断，绿色表示与你的实际感受吻合。</p>
                     <div class="flex flex-col gap-2.5">${items}</div>
                 </div>`;
@@ -4499,7 +4501,7 @@
 
             const avoidHtml = reportSafetyBlocked ? '' : `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">当前应当注意</div>
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">做这些会适得其反</div>
                 <div class="flex flex-col gap-2">
                     ${report.avoid.map(item => `
                     <div class="flex items-start gap-2.5">
@@ -4520,7 +4522,7 @@
                     </div>`).join('');
                 return `
                 <div class="rounded-[2rem] p-5 border border-violet-100 bg-gradient-to-br from-violet-50/60 to-slate-50 shadow-sm mb-4">
-                    <div class="text-[10px] font-bold text-violet-500 mb-3 uppercase tracking-[0.15em]">改善路径 · 三阶段</div>
+                    <div class="text-[10px] font-bold text-violet-500 mb-3 uppercase tracking-[0.15em]">你的改善路径</div>
                     <div class="flex flex-col gap-3">${stepsHtml}</div>
                 </div>`;
             })();
@@ -4532,7 +4534,7 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${bodyFeatureHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
+            container.innerHTML = `${typeHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${directionHtml}${safetyHtml}${avoidHtml}${appendixHtml}`;
             container.classList.remove('hidden');
             const _ck = comboKey, _pa = PELVIS_ANIM;
             requestAnimationFrame(() => initPelvisScene(_ck, _pa));
