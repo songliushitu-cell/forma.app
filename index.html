@@ -82,7 +82,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.10</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.11</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2419,6 +2419,67 @@
             });
         }
 
+        function buildBodyFeatureInference(comboKey, metrics) {
+            const features = [];
+            const isAnterior = comboKey.startsWith('anterior');
+            const isPosterior = comboKey.startsWith('posterior');
+            const isLateral = comboKey.endsWith('lateral');
+            const isOblique = comboKey.endsWith('oblique');
+            const isBaseline = comboKey.endsWith('baseline');
+
+            const add = (name, side, prob, why) => features.push({ name, side, prob, why });
+
+            // ── 假胯宽 ──────────────────────────────────────────────────
+            if (isAnterior && (isLateral || isOblique)) {
+                add('假胯宽（左侧更明显）', 'left', 'likely',
+                    '前侧肌群过紧 + 左侧骨盆偏高偏前，左髋股骨大转子被外旋顶出，正面看左侧髋部轮廓外扩明显。');
+            } else if (isAnterior && isBaseline) {
+                add('双侧假胯宽', 'both', 'likely',
+                    '髂腰肌、阔筋膜张肌持续紧绷，双侧股骨大转子被外旋撑开，正面看髋部偏宽、两侧轮廓外扩。');
+            } else if (isPosterior && (isLateral || isOblique)) {
+                add('假胯宽（左侧）', 'left', 'possible',
+                    '左侧骨盆偏高，左髋位置外移，正面看左侧髋部轮廓略宽于右侧。');
+            }
+
+            // ── 臀部凹陷 / 不饱满 ────────────────────────────────────────
+            if (isLateral || isOblique) {
+                add('右侧臀部凹陷', 'right', 'likely',
+                    '右侧骨盆偏低，右侧臀中肌长期拉长失活，髋侧面填充感不足，背面看右侧臀部比左侧更扁、更空。');
+                add('臀部左右高低/大小不对称', 'both', 'likely',
+                    '左臀峰更高更靠后，右臀峰更低更薄。背面看两侧臀形不在同一水平，左边"挂"出来，右边更掉。');
+            }
+            if (isAnterior && isBaseline) {
+                add('双侧臀部不饱满', 'both', 'possible',
+                    '前侧肌肉长期主导，臀大肌被持续抑制，双侧臀部可能偏扁平、缺乏饱满感，做臀伸类动作时臀部难以发力。');
+            }
+
+            // ── 翼状肩胛 ──────────────────────────────────────────────────
+            if (isPosterior && metrics.shoulderFinal < 100) {
+                add('肩胛骨突出（翼状肩胛倾向）', 'both', 'possible',
+                    '后侧肌群过紧 + 肩屈受限，前锯肌无法有效将肩胛贴紧胸廓，背面可见肩胛内侧缘或下角翘起。');
+            }
+
+            // ── 下肋外翻 ──────────────────────────────────────────────────
+            if (isAnterior) {
+                add('下肋外翻', 'both', 'likely',
+                    '前侧肌肉紧绷、腹斜肌相对松弛，第8–10肋前端向外翘起，侧面看腰腹之间的过渡更"张开"、更突出。');
+            }
+
+            // ── 腰椎弓度偏大 ──────────────────────────────────────────────
+            if (isAnterior && metrics.hipFinal < 100) {
+                add('腰椎弓度偏大（腰弓明显）', null, 'likely',
+                    '髋屈肌持续牵拉将骨盆前倾，腰椎随之过度前凸，侧面看腰背空隙偏大、腰弓比正常更深。');
+            }
+
+            // ── 腰背肌肉轮廓突出 ──────────────────────────────────────────
+            if (isPosterior) {
+                add('腰背肌肉轮廓感偏强', null, 'likely',
+                    '竖脊肌、腰方肌持续高张力，腰部两侧肌肉轮廓明显——这不是真正的力量型发达，而是长期紧绷的视觉效果。');
+            }
+
+            return features;
+        }
+
         function buildProblemInference(comboKey, answers) {
             const a = answers || {};
             const results = [];
@@ -4173,68 +4234,68 @@
                 posterior_baseline: {
                     typeName: '骨盆后侧肌肉紧张 · 基础左右不对称', typeTag: '后侧紧张',
                     oneLiner: '背部和腰部肌肉太紧，一直从后面把骨盆往前推',
-                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌、腰髂肋肌等）张力偏高，像有一双手从后面一直推着你的骨盆往前走。这不是"后面松了"，恰恰相反——是后面太紧、太会干活、太习惯撑着你了。同时，你的骨盆有大多数人天生都有的左右不对称：左侧稍微靠前，右侧稍微偏高，整体重心略偏右。',
+                    what: '你的骨盆后侧肌群——竖脊肌、腰方肌、背阔肌、腰髂肋肌——长期处于高张力状态，持续从后方把骨盆前推。这不是"后面弱了撑不住"，恰恰相反：是后侧太强、太会抢活，早已学会用持续紧绷代替真正稳定。结果是骨盆整日被"顶"在偏前位置，腰椎无法归位中立，后背的肌肉永远在工作、永远没有机会真正放松。同时你存在人体天生的基础不对称：左侧骨盆轻微靠前、右侧轻微偏高——在后侧高张力的底色下，这个不对称被进一步锁定和放大，单靠做动作无法自行纠正。',
                     front: '左侧骨盆可能略微靠前，右侧稍微高一点。整个人有一种"后背在顶着你往前走"的感觉——不是你自己想前倾，而是后面的肌肉一直在推。',
                     back: '后背和腰部看起来比较紧绷、有力。臀部可能有一种"假性翘臀"——不是臀肌真的很强，而是骨盆被后面的肌肉群（背阔肌、竖脊肌等）顶出来了。',
                     side: '整个人偏前顶，胸口有点前飘，下面的肋骨容易打开，腰背一直像在"撑住你"。',
                     feel: '日常中你可能觉得后背和腰总是很紧、很累，站久了腰部容易酸胀。深呼吸时后背扩不开，更多是靠前胸呼吸。弯腰后直起来那一瞬间，腰背特别"顶"。',
                     avoid: ['避免使劲拉伸腰背、绳肌和臀部——后压缩人群的后侧肌肉已经过度拉长，越拉越会应激收紧', '避免大量臀桥训练——容易诱发腰椎代偿，掩盖真正的骨盆问题', '避免忽视呼吸训练——让后背学会真正扩张才是第一步'],
-                    direction: '先通过呼吸让后侧肌肉（背阔肌、竖脊肌等）不再那么紧绷 → 再恢复骨盆后侧的活动空间 → 最后针对左前右后的不对称做微调。'
+                    direction: '第①步 建立基础：慢呼气 + 后背肋骨扩张，让竖脊肌/腰方肌不再持续高张力，目标是深呼吸时后背真正能扩开。<br>第②步 压缩修复：在后侧松开的基础上重建骨盆后侧活动空间，恢复重心后移能力，重建内旋空间，不再锁在前倾位。<br>第③步 微调不对称：后侧张力解除后，再针对左前右后的基础不对称做专项调整——顺序错了在这之前调不动。'
                 },
                 posterior_lateral: {
                     typeName: '骨盆后侧肌肉紧张 · 左高右低', typeTag: '后侧紧张 + 左高右低',
                     oneLiner: '后背和腰部肌肉太紧，同时骨盆左边高、右边低',
-                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌等）张力偏高，同时骨盆不只是左前右后——左边已经明显被往上推、右边被往下压，出现了清晰的左高右低。这意味着你的身体不光是前后方向在紧，左右的不对称也很明显。',
+                    what: '在后侧肌群高张力的基础上，你的骨盆还出现了明显的左高右低。左侧腰方肌不只是前后方向上"顶"着骨盆，还在侧向持续"提"着左骨盆——左边被上提，右边被往下压，两个维度同时偏移。右侧骨盆因持续被压低，右侧外展肌群（臀中肌、臀小肌）长期处于拉长无力状态，右侧稳定能力全面下滑。这不是"左边练得好、右边懒"，而是神经肌肉模式已经把左边设定为"默认接管者"，右边已经学会不出力。',
                     front: '左肩可能更高，左侧骨盆更高，左侧腰线更短，右侧腰线更长。整体不只是往前顶，还带着一种"横着歪"的感觉——比较清晰的左边高、右边低。',
                     back: '左臀峰更高，左侧腰背更紧、更"上提"。右边更低、更扁、更不挂。能明显看出两侧骨盆不在同一个水平面上。',
                     side: '整个人前顶的同时，身体还有往一边偏的趋势。后背一样很紧，腰背一直在撑，但歪的感觉比单纯后侧紧张更明显。',
                     feel: '你可能觉得左边腰部和髋部总是比右边紧，右边感觉"空空的、使不上劲"。站着时身体容易往左边挂，左侧腰和髋前容易累。做单腿动作时，右边明显比左边不稳。',
                     avoid: ['避免只做左右对称的训练——你的两边已经不一样了，对称练只会加重差距', '避免大量侧弯拉伸——可能反而加重偏移', '避免忽视右侧承重能力的恢复——右边需要重新学会接住体重'],
-                    direction: '先通过呼吸释放后侧肌肉紧绷 → 要减少：左侧抢活与外开前顶；要建立：右侧真正的承重与装载能力 → 优先做右腿单侧承重类动作（右腿前分腿蹲、右侧 RDL 等），重建右侧站立期稳定性。'
+                    direction: '第①步 释放后侧：慢呼气 + 后背扩张释放后侧肌群，同时左侧呼气侧向扩张减少左侧腰方肌的主动"提拉"。<br>第②步 横向偏移修正：要减少左侧继续抢活、腰方肌持续上提骨盆；要建立右侧承重与装载感——优先做右腿单侧承重动作（右腿前弓步、右侧 RDL、右腿单腿站立），让右边重新接住体重。<br>第③步 整合稳定：左右承重趋于平衡后，整合双侧稳定训练，重建步态中两侧交替承重的协调性。'
                 },
                 posterior_oblique: {
                     typeName: '骨盆后侧肌肉紧张 · 左边又高又靠前', typeTag: '后侧紧张 + 斜向偏移',
                     oneLiner: '后背腰部肌肉太紧，同时左边骨盆又高又往前冲',
-                    what: '你的骨盆后侧肌肉群（背阔肌、腰方肌、竖脊肌等）紧绷的同时，骨盆不只是左高右低——左边还明显更靠前。整个骨盆像沿着一条对角线"拧"出去了：左边被拎起来的同时，还被拉到了前面去。这种偏移是斜着的，不只是横向歪，所以体态上容易"看着别扭但说不准哪里不对"。',
+                    what: '你的后侧肌群高张力，同时骨盆的偏移不是单纯的左高右低，而是沿对角线"拧"出去：左边既被拎高，又被拉到前方。这种斜向偏移叠加了两个维度——高度差 + 前后差——是六种分型中骨盆位置偏离最明显的一种。正因为是斜的，从任何单一角度看都会觉得"哪里不对但说不清楚"，只有多角度综合才能识别。左边整体扛着过大的代偿任务（既高又前），右边则处于全面"缺席"状态（既低又后），两侧之间的功能差距比单纯左高右低还要大得多。',
                     front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是向左偏，而像左半边身体整体更往前、更往上。骨盆两边看起来不在一个平面上。',
                     back: '左臀峰更高，左侧腰背更紧，左侧臀上缘更高、更方。右边更低、更扁、更薄。和单纯左高右低不同的是：这里左边不只是高，还明显更靠前。',
                     side: '整个人前顶，胸廓前飘，下肋打开，腰背在顶。换个角度看左右两侧，会发现左边那一侧明显更"前"——这是骨盆斜向偏移最典型的标志。',
                     feel: '左边特别会顶、会挂、会提——左边的腰、髋前、臀上缘、外髋很容易累。右边经常是"没感觉""接不住""发不上力"。做单腿动作时右边更容易塌，做双腿动作时身体又会跑回左前侧去稳定。',
                     avoid: ['避免只想着把左边压下来——左边不只是高，还往前冲，两个维度都要处理', '避免大量对称深蹲——会加重左前偏移', '避免太早追求力量进阶——先让骨盆位置回来'],
-                    direction: '先通过呼吸释放后侧肌肉紧绷 → 斜向偏移需同时处理两个维度：要减少左边"高"和"前"两个方向的代偿，不能只压高度；要建立：右侧推进与重心接管能力 → 最后整合双侧胸廓与骨盆的重新堆叠。'
+                    direction: '第①步 释放后侧：呼吸建立后背扩张，腰背不再作为主要稳定者。<br>第②步 斜向修正（同时处理两个维度）：要减少左边"高"和"前"两个方向的代偿，只处理高度不够；要建立右侧推进能力与重心接管能力，让右边真正接住体重。<br>第③步 整合堆叠：重新建立胸廓与骨盆的垂直堆叠关系，骨盆不再被斜向锁定，步态恢复两侧对称承重。'
                 },
                 anterior_baseline: {
                     typeName: '骨盆前侧肌肉紧张 · 基础左右不对称', typeTag: '前侧紧张',
                     oneLiner: '髋前和大腿前侧肌肉太紧，一直拽着骨盆往前走',
-                    what: '你的骨盆前侧肌肉群（髂腰肌、股直肌、腹直肌、内收肌群等）张力偏高——不是后面推你，而是前面拽你。这些肌肉太会抢活，身体越来越靠前面来维持稳定。如果"后侧紧张"是后面推着你往前，那"前侧紧张"就是前面拽着你往前。骨盆底层还是左侧稍微靠前、右侧略偏高的基础不对称。虽然看起来都是往前偏，但处理方向完全不同。',
+                    what: '你的骨盆前侧肌群——髂腰肌、股直肌、阔筋膜张肌、内收肌群——张力偏高，从前方持续将骨盆牵拉向前。注意：与后侧紧张看起来都是"骨盆往前倾"，但机制完全相反。后侧紧张是"后面推你往前"；前侧紧张是"前面拽你往前"——两者处理方向南辕北辙，混淆会让干预完全失效。前侧肌群持续主导，身体越来越依赖它们稳定，真正应该工作的臀大肌和腘绳肌反而被持续抑制——肌肉不是不能用，而是已经被"关掉了"。底层仍存在基础不对称：左侧骨盆轻微靠前、右侧略偏高。',
                     front: '左边可能仍略前、略外，右边相对略高。但整体不是那种"很顶、很撑"的感觉，更像前面一直收着、拉着。后侧紧张的人给人感觉是"后背撑着、整个人顶着"；前侧紧张更像"前面那几条线一直没松开"。',
                     back: '后背没有那种特别紧绷、臀部像被顶出来的感觉。后侧更多表现为不够挂、不够饱满——臀部不一定假翘，反而更容易不够饱满、不够挂。',
                     side: '大腿前侧和髋前比较紧，小腹像是一直在"收着"。臀部不是被顶出来的，反而更像后面接不住、挂不出来。',
                     feel: '大腿前侧紧、髋前紧、小腹总是绷着，后面的臀部和腰方反而使不上劲。最大的体感区别：你不是后背撑着累，而是前面一直绷着累。',
                     avoid: ['避免反复拉伸髂腰肌——它已经在过度工作了，硬拉只会更紧', '避免大量做卷腹、仰卧起坐等加重前侧收紧的动作', '避免孤立激活臀部而不先解决前侧拉力——前侧不松开，臀肌根本发不上力，顺序错了效果相反'],
-                    direction: '先让前侧肌肉群（髂腰肌、股直肌等）不再一直拽着 → 再逐步唤醒后侧肌肉（特别是臀大肌、腘绳肌）→ 最后微调左前右后的不对称。'
+                    direction: '第①步 松开前侧拉力：呼气延长 + 前侧肋骨回落，让髂腰肌/股直肌不再持续缩短，目标是腹股沟和髋前能真正放松下来。<br>第②步 唤醒后侧：前侧松开后，用有控制的臀伸类动作重建臀大肌和腘绳肌的参与感，让后侧"接管"骨盆稳定。<br>第③步 整合左右：后侧能发力后，再针对左前右后的基础不对称做微调，整合步态中的均匀承重。'
                 },
                 anterior_lateral: {
                     typeName: '骨盆前侧肌肉紧张 · 左高右低', typeTag: '前侧紧张 + 左高右低',
                     oneLiner: '髋前和大腿前侧肌肉紧，同时骨盆左边高、右边低',
-                    what: '和"后侧紧张+左高右低"的区别在于：后侧紧张是后面推你，前侧紧张是前面拉你。同样都有骨盆左边高、右边低的倾斜，但身体维持稳定的方式完全不同。这种情况看起来不是"很顶、很撑、往前冲"，而是"被前面拉住、被吊住、被拽着走"。',
+                    what: '与"后侧紧张+左高右低"的本质区别：后侧是后面推你，前侧是前面拉你——外观相似，机制相反，处理完全不同。同样是骨盆左高右低，这里的"高"不是被腰方肌从后侧托起的，而是左侧髂腰肌/阔筋膜张肌持续收缩、将左骨盆往前上方拉扯所致。整个人不是"顶着撑着往前冲"，而是"被前面吊住、被牵引着走"——这是区分两类体态的关键观察视角，也是为什么用同样动作但处理方向不对，不但没有效果反而会加重的原因。',
                     front: '左肩略高、左侧骨盆更高、左侧腰线更短、右侧腰线更长。但不是那种"左边高又很顶"的感觉，更像左边一直被提着，前面还在拉着。你从正面看会觉得：不是她自己在用后背顶住，而是前面有根绳子在把她往前吊——歪着，同时被前面吊着。',
                     back: '左臀峰更高，但没有后侧紧张那种后背硬撑的味道。后侧整体偏薄、偏挂不住，不够饱满。',
                     side: '髋前和腹前比较紧，但后背不像后侧紧张那样绷着。整个人更像被前侧肌肉群（髂腰肌、股直肌等）牵引着走，而不是被后背推着走。',
                     feel: '左侧髋前和腹前容易紧，右边感觉空、接不住。不是后背累，而是前面一直收着的那种疲劳感，同时左右还有明显的不对称体感。',
                     avoid: ['避免只处理左右高低差而忽略前侧的持续拉扯', '避免大量做前侧收紧的训练（如卷腹）', '避免忽视右侧的承重恢复——右边需要重新接住体重'],
-                    direction: '先释放前侧肌肉群（髂腰肌、股直肌等）的持续牵拉 → 要减少：左侧继续抢活、前侧持续拉扯；要建立：右侧活动空间、右侧承重与装载能力 → 优先做右腿单侧承重类动作，同步唤醒后侧臀肌参与。'
+                    direction: '第①步 松开前侧拉力：呼气延长，释放髂腰肌/股直肌的持续收缩，让髋前和腹股沟能真正放松。<br>第②步 横向偏移修正：要减少左侧前侧肌群继续抢活、骨盆持续被拽向左前；要建立右侧承重空间——优先做右腿单侧承重动作，唤醒右侧臀肌，让右边重新接住体重。<br>第③步 整合步态：前侧松开 + 右侧能承重后，整合两侧交替承重的步态模式，消除代偿性的左侧优势。'
                 },
                 anterior_oblique: {
                     typeName: '骨盆前侧肌肉紧张 · 左边又高又靠前', typeTag: '前侧紧张 + 斜向偏移',
                     oneLiner: '髋前肌肉紧张拉着骨盆，同时左边又高又往前冲',
-                    what: '这是最复杂的一种情况——三件事叠在一起：骨盆左边高、左边靠前、前侧肌肉一直在拉。骨盆不只是左高右低，左边还明显更往前冲；同时不是后面推你，而是前面的髂腰肌、股直肌等一直在拽。一句话说清楚：左边又高又前，身体还被前侧肌肉群吊着走。',
+                    what: '这是六种分型中最复杂的一种——三件事同时叠加：骨盆左边高、左边靠前、前侧肌群一直在拉。骨盆不只是左高右低，左边还明显更往前冲；而这一切不是后侧推出来的，是前侧髂腰肌/股直肌/阔筋膜张肌拽出来的。用一句话概括：左边又高又前，右边又低又后，身体还被前侧肌群持续"吊"着走。这种情况的复杂之处在于：三个问题相互锁定，随便只处理其中一个，其他两个会继续把它拉回来——必须按正确顺序、同时处理才有效。',
                     front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是偏左，而是左边整半边更在"前上方"的位置。',
                     back: '左臀峰更高、左侧臀上缘更高更方，右侧臀峰更低，右边更薄、更掉。后背没有那种硬撑的味道，更多是"左边高又前，右边低又后"。',
                     side: '不是"后背顶出来的前倾"，而更像前面那些肌肉一直在拉。髋前和腹前很紧，臀后侧和臀下缘更挂不出来。左半边从侧面看会明显更前。',
                     feel: '左髋前、左腹股沟、左前侧特别紧，左边更容易累。右边更难真正承重，一做动作身体又回到左前方去挂住。关键感觉不是"后面顶"，而是"左前挂，右后掉"。',
                     avoid: ['避免太早修臀型——顺序错了会让左边更高更前、假胯宽更明显', '避免大量对称训练——你的不对称需要针对性处理', '避免只想着把左边压下来——还要同时处理前冲和高度两个维度'],
-                    direction: '先让前侧肌肉群（髂腰肌、股直肌等）别一直拽着 → 斜向偏移要同时处理两个维度：要减少左边"高"和"前"两个方向的代偿；要建立：右侧推进与接管能力 → 前侧松开后才能让臀肌真正发力，最后整合步态与双侧平衡。'
+                    direction: '第①步 松开前侧拉力：呼气延长，前侧肋骨回落，让髂腰肌/股直肌先放开骨盆。这一步不做，后面全白费。<br>第②步 斜向修正（必须同时处理两个维度）：要减少左边"高"和"前"两个方向同时在抢活；要建立右侧推进 + 接管能力——前侧松开后才能真正激活臀肌，顺序不能反。<br>第③步 整合双侧平衡：右侧能承重后，整合步态与双侧交替平衡，左边不再是身体唯一的稳定依靠。'
                 }
             };
 
@@ -4386,6 +4447,35 @@
                 <p class="text-[13px] text-slate-600 leading-relaxed">${report.feel}</p>
             </div>`;
 
+            const bodyFeatures = buildBodyFeatureInference(comboKey, metrics);
+            const bodyFeatureHtml = reportSafetyBlocked || bodyFeatures.length === 0 ? '' : (() => {
+                const sideLabel = { left: '左侧', right: '右侧', both: '双侧', null: '' };
+                const probConfig = {
+                    likely:   { text: '高度吻合',   bg: 'bg-violet-50',  border: 'border-violet-200', tag: 'bg-violet-100 text-violet-700', dot: 'bg-violet-500' },
+                    possible: { text: '可能存在',   bg: 'bg-slate-50',   border: 'border-slate-200',  tag: 'bg-slate-100 text-slate-500',   dot: 'bg-slate-300'  }
+                };
+                const cards = bodyFeatures.map(f => {
+                    const cfg = probConfig[f.prob];
+                    const sideTag = f.side ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 ml-1">${sideLabel[f.side]}</span>` : '';
+                    return `
+                    <div class="rounded-xl border ${cfg.border} ${cfg.bg} p-3.5">
+                        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span class="w-2 h-2 rounded-full ${cfg.dot} shrink-0"></span>
+                            <span class="text-[12px] font-bold text-slate-800">${f.name}</span>
+                            ${sideTag}
+                            <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${cfg.tag}">${cfg.text}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed pl-4">${f.why}</p>
+                    </div>`;
+                }).join('');
+                return `
+                <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.15em]">外观体态特征推断</div>
+                    <p class="text-[10px] text-slate-400 mb-3 leading-relaxed">以下特征由测试数据推断，仅供参考，实际情况以评估师观察为准。</p>
+                    <div class="flex flex-col gap-2.5">${cards}</div>
+                </div>`;
+            })();
+
             const inferredProblems = buildProblemInference(comboKey, symptomCheck.answers);
             const problemHtml = reportSafetyBlocked ? '' : (() => {
                 const items = inferredProblems.map(p => `
@@ -4419,11 +4509,21 @@
                 </div>
             </div>`;
 
-            const directionHtml = reportSafetyBlocked ? '' : `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">推荐处理方向</div>
-                <p class="text-[13px] text-slate-700 leading-relaxed font-medium">${report.direction}</p>
-            </div>`;
+            const directionHtml = reportSafetyBlocked ? '' : (() => {
+                const steps = report.direction.split('<br>');
+                const stepColors = ['bg-slate-100 text-slate-600', 'bg-blue-50 text-blue-700', 'bg-violet-50 text-violet-700'];
+                const stepDots = ['bg-slate-400', 'bg-blue-500', 'bg-violet-500'];
+                const stepsHtml = steps.map((s, i) => `
+                    <div class="flex items-start gap-3">
+                        <span class="mt-0.5 w-5 h-5 rounded-full ${stepDots[i] || 'bg-slate-400'} text-white text-[10px] font-black flex items-center justify-center shrink-0">${i + 1}</span>
+                        <p class="text-[12px] text-slate-700 leading-relaxed flex-1">${s.replace(/^第[①②③]步\s*/, '<span class="font-bold text-slate-800">$&</span>')}</p>
+                    </div>`).join('');
+                return `
+                <div class="rounded-[2rem] p-5 border border-violet-100 bg-gradient-to-br from-violet-50/60 to-slate-50 shadow-sm mb-4">
+                    <div class="text-[10px] font-bold text-violet-500 mb-3 uppercase tracking-[0.15em]">改善路径 · 三阶段</div>
+                    <div class="flex flex-col gap-3">${stepsHtml}</div>
+                </div>`;
+            })();
 
             const safetyHtml = reportSafetyBlocked ? `
             <div class="bg-rose-50 rounded-[2rem] p-5 border border-rose-200 shadow-sm mb-4">
@@ -4432,7 +4532,7 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
+            container.innerHTML = `${typeHtml}${dataHtml}${pelvisHtml}${postureHtml}${feelHtml}${bodyFeatureHtml}${problemHtml}${safetyHtml}${avoidHtml}${directionHtml}`;
             container.classList.remove('hidden');
             const _ck = comboKey, _pa = PELVIS_ANIM;
             requestAnimationFrame(() => initPelvisScene(_ck, _pa));
