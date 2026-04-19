@@ -56,133 +56,6 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-      }
-    }
-    </script>
-    <script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-    window._pelvisRender = function(canvas, comboKey, pelvisAnimMap) {
-        if (canvas._pelvisActive) return;
-        canvas._pelvisActive = true;
-
-        const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: -0.14, rz: 0.05 };
-        const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
-        const H = 200;
-
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-        renderer.setSize(W, H);
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-        renderer.setClearColor(0x0d1117, 1);
-        renderer.shadowMap.enabled = true;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
-
-        const scene = new THREE.Scene();
-
-        const pmrem = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        pmrem.dispose();
-
-        const camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 100);
-        camera.position.set(0, 0.3, 3.0);
-        camera.lookAt(0, 0, 0);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-        const dLight = new THREE.DirectionalLight(0xffffff, 2.5);
-        dLight.position.set(3, 5, 3);
-        dLight.castShadow = true;
-        scene.add(dLight);
-        const fill = new THREE.DirectionalLight(0xffffff, 0.8);
-        fill.position.set(-3, 2, -2);
-        scene.add(fill);
-
-        const grid = new THREE.GridHelper(3, 12, 0x334455, 0x1a2233);
-        grid.position.y = -1.0;
-        scene.add(grid);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.minDistance = 0.5;
-        controls.maxDistance = 8;
-        controls.target.set(0, 0, 0);
-
-        function easeOutBack(t) {
-            const c1 = 1.70158, c3 = c1 + 1;
-            return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-        }
-
-        function startAnim(group) {
-            const t0 = performance.now(), dur = 1400;
-            const { rx: tRx, ry: tRy, rz: tRz } = cfg;
-            (function animate() {
-                requestAnimationFrame(animate);
-                const p = easeOutBack(Math.min((performance.now() - t0) / dur, 1));
-                group.rotation.set(tRx * p, tRy * p, tRz * p);
-                controls.update();
-                renderer.render(scene, camera);
-            })();
-        }
-
-        function hideLoading() {
-            const el = document.getElementById('pelvis-loading');
-            if (el) el.style.display = 'none';
-        }
-
-        // pelvis.glb uses Draco compression — DRACOLoader required
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
-
-        const loader = new GLTFLoader();
-        loader.setDRACOLoader(dracoLoader);
-
-        loader.load(
-            'pelvis.glb',
-            (gltf) => {
-                console.log('[Pelvis] \u2705 pelvis.glb loaded (Draco)');
-                hideLoading();
-                const model = gltf.scene;
-                let n = 0;
-                model.traverse(child => {
-                    if (!child.isMesh) return;
-                    n++;
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                });
-                console.log('[Pelvis] meshes:', n);
-                const box = new THREE.Box3().setFromObject(model);
-                if (!box.isEmpty()) {
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    console.log('[Pelvis] maxDim:', maxDim.toFixed(3));
-                    model.position.sub(center);
-                    model.scale.setScalar(1.8 / (maxDim || 1));
-                }
-                const group = new THREE.Group();
-                group.add(model);
-                scene.add(group);
-                startAnim(group);
-            },
-            (xhr) => { if (xhr.total) console.log('[Pelvis]', (xhr.loaded / xhr.total * 100 | 0) + '%'); },
-            (err) => {
-                console.error('[Pelvis] \u274c', err);
-                hideLoading();
-                (function loop() { requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
-            }
-        );
-    };
-    </script>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
@@ -210,7 +83,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.22</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.23</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2780,25 +2653,108 @@
 
         function initPelvisScene(comboKey, pelvisAnimMap) {
             const canvas = document.getElementById('pelvis-canvas');
-            if (!canvas) return;
-            if (typeof window._pelvisRender === 'function') {
-                window._pelvisRender(canvas, comboKey, pelvisAnimMap);
-            } else {
-                // 模块尚未加载，最多重试 8 次
-                let tries = 0;
-                const wait = setInterval(() => {
-                    tries++;
-                    if (typeof window._pelvisRender === 'function') {
-                        clearInterval(wait);
-                        window._pelvisRender(canvas, comboKey, pelvisAnimMap);
-                    } else if (tries >= 8) {
-                        clearInterval(wait);
-                        console.warn('[Pelvis] _pelvisRender not available after retries');
-                        const el = document.getElementById('pelvis-loading');
-                        if (el) el.innerHTML = '<span style="color:#666;font-size:10px">模型加载失败</span>';
-                    }
-                }, 400);
+            if (!canvas || canvas._pelvisActive) return;
+            canvas._pelvisActive = true;
+
+            const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: -0.14, rz: 0.05 };
+            const isAnterior  = comboKey && comboKey.startsWith('anterior');
+            const isPosterior = comboKey && comboKey.startsWith('posterior');
+            const isLateral   = comboKey && (comboKey.endsWith('lateral'));
+            const isOblique   = comboKey && (comboKey.endsWith('oblique'));
+            const labels = [];
+            if (isAnterior)  labels.push('骨盆前倾');
+            if (isPosterior) labels.push('骨盆后倾');
+            if (isLateral)   labels.push('左高右低');
+            if (isOblique)   labels.push('斜向偏移');
+
+            const TOTAL = 32;
+            const FPS   = 6;
+            const imgs  = new Array(TOTAL).fill(null);
+            let current = 0, loadedCount = 0, animStarted = false;
+
+            const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
+            const H = 200;
+            canvas.width  = W;
+            canvas.height = H;
+            canvas.style.cursor = 'grab';
+            if (canvas.parentElement) canvas.parentElement.style.background = '#f0f0f0';
+
+            const ctx = canvas.getContext('2d');
+
+            function hideLoading() {
+                const el = document.getElementById('pelvis-loading');
+                if (el) el.style.display = 'none';
             }
+
+            function drawFrame(idx) {
+                const img = imgs[idx];
+                if (!img) return;
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fillRect(0, 0, W, H);
+                const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+                const dw = img.naturalWidth * scale;
+                const dh = img.naturalHeight * scale;
+                ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+                if (labels.length > 0) {
+                    const text = labels.join(' · ');
+                    ctx.save();
+                    ctx.font = 'bold 11px -apple-system, sans-serif';
+                    const tw = ctx.measureText(text).width;
+                    ctx.fillStyle = 'rgba(30,30,40,0.62)';
+                    ctx.beginPath();
+                    ctx.roundRect(8, H - 30, tw + 18, 22, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(text, 17, H - 14);
+                    ctx.restore();
+                }
+            }
+
+            function startAnim() {
+                if (animStarted) return;
+                animStarted = true;
+                let lastT = 0;
+                const interval = 1000 / FPS;
+                (function loop(t) {
+                    requestAnimationFrame(loop);
+                    if (t - lastT >= interval) {
+                        lastT = t;
+                        current = (current + 1) % TOTAL;
+                        if (imgs[current]) drawFrame(current);
+                    }
+                })(0);
+            }
+
+            for (let i = 0; i < TOTAL; i++) {
+                const img = new Image();
+                const idx = i;
+                img.onload = function() {
+                    imgs[idx] = img;
+                    loadedCount++;
+                    if (loadedCount === 1 && idx === 0) { hideLoading(); drawFrame(0); }
+                    if (loadedCount >= 4) startAnim();
+                };
+                img.onerror = function() { loadedCount++; if (loadedCount >= 4) startAnim(); };
+                img.src = 'glb_clean/frames/frame_' + String(i + 1).padStart(4, '0') + '.png';
+            }
+
+            // 拖拽旋转
+            let drag = false, dragX = 0, dragF = 0;
+            canvas.addEventListener('mousedown',  (e) => { drag = true;  dragX = e.clientX; dragF = current; });
+            canvas.addEventListener('mousemove',  (e) => {
+                if (!drag) return;
+                current = (((dragF + Math.round((e.clientX - dragX) / 7)) % TOTAL) + TOTAL) % TOTAL;
+                if (imgs[current]) drawFrame(current);
+            });
+            canvas.addEventListener('mouseup',    () => { drag = false; });
+            canvas.addEventListener('mouseleave', () => { drag = false; });
+            canvas.addEventListener('touchstart', (e) => { drag = true;  dragX = e.touches[0].clientX; dragF = current; }, { passive: true });
+            canvas.addEventListener('touchmove',  (e) => {
+                if (!drag) return; e.preventDefault();
+                current = (((dragF + Math.round((e.touches[0].clientX - dragX) / 7)) % TOTAL) + TOTAL) % TOTAL;
+                if (imgs[current]) drawFrame(current);
+            }, { passive: false });
+            canvas.addEventListener('touchend', () => { drag = false; });
         }
 
         function hasAnyRedFlag(symptomCheck) {
