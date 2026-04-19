@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelvis &amp; Gender Anatomy — 3D Video Viewer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+  #info {
+    position: fixed; top: 20px; left: 20px; color: #fff;
+    font-size: 13px; line-height: 1.7; z-index: 10;
+    background: rgba(0,0,0,0.6); padding: 14px 18px; border-radius: 10px;
+    max-width: 320px;
+  }
+  #info h2 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #5bd4c8; }
+  #info .badge {
+    display: inline-block; background: #5bd4c8; color: #000;
+    font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  canvas { display: block; }
+  #controls {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 50px;
+    backdrop-filter: blur(10px); z-index: 10;
+  }
+  #controls button {
+    background: #5bd4c8; border: none; color: #000;
+    width: 36px; height: 36px; border-radius: 50%;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s;
+  }
+  #controls button:hover { transform: scale(1.1); }
+  #controls button:active { transform: scale(0.95); }
+  #timeline {
+    width: 240px; height: 4px; -webkit-appearance: none;
+    background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer;
+  }
+  #timeline::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    background: #5bd4c8; border-radius: 50%; cursor: pointer;
+  }
+  #frame-display {
+    color: #5bd4c8; font-size: 12px; font-weight: 600; min-width: 50px; text-align: center;
+  }
+  #loading {
+    position: fixed; inset: 0; background: #0a0a0a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100; color: #fff; gap: 16px;
+  }
+  #loading.hidden { display: none; }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid rgba(91,212,200,0.2);
+    border-top-color: #5bd4c8; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #progress-bar { width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  #progress-fill { height: 100%; background: #5bd4c8; width: 0%; transition: width 0.1s; border-radius: 2px; }
+  #status { font-size: 13px; color: rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="status">正在加载帧...</div>
+</div>
+
+<div id="info">
+  <h2>Pelvis &amp; Gender Anatomy</h2>
+  <div class="badge">GLB · 3D Video</div>
+  <div>拖拽旋转 · 滚轮缩放</div>
+  <div style="margin-top:4px;color:rgba(255,255,255,0.5)">共 <span id="total-frames">32</span> 帧 · 2fps</div>
+</div>
+
+<div id="controls">
+  <button onclick="prevFrame()" title="上一帧">&#9664;</button>
+  <button onclick="togglePlay()" id="playBtn" title="播放/暂停">&#9654;</button>
+  <button onclick="nextFrame()" title="下一帧">&#9654;</button>
+  <input type="range" id="timeline" min="0" max="31" value="0" step="1">
+  <span id="frame-display">1/32</span>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── 全局状态 ───────────────────────────────────────────────
+let scene, camera, renderer, mesh, material;
+let textures = [];
+let currentFrame = 0;
+let isPlaying = false;
+let lastTime = 0;
+const FPS = 2; // 原始视频 16s/32帧 ≈ 2fps
+const TOTAL_FRAMES = 32;
+
+document.getElementById('total-frames').textContent = TOTAL_FRAMES;
+
+// ── Three.js 场景 ──────────────────────────────────────────
+function initScene() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0a0a);
+
+  // 相机
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 3.5);
+
+  // 渲染器
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // 轨道控制
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 1;
+  controls.maxDistance = 10;
+
+  // 网格 (3x3 用于测试，显示网格)
+  const gridHelper = new THREE.GridHelper(6, 6, 0x222222, 0x1a1a1a);
+  gridHelper.position.y = -1.2;
+  scene.add(gridHelper);
+
+  // 平面网格
+  const geometry = new THREE.PlaneGeometry(2.88, 1.62); // 16:9 比例
+
+  // 初始空白纹理
+  const initTexture = new THREE.Texture();
+  initTexture.image = document.createElement('canvas');
+  initTexture.image.width = 512;
+  initTexture.image.height = 288;
+
+  material = new THREE.MeshBasicMaterial({
+    map: initTexture,
+    side: THREE.DoubleSide
+  });
+
+  mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(0, 0, 0);
+  scene.add(mesh);
+
+  // 边框
+  const edges = new THREE.EdgesGeometry(geometry);
+  const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x5bd4c8, transparent: true, opacity: 0.4 }));
+  mesh.add(line);
+
+  // 灯光 (辅助)
+  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambient);
+
+  // 窗口大小
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+// ── 加载所有帧 ─────────────────────────────────────────────
+async function loadFrames() {
+  const promises = [];
+  for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    const padded = String(i).padStart(4, '0');
+    const url = `./frames/frame_${padded}.png`;
+    promises.push(new Promise((resolve) => {
+      const loader = new THREE.TextureLoader();
+      loader.load(url, (tex) => {
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        textures.push(tex);
+        resolve();
+      }, undefined, () => {
+        // fallback: 创建空白纹理
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 288;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, 512, 288);
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Frame ${i}`, 256, 144);
+        const tex = new THREE.CanvasTexture(canvas);
+        textures.push(tex);
+        resolve();
+      });
+    }));
+  }
+
+  // 逐个加载，显示进度
+  for (let i = 0; i < promises.length; i++) {
+    await promises[i];
+    const pct = Math.round(((i + 1) / TOTAL_FRAMES) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('status').textContent = `加载帧 ${i + 1}/${TOTAL_FRAMES}`;
+  }
+
+  // 显示第一帧
+  if (textures.length > 0) {
+    material.map = textures[0];
+    material.needsUpdate = true;
+  }
+
+  document.getElementById('loading').classList.add('hidden');
+}
+
+// ── 帧控制 ─────────────────────────────────────────────────
+function setFrame(idx) {
+  currentFrame = Math.max(0, Math.min(TOTAL_FRAMES - 1, idx));
+  if (textures[currentFrame]) {
+    material.map = textures[currentFrame];
+    material.needsUpdate = true;
+  }
+  document.getElementById('timeline').value = currentFrame;
+  document.getElementById('frame-display').textContent = `${currentFrame + 1}/${TOTAL_FRAMES}`;
+}
+
+function nextFrame() { setFrame(currentFrame + 1); }
+function prevFrame() { setFrame(currentFrame - 1); }
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('playBtn').innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9654;';
+}
+
+// 时间轴拖动
+document.getElementById('timeline').addEventListener('input', (e) => {
+  setFrame(parseInt(e.target.value));
+  isPlaying = false;
+  document.getElementById('playBtn').innerHTML = '&#9654;';
+});
+
+// 键盘快捷键
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowLeft') prevFrame();
+  if (e.code === 'ArrowRight') nextFrame();
+});
+
+// ── 动画循环 ───────────────────────────────────────────────
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  if (isPlaying) {
+    const elapsed = (time - lastTime) / 1000;
+    if (elapsed >= 1 / FPS) {
+      setFrame((currentFrame + 1) % TOTAL_FRAMES);
+      lastTime = time;
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+// ── 启动 ───────────────────────────────────────────────────
+initScene();
+loadFrames().then(() => animate(0));
+</script>
+</body>
+</html>
