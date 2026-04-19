@@ -56,6 +56,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
@@ -83,7 +84,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.16</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.17</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2652,156 +2653,16 @@
         }
 
         function initPelvisScene(comboKey, pelvisAnimMap) {
-            if (typeof THREE === 'undefined') return;
-            const canvas = document.getElementById('pelvis-canvas');
-            if (!canvas) return;
-            if (_pelvisRenderer) { _pelvisRenderer.dispose(); _pelvisRenderer = null; }
-
-            const cfg = (pelvisAnimMap||{})[comboKey] || { rx:0.28, ry:-0.14, rz:0.05, color:'#8e8e93' };
-            const W = canvas.parentElement.clientWidth || 340, H = 200;
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-            renderer.setSize(W, H); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-            renderer.shadowMap.enabled = true;
-            renderer.setClearColor(0x0d1117, 1);
-            _pelvisRenderer = renderer;
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(38, W/H, 0.1, 20);
-            // 相机位置优化
-            camera.position.set(0, 0.3, 2.0);
-            camera.lookAt(0, -0.1, 0);
-
-            // 增强灯光以确保模型可见
-            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-            const dLight = new THREE.DirectionalLight(0xffffff, 1.5);
-            dLight.position.set(2, 3, 2); dLight.castShadow = true;
-            scene.add(dLight);
-            const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            fillLight.position.set(-2, 1, -1);
-            scene.add(fillLight);
-            const backLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            backLight.position.set(0, 2, -3);
-            scene.add(backLight);
-
-            const gridHelper = new THREE.GridHelper(2, 10, 0x334455, 0x222d38);
-            gridHelper.position.y = -0.6;
-            scene.add(gridHelper);
-
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.dampingFactor = 0.08;
-            controls.minDistance = 1.2; controls.maxDistance = 7;
-            controls.target.set(0, 0, 0);
-
-            function easeOutBack(t) { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
-            let rafId;
-
-            function startAnim(pelvisGroup) {
-                const t0 = performance.now(), dur = 1400;
-                const { rx: tRx, ry: tRy, rz: tRz } = cfg;
-                function animate() {
-                    rafId = requestAnimationFrame(animate);
-                    const el = performance.now() - t0;
-                    const p = easeOutBack(Math.min(el / dur, 1));
-                    pelvisGroup.rotation.set(tRx*p, tRy*p, tRz*p);
-                    controls.update();
-                    renderer.render(scene, camera);
-                }
-                animate();
-            }
-
-            // 材质（仅作为fallback）
-            const boneMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e2d5c5'), roughness: 0.60, metalness: 0.0 });
-
-            function hideLoading() {
-                const loading = document.getElementById('pelvis-loading');
-                if (loading) loading.style.display = 'none';
-            }
-
-            function applyGLBModel(gltf) {
-                console.log('[Pelvis] GLB loaded successfully');
-                hideLoading();
-                const model = gltf.scene;
-                
-                // 统计信息
-                let meshCount = 0;
-                model.traverse(child => {
-                    if (child.isMesh) {
-                        meshCount++;
-                        console.log('[Pelvis] Mesh found:', child.name, 'visible:', child.visible, 'material:', child.material ? child.material.type : 'none');
-                        // 确保材质正确
-                        if (!child.material) {
-                            child.material = boneMat;
-                        }
-                        // 确保 castShadow/receiveShadow
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        // 强制可见
-                        child.visible = true;
-                    }
-                });
-                console.log('[Pelvis] Total meshes:', meshCount);
-                
-                // 计算包围盒并居中缩放
-                const box = new THREE.Box3().setFromObject(model);
-                console.log('[Pelvis] Bounding box empty?', box.isEmpty());
-                
-                if (!box.isEmpty()) {
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    console.log('[Pelvis] Model size:', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2), 'maxDim:', maxDim.toFixed(2));
-                    console.log('[Pelvis] Center:', center.x.toFixed(2), center.y.toFixed(2), center.z.toFixed(2));
-                    
-                    // 居中
-                    model.position.sub(center);
-                    
-                    // 缩放至适合视野（目标高度约 1.5 单位）
-                    let scale = 1.5 / (maxDim || 1);
-                    // 如果模型很小，可能需要放大更多
-                    if (maxDim < 0.1) scale = 15;
-                    else if (maxDim < 1) scale = 3;
-                    
-                    model.scale.setScalar(scale);
-                    console.log('[Pelvis] Applied scale:', scale.toFixed(3));
-                }
-                
-                const group = new THREE.Group();
-                group.add(model);
-                scene.add(group);
-                
-                // 添加 wireframe 辅助线帮助调试
-                const wireGeo = new THREE.WireframeGeometry(new THREE.Box3().setFromObject(model));
-                const wireMat = new THREE.LineBasicMaterial({ color: 0x5bd4c8, transparent: true, opacity: 0.3 });
-                const wireframe = new THREE.LineSegments(wireGeo, wireMat);
-                group.add(wireframe);
-                
-                startAnim(group);
-            }
-
-            console.log('[Pelvis] Loading GLB from: glb_clean/pelvis_anatomy_clean.glb');
-            if (typeof THREE.GLTFLoader !== 'undefined') {
-                new THREE.GLTFLoader().load(
-                    'glb_clean/pelvis_anatomy_clean.glb',
-                    applyGLBModel,
-                    (xhr) => { console.log('[Pelvis] Loading progress:', (xhr.loaded / xhr.total * 100).toFixed(0) + '%'); },
-                    (err) => { 
-                        console.error('[Pelvis] GLB load failed:', err); 
-                        console.warn('[Pelvis] Using fallback mesh');
-                        hideLoading();
-                        const fb = buildPelvisMesh(cfg.color); 
-                        scene.add(fb); 
-                        startAnim(fb); 
-                    }
-                );
-            } else {
-                console.warn('[Pelvis] GLTFLoader not available, using fallback');
-                hideLoading();
-                const fb = buildPelvisMesh(cfg.color);
-                scene.add(fb);
-                startAnim(fb);
-            }
-
-            canvas._pelvisCleanup = () => { cancelAnimationFrame(rafId); if(_pelvisRenderer){_pelvisRenderer.dispose();_pelvisRenderer=null;} };
+            const mv = document.getElementById('pelvis-canvas');
+            if (!mv || mv.tagName !== 'MODEL-VIEWER') return;
+            const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: 0, rz: 0 };
+            const R = 180 / Math.PI;
+            const rxDeg = (cfg.rx * R).toFixed(1);
+            const ryDeg = (cfg.ry * R).toFixed(1);
+            const rzDeg = (cfg.rz * R).toFixed(1);
+            // model-viewer orientation: pitch yaw roll (XYZ deg)
+            mv.setAttribute('orientation', `${rxDeg}deg ${ryDeg}deg ${rzDeg}deg`);
+            console.log('[Pelvis] model-viewer orientation set:', rxDeg, ryDeg, rzDeg);
         }
 
         function hasAnyRedFlag(symptomCheck) {
@@ -4465,14 +4326,19 @@
                     <span class="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
                 </div>
                 <div class="mb-3 px-3.5 py-2.5 rounded-xl text-[11px] leading-relaxed" style="color:${stageC};background:${stageC}12;border:1px solid ${stageC}30">${STAGE_TIP[trainingStage]}</div>
-                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;position:relative;">
-                    <canvas id="pelvis-canvas" style="width:100%;height:200px;display:block;border-radius:1rem;"></canvas>
-                    <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;">
-                        <span style="display:flex;align-items:center;gap:8px;">
-                            <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
-                            加载3D模型...
-                        </span>
-                    </div>
+                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;overflow:hidden;">
+                    <model-viewer
+                        id="pelvis-canvas"
+                        src="glb_clean/pelvis_anatomy_clean.glb"
+                        camera-controls
+                        shadow-intensity="0.8"
+                        exposure="1.1"
+                        camera-orbit="-20deg 75deg 2.5m"
+                        min-camera-orbit="auto auto 1.2m"
+                        max-camera-orbit="auto auto 5m"
+                        style="width:100%;height:200px;background:#0d1117;border-radius:1rem;--progress-bar-color:#5bd4c8;">
+                        <div slot="progress-bar" style="height:3px;background:#5bd4c8;"></div>
+                    </model-viewer>
                 </div>
                 <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-2">${report.oneLiner}</h3>
                 <p class="text-[12px] text-slate-500 leading-relaxed">${report.what.split('。')[0]}。</p>
