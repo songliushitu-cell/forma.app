@@ -50,7 +50,7 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { appearance: textfield; -moz-appearance: textfield; }
-        .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 200px; overflow: hidden; border-radius: 1rem; }
+        .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 200px; overflow: visible; border-radius: 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -83,7 +83,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.23</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.24</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2679,6 +2679,19 @@
             canvas.style.cursor = 'grab';
             if (canvas.parentElement) canvas.parentElement.style.background = '#f0f0f0';
 
+            // CSS 3D 倾斜变换：当第一帧加载完成后触发落定动画
+            const R2D = 180 / Math.PI;
+            const tRx = +(cfg.rx * R2D).toFixed(1);
+            const tRy = +(cfg.ry * R2D).toFixed(1);
+            const tRz = +(cfg.rz * R2D).toFixed(1);
+            const targetTransform = `perspective(500px) rotateX(${tRx}deg) rotateY(${tRy}deg) rotateZ(${tRz}deg)`;
+            canvas.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
+            canvas.style.transformOrigin = 'center center';
+            function applyTilt() {
+                canvas.style.transition = 'transform 1.8s cubic-bezier(0.34,1.56,0.64,1)';
+                canvas.style.transform = targetTransform;
+            }
+
             const ctx = canvas.getContext('2d');
 
             function hideLoading() {
@@ -2731,30 +2744,40 @@
                 img.onload = function() {
                     imgs[idx] = img;
                     loadedCount++;
-                    if (loadedCount === 1 && idx === 0) { hideLoading(); drawFrame(0); }
+                    if (loadedCount === 1 && idx === 0) {
+                        hideLoading();
+                        drawFrame(0);
+                        setTimeout(applyTilt, 300);
+                    }
                     if (loadedCount >= 4) startAnim();
                 };
                 img.onerror = function() { loadedCount++; if (loadedCount >= 4) startAnim(); };
                 img.src = 'glb_clean/frames/frame_' + String(i + 1).padStart(4, '0') + '.png';
             }
 
-            // 拖拽旋转
+            // 拖拽旋转（拖拽时暂停 transition 避免弹回）
             let drag = false, dragX = 0, dragF = 0;
-            canvas.addEventListener('mousedown',  (e) => { drag = true;  dragX = e.clientX; dragF = current; });
+            canvas.addEventListener('mousedown',  (e) => {
+                drag = true; dragX = e.clientX; dragF = current;
+                canvas.style.transition = 'none';
+            });
             canvas.addEventListener('mousemove',  (e) => {
                 if (!drag) return;
                 current = (((dragF + Math.round((e.clientX - dragX) / 7)) % TOTAL) + TOTAL) % TOTAL;
                 if (imgs[current]) drawFrame(current);
             });
-            canvas.addEventListener('mouseup',    () => { drag = false; });
-            canvas.addEventListener('mouseleave', () => { drag = false; });
-            canvas.addEventListener('touchstart', (e) => { drag = true;  dragX = e.touches[0].clientX; dragF = current; }, { passive: true });
+            canvas.addEventListener('mouseup',    () => { drag = false; canvas.style.transition = ''; });
+            canvas.addEventListener('mouseleave', () => { drag = false; canvas.style.transition = ''; });
+            canvas.addEventListener('touchstart', (e) => {
+                drag = true; dragX = e.touches[0].clientX; dragF = current;
+                canvas.style.transition = 'none';
+            }, { passive: true });
             canvas.addEventListener('touchmove',  (e) => {
                 if (!drag) return; e.preventDefault();
                 current = (((dragF + Math.round((e.touches[0].clientX - dragX) / 7)) % TOTAL) + TOTAL) % TOTAL;
                 if (imgs[current]) drawFrame(current);
             }, { passive: false });
-            canvas.addEventListener('touchend', () => { drag = false; });
+            canvas.addEventListener('touchend', () => { drag = false; canvas.style.transition = ''; });
         }
 
         function hasAnyRedFlag(symptomCheck) {
