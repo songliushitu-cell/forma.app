@@ -83,7 +83,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.24</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.25</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2670,7 +2670,7 @@
             const TOTAL = 32;
             const FPS   = 6;
             const imgs  = new Array(TOTAL).fill(null);
-            let current = 0, loadedCount = 0, animStarted = false;
+            let current = 0, loadedCount = 0;
 
             const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
             const H = 200;
@@ -2723,21 +2723,6 @@
                 }
             }
 
-            function startAnim() {
-                if (animStarted) return;
-                animStarted = true;
-                let lastT = 0;
-                const interval = 1000 / FPS;
-                (function loop(t) {
-                    requestAnimationFrame(loop);
-                    if (t - lastT >= interval) {
-                        lastT = t;
-                        current = (current + 1) % TOTAL;
-                        if (imgs[current]) drawFrame(current);
-                    }
-                })(0);
-            }
-
             for (let i = 0; i < TOTAL; i++) {
                 const img = new Image();
                 const idx = i;
@@ -2749,9 +2734,8 @@
                         drawFrame(0);
                         setTimeout(applyTilt, 300);
                     }
-                    if (loadedCount >= 4) startAnim();
                 };
-                img.onerror = function() { loadedCount++; if (loadedCount >= 4) startAnim(); };
+                img.onerror = function() { loadedCount++; };
                 img.src = 'glb_clean/frames/frame_' + String(i + 1).padStart(4, '0') + '.png';
             }
 
