@@ -325,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.2</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -632,49 +632,38 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#dbeafe] shadow-sm">
-                    <div class="bg-gradient-to-r from-[#f8fbff] to-white px-5 py-4 flex items-start gap-3 border-b border-[#e5e5ea]">
-                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-[#0a84ff]/10 border border-[#0a84ff]/15 flex items-center justify-center mt-0.5">
-                            <svg class="w-5 h-5 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-slate-200 shadow-sm bg-white">
+                    <!-- 摘要行（始终可见，点击展开/收起） -->
+                    <button id="btn-toggle-vp-detail" class="w-full px-5 py-3.5 flex items-center gap-3 text-left hover:bg-slate-50/50 transition-colors">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
-                        <div class="min-w-0">
-                            <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.22em] mb-0.5 uppercase">不想自己折腾？</div>
-                            <div id="vp-title" class="text-[16px] font-black text-slate-900 leading-snug tracking-wide">直接拿走你的训练方案</div>
-                            <div id="vp-tagline" class="text-[10px] text-slate-500 mt-1 leading-relaxed">加载中...</div>
+                        <div class="min-w-0 flex-1">
+                            <div id="vp-title" class="text-[13px] font-bold text-slate-800 leading-snug">根据你的评估结果，推荐以下训练内容</div>
+                            <div id="vp-tagline" class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">加载中...</div>
                         </div>
-                    </div>
-                    <div class="bg-white px-5 py-4 flex flex-col gap-3.5">
-                        <div>
-                            <div class="text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-3">
-                                报告帮你看清了问题所在。如果不想自己花时间找动作、排顺序、判断做得对不对——这套方案已经帮你全部安排好了。
+                        <svg id="vp-chevron" class="w-4 h-4 text-slate-300 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- 展开详情（默认隐藏） -->
+                    <div id="vp-detail" class="hidden border-t border-slate-100">
+                        <div class="px-5 py-4 flex flex-col gap-3">
+                            <div>
+                                <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">方案包含内容</div>
+                                <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
                             </div>
-                            <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">帮你省掉这些事</div>
-                            <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
-                        </div>
-                        <div class="h-px bg-[#f0f0f5]"></div>
-                        <div class="flex flex-col gap-3">
-                            <div class="flex items-start gap-2 bg-[#f8fbff] rounded-lg border border-[#dbeafe] px-3 py-2">
-                                <span class="text-[#0a84ff] font-black mt-0.5 shrink-0">i</span>
-                                <span class="text-[10px] text-slate-600 leading-tight">动作选好了、顺序排好了、注意事项写好了——直接跟着做就行，不用自己东查西看。</span>
+                            <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                动作已选好、顺序已排好、注意事项已写好——跟着做就行。
                             </div>
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.18em] bg-[#0a84ff]/8 border border-[#0a84ff]/10 rounded px-1.5 py-0.5 inline-block">省心方案</div>
-                                    <div class="mt-1 flex items-baseline gap-1.5">
-                                        <span class="text-[11px] text-slate-400 line-through font-bold">原价 ¥599</span>
-                                        <span class="text-2xl font-black text-slate-900">¥299</span>
-                                    </div>
-                                </div>
-                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#0a84ff] hover:bg-[#0062cc] active:scale-95 text-white rounded-xl px-4 py-3 text-[11px] font-black tracking-widest shadow-[0_4px_14px_rgba(10,132,255,0.28)] transition-all flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                    了解省心方案
+                            <div class="flex items-center justify-between gap-3 pt-1">
+                                <span class="text-[13px] font-bold text-slate-700">¥299</span>
+                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-sm transition-all">
+                                    查看详情
                                 </button>
                             </div>
+                            <p class="text-[9px] text-slate-400 leading-relaxed text-center">
+                                付款后添加微信 <b class="text-slate-600">songjiaotou999</b> 发送截图，确认后发送专属方案
+                            </p>
                         </div>
-                        <p class="text-[9px] text-slate-500 leading-relaxed text-center mt-1 bg-slate-50 p-2 rounded-lg">
-                            付款后添加宋教头微信 <b class="text-slate-800 underline decoration-slate-300 underline-offset-2">songjiaotou999</b>，发送付款截图即可。<br>
-                            <span class="text-slate-400">(确认后直接发送你的专属训练方案)</span>
-                        </p>
                     </div>
                 </div>
 
@@ -756,60 +745,51 @@
         </div>
     </div>
 
-    <!-- 视频方案付费 Modal -->
+    <!-- 视频方案确认 Modal -->
     <div id="video-plan-modal" class="fixed inset-0 z-[109] bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
-        <div class="bg-[#f5f5f7] w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50">
+        <div class="bg-white w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50">
             <!-- 头部 -->
-            <div class="px-5 pt-5 pb-4 bg-gradient-to-r from-[#f8fbff] to-white flex justify-between items-start border-b border-[#e5e5ea]">
+            <div class="px-5 pt-5 pb-4 flex justify-between items-start border-b border-slate-100">
                 <div class="min-w-0">
-                    <div class="text-[9px] font-bold text-[#0a84ff] tracking-[0.22em] mb-1 uppercase">不想自己折腾？</div>
-                    <h2 id="vpm-title" class="text-[16px] font-black text-slate-900 leading-snug">方案加载中</h2>
-                    <p id="vpm-tagline" class="text-[10px] text-slate-500 mt-1 leading-relaxed"></p>
+                    <h2 id="vpm-title" class="text-[15px] font-bold text-slate-900 leading-snug">训练方案详情</h2>
+                    <p id="vpm-tagline" class="text-[10px] text-slate-400 mt-1 leading-relaxed"></p>
                 </div>
-                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-white border border-[#e5e5ea] flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
+                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <!-- 内容 -->
-            <div class="p-5 flex flex-col gap-4">
-                <!-- 包含视频 -->
-                <div class="rounded-2xl border border-[#e5e5ea] bg-white px-4 py-3.5">
-                    <div class="text-[10px] font-bold text-slate-400 tracking-[0.18em] mb-2">帮你省掉这些事</div>
+            <div class="p-5 flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
+                <!-- 包含内容 -->
+                <div>
+                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] mb-2 uppercase">方案包含内容</div>
                     <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
                 </div>
-                <!-- 价格 -->
-                <div class="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3.5 flex flex-col gap-1">
-                    <div class="flex items-center justify-between mb-1 gap-2">
-                        <span class="text-[11px] font-black text-[#0a84ff] tracking-wider flex items-center gap-1"><svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg> 省心方案价格</span>
-                        <div class="text-right">
-                            <span class="text-[9px] font-black text-white bg-[#0a84ff] rounded-lg px-2 py-0.5 tracking-widest shadow-sm inline-block">本轮截止</span>
-                            <div id="vpm-offer-countdown" class="mt-1 text-[11px] font-black text-[#0a84ff] tracking-wide">00:00:00</div>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline gap-2.5">
-                        <span class="text-3xl font-[900] text-slate-900 tracking-tight">¥299</span>
-                        <span class="text-[12px] text-slate-400 line-through font-medium">参考价 ¥599</span>
-                    </div>
-                    <div id="vpm-offer-deadline" class="mt-1 text-[10px] text-slate-600 leading-relaxed">本轮服务截止至 --</div>
+                <!-- 说明 -->
+                <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                    动作已选好、顺序已排好、注意事项已写好——跟着做就行，相当于一次线下训练指导。
                 </div>
                 <!-- 二维码 -->
-                <div class="flex flex-col items-center gap-3">
-                    <div class="text-[10px] font-bold text-slate-500 tracking-[0.18em]">扫码付款</div>
-                    <div class="w-44 h-44 bg-white border border-slate-200 p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
+                <div class="flex flex-col items-center gap-3 pt-1">
+                    <div class="w-40 h-40 bg-white border border-slate-200 p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
                         <img src="IMG_1456.jpeg" alt="付款二维码" class="w-full h-full object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                         <div class="absolute inset-0 flex-col items-center justify-center bg-slate-50 text-slate-400 hidden p-2 text-center flex">
                             <svg class="w-8 h-8 mb-2 opacity-50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             <span class="text-[10px] leading-tight">未找到二维码</span>
                         </div>
                     </div>
-                    <div class="text-[10px] text-slate-500 text-center leading-relaxed px-2">
-                        扫码支付后，添加微信 <span class="font-black text-slate-800 mx-0.5 border-b-2 border-[#bfdbfe]">songjiaotou999</span>，发送付款截图即可。确认后直接发送你的专属训练方案。
-                        <!-- 留白用于补充 -->
-                        <div class="h-1"></div>
+                    <div class="text-center">
+                        <span class="text-[13px] font-bold text-slate-800">¥299</span>
+                        <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                            扫码付款后添加微信 <span class="font-bold text-slate-600">songjiaotou999</span><br>发送截图，确认后发送专属方案
+                        </p>
                     </div>
                 </div>
-                <button id="btn-close-video-plan-bottom" class="w-full py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-slate-700 rounded-xl font-bold shadow-sm transition-transform active:scale-[0.98] text-[11px] tracking-widest">
-                    我已了解，关闭
+            </div>
+            <!-- 底部 -->
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100">
+                <button id="btn-close-video-plan-bottom" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors text-[11px] tracking-wider">
+                    关闭
                 </button>
             </div>
         </div>
@@ -1112,8 +1092,6 @@
         const btnVerifyUnlockCode = document.getElementById('btn-verify-unlock-code');
         const btnSaveReport = document.getElementById('btn-save-report');
         const btnViewSavedReports = document.getElementById('btn-view-saved-reports');
-        const videoPlanOfferCountdown = document.getElementById('vpm-offer-countdown');
-        const videoPlanOfferDeadline = document.getElementById('vpm-offer-deadline');
         // Start Over
         const btnStartOver = document.getElementById('btn-start-over');
 
@@ -1144,8 +1122,6 @@
         let activeDemoKey = null;
         let demoPlaybackToken = 0;
         let pendingFinalReportGeneration = false;
-        let videoPlanOfferDeadlineAt = null;
-        let videoPlanOfferTimerId = null;
         let aiEngineState = {
             status: 'idle',
             error: '',
@@ -1206,9 +1182,6 @@
         const USAGE_GATE_CONFIG = {
             freeQuota: 3
         };
-        const VIDEO_PLAN_OFFER_CONFIG = {
-            durationHours: 6
-        };
         const DEMO_ANIMATION_CONFIG = {
             videos: {
                 slr: {
@@ -1257,56 +1230,6 @@
             });
         }
 
-        function formatOfferCountdownParts(totalMs) {
-            const clamped = Math.max(0, totalMs);
-            const totalSeconds = Math.floor(clamped / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            return {
-                hours: String(hours).padStart(2, '0'),
-                minutes: String(minutes).padStart(2, '0'),
-                seconds: String(seconds).padStart(2, '0')
-            };
-        }
-
-        function getNextOfferDeadline(now = new Date()) {
-            const deadline = new Date(now);
-            deadline.setMinutes(0, 0, 0);
-            deadline.setHours(deadline.getHours() + VIDEO_PLAN_OFFER_CONFIG.durationHours);
-            return deadline;
-        }
-
-        function stopVideoPlanOfferCountdown() {
-            if (videoPlanOfferTimerId) {
-                window.clearInterval(videoPlanOfferTimerId);
-                videoPlanOfferTimerId = null;
-            }
-        }
-
-        function renderVideoPlanOfferCountdown() {
-            if (!videoPlanOfferCountdown || !videoPlanOfferDeadline) return;
-            if (!videoPlanOfferDeadlineAt) {
-                videoPlanOfferDeadlineAt = getNextOfferDeadline();
-            }
-
-            let remainingMs = videoPlanOfferDeadlineAt.getTime() - Date.now();
-            if (remainingMs <= 0) {
-                videoPlanOfferDeadlineAt = getNextOfferDeadline(new Date(Date.now() + 1000));
-                remainingMs = videoPlanOfferDeadlineAt.getTime() - Date.now();
-            }
-
-            const parts = formatOfferCountdownParts(remainingMs);
-            videoPlanOfferCountdown.textContent = `${parts.hours}:${parts.minutes}:${parts.seconds}`;
-            videoPlanOfferDeadline.textContent = `本轮优惠截止至 ${formatReportDateTime(videoPlanOfferDeadlineAt)}，过时将恢复原价。`;
-        }
-
-        function startVideoPlanOfferCountdown() {
-            stopVideoPlanOfferCountdown();
-            videoPlanOfferDeadlineAt = getNextOfferDeadline();
-            renderVideoPlanOfferCountdown();
-            videoPlanOfferTimerId = window.setInterval(renderVideoPlanOfferCountdown, 1000);
-        }
 
         function getDefaultUsageGateState() {
             return {
@@ -4830,8 +4753,6 @@
 
             document.getElementById('vpm-title').textContent = plan.title;
             document.getElementById('vpm-tagline').textContent = plan.tagline;
-            startVideoPlanOfferCountdown();
-
             const list = document.getElementById('vpm-video-list');
             list.innerHTML = plan.videos.map((v, i) => `
                 <li class="flex items-start gap-2.5">
@@ -4848,18 +4769,23 @@
 
         function closeVideoPlanModal(isFromBottomBtn = false) {
             document.getElementById('video-plan-modal').classList.add('hidden');
-            stopVideoPlanOfferCountdown();
             if (isFromBottomBtn) {
                 const btnGet = document.getElementById('btn-get-video-plan');
                 if (btnGet) {
-                    btnGet.classList.remove('bg-[#0a84ff]', 'hover:bg-[#0062cc]', 'shadow-[0_4px_14px_rgba(10,132,255,0.4)]', 'animate-pulse');
-                    btnGet.classList.add('bg-emerald-500', 'hover:bg-emerald-600', 'shadow-[0_4px_14px_rgba(16,185,129,0.4)]');
-                    btnGet.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>已扫码？等待发送...`;
+                    btnGet.classList.remove('bg-slate-800', 'hover:bg-slate-700');
+                    btnGet.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    btnGet.textContent = '已了解，等待发送';
                 }
             }
         }
 
         // 事件绑定
+        document.getElementById('btn-toggle-vp-detail').addEventListener('click', () => {
+            const detail = document.getElementById('vp-detail');
+            const chevron = document.getElementById('vp-chevron');
+            detail.classList.toggle('hidden');
+            chevron.style.transform = detail.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        });
         document.getElementById('btn-get-video-plan').addEventListener('click', openVideoPlanModal);
         document.getElementById('btn-close-video-plan').addEventListener('click', () => closeVideoPlanModal(false));
         document.getElementById('btn-close-video-plan-bottom').addEventListener('click', () => closeVideoPlanModal(true));
