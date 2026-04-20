@@ -1,11 +1,20 @@
 {
   "name": "forma-basic",
-  "version": "1.0.0",
+  "version": "1.7.0",
   "private": true,
   "scripts": {
     "license:server": "node server/license-server.js",
     "license:create": "node scripts/generate_unlock_code.js",
     "worker:dev": "npx wrangler dev /Users/songxuan/Desktop/jichuban/worker/license-worker.js --config /Users/songxuan/Desktop/jichuban/worker/wrangler.toml",
     "worker:deploy": "npx wrangler deploy --config /Users/songxuan/Desktop/jichuban/worker/wrangler.toml"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.3.0",
+    "@gltf-transform/extensions": "^4.3.0",
+    "@gltf-transform/functions": "^4.3.0",
+    "draco3d": "^1.5.7"
+  },
+  "dependencies": {
+    "meshoptimizer": "^1.1.1"
   }
 }

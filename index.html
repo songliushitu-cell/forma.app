@@ -53,105 +53,249 @@
         .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 220px; overflow: hidden; border-radius: 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script type="importmap">
     { "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "./three_local/three.module.js",
+        "three/addons/": "./three_local/addons/"
     } }
     </script>
     <script type="module">
     import * as THREE from 'three';
-    import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
-    import { DRACOLoader }   from 'three/addons/loaders/DRACOLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    function buildPelvisMesh(color) {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
+        const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
+        function addMesh(geo, m, x, y, z, rx, ry, rz) {
+            const mesh = new THREE.Mesh(geo, m);
+            mesh.position.set(x||0, y||0, z||0);
+            if (rx) mesh.rotation.x = rx;
+            if (ry) mesh.rotation.y = ry;
+            if (rz) mesh.rotation.z = rz;
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            group.add(mesh); return mesh;
+        }
+        // 骶骨
+        addMesh(new THREE.CylinderGeometry(0.18, 0.28, 0.55, 5, 1), mat, 0, 0, -0.38, Math.PI*0.08);
+        // 髂翼
+        function makeWing(side) {
+            const pts = [];
+            for (let i=0; i<=10; i++) {
+                const t=i/10;
+                pts.push(new THREE.Vector3(side*(0.25+t*0.52), 0.12-t*0.05+Math.sin(t*Math.PI)*0.1, -0.12+t*0.22-Math.sin(t*Math.PI)*0.28));
+            }
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const shape = new THREE.Shape();
+            shape.moveTo(-0.01,0); shape.bezierCurveTo(-0.01,0.18,0.01,0.22,0,0.26); shape.bezierCurveTo(-0.01,0.22,0.01,0.18,0,0);
+            return new THREE.ExtrudeGeometry(shape, { steps:14, extrudePath:curve, bevelEnabled:false });
+        }
+        addMesh(makeWing(1), mat, 0,0,0);
+        addMesh(makeWing(-1), mat, 0,0,0);
+        // 髂嵴管
+        function makeCrest(side) {
+            const pts = [new THREE.Vector3(side*0.25,0.22,-0.12),new THREE.Vector3(side*0.50,0.26,-0.05),new THREE.Vector3(side*0.72,0.20,0.12),new THREE.Vector3(side*0.65,0.10,0.28),new THREE.Vector3(side*0.42,0.06,0.38)];
+            return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.038, 7, false);
+        }
+        addMesh(makeCrest(1), mat, 0,0,0);
+        addMesh(makeCrest(-1), mat, 0,0,0);
+        // 坐骨结节
+        const isGeo = new THREE.SphereGeometry(0.11,10,8); isGeo.scale(1,0.7,1.1);
+        addMesh(isGeo, mat, 0.48,-0.18,0.35);
+        const isGeo2 = new THREE.SphereGeometry(0.11,10,8); isGeo2.scale(1,0.7,1.1);
+        addMesh(isGeo2, mat, -0.48,-0.18,0.35);
+        // 耻骨联合
+        addMesh(new THREE.BoxGeometry(0.30,0.14,0.12), mat, 0,-0.05,0.44);
+        // 耻骨支弧
+        function makePubRamus(side) {
+            const pts=[new THREE.Vector3(side*0.12,-0.04,0.44),new THREE.Vector3(side*0.28,0.00,0.42),new THREE.Vector3(side*0.42,0.04,0.38)];
+            return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,0.045,6,false);
+        }
+        addMesh(makePubRamus(1), mat, 0,0,0);
+        addMesh(makePubRamus(-1), mat, 0,0,0);
+        // L/R 标记球
+        const mkGeo = new THREE.SphereGeometry(0.045,8,6);
+        addMesh(mkGeo, markerMat,  0.78,0.22,0.0);
+        addMesh(new THREE.SphereGeometry(0.045,8,6), markerMat, -0.78,0.22,0.0);
+        return group;
+    }
+
+    function buildPelvisFallbackMesh(color) {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
+        const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
+
+        const sacrum = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.6, 10, 1), mat);
+        sacrum.position.set(0, 0, -0.25);
+        sacrum.rotation.x = Math.PI * 0.1;
+        group.add(sacrum);
+
+        const iliumL = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), mat);
+        iliumL.scale.set(1.2, 0.8, 0.5);
+        iliumL.position.set(-0.48, 0.05, -0.05);
+        group.add(iliumL);
+
+        const iliumR = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), mat);
+        iliumR.scale.set(1.2, 0.8, 0.5);
+        iliumR.position.set(0.48, 0.05, -0.05);
+        group.add(iliumR);
+
+        const pubis = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.16, 0.12), mat);
+        pubis.position.set(0, -0.08, 0.38);
+        group.add(pubis);
+
+        const markerL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMat);
+        markerL.position.set(-0.8, 0.22, 0.0);
+        group.add(markerL);
+
+        const markerR = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMat);
+        markerR.position.set(0.8, 0.22, 0.0);
+        group.add(markerR);
+
+        group.traverse((m) => {
+            if (m.isMesh) {
+                m.castShadow = true;
+                m.receiveShadow = true;
+            }
+        });
+
+        return group;
+    }
+
+    function drawPelvis2DFallback(canvas, cfg) {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const w = canvas.width || 340;
+        const h = canvas.height || 220;
+        const c = cfg?.color || '#8e8e93';
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#0d1117';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = h / 2 + 6;
+        const tilt = (cfg?.rz || 0) * 35;
+        const pitch = (cfg?.rx || 0.28) * 26;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((tilt * Math.PI) / 180);
+
+        ctx.strokeStyle = '#e8ddd0';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.ellipse(-56, -8 - pitch * 0.4, 54, 36, 0.25, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(56, 8 + pitch * 0.4, 54, 36, -0.25, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-32, 20);
+        ctx.quadraticCurveTo(0, 36, 32, 20);
+        ctx.stroke();
+
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(-86, -12, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(86, 12, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function cleanupPelvisRuntime() {
+        if (!window._pelvisRuntime) return;
+        const rt = window._pelvisRuntime;
+        if (rt.rafId) cancelAnimationFrame(rt.rafId);
+        if (rt.controls) {
+            try { rt.controls.dispose(); } catch(e) {}
+        }
+        if (rt.renderer) {
+            try { rt.renderer.dispose(); } catch(e) {}
+            try { rt.renderer.forceContextLoss(); } catch(e) {}
+        }
+        window._pelvisRuntime = null;
+        window._activePelvisRenderer = null;
+    }
 
     window._pelvisRender = function(canvas, comboKey, pelvisAnimMap) {
-        if (canvas._pelvisActive) return;
-        canvas._pelvisActive = true;
-
-        const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: -0.14, rz: 0.05 };
-        const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
-        const H = 220;
-
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-        renderer.setSize(W, H);
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-        renderer.setClearColor(0x0d1117, 1);
-        renderer.shadowMap.enabled = true;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
-
-        const scene = new THREE.Scene();
-        const pmrem = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        pmrem.dispose();
-
-        const camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 100);
-        camera.position.set(0, 0.3, 3.2);
-
-        scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-        const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-        sun.position.set(3, 5, 3); sun.castShadow = true; scene.add(sun);
-        scene.add(Object.assign(new THREE.DirectionalLight(0xffffff, 0.8), { position: new THREE.Vector3(-3, 2, -2) }));
-
-        const grid = new THREE.GridHelper(3, 12, 0x334455, 0x1a2233);
-        grid.position.y = -1.0; scene.add(grid);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; controls.dampingFactor = 0.08;
-        controls.minDistance = 0.5;   controls.maxDistance = 8;
-
-        function render() { controls.update(); renderer.render(scene, camera); }
-        controls.addEventListener('change', render);
-
-        function hideLoading() {
+        const hideLoading = () => {
             const el = document.getElementById('pelvis-loading');
             if (el) el.style.display = 'none';
+        };
+        try {
+            cleanupPelvisRuntime();
+
+            const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: -0.14, rz: 0.05, color: '#8e8e93' };
+            const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
+            const H = 220;
+            canvas.width = W;
+            canvas.height = H;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+            renderer.setSize(W, H);
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+            renderer.setClearColor(0x0d1117, 1);
+            renderer.shadowMap.enabled = true;
+            window._activePelvisRenderer = renderer;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 100);
+            camera.position.set(0, 0.3, 3.2);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            const key = new THREE.DirectionalLight(0xffffff, 2.5);
+            key.position.set(3, 5, 3); key.castShadow = true; scene.add(key);
+            scene.add(Object.assign(new THREE.DirectionalLight(0xa0c8ff, 0.8), { position: new THREE.Vector3(-3, 2, -2) }));
+
+            const grid = new THREE.GridHelper(3, 12, 0x334455, 0x1a2233);
+            grid.position.y = -1.0; scene.add(grid);
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; controls.dampingFactor = 0.08;
+            controls.minDistance = 0.5; controls.maxDistance = 8;
+
+            const render = () => { controls.update(); renderer.render(scene, camera); };
+            controls.addEventListener('change', render);
+
+            // Build procedural pelvis immediately — zero loading time
+            let group;
+            try {
+                group = buildPelvisMesh(cfg.color || '#8e8e93');
+            } catch (meshErr) {
+                console.error('[Pelvis] primary mesh build failed, using fallback mesh', meshErr);
+                group = buildPelvisFallbackMesh(cfg.color || '#8e8e93');
+            }
+            scene.add(group);
+            hideLoading();
+            render();
+
+            // Smooth easeOut entrance animation
+            const t0 = performance.now(), dur = 1400;
+            const { rx: tRx, ry: tRy, rz: tRz } = cfg;
+            const easeOut = (t) => { const c = 1.70158, c3 = c + 1; return 1 + c3 * Math.pow(t-1,3) + c * Math.pow(t-1,2); };
+            (function animLoop() {
+                const rafId = requestAnimationFrame(animLoop);
+                if (!window._pelvisRuntime) return;
+                window._pelvisRuntime.rafId = rafId;
+                const p = easeOut(Math.min((performance.now() - t0) / dur, 1));
+                group.rotation.set(tRx * p, tRy * p, tRz * p);
+                render();
+            })();
+
+            window._pelvisRuntime = { renderer, controls, rafId: null };
+        } catch (e) {
+            hideLoading();
+            console.error('[Pelvis] error', e);
+            try {
+                cleanupPelvisRuntime();
+                drawPelvis2DFallback(canvas, (pelvisAnimMap || {})[comboKey] || { rx: 0.28, rz: 0.05, color: '#8e8e93' });
+            } catch (fallbackErr) {
+                console.error('[Pelvis] 2D fallback error', fallbackErr);
+            }
         }
-
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
-        const loader = new GLTFLoader();
-        loader.setDRACOLoader(dracoLoader);
-
-        loader.load('pelvis.glb',
-            (gltf) => {
-                console.log('[Pelvis] ✅ loaded');
-                hideLoading();
-                const model = gltf.scene;
-                model.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size   = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                model.position.sub(center);
-                model.scale.setScalar(1.8 / (maxDim || 1));
-
-                const group = new THREE.Group();
-                group.add(model);
-                scene.add(group);
-
-                // 平滑应用评估角度（easeOutBack 1.4s）
-                const t0 = performance.now(), dur = 1400;
-                const { rx: tRx, ry: tRy, rz: tRz } = cfg;
-                function c1() { return 1.70158; }
-                function easeOut(t) { const c = c1(), c3 = c + 1; return 1 + c3 * Math.pow(t-1,3) + c * Math.pow(t-1,2); }
-                (function animLoop() {
-                    requestAnimationFrame(animLoop);
-                    const p = easeOut(Math.min((performance.now() - t0) / dur, 1));
-                    group.rotation.set(tRx * p, tRy * p, tRz * p);
-                    render();
-                })();
-            },
-            null,
-            (err) => { console.error('[Pelvis] ❌', err); hideLoading(); render(); }
-        );
-
-        render();
     };
     </script>
 </head>
@@ -181,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.6.26</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.1</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -332,18 +476,21 @@
                         <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         启动实时捕捉
                     </button>
-                    <!-- 三分块次要操作：包含手动录入 -->
-                    <div class="flex gap-2 text-center items-center justify-center">
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 高清抓拍
+                    <!-- 四分块次要操作 -->
+                    <div class="flex gap-1.5 text-center items-center justify-center">
+                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 高清抓拍
                             <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden">
                         </label>
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册分析
+                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册分析
                             <input type="file" accept="image/*" id="albumInput" class="hidden">
                         </label>
-                        <button id="btn-manual-input" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2.5 sm:py-3 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 sm:gap-1.5 tracking-wider active:scale-[0.98]">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 手动录入
+                        <button id="btn-manual-input" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider active:scale-[0.98]">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 手动录入
+                        </button>
+                        <button id="btn-protractor" onclick="openProtractor()" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider active:scale-[0.98]">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20h16M12 20V4m0 0L6 10m6-6l6 6"></path><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg> 量角器
                         </button>
                     </div>
                 </div>
@@ -1253,7 +1400,7 @@
         }
 
         function canGenerateReport() {
-            return true; // 临时通过，隐藏充值拦截: isLicenseActive() || getRemainingFreeReports() > 0;
+            return true; // 次数功能已隐藏
         }
 
         function getPlanLabel(plan) {
@@ -1574,9 +1721,9 @@
                 hipR,
                 shL,
                 shR,
-                slrFinal: testRecords.slr.final,
-                hipFinal: testRecords.hip.final,
-                shoulderFinal: testRecords.shoulder.final,
+                slrFinal: testRecords.slr.final ?? (slrL !== null && slrR !== null ? normalizeAngleValue(Math.min(slrL, slrR)) : null),
+                hipFinal: testRecords.hip.final ?? (hipL !== null && hipR !== null ? normalizeAngleValue(Math.min(hipL, hipR)) : null),
+                shoulderFinal: testRecords.shoulder.final ?? (shL !== null && shR !== null ? normalizeAngleValue(Math.min(shL, shR)) : null),
                 diffHip,
                 diffSLR,
                 diffSh,
@@ -1686,10 +1833,10 @@
                 return { key: 'leftHigh', confidenceKey: rotationResult.evidenceHits === 3 ? 'high' : 'medium' };
             }
 
-            // 左右差明显（>=10°）但方向不够集中
-            const hasLargeDiff = Math.abs(metrics.diffHip) >= metrics.threshold || Math.abs(metrics.diffSLR) >= metrics.threshold || Math.abs(metrics.diffSh) >= metrics.threshold;
-            if (hasLargeDiff && rotationResult.key === 'unclear') {
-                return { key: 'uneven', confidenceKey: 'low' };
+            // 左右差明显（>=10°）但方向不够集中：需 ≥2 项才判定为横向偏移，单项差值证据不足
+            const largeDiffCount = [Math.abs(metrics.diffHip), Math.abs(metrics.diffSLR), Math.abs(metrics.diffSh)].filter(d => d >= metrics.threshold).length;
+            if (largeDiffCount >= 2 && rotationResult.key === 'unclear') {
+                return { key: 'uneven', confidenceKey: largeDiffCount === 3 ? 'medium' : 'low' };
             }
 
             return { key: 'unclear', confidenceKey: 'low' };
@@ -1732,27 +1879,6 @@
             };
         }
 
-        function buildRetestPriorityItems(metrics, compressionResult, rotationResult) {
-            const pushRetestItem = (items, label) => {
-                if (!items.includes(label)) items.push(label);
-            };
-            const retestPriorityItems = [];
-            if (Math.abs(metrics.diffSLR) >= metrics.nearThreshold && Math.abs(metrics.diffSLR) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
-            if (Math.abs(metrics.diffHip) >= metrics.nearThreshold && Math.abs(metrics.diffHip) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            if (Math.abs(metrics.diffSh) >= metrics.nearThreshold && Math.abs(metrics.diffSh) <= metrics.threshold) pushRetestItem(retestPriorityItems, '主动肩屈');
-            if (Math.abs(metrics.slrFinal - 50) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动直腿抬高');
-            if (Math.abs(metrics.hipFinal - 100) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            if (Math.abs(metrics.shoulderFinal - 100) <= metrics.nearThreshold) pushRetestItem(retestPriorityItems, '主动肩屈');
-            if (compressionResult.key === 'mixed') {
-                pushRetestItem(retestPriorityItems, '主动直腿抬高');
-                pushRetestItem(retestPriorityItems, '主动髋屈曲');
-            }
-            if (rotationResult.key === 'unclear') {
-                pushRetestItem(retestPriorityItems, '主动髋屈曲');
-                pushRetestItem(retestPriorityItems, '主动肩屈');
-            }
-            return retestPriorityItems;
-        }
 
         function buildAssessmentGateFromMeasurements() {
             const metrics = buildAssessmentMetrics();
@@ -2212,49 +2338,6 @@
             };
         }
 
-        function buildMeasurementQualitySummary(params) {
-            const { diffHip, diffSLR, diffSh, nearThreshold, threshold, retestPriorityItems } = params;
-            const sideIntegrityItems = [];
-            const manualAdjustedItems = [];
-            const thresholdItems = [];
-            const diffItems = [
-                { label: '主动直腿抬高左右差', value: diffSLR },
-                { label: '主动髋屈曲左右差', value: diffHip },
-                { label: '主动肩屈左右差', value: diffSh }
-            ];
-
-            ['slr', 'hip', 'shoulder'].forEach(type => {
-                ['L', 'R'].forEach(side => {
-                    const record = measurementRecords[type][side];
-                    if (record.sideIntegrity === 'fallback' || record.usedFallback) {
-                        sideIntegrityItems.push(`${getSideLabel(side)}${getTestLabel(type)}`);
-                    }
-                    if (record.manualAdjusted) {
-                        manualAdjustedItems.push(`${getSideLabel(side)}${getTestLabel(type)}`);
-                    }
-                });
-            });
-
-            diffItems.forEach(item => {
-                if (Math.abs(item.value) >= nearThreshold && Math.abs(item.value) <= threshold) {
-                    thresholdItems.push(`${item.label}接近阈值`);
-                }
-            });
-            if (Math.abs(testRecords.slr.final - 50) <= nearThreshold) thresholdItems.push('主动直腿抬高短板值接近 50°');
-            if (Math.abs(testRecords.hip.final - 100) <= nearThreshold) thresholdItems.push('主动髋屈曲短板值接近 100°');
-            if (Math.abs(testRecords.shoulder.final - 100) <= nearThreshold) thresholdItems.push('主动肩屈短板值接近 100°');
-
-            return {
-                sideIntegrity: sideIntegrityItems.length ? 'needs_recapture' : 'stable',
-                manualAdjusted: manualAdjustedItems.length > 0,
-                thresholdCloseness: thresholdItems.length > 0,
-                recaptureNeeded: sideIntegrityItems.length > 0 || thresholdItems.length > 0,
-                sideIntegrityItems,
-                manualAdjustedItems,
-                thresholdItems,
-                retestPriorityItems: [...retestPriorityItems]
-            };
-        }
 
         function getSelectedTestType() {
             return document.querySelector('input[name="testType"]:checked').value;
@@ -2688,65 +2771,6 @@
             }
 
             return results;
-        }
-
-        let _pelvisRenderer = null;
-
-        function buildPelvisMesh(color) {
-            const group = new THREE.Group();
-            const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
-            const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
-            function addMesh(geo, m, x, y, z, rx, ry, rz) {
-                const mesh = new THREE.Mesh(geo, m);
-                mesh.position.set(x||0, y||0, z||0);
-                if (rx) mesh.rotation.x = rx;
-                if (ry) mesh.rotation.y = ry;
-                if (rz) mesh.rotation.z = rz;
-                mesh.castShadow = true; mesh.receiveShadow = true;
-                group.add(mesh); return mesh;
-            }
-            // 骶骨
-            addMesh(new THREE.CylinderGeometry(0.18, 0.28, 0.55, 5, 1), mat, 0, 0, -0.38, Math.PI*0.08);
-            // 髂翼
-            function makeWing(side) {
-                const pts = [];
-                for (let i=0; i<=10; i++) {
-                    const t=i/10;
-                    pts.push(new THREE.Vector3(side*(0.25+t*0.52), 0.12-t*0.05+Math.sin(t*Math.PI)*0.1, -0.12+t*0.22-Math.sin(t*Math.PI)*0.28));
-                }
-                const curve = new THREE.CatmullRomCurve3(pts);
-                const shape = new THREE.Shape();
-                shape.moveTo(-0.01,0); shape.bezierCurveTo(-0.01,0.18,0.01,0.22,0,0.26); shape.bezierCurveTo(-0.01,0.22,0.01,0.18,0,0);
-                return new THREE.ExtrudeGeometry(shape, { steps:14, extrudePath:curve, bevelEnabled:false });
-            }
-            addMesh(makeWing(1), mat, 0,0,0);
-            addMesh(makeWing(-1), mat, 0,0,0);
-            // 髂嵴管
-            function makeCrest(side) {
-                const pts = [new THREE.Vector3(side*0.25,0.22,-0.12),new THREE.Vector3(side*0.50,0.26,-0.05),new THREE.Vector3(side*0.72,0.20,0.12),new THREE.Vector3(side*0.65,0.10,0.28),new THREE.Vector3(side*0.42,0.06,0.38)];
-                return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.038, 7, false);
-            }
-            addMesh(makeCrest(1), mat, 0,0,0);
-            addMesh(makeCrest(-1), mat, 0,0,0);
-            // 坐骨结节
-            const isGeo = new THREE.SphereGeometry(0.11,10,8); isGeo.scale(1,0.7,1.1);
-            addMesh(isGeo, mat, 0.48,-0.18,0.35);
-            const isGeo2 = new THREE.SphereGeometry(0.11,10,8); isGeo2.scale(1,0.7,1.1);
-            addMesh(isGeo2, mat, -0.48,-0.18,0.35);
-            // 耻骨联合
-            addMesh(new THREE.BoxGeometry(0.30,0.14,0.12), mat, 0,-0.05,0.44);
-            // 耻骨支弧
-            function makePubRamus(side) {
-                const pts=[new THREE.Vector3(side*0.12,-0.04,0.44),new THREE.Vector3(side*0.28,0.00,0.42),new THREE.Vector3(side*0.42,0.04,0.38)];
-                return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,0.045,6,false);
-            }
-            addMesh(makePubRamus(1), mat, 0,0,0);
-            addMesh(makePubRamus(-1), mat, 0,0,0);
-            // L/R 标记球
-            const mkGeo = new THREE.SphereGeometry(0.045,8,6);
-            addMesh(mkGeo, markerMat,  0.78,0.22,0.0);
-            addMesh(new THREE.SphereGeometry(0.045,8,6), markerMat, -0.78,0.22,0.0);
-            return group;
         }
 
         function initPelvisScene(comboKey, pelvisAnimMap) {
@@ -4328,7 +4352,7 @@
                     front: '可能存在轻微的左右不对称，但前后方向的特征目前不够典型。', back: '暂无法明确后侧是更紧还是更弱。', side: '前后方向的倾向需要进一步确认。',
                     feel: '你可能感觉身体有些不对称，但具体是"后面顶"还是"前面拽"还不够明确。建议记录日常感受，下次复测时作为参考。',
                     avoid: ['避免一次上太多复杂的纠正动作', '避免在方向不明确时强行做单方向矫正'],
-                    direction: '先做基础呼吸训练和核心稳定练习 → 过 2-4 周后复测 → 根据更明确的数据调整方向。'
+                    direction: '先做基础呼吸训练：慢呼气 + 后背肋骨扩张，让核心真正激活而非代偿收紧；同步练习双侧骨盆稳定（90/90 呼吸、仰卧腹式呼吸）。不需要等到方向完全明确才开始——这套训练对前后压缩均有效，2-4 周后复测时方向通常会更清晰，届时再按具体分型调整重点。'
                 };
                 REPORT['mixed_lateral'] = { ...REPORT['mixed_baseline'], typeName: '紧张方向待确认 · 左高右低', oneLiner: '前后哪侧更紧待确认，但骨盆左边高、右边低已经出现',
                     what: '前后哪侧肌肉更紧还不够明确，但骨盆左高右低的偏移是清晰的。目前优先关注左右的不对称，同时通过复测进一步确认前后方向。'
@@ -4355,14 +4379,16 @@
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
 
             // ---- 训练阶段配置（模块八三阶段） ----
-            const STAGE_LABEL = { 1: '第一阶段 · 建立基础', 2: '第二阶段 · 压缩修复', 3: '第三阶段 · 偏移修正' };
+            const STAGE_LABEL = { 1: '第一阶段 · 建立基础', 2: '第二阶段 · 压缩修复', 3: subType === 'baseline' ? '第三阶段 · 旋转修正' : '第三阶段 · 偏移修正' };
             const STAGE_COLOR = { 1: '#8e8e93', 2: compKey === 'anterior' ? '#ff9500' : '#0a84ff', 3: '#7c3aed' };
             const STAGE_TIP = {
                 1: '直腿抬高和肩屈均低于基础阈值（SLR < 45°、肩屈 < 90°），优先建立双侧呼吸基础和骨盆底色，再处理前后与左右问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈 > 90°、直腿抬高 > 45°、髋屈 > 90°，达到后即可进入第二阶段。</span>',
                 2: '三项左右差值均 < 10°，主要问题在前后压缩层，暂无明显左右侧倾。此阶段<strong>允许左右活动度不对称依然存在</strong>，无需刻意纠正——先通过呼吸和骨盆重定位解决前后问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈达到 120°、直腿抬高达到 60–70°、髋屈达到 120° 以上，达到后即可进入偏移修正阶段。</span>',
                 3: (() => {
                     const m = {
-                        baseline: '至少一项差值 ≥ 10°，身体呈现基础左前右后不对称（Left AIC 模式）。训练重点：<strong>减少左侧前顶外开，建立右侧真正的承重能力</strong>。<br><span style="opacity:0.75">📌 要减少：左侧持续代偿主导、左侧外开前顶；要建立：右侧承重与装载、胸廓与骨盆重新堆叠。优先做左侧回位类、右腿单侧承重类动作（如右腿前分腿蹲、右侧 RDL），暂缓大重量双侧对称训练。</span>',
+                        baseline: rotKey === 'LeftAIC'
+                            ? '两项以上差值 ≥ 10°，身体呈现基础左前右后不对称（Left AIC 模式）。训练重点：<strong>减少左侧前顶外开，建立右侧真正的承重能力</strong>。<br><span style="opacity:0.75">📌 要减少：左侧持续代偿主导、左侧外开前顶；要建立：右侧承重与装载、胸廓与骨盆重新堆叠。优先做左侧回位类、右腿单侧承重类动作（如右腿前分腿蹲、右侧 RDL），暂缓大重量双侧对称训练。</span>'
+                            : '仅一项差值 ≥ 10°，左右旋转方向尚不明确。训练重点：<strong>先建立双侧均衡的骨盆基础稳定，不急于单方向纠正</strong>。<br><span style="opacity:0.75">📌 优先做双侧 90/90 呼吸和仰卧腹式呼吸，建立骨盆中立稳定感；同步关注差值较大的那一项，2-4 周后复测，方向清晰后再加入定向训练。</span>',
                         lateral:  '至少一项差值 ≥ 10°，骨盆呈现横向偏移（左高右低）。训练重点：<strong>让左边减少主导抢活，让右侧解锁并重新承重</strong>。<br><span style="opacity:0.75">📌 要减少：左侧继续抢活、左侧前顶外开；要建立：右侧活动空间、右侧承重与装载能力、右侧站立期稳定性。优先做右侧承重单腿动作，同步恢复右侧后链的参与感。</span>',
                         oblique:  '至少一项差值 ≥ 10°，骨盆呈现斜向偏移（左边又高又靠前）。训练重点：<strong>先让左侧从"前到卡死"退出，再让右侧推进接管</strong>。<br><span style="opacity:0.75">📌 斜向偏移有两个维度——不只是左高，还有左前。要减少：左边"高"和"前"两个方向的同时代偿；要建立：右侧推进与重心接管能力。两个维度都要处理，只压高度是不够的。</span>'
                     };
@@ -4430,8 +4456,7 @@
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
                     <span class="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
                 </div>
-                <div class="mb-3 px-3.5 py-2.5 rounded-xl text-[11px] leading-relaxed" style="color:${stageC};background:${stageC}12;border:1px solid ${stageC}30">${STAGE_TIP[trainingStage]}</div>
-                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;position:relative;">
+                <div class="pelvis-stage mb-3 hidden" style="background:#0d1117;border-radius:1rem;position:relative;">
                     <canvas id="pelvis-canvas" style="width:100%;height:220px;display:block;border-radius:1rem;"></canvas>
                     <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
                         <span style="display:flex;align-items:center;gap:8px;">
@@ -4525,33 +4550,130 @@
                 </div>`;
             })();
 
-            const avoidHtml = reportSafetyBlocked ? '' : `
+            const avoidHtml = '';
+
+            const directionHtml = '';
+
+            // ---- 臀型特征 & 常见误判（内容来源：six/ 目录下各类型完整合并文档） ----
+            const GLUTE_INFO = {
+                posterior_baseline: {
+                    fakeHip:    '容易（中等偏高）— 左侧大转子区域外顶更明显，正面或穿紧身裤看胯显宽，但骨骼本身未变宽；外侧线条不顺，右边更像塌',
+                    depression: '容易（中等）— 臀上外侧不够圆、后外侧偏空、臀下缘不清晰；不是臀小，而是"有量但线条不高级"，后侧没有真正挂出来',
+                    heightDiff: '轻到中等 — 右边略高、左边略低；拍照或穿紧身裤可见，本人站立不一定一眼看出',
+                    why:        '骨盆被后侧肌群持续向前推，股骨在髋臼里居中不够，大转子外侧线条被勾出；臀后侧真正的悬挂空间差，所以"有量却挂不出来"'
+                },
+                posterior_lateral: {
+                    fakeHip:    '高 — 左侧大转子更外、更挂出来，裤子左侧外轮廓更鼓；和第一类相比，这类假胯宽更像单侧突出：左边特别像假胯宽，右边更像塌',
+                    depression: '中等到高 — 左边高鼓但紧，右边低塌又空；右侧后外侧、臀中上方、臀下缘不清楚；高低差已是这类最典型的外观特征之一',
+                    heightDiff: '非常明显 — 左高右低是这类的核心外观问题；臀沟起点两边不在同一水平，穿紧身裤、拍照、教练看动作均可清晰识别',
+                    why:        '横向型本身就是"左侧被往上推、右边被往下压"，叠加后压缩后左边更紧更上提；右侧臀肌长期拉长无力，臀后侧根本挂不出来'
+                },
+                posterior_oblique: {
+                    fakeHip:    '高 — 左侧是六类中最容易"单侧特别明显"的；同时具备左高、左前、左外开加后压缩前顶，左侧外髋和大转子那条线被格外勾出来',
+                    depression: '中等到高 — 左边更高/紧/方/外翻（不一定最凹），右边更低/薄/掉，后外侧和臀下缘挂不住；常见画面："左边大、右边掉"',
+                    heightDiff: '明显（斜向）— 通常和第二类一样明显甚至更夸张；左高右低同时叠加左前右后，高度差与前后差两个维度都存在',
+                    why:        '骨盆在斜向方向同时叠加了高度差与前后差；后侧高张力把整个骨盆锁在斜向位置，任何单一方向干预都难以撼动'
+                },
+                anterior_baseline: {
+                    fakeHip:    '中等常见 — 位置是前外侧、大转子前外侧更容易被勾出来（不同于后侧类型的后外侧外顶）；因底层仍是基线型，左边通常更明显',
+                    depression: '容易（中等）— 臀下缘不清楚、后外侧不够饱满、上外侧轻度空；不是臀小，而是前外侧太抢，后侧不够立体；"臀不一定假性很翘，反而更容易不够挂"',
+                    heightDiff: '轻到中等 — 底层基线型带来的右略高左略低，但通常比后侧类型更不明显；穿紧身裤或拍照可见，平时站立不一定能看出',
+                    why:        '前侧肌群（髂腰肌、股直肌、阔筋膜张肌）持续拉住骨盆，真正应该工作的臀大肌被抑制；臀后侧没有真正参与承重，后侧线条接不住'
+                },
+                anterior_lateral: {
+                    fakeHip:    '高 — 左侧前外上方更卡、大腿前外侧更紧、左外髋那条线更靠前地突出来；和第二类相比，这类假胯宽更像"被前侧拉出来"而非"被顶出来"',
+                    depression: '中等到高 — 右侧后外侧、臀下缘更容易不清楚；还会出现双侧后侧整体挂感差，尤其右边更明显；整体后侧线条都不够挂',
+                    heightDiff: '非常明显 — 左高右低，但和第二类相比更显得"软""吊"——第二类是左边被撑起来，这类是左边被前侧链吊起来',
+                    why:        '前侧链持续把骨盆往左前上方牵引，右侧臀肌处于拉长被抑制状态；右边后侧线条接不住，双侧后侧整体都缺乏真正的悬挂感'
+                },
+                anterior_oblique: {
+                    fakeHip:    '中等到高 — 六类中最容易让人觉得左边又高又往前鼓；左高+左前+左外开+前侧拉扯叠加，左侧前外上方最卡最吊，是六类中最复杂的假胯宽模式',
+                    depression: '中等到高 — 右侧后外侧、臀中上方、臀下缘更容易空；右边不是单纯没肉，而是后侧没接上线、臀下缘没挂住、身体不愿意把重量交给右边',
+                    heightDiff: '几乎一定非常明显 — 左高右低+左前右后+厚薄差+轮廓差；不只是水平高低，还带前后差，是六类中最复杂的不对称模式',
+                    why:        '三件事同时叠加（左高+左前+前侧紧），右侧后链在高度和前后两个维度同时处于劣势；三个问题相互锁定，单独处理任何一个都会被其余两个拉回来'
+                },
+            };
+            const MISDIAGNOSIS_INFO = {
+                posterior_baseline: {
+                    label:        '"屁股不够大，多练臀"',
+                    wrongApproach:'大量臀推、蚌式、侧抬腿、怪兽走、宽站距深蹲——以为练大就解决了',
+                    whyWorse:     '臀围可能大一点，但外侧更鼓、腰背更紧、假胯宽不改善、线条更不顺——越练越壮，但没练顺。根本没先处理后侧链高张力和骨盆位置'
+                },
+                posterior_lateral: {
+                    label:        '"右边塌，只补右边臀"',
+                    wrongApproach:'右侧蚌式、侧抬腿、外展机、后踢腿、怪兽走大量叠加，视觉上右边稍微充一点',
+                    whyWorse:     '骨盆仍被锁在横向位置，高低差根本改不动；最后变成左边更高更紧，右边还是低，骨盆还是歪，只是右边练肿了一点'
+                },
+                posterior_oblique: {
+                    label:        '"太早修臀型"',
+                    wrongApproach:'一上来就大量臀推、外展机、后踢腿，直接冲着改线条去',
+                    whyWorse:     '左边更高更前更方，右边还是接不住；后压缩的外层前顶没降，斜轴的两个维度没处理，修臀型全白费，越练越锁'
+                },
+                anterior_baseline: {
+                    label:        '"多练臀，猛激活臀肌"',
+                    wrongApproach:'大量臀推、分腿蹲，或太早上高负荷分腿蹲——前腿前侧抢活、髋前太忙、胸廓和骨盆被前面拽走',
+                    whyWorse:     '前侧链越练越抢活，臀肌根本发不上力；前外侧更抢镜，后侧线条更挂不出来；正确路线是先松前面，再把后侧接回来，顺序不对全白费'
+                },
+                anterior_lateral: {
+                    label:        '"按第二类的方式去练"',
+                    wrongApproach:'先降后压缩、再降左高、再练右承重——但这类外层是前压缩，不是后压缩',
+                    whyWorse:     '前侧链的拉扯没有先被拆解，后侧承重根本接不回来；右边还是挂不住，左边还是被前侧吊着，越练高低差越固定'
+                },
+                anterior_oblique: {
+                    label:        '"太早修臀型，或顺序搞错"',
+                    wrongApproach:'跳过前侧拆解直接练臀型，或只处理左高/左前其中一个维度',
+                    whyWorse:     '太早修臀型会让左边更高更前更外，假胯宽更明显，右边还是低掉薄；三个问题相互锁定，只处理一个，其余两个把它拉回来'
+                },
+            };
+
+            const gluteInfo   = GLUTE_INFO[comboKey]        || GLUTE_INFO['posterior_baseline'];
+            const misInfo     = MISDIAGNOSIS_INFO[comboKey] || MISDIAGNOSIS_INFO['posterior_baseline'];
+
+            const gluteHtml = `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">做这些会适得其反</div>
-                <div class="flex flex-col gap-2">
-                    ${report.avoid.map(item => `
-                    <div class="flex items-start gap-2.5">
-                        <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>
-                        <span class="text-[13px] text-slate-600 leading-relaxed">${item}</span>
-                    </div>`).join('')}
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">这种骨盆类型的臀型特征</div>
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-start gap-3">
+                        <span class="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-content shrink-0" style="display:flex;align-items:center;justify-content:center;">胯</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-700 mb-0.5">假胯宽</div>
+                            <p class="text-[12px] text-slate-500 leading-relaxed">${gluteInfo.fakeHip}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-violet-400 text-white text-[10px] font-black flex items-center justify-content shrink-0" style="display:flex;align-items:center;justify-content:center;">凹</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-700 mb-0.5">臀凹陷</div>
+                            <p class="text-[12px] text-slate-500 leading-relaxed">${gluteInfo.depression}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-rose-400 text-white text-[10px] font-black flex items-center justify-content shrink-0" style="display:flex;align-items:center;justify-content:center;">高</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-slate-700 mb-0.5">臀线高低差</div>
+                            <p class="text-[12px] text-slate-500 leading-relaxed">${gluteInfo.heightDiff}</p>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100">
+                        <p class="text-[11px] text-slate-400 leading-relaxed"><span class="font-bold text-slate-500">为什么会这样：</span>${gluteInfo.why}</p>
+                    </div>
                 </div>
             </div>`;
 
-            const directionHtml = reportSafetyBlocked ? '' : (() => {
-                const steps = report.direction.split('<br>');
-                const stepColors = ['bg-slate-100 text-slate-600', 'bg-blue-50 text-blue-700', 'bg-violet-50 text-violet-700'];
-                const stepDots = ['bg-slate-400', 'bg-blue-500', 'bg-violet-500'];
-                const stepsHtml = steps.map((s, i) => `
-                    <div class="flex items-start gap-3">
-                        <span class="mt-0.5 w-5 h-5 rounded-full ${stepDots[i] || 'bg-slate-400'} text-white text-[10px] font-black flex items-center justify-center shrink-0">${i + 1}</span>
-                        <p class="text-[12px] text-slate-700 leading-relaxed flex-1">${s.replace(/^第[①②③]步\s*/, '<span class="font-bold text-slate-800">$&</span>')}</p>
-                    </div>`).join('');
-                return `
-                <div class="rounded-[2rem] p-5 border border-violet-100 bg-gradient-to-br from-violet-50/60 to-slate-50 shadow-sm mb-4">
-                    <div class="text-[10px] font-bold text-violet-500 mb-3 uppercase tracking-[0.15em]">你的改善路径</div>
-                    <div class="flex flex-col gap-3">${stepsHtml}</div>
-                </div>`;
-            })();
+            const misdiagnosisHtml = `
+            <div class="bg-amber-50/70 rounded-[2rem] p-5 border border-amber-100 shadow-sm mb-4">
+                <div class="text-[10px] font-bold text-amber-600 mb-3 uppercase tracking-[0.15em]">最容易被误判成什么</div>
+                <div class="flex flex-col gap-3">
+                    <div class="px-3 py-2 rounded-xl bg-white border border-amber-100">
+                        <div class="text-[11px] font-bold text-slate-800 mb-1">常见误判：${misInfo.label}</div>
+                        <p class="text-[12px] text-slate-500 leading-relaxed">常见做法：${misInfo.wrongApproach}</p>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <span class="mt-[5px] w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                        <p class="text-[12px] text-slate-600 leading-relaxed"><span class="font-bold text-slate-700">为什么会越练越糟：</span>${misInfo.whyWorse}</p>
+                    </div>
+                </div>
+            </div>`;
 
             const safetyHtml = reportSafetyBlocked ? `
             <div class="bg-rose-50 rounded-[2rem] p-5 border border-rose-200 shadow-sm mb-4">
@@ -4560,10 +4682,9 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${directionHtml}${safetyHtml}${avoidHtml}${appendixHtml}`;
+            container.innerHTML = `${typeHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${gluteHtml}${misdiagnosisHtml}${safetyHtml}${appendixHtml}`;
             container.classList.remove('hidden');
-            const _ck = comboKey, _pa = PELVIS_ANIM;
-            requestAnimationFrame(() => initPelvisScene(_ck, _pa));
+            // 骨盆模型板块已临时隐藏
 
             const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
             titleEl.innerText = mainSentence;
@@ -4581,11 +4702,7 @@
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
 
-            const videoPlanCard = document.getElementById('video-plan-card');
-            if (videoPlanCard) videoPlanCard.classList.add('hidden');
-            const jumpLink = document.querySelector('.id-jump-video');
-            if (jumpLink) jumpLink.classList.add('hidden');
-            if (!reportSafetyBlocked) renderVideoPlanCard(planKey);
+            renderVideoPlanCard(planKey);
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
         }
@@ -4646,6 +4763,33 @@
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧减压先行，骨盆停止被向前拽，才能让后面的横向纠正真正落地。' },
                     { name: '第二步：减轻骨盆被持续带偏的侧向代偿', desc: '前侧拉扯合并左右不对称时，两层往往会互相放大，所以先把持续带偏骨盆的代偿降下来，再做后续纠正。' },
                     { name: '第三步：重建左右侧向稳定与承重的平衡', desc: '偏移改善后，恢复两侧轮流承重的能力，让骨盆真正稳定下来，而不只是暂时调整位置。' }
+                ]
+            },
+            mixed_LeftAIC: {
+                title: '基础稳定方案 · 方向待确认',
+                tagline: '根据你的评估结果定制：前后方向暂不明确，先建立基础稳定，2-4 周后复测再定向',
+                videos: [
+                    { name: '第一步：双侧呼吸基础建立', desc: '无论前后方向如何，呼吸模式都是优先处理的底层问题。先让横膈膜、骨盆底和腹斜肌协调工作，减少代偿模式，再叠加方向性干预。' },
+                    { name: '第二步：骨盆中立位稳定建立', desc: '前后方向不确定时，先帮助骨盆找到中立范围，减少两端的极端偏移，为后续方向性训练打好基础。' },
+                    { name: '第三步：复测并确认方向', desc: '基础训练 2-4 周后，三项测试值通常会更稳定清晰，届时根据更明确的数据进入对应的方向性方案。' }
+                ]
+            },
+            mixed_Lateral: {
+                title: '基础稳定方案 · 横向偏移待定向',
+                tagline: '根据你的评估结果定制：前后方向待确认，但骨盆左高右低已出现，先处理横向不对称',
+                videos: [
+                    { name: '第一步：双侧呼吸基础建立', desc: '先建立均衡的呼吸模式，为横向纠正打好基础，避免代偿进一步放大左右差距。' },
+                    { name: '第二步：减少左侧主导，建立右侧承重能力', desc: '骨盆左高右低已经清晰，优先让右侧重新接住体重，减少左侧持续代偿托举。不需要等前后方向确认再开始这一步。' },
+                    { name: '第三步：复测确认前后方向', desc: '横向改善后复测，前后方向通常会更清晰，届时再叠加对应的前后方向专项训练。' }
+                ]
+            },
+            mixed_Oblique: {
+                title: '基础稳定方案 · 斜向偏移待定向',
+                tagline: '根据你的评估结果定制：前后方向待确认，但骨盆已出现左高左前斜向偏移，先处理斜向问题',
+                videos: [
+                    { name: '第一步：双侧呼吸基础建立', desc: '先建立均衡的呼吸模式，为斜向纠正打好基础，减少整体代偿张力。' },
+                    { name: '第二步：解除左侧又高又前的斜向偏移', desc: '斜向偏移有两个维度——高度和前后都要处理，只压高度是不够的。同步让右侧重新接管承重、稳定骨盆。' },
+                    { name: '第三步：复测确认前后方向', desc: '斜向改善后复测，前后方向通常会更清晰，届时再叠加对应的前后方向专项训练。' }
                 ]
             }
         };
@@ -4739,5 +4883,270 @@
         });
 
     </script>
+
+<!-- 角度测量器模态窗 -->
+<div id="protractor-modal" class="fixed inset-0 z-[9999] bg-black hidden flex-col">
+    <!-- 顶部栏 -->
+    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] bg-gradient-to-b from-black/70 to-transparent pb-6" style="padding-top:max(env(safe-area-inset-top),12px)">
+        <button onclick="closeProtractor()" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white active:scale-90 transition-transform">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div id="protractor-angle-badge" class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-lg tracking-wide">0°</div>
+        <div class="w-9"></div>
+    </div>
+    <!-- 摄像头视频 -->
+    <video id="protractor-video" class="absolute inset-0 w-full h-full object-cover" playsinline autoplay muted></video>
+    <!-- 量角器 Canvas 叠加 -->
+    <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full" style="touch-action:none;"></canvas>
+    <!-- 底部提示 -->
+    <div class="absolute bottom-0 left-0 right-0 z-10 text-center pb-[env(safe-area-inset-bottom)] bg-gradient-to-t from-black/70 to-transparent pt-8" style="padding-bottom:max(env(safe-area-inset-bottom),16px)">
+        <p class="text-white/80 text-[11px] font-bold tracking-wide">将摄像头对准大腿侧面，拖动指针对齐大腿方向读取角度</p>
+    </div>
+</div>
+
+<script>
+(function() {
+    let _protractorStream = null;
+    let _protractorAngle = 45;
+    let _isDragging = false;
+    let _protractorRAF = null;
+    let _centerX = 0, _centerY = 0, _radius = 0;
+
+    window.openProtractor = function() {
+        const modal = document.getElementById('protractor-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const video = document.getElementById('protractor-video');
+        const canvas = document.getElementById('protractor-canvas');
+
+        // Size canvas to screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Start camera
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+            .then(stream => {
+                _protractorStream = stream;
+                video.srcObject = stream;
+                video.play().catch(() => {});
+            })
+            .catch(err => {
+                console.warn('[Protractor] camera error:', err);
+            });
+
+        // Compute layout
+        _computeLayout(canvas.width, canvas.height);
+
+        // Touch events
+        canvas.addEventListener('touchstart', _onTouchStart, { passive: false });
+        canvas.addEventListener('touchmove', _onTouchMove, { passive: false });
+        canvas.addEventListener('touchend', _onTouchEnd, { passive: false });
+        canvas.addEventListener('mousedown', _onMouseDown);
+        canvas.addEventListener('mousemove', _onMouseMove);
+        canvas.addEventListener('mouseup', _onMouseUp);
+
+        // Draw loop
+        _protractorAngle = 45;
+        _drawProtractor();
+    };
+
+    window.closeProtractor = function() {
+        const modal = document.getElementById('protractor-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        if (_protractorRAF) { cancelAnimationFrame(_protractorRAF); _protractorRAF = null; }
+
+        const canvas = document.getElementById('protractor-canvas');
+        canvas.removeEventListener('touchstart', _onTouchStart);
+        canvas.removeEventListener('touchmove', _onTouchMove);
+        canvas.removeEventListener('touchend', _onTouchEnd);
+        canvas.removeEventListener('mousedown', _onMouseDown);
+        canvas.removeEventListener('mousemove', _onMouseMove);
+        canvas.removeEventListener('mouseup', _onMouseUp);
+
+        if (_protractorStream) {
+            _protractorStream.getTracks().forEach(t => t.stop());
+            _protractorStream = null;
+        }
+        const video = document.getElementById('protractor-video');
+        video.srcObject = null;
+    };
+
+    function _computeLayout(w, h) {
+        _radius = Math.min(w * 0.44, h * 0.38);
+        _centerX = w / 2;
+        _centerY = h * 0.62;
+    }
+
+    function _angleFromPoint(x, y) {
+        const dx = x - _centerX;
+        const dy = _centerY - y;
+        let a = Math.atan2(dy, dx) * (180 / Math.PI);
+        a = Math.max(0, Math.min(180, a));
+        return Math.round(a);
+    }
+
+    function _onTouchStart(e) { e.preventDefault(); _isDragging = true; const t = e.touches[0]; _updateAngle(t.clientX, t.clientY); }
+    function _onTouchMove(e) { e.preventDefault(); if (!_isDragging) return; const t = e.touches[0]; _updateAngle(t.clientX, t.clientY); }
+    function _onTouchEnd(e) { _isDragging = false; }
+    function _onMouseDown(e) { _isDragging = true; _updateAngle(e.clientX, e.clientY); }
+    function _onMouseMove(e) { if (!_isDragging) return; _updateAngle(e.clientX, e.clientY); }
+    function _onMouseUp(e) { _isDragging = false; }
+
+    function _updateAngle(x, y) {
+        _protractorAngle = _angleFromPoint(x, y);
+        document.getElementById('protractor-angle-badge').textContent = _protractorAngle + '°';
+    }
+
+    function _drawProtractor() {
+        const canvas = document.getElementById('protractor-canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = _centerX, cy = _centerY, r = _radius;
+        const r2 = r * 0.78; // inner ring
+
+        // Semi-transparent background arc
+        ctx.beginPath();
+        ctx.moveTo(cx - r - 20, cy);
+        ctx.arc(cx, cy, r + 20, Math.PI, 0, false);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fill();
+
+        // Outer arc
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, Math.PI, 0, false);
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Inner arc
+        ctx.beginPath();
+        ctx.arc(cx, cy, r2, Math.PI, 0, false);
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Baseline
+        ctx.beginPath();
+        ctx.moveTo(cx - r - 10, cy);
+        ctx.lineTo(cx + r + 10, cy);
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Tick marks & labels
+        for (let deg = 0; deg <= 180; deg++) {
+            const rad = (180 - deg) * Math.PI / 180;
+            const cos = Math.cos(rad), sin = Math.sin(rad);
+
+            if (deg % 10 === 0) {
+                // Long tick
+                ctx.beginPath();
+                ctx.moveTo(cx + (r - 14) * cos, cy - (r - 14) * sin);
+                ctx.lineTo(cx + r * cos, cy - r * sin);
+                ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Inner tick
+                ctx.beginPath();
+                ctx.moveTo(cx + r2 * cos, cy - r2 * sin);
+                ctx.lineTo(cx + (r2 + 10) * cos, cy - (r2 + 10) * sin);
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Outer label
+                ctx.save();
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.font = `bold ${Math.max(10, r * 0.075)}px -apple-system, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const lx = cx + (r + 16) * cos, ly = cy - (r + 16) * sin;
+                ctx.fillText(deg.toString(), lx, ly);
+                ctx.restore();
+
+                // Inner label (supplementary)
+                if (deg > 0 && deg < 180) {
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                    ctx.font = `${Math.max(8, r * 0.058)}px -apple-system, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const lx2 = cx + (r2 - 14) * cos, ly2 = cy - (r2 - 14) * sin;
+                    ctx.fillText((180 - deg).toString(), lx2, ly2);
+                    ctx.restore();
+                }
+            } else if (deg % 5 === 0) {
+                // Medium tick
+                ctx.beginPath();
+                ctx.moveTo(cx + (r - 10) * cos, cy - (r - 10) * sin);
+                ctx.lineTo(cx + r * cos, cy - r * sin);
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            } else {
+                // Short tick
+                ctx.beginPath();
+                ctx.moveTo(cx + (r - 6) * cos, cy - (r - 6) * sin);
+                ctx.lineTo(cx + r * cos, cy - r * sin);
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        // Center dot
+        ctx.beginPath();
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#5bd4c8';
+        ctx.fill();
+
+        // Pointer line
+        const pRad = (180 - _protractorAngle) * Math.PI / 180;
+        const pCos = Math.cos(pRad), pSin = Math.sin(pRad);
+        const pLen = r + 8;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + pLen * pCos, cy - pLen * pSin);
+        ctx.strokeStyle = '#5bd4c8';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Drag handle
+        const hx = cx + (r * 0.7) * pCos, hy = cy - (r * 0.7) * pSin;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 16, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(91,212,200,0.3)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(hx, hy, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#5bd4c8';
+        ctx.fill();
+
+        // Large angle text near center
+        ctx.save();
+        ctx.fillStyle = '#5bd4c8';
+        ctx.font = `bold ${Math.max(28, r * 0.2)}px -apple-system, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(_protractorAngle + '°', cx, cy - 18);
+        ctx.restore();
+
+        _protractorRAF = requestAnimationFrame(_drawProtractor);
+    }
+})();
+</script>
 </body>
 </html>
