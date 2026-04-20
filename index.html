@@ -325,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.5</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.1</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4887,12 +4887,29 @@
 <!-- 角度测量器模态窗 -->
 <div id="protractor-modal" class="fixed inset-0 z-[9999] bg-black hidden flex-col">
     <!-- 顶部栏 -->
-    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 bg-gradient-to-b from-black/70 to-transparent pb-6" style="padding-top:max(env(safe-area-inset-top),12px)">
-        <button onclick="closeProtractor()" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white active:scale-90 transition-transform">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 bg-gradient-to-b from-black/70 to-transparent pb-4" style="padding-top:max(env(safe-area-inset-top),10px)">
+        <button onclick="closeProtractor()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white active:scale-90 transition-transform">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
-        <div id="protractor-angle-badge" class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-lg tracking-wide tabular-nums">45°</div>
-        <div class="w-9"></div>
+        <div id="protractor-angle-badge" class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-base tracking-wide tabular-nums">45°</div>
+        <!-- 功能开关按钮组 -->
+        <div class="flex items-center gap-1">
+            <button id="btn-p-dual" onclick="pToggleDual()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="双指针">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m-5 5l5-5 5 5"/></svg>
+            </button>
+            <button id="btn-p-level" onclick="pToggleLevel()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="水平仪">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M12 4v16"/></svg>
+            </button>
+            <button id="btn-p-voice" onclick="pToggleVoice()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="语音播报">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586v12.828a1 1 0 01-1.707.707L5.586 15z"/></svg>
+            </button>
+            <button onclick="pFlipCamera()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="翻转摄像头">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+            <button id="btn-p-theme" onclick="pToggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="主题">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </button>
+        </div>
     </div>
     <!-- 摄像头视频 -->
     <video id="protractor-video" class="absolute inset-0 w-full h-full object-cover" playsinline autoplay muted></video>
@@ -4901,401 +4918,536 @@
     <!-- 摄像头错误提示 -->
     <div id="protractor-cam-error" class="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
     <!-- 底部工具栏 -->
-    <div class="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent pt-10" style="padding-bottom:max(env(safe-area-inset-bottom),12px)">
-        <p class="text-white/50 text-[10px] font-bold tracking-wide text-center mb-3">对准大腿侧面 · 拖动指针对齐方向 · 可移动/缩放量角器</p>
-        <div class="flex items-center justify-center gap-3 px-5 pb-1">
-            <button id="btn-protractor-lock" onclick="toggleProtractorLock()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
-                <svg id="protractor-lock-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
+    <div class="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent pt-6" style="padding-bottom:max(env(safe-area-inset-bottom),10px)">
+        <!-- ±1° 微调 -->
+        <div class="flex items-center justify-center gap-4 mb-2">
+            <button onclick="pNudge(-1)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white text-lg font-black active:scale-90 transition-transform border border-white/10">−</button>
+            <span class="text-white/40 text-[10px] font-bold tracking-wider">微调 ±1°</span>
+            <button onclick="pNudge(1)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white text-lg font-black active:scale-90 transition-transform border border-white/10">+</button>
+        </div>
+        <!-- 主操作行 -->
+        <div class="flex items-center justify-center gap-2.5 px-4 pb-1">
+            <button id="btn-protractor-lock" onclick="toggleProtractorLock()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg id="protractor-lock-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
                 <span id="protractor-lock-text">锁定</span>
             </button>
-            <button onclick="protractorScreenshot()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
+            <button onclick="protractorScreenshot()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
                 截图
             </button>
-            <button onclick="useProtractorAngle()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                使用此角度
+            <button id="btn-p-history" onclick="pToggleHistory()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                记录
             </button>
+            <button onclick="useProtractorAngle()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                使用
+            </button>
+        </div>
+    </div>
+    <!-- 历史记录面板 -->
+    <div id="protractor-history-panel" class="absolute right-0 top-0 bottom-0 w-64 z-30 hidden bg-black/85 backdrop-blur-md border-l border-white/10 flex flex-col" style="padding-top:max(env(safe-area-inset-top),10px)">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+            <span class="text-white font-bold text-xs tracking-wider">测量记录</span>
+            <button onclick="pToggleHistory()" class="text-white/60 text-xs font-bold">关闭</button>
+        </div>
+        <div id="protractor-history-list" class="flex-1 overflow-y-auto px-3 py-2 space-y-2"></div>
+        <div class="px-4 py-2 border-t border-white/10">
+            <button onclick="pClearHistory()" class="w-full py-1.5 rounded-lg bg-red-500/20 text-red-400 text-[10px] font-bold tracking-wider active:scale-95">清空记录</button>
         </div>
     </div>
 </div>
 
 <script>
 (function() {
-    let _pStream = null;
-    let _pAngle = 45;
-    let _pRAF = null;
-    // CSS pixels (not device pixels) — all coordinates in CSS space
-    let _pCX = 0, _pCY = 0, _pR = 0;
-    let _pLocked = false;
-    let _dpr = 1;
+    // === State ===
+    let _pStream = null, _pAngle = 45, _pAngle2 = 120, _pRAF = null;
+    let _pCX = 0, _pCY = 0, _pR = 0, _pLocked = false, _dpr = 1;
+    let _mode = 'none', _moveOffX = 0, _moveOffY = 0;
+    let _pinchStartDist = 0, _pinchStartR = 0, _prevBucket = -1, _lastRad = null;
+    // Dual pointer
+    let _dualMode = false, _activePtr = 1, _lastRad2 = null;
+    // Feature toggles
+    let _levelOn = false, _voiceOn = false, _darkTheme = true, _guideLine = true;
+    let _facingBack = true;
+    // Gyro
+    let _tiltAngle = 0, _gyroHandler = null;
+    // History
+    let _history = JSON.parse(localStorage.getItem('p_history') || '[]');
+    // Angle ranges per test type
+    const RANGES = {
+        slr:      { green: [60, 80], label: 'SLR 正常' },
+        hip:      { green: [100, 130], label: '髋屈正常' },
+        shoulder: { green: [150, 180], label: '肩屈正常' }
+    };
+    const HANDLE_DIST = 60, MIN_R = 80, MAX_R_RATIO = 0.46;
+    const _font = '-apple-system,BlinkMacSystemFont,sans-serif';
 
-    // Interaction
-    let _mode = 'none'; // 'none' | 'rotate' | 'move' | 'pinch'
-    let _moveOffX = 0, _moveOffY = 0;
-    let _pinchStartDist = 0, _pinchStartR = 0;
-    let _prevAngleBucket = -1;
-    // Incremental rotation state
-    let _lastTouchAngleRad = null;
-    const HANDLE_DIST = 60;
-    const MIN_R = 80, MAX_R_RATIO = 0.46;
-
-    // --- HiDPI canvas ---
+    // === Canvas HiDPI ===
     function _setupCanvas() {
         const c = document.getElementById('protractor-canvas');
         _dpr = Math.min(window.devicePixelRatio || 1, 3);
-        const cssW = window.innerWidth, cssH = window.innerHeight;
-        c.width = cssW * _dpr;
-        c.height = cssH * _dpr;
-        c.style.width = cssW + 'px';
-        c.style.height = cssH + 'px';
+        const w = window.innerWidth, h = window.innerHeight;
+        c.width = w * _dpr; c.height = h * _dpr;
+        c.style.width = w + 'px'; c.style.height = h + 'px';
     }
-
     function _defaultLayout() {
-        const cssW = window.innerWidth, cssH = window.innerHeight;
-        const isLandscape = cssW > cssH;
-        const shortEdge = Math.min(cssW, cssH);
-        // Use short edge as base so protractor scales proportionally in any orientation
-        _pR = isLandscape
-            ? shortEdge * 0.40   // landscape: 40% of height (short edge)
-            : shortEdge * 0.42;  // portrait: 42% of width (short edge)
-        _pR = Math.max(_pR, MIN_R);
-        _pCX = cssW / 2;
-        _pCY = isLandscape ? cssH * 0.48 : cssH * 0.52;
+        const w = window.innerWidth, h = window.innerHeight;
+        const land = w > h, short = Math.min(w, h);
+        _pR = Math.max(MIN_R, short * (land ? 0.40 : 0.42));
+        _pCX = w / 2;
+        _pCY = land ? h * 0.48 : h * 0.50;
     }
 
+    // === Toggle helpers ===
+    function _togBtn(id, on) {
+        const b = document.getElementById(id);
+        if (!b) return;
+        if (on) { b.classList.add('bg-[#5bd4c8]/60'); b.classList.remove('bg-white/15','text-white/70'); b.classList.add('text-white'); }
+        else { b.classList.remove('bg-[#5bd4c8]/60','text-white'); b.classList.add('bg-white/15','text-white/70'); }
+    }
+
+    // === Open / Close ===
     window.openProtractor = function() {
         const modal = document.getElementById('protractor-modal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        _pLocked = false;
-        _updateLockUI();
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        _pLocked = false; _updateLockUI();
+        _dualMode = false; _togBtn('btn-p-dual', false);
+        _levelOn = false; _togBtn('btn-p-level', false);
+        _voiceOn = false; _togBtn('btn-p-voice', false);
+        document.getElementById('protractor-cam-error').classList.add('hidden');
+        document.getElementById('protractor-history-panel').classList.add('hidden');
 
-        const video = document.getElementById('protractor-video');
-        const errEl = document.getElementById('protractor-cam-error');
-        errEl.classList.add('hidden');
+        _setupCanvas(); _defaultLayout();
+        _pAngle = 45; _pAngle2 = 120; _prevBucket = 4; _syncBadge();
 
-        _setupCanvas();
-        _defaultLayout();
-        _pAngle = 45;
-        _prevAngleBucket = Math.floor(45 / 10);
-        _syncBadge();
+        _startCamera(_facingBack);
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
-            .then(stream => { _pStream = stream; video.srcObject = stream; video.play().catch(() => {}); })
-            .catch(() => { errEl.classList.remove('hidden'); setTimeout(() => errEl.classList.add('hidden'), 4000); });
-
-        const canvas = document.getElementById('protractor-canvas');
-        canvas.addEventListener('touchstart', _tStart, { passive: false });
-        canvas.addEventListener('touchmove', _tMove, { passive: false });
-        canvas.addEventListener('touchend', _tEnd, { passive: false });
-        canvas.addEventListener('touchcancel', _tEnd, { passive: false });
-        canvas.addEventListener('mousedown', _mDown);
-        canvas.addEventListener('mousemove', _mMove);
-        canvas.addEventListener('mouseup', _mUp);
+        const c = document.getElementById('protractor-canvas');
+        c.addEventListener('touchstart', _tStart, { passive: false });
+        c.addEventListener('touchmove', _tMove, { passive: false });
+        c.addEventListener('touchend', _tEnd, { passive: false });
+        c.addEventListener('touchcancel', _tEnd, { passive: false });
+        c.addEventListener('mousedown', _mDown);
+        c.addEventListener('mousemove', _mMove);
+        c.addEventListener('mouseup', _mUp);
         window.addEventListener('resize', _onResize);
-
         _drawLoop();
     };
-
     window.closeProtractor = function() {
         const modal = document.getElementById('protractor-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        modal.classList.add('hidden'); modal.classList.remove('flex');
         if (_pRAF) { cancelAnimationFrame(_pRAF); _pRAF = null; }
-        const canvas = document.getElementById('protractor-canvas');
-        canvas.removeEventListener('touchstart', _tStart);
-        canvas.removeEventListener('touchmove', _tMove);
-        canvas.removeEventListener('touchend', _tEnd);
-        canvas.removeEventListener('touchcancel', _tEnd);
-        canvas.removeEventListener('mousedown', _mDown);
-        canvas.removeEventListener('mousemove', _mMove);
-        canvas.removeEventListener('mouseup', _mUp);
+        const c = document.getElementById('protractor-canvas');
+        c.removeEventListener('touchstart', _tStart);
+        c.removeEventListener('touchmove', _tMove);
+        c.removeEventListener('touchend', _tEnd);
+        c.removeEventListener('touchcancel', _tEnd);
+        c.removeEventListener('mousedown', _mDown);
+        c.removeEventListener('mousemove', _mMove);
+        c.removeEventListener('mouseup', _mUp);
         window.removeEventListener('resize', _onResize);
-        if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
-        document.getElementById('protractor-video').srcObject = null;
+        _stopCamera(); _stopGyro();
     };
 
-    // --- Lock ---
+    // === Camera ===
+    function _startCamera(back) {
+        const video = document.getElementById('protractor-video');
+        const errEl = document.getElementById('protractor-cam-error');
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: back ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+            .then(s => { _pStream = s; video.srcObject = s; video.play().catch(() => {}); })
+            .catch(() => { errEl.classList.remove('hidden'); setTimeout(() => errEl.classList.add('hidden'), 4000); });
+    }
+    function _stopCamera() {
+        if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
+        document.getElementById('protractor-video').srcObject = null;
+    }
+    window.pFlipCamera = function() {
+        _facingBack = !_facingBack; _stopCamera(); _startCamera(_facingBack);
+    };
+
+    // === Gyro / Level ===
+    function _startGyro() {
+        _gyroHandler = function(e) {
+            // gamma = left/right tilt in degrees [-90,90]
+            _tiltAngle = (e.gamma || 0);
+        };
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission().then(r => {
+                if (r === 'granted') window.addEventListener('deviceorientation', _gyroHandler);
+            }).catch(() => {});
+        } else {
+            window.addEventListener('deviceorientation', _gyroHandler);
+        }
+    }
+    function _stopGyro() {
+        if (_gyroHandler) { window.removeEventListener('deviceorientation', _gyroHandler); _gyroHandler = null; }
+    }
+    window.pToggleLevel = function() {
+        _levelOn = !_levelOn; _togBtn('btn-p-level', _levelOn);
+        if (_levelOn) _startGyro(); else _stopGyro();
+    };
+
+    // === Dual pointer ===
+    window.pToggleDual = function() { _dualMode = !_dualMode; _togBtn('btn-p-dual', _dualMode); _syncBadge(); };
+
+    // === Voice ===
+    window.pToggleVoice = function() { _voiceOn = !_voiceOn; _togBtn('btn-p-voice', _voiceOn); };
+    function _speak(text) {
+        if (!_voiceOn || !window.speechSynthesis) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN'; u.rate = 1.1; speechSynthesis.speak(u);
+    }
+
+    // === Theme ===
+    window.pToggleTheme = function() { _darkTheme = !_darkTheme; _togBtn('btn-p-theme', !_darkTheme); };
+
+    // === Lock ===
     window.toggleProtractorLock = function() {
-        _pLocked = !_pLocked;
-        _updateLockUI();
+        _pLocked = !_pLocked; _updateLockUI();
+        if (_pLocked && _voiceOn) _speak('当前角度' + (_dualMode ? Math.abs(_pAngle - _pAngle2) : _pAngle) + '度');
     };
     function _updateLockUI() {
-        const btn = document.getElementById('btn-protractor-lock');
-        const txt = document.getElementById('protractor-lock-text');
-        const ico = document.getElementById('protractor-lock-icon');
+        const btn = document.getElementById('btn-protractor-lock'), txt = document.getElementById('protractor-lock-text'), ico = document.getElementById('protractor-lock-icon');
         if (_pLocked) {
-            btn.classList.remove('bg-white/15', 'border-white/10');
-            btn.classList.add('bg-[#ff9500]/70', 'border-[#ff9500]/40');
+            btn.classList.remove('bg-white/15','border-white/10'); btn.classList.add('bg-[#ff9500]/70','border-[#ff9500]/40');
             txt.textContent = '已锁定';
             ico.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6-6V7a6 6 0 1112 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"/>';
         } else {
-            btn.classList.add('bg-white/15', 'border-white/10');
-            btn.classList.remove('bg-[#ff9500]/70', 'border-[#ff9500]/40');
+            btn.classList.add('bg-white/15','border-white/10'); btn.classList.remove('bg-[#ff9500]/70','border-[#ff9500]/40');
             txt.textContent = '锁定';
             ico.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/>';
         }
     }
 
-    // --- Screenshot ---
+    // === Nudge ±1° ===
+    window.pNudge = function(d) {
+        if (_pLocked) return;
+        if (_dualMode && _activePtr === 2) _pAngle2 = Math.max(0, Math.min(180, _pAngle2 + d));
+        else _pAngle = Math.max(0, Math.min(180, _pAngle + d));
+        _syncBadge();
+        if (navigator.vibrate) navigator.vibrate(8);
+    };
+
+    // === Screenshot ===
     window.protractorScreenshot = function() {
-        const video = document.getElementById('protractor-video');
-        const pCanvas = document.getElementById('protractor-canvas');
+        const video = document.getElementById('protractor-video'), pc = document.getElementById('protractor-canvas');
         const tmp = document.createElement('canvas');
-        tmp.width = pCanvas.width; tmp.height = pCanvas.height;
+        tmp.width = pc.width; tmp.height = pc.height;
         const ctx = tmp.getContext('2d');
-        if (video.srcObject && video.readyState >= 2) {
-            ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
-        } else {
-            ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, tmp.width, tmp.height);
-        }
-        ctx.drawImage(pCanvas, 0, 0);
-        tmp.toBlob(blob => {
-            if (!blob) return;
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `angle_${_pAngle}deg_${Date.now()}.png`;
+        if (video.srcObject && video.readyState >= 2) ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
+        else { ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, tmp.width, tmp.height); }
+        ctx.drawImage(pc, 0, 0);
+        tmp.toBlob(b => {
+            if (!b) return;
+            const url = URL.createObjectURL(b), a = document.createElement('a');
+            a.href = url; a.download = `angle_${_dispAngle()}deg_${Date.now()}.png`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 3000);
         }, 'image/png');
         if (navigator.vibrate) navigator.vibrate(30);
     };
 
-    // --- Use angle ---
+    // === Use angle ===
     window.useProtractorAngle = function() {
-        const testType = document.querySelector('input[name="testType"]:checked');
-        const testSide = document.querySelector('input[name="testSide"]:checked');
-        if (!testType || !testSide) { closeProtractor(); return; }
-        const t = testType.value, s = testSide.value.toLowerCase();
-        const fieldMap = { slr: 'm-slr-', hip: 'm-hip-', shoulder: 'm-sh-' };
-        const prefix = fieldMap[t];
-        if (prefix) {
-            const input = document.getElementById(prefix + s);
-            if (input) { input.value = _pAngle; input.dispatchEvent(new Event('input', { bubbles: true })); }
-        }
+        const ang = _dispAngle();
+        // Save to history
+        _addHistory(ang);
+        const tt = document.querySelector('input[name="testType"]:checked');
+        const ts = document.querySelector('input[name="testSide"]:checked');
+        if (!tt || !ts) { closeProtractor(); return; }
+        const t = tt.value, s = ts.value.toLowerCase();
+        const map = { slr: 'm-slr-', hip: 'm-hip-', shoulder: 'm-sh-' };
+        const pfx = map[t];
+        if (pfx) { const inp = document.getElementById(pfx + s); if (inp) { inp.value = ang; inp.dispatchEvent(new Event('input', { bubbles: true })); } }
+        if (_voiceOn) _speak('已填入' + ang + '度');
         closeProtractor();
-        const manualPanel = document.getElementById('manual-input-panel');
-        if (manualPanel && manualPanel.classList.contains('hidden')) {
-            const btn = document.getElementById('btn-manual-input');
-            if (btn) btn.click();
-        }
+        const mp = document.getElementById('manual-input-panel');
+        if (mp && mp.classList.contains('hidden')) { const b = document.getElementById('btn-manual-input'); if (b) b.click(); }
     };
 
-    // --- Resize / orientation change ---
-    function _onResize() {
-        _setupCanvas();
-        // Fully recalculate layout so protractor scales to new orientation
-        _defaultLayout();
+    // === History ===
+    function _addHistory(ang) {
+        const tt = document.querySelector('input[name="testType"]:checked');
+        const ts = document.querySelector('input[name="testSide"]:checked');
+        const label = (tt ? { slr: '直腿抬高', hip: '髋屈曲', shoulder: '肩屈' }[tt.value] || '' : '') + (ts ? (ts.value === 'L' ? '(左)' : '(右)') : '');
+        _history.unshift({ angle: ang, label: label, time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) });
+        if (_history.length > 50) _history.length = 50;
+        localStorage.setItem('p_history', JSON.stringify(_history));
+    }
+    window.pToggleHistory = function() {
+        const p = document.getElementById('protractor-history-panel');
+        p.classList.toggle('hidden'); _renderHistory();
+    };
+    window.pClearHistory = function() {
+        _history = []; localStorage.removeItem('p_history'); _renderHistory();
+    };
+    function _renderHistory() {
+        const list = document.getElementById('protractor-history-list');
+        if (!_history.length) { list.innerHTML = '<p class="text-white/30 text-[10px] text-center mt-8">暂无记录</p>'; return; }
+        list.innerHTML = _history.map(h =>
+            `<div class="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                <div><span class="text-white font-black text-sm">${h.angle}°</span><span class="text-white/40 text-[9px] ml-1.5">${h.label}</span></div>
+                <span class="text-white/30 text-[9px]">${h.time}</span>
+            </div>`
+        ).join('');
     }
 
-    // --- Angle helpers ---
-    function _rawAngleRad(x, y) {
-        return Math.atan2(_pCY - y, x - _pCX);
-    }
+    // === Resize ===
+    function _onResize() { _setupCanvas(); _defaultLayout(); }
+
+    // === Helpers ===
+    function _dispAngle() { return _dualMode ? Math.abs(_pAngle - _pAngle2) : _pAngle; }
     function _syncBadge() {
-        document.getElementById('protractor-angle-badge').textContent = _pAngle + '°';
+        const a = _dispAngle();
+        document.getElementById('protractor-angle-badge').textContent = a + '°';
     }
-    function _handlePos() {
-        const rad = _pAngle * Math.PI / 180;
-        return { x: _pCX + _pR * 0.72 * Math.cos(rad), y: _pCY - _pR * 0.72 * Math.sin(rad) };
+    function _rawRad(x, y) { return Math.atan2(_pCY - y, x - _pCX); }
+    function _hPos(ang) {
+        const r = ang * Math.PI / 180;
+        return { x: _pCX + _pR * 0.72 * Math.cos(r), y: _pCY - _pR * 0.72 * Math.sin(r) };
     }
-    function _dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
-    function _pinchDist(t) { return Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY); }
+    function _d(a, b, c, e) { return Math.hypot(c - a, e - b); }
+    function _pDist(t) { return Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY); }
 
-    // --- Incremental angle update (smooth, no jumps) ---
-    function _beginRotate(x, y) {
-        _mode = 'rotate';
-        _lastTouchAngleRad = _rawAngleRad(x, y);
+    // === Rotation (incremental) ===
+    function _beginRot(x, y, ptr) {
+        _mode = 'rotate'; _activePtr = ptr;
+        if (ptr === 2) _lastRad2 = _rawRad(x, y);
+        else _lastRad = _rawRad(x, y);
     }
-    function _updateRotate(x, y) {
-        const cur = _rawAngleRad(x, y);
-        if (_lastTouchAngleRad === null) { _lastTouchAngleRad = cur; return; }
-        let delta = (cur - _lastTouchAngleRad) * (180 / Math.PI);
-        // Wrap delta to [-180, 180]
-        if (delta > 180) delta -= 360;
-        if (delta < -180) delta += 360;
-        _lastTouchAngleRad = cur;
-        _pAngle = Math.max(0, Math.min(180, Math.round(_pAngle + delta)));
-        _syncBadge();
-        const bucket = Math.floor(_pAngle / 10);
-        if (bucket !== _prevAngleBucket) {
-            _prevAngleBucket = bucket;
-            if (navigator.vibrate) navigator.vibrate(10);
+    function _updRot(x, y) {
+        const cur = _rawRad(x, y);
+        if (_activePtr === 2) {
+            if (_lastRad2 === null) { _lastRad2 = cur; return; }
+            let dl = (cur - _lastRad2) * 180 / Math.PI;
+            if (dl > 180) dl -= 360; if (dl < -180) dl += 360;
+            _lastRad2 = cur;
+            _pAngle2 = Math.max(0, Math.min(180, Math.round(_pAngle2 + dl)));
+        } else {
+            if (_lastRad === null) { _lastRad = cur; return; }
+            let dl = (cur - _lastRad) * 180 / Math.PI;
+            if (dl > 180) dl -= 360; if (dl < -180) dl += 360;
+            _lastRad = cur;
+            _pAngle = Math.max(0, Math.min(180, Math.round(_pAngle + dl)));
         }
+        _syncBadge();
+        const bk = Math.floor(_dispAngle() / 10);
+        if (bk !== _prevBucket) { _prevBucket = bk; if (navigator.vibrate) navigator.vibrate(10); }
     }
 
-    // --- Touch ---
+    // === Touch ===
     function _tStart(e) {
         e.preventDefault();
-        if (e.touches.length === 2) {
-            _mode = 'pinch';
-            _pinchStartDist = _pinchDist(e.touches);
-            _pinchStartR = _pR;
-            return;
-        }
+        if (e.touches.length === 2) { _mode = 'pinch'; _pinchStartDist = _pDist(e.touches); _pinchStartR = _pR; return; }
         const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        const h = _handlePos();
-        if (_dist(tx, ty, h.x, h.y) < HANDLE_DIST && !_pLocked) {
-            _beginRotate(tx, ty);
-        } else {
-            _mode = 'move';
-            _moveOffX = tx - _pCX;
-            _moveOffY = ty - _pCY;
-        }
+        const h1 = _hPos(_pAngle), h2 = _dualMode ? _hPos(_pAngle2) : null;
+        const d1 = _d(tx, ty, h1.x, h1.y);
+        const d2 = h2 ? _d(tx, ty, h2.x, h2.y) : 999;
+        if (!_pLocked && d1 < HANDLE_DIST && d1 <= d2) _beginRot(tx, ty, 1);
+        else if (!_pLocked && _dualMode && d2 < HANDLE_DIST) _beginRot(tx, ty, 2);
+        else { _mode = 'move'; _moveOffX = tx - _pCX; _moveOffY = ty - _pCY; }
     }
     function _tMove(e) {
         e.preventDefault();
         if (_mode === 'pinch' && e.touches.length === 2) {
-            const d = _pinchDist(e.touches);
-            const maxR = Math.min(window.innerWidth, window.innerHeight) * MAX_R_RATIO;
-            _pR = Math.max(MIN_R, Math.min(maxR, _pinchStartR * (d / _pinchStartDist)));
-            return;
+            const d = _pDist(e.touches), mx = Math.min(window.innerWidth, window.innerHeight) * MAX_R_RATIO;
+            _pR = Math.max(MIN_R, Math.min(mx, _pinchStartR * (d / _pinchStartDist))); return;
         }
         const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        if (_mode === 'rotate' && !_pLocked) _updateRotate(tx, ty);
+        if (_mode === 'rotate' && !_pLocked) _updRot(tx, ty);
         else if (_mode === 'move') { _pCX = tx - _moveOffX; _pCY = ty - _moveOffY; }
     }
-    function _tEnd(e) {
-        if (e.touches.length < 2) { _mode = 'none'; _lastTouchAngleRad = null; }
-    }
+    function _tEnd(e) { if (e.touches.length < 2) { _mode = 'none'; _lastRad = null; _lastRad2 = null; } }
 
-    // --- Mouse ---
+    // === Mouse ===
     function _mDown(e) {
-        const h = _handlePos();
-        if (_dist(e.clientX, e.clientY, h.x, h.y) < HANDLE_DIST && !_pLocked) {
-            _beginRotate(e.clientX, e.clientY);
-        } else {
-            _mode = 'move'; _moveOffX = e.clientX - _pCX; _moveOffY = e.clientY - _pCY;
-        }
+        const h1 = _hPos(_pAngle), h2 = _dualMode ? _hPos(_pAngle2) : null;
+        const d1 = _d(e.clientX, e.clientY, h1.x, h1.y), d2 = h2 ? _d(e.clientX, e.clientY, h2.x, h2.y) : 999;
+        if (!_pLocked && d1 < HANDLE_DIST && d1 <= d2) _beginRot(e.clientX, e.clientY, 1);
+        else if (!_pLocked && _dualMode && d2 < HANDLE_DIST) _beginRot(e.clientX, e.clientY, 2);
+        else { _mode = 'move'; _moveOffX = e.clientX - _pCX; _moveOffY = e.clientY - _pCY; }
     }
     function _mMove(e) {
-        if (_mode === 'rotate' && !_pLocked) _updateRotate(e.clientX, e.clientY);
+        if (_mode === 'rotate' && !_pLocked) _updRot(e.clientX, e.clientY);
         else if (_mode === 'move') { _pCX = e.clientX - _moveOffX; _pCY = e.clientY - _moveOffY; }
     }
-    function _mUp() { _mode = 'none'; _lastTouchAngleRad = null; }
+    function _mUp() { _mode = 'none'; _lastRad = null; _lastRad2 = null; }
 
-    // --- Draw (HiDPI) ---
+    // === Draw ===
     function _drawLoop() {
-        const canvas = document.getElementById('protractor-canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('protractor-canvas'), ctx = canvas.getContext('2d');
         if (!ctx) return;
-
-        const d = _dpr;
-        ctx.setTransform(d, 0, 0, d, 0, 0); // scale for HiDPI
-        const cssW = canvas.width / d, cssH = canvas.height / d;
+        ctx.setTransform(_dpr, 0, 0, _dpr, 0, 0);
+        const cssW = canvas.width / _dpr, cssH = canvas.height / _dpr;
         ctx.clearRect(0, 0, cssW, cssH);
 
-        const cx = _pCX, cy = _pCY, r = _pR;
-        const r2 = r * 0.76;
+        const cx = _pCX, cy = _pCY, r = _pR, r2 = r * 0.76;
+        const tC = _darkTheme; // true=dark overlay, false=light overlay
+        const bgFill = tC ? 'rgba(0,0,0,0.30)' : 'rgba(255,255,255,0.35)';
+        const lineC = tC ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.85)';
+        const lineC2 = tC ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+        const lineC3 = tC ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
+        const txtC = tC ? '#fff' : '#111';
+        const txtC2 = tC ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.35)';
+        const accent = _pLocked ? '#ff9500' : '#5bd4c8';
+        const accent2 = '#ff6b6b';
 
         // BG arc
-        ctx.beginPath();
-        ctx.moveTo(cx - r - 24, cy);
-        ctx.arc(cx, cy, r + 24, Math.PI, 0, false);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(0,0,0,0.28)';
-        ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx - r - 24, cy);
+        ctx.arc(cx, cy, r + 24, Math.PI, 0, false); ctx.closePath();
+        ctx.fillStyle = bgFill; ctx.fill();
 
-        // Outer arc
+        // Angle range highlight
+        const tt = document.querySelector('input[name="testType"]:checked');
+        if (tt && RANGES[tt.value]) {
+            const rng = RANGES[tt.value];
+            const a1 = rng.green[0] * Math.PI / 180, a2 = rng.green[1] * Math.PI / 180;
+            ctx.beginPath(); ctx.arc(cx, cy, r - 2, -a2, -a1, false);
+            ctx.strokeStyle = 'rgba(52,199,89,0.35)'; ctx.lineWidth = r * 0.12; ctx.stroke();
+            // Label
+            const mid = (rng.green[0] + rng.green[1]) / 2 * Math.PI / 180;
+            ctx.save(); ctx.fillStyle = 'rgba(52,199,89,0.6)';
+            ctx.font = `bold ${Math.max(8, r * 0.055)}px ${_font}`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(rng.label, cx + (r * 0.55) * Math.cos(mid), cy - (r * 0.55) * Math.sin(mid));
+            ctx.restore();
+        }
+
+        // Arcs
         ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 2.5; ctx.stroke();
-
-        // Inner arc
+        ctx.strokeStyle = lineC; ctx.lineWidth = 2.5; ctx.stroke();
         ctx.beginPath(); ctx.arc(cx, cy, r2, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.strokeStyle = lineC2; ctx.lineWidth = 1.5; ctx.stroke();
 
-        // Baseline (dashed)
-        ctx.beginPath();
-        ctx.moveTo(cx - r - 16, cy); ctx.lineTo(cx + r + 16, cy);
-        ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 2;
-        ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([]);
+        // Baseline
+        ctx.beginPath(); ctx.moveTo(cx - r - 16, cy); ctx.lineTo(cx + r + 16, cy);
+        ctx.strokeStyle = lineC2; ctx.lineWidth = 2; ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([]);
 
-        // Ticks & labels — bigger, bolder
-        const fBig = Math.max(12, r * 0.09);
-        const fSm = Math.max(9, r * 0.065);
+        // Ticks
+        const fB = Math.max(12, r * 0.09), fS = Math.max(9, r * 0.065);
         for (let deg = 0; deg <= 180; deg++) {
-            const rad = deg * Math.PI / 180;
-            const co = Math.cos(rad), si = Math.sin(rad);
+            const rad = deg * Math.PI / 180, co = Math.cos(rad), si = Math.sin(rad);
             if (deg % 10 === 0) {
-                // Long tick outer
-                ctx.beginPath();
-                ctx.moveTo(cx + (r - 16) * co, cy - (r - 16) * si);
+                ctx.beginPath(); ctx.moveTo(cx + (r - 16) * co, cy - (r - 16) * si);
                 ctx.lineTo(cx + r * co, cy - r * si);
-                ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 2.5; ctx.stroke();
-
-                // Long tick inner
-                ctx.beginPath();
-                ctx.moveTo(cx + r2 * co, cy - r2 * si);
+                ctx.strokeStyle = lineC; ctx.lineWidth = 2.5; ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx + r2 * co, cy - r2 * si);
                 ctx.lineTo(cx + (r2 + 11) * co, cy - (r2 + 11) * si);
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; ctx.stroke();
-
-                // Outer label
-                ctx.save();
-                ctx.fillStyle = '#fff';
-                ctx.font = `bold ${fBig}px -apple-system,BlinkMacSystemFont,sans-serif`;
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 4;
-                ctx.fillText(deg.toString(), cx + (r + 20) * co, cy - (r + 20) * si);
-                ctx.restore();
-
-                // Inner label (supplementary)
+                ctx.strokeStyle = lineC2; ctx.lineWidth = 2; ctx.stroke();
+                ctx.save(); ctx.fillStyle = txtC;
+                ctx.font = `bold ${fB}px ${_font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.shadowColor = tC ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)'; ctx.shadowBlur = 4;
+                ctx.fillText(deg.toString(), cx + (r + 20) * co, cy - (r + 20) * si); ctx.restore();
                 if (deg > 0 && deg < 180) {
-                    ctx.save();
-                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-                    ctx.font = `bold ${fSm}px -apple-system,BlinkMacSystemFont,sans-serif`;
-                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText((180 - deg).toString(), cx + (r2 - 16) * co, cy - (r2 - 16) * si);
-                    ctx.restore();
+                    ctx.save(); ctx.fillStyle = txtC2;
+                    ctx.font = `bold ${fS}px ${_font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText((180 - deg).toString(), cx + (r2 - 16) * co, cy - (r2 - 16) * si); ctx.restore();
                 }
             } else if (deg % 5 === 0) {
-                ctx.beginPath();
-                ctx.moveTo(cx + (r - 10) * co, cy - (r - 10) * si);
+                ctx.beginPath(); ctx.moveTo(cx + (r - 10) * co, cy - (r - 10) * si);
                 ctx.lineTo(cx + r * co, cy - r * si);
-                ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = lineC2; ctx.lineWidth = 2; ctx.stroke();
             } else {
-                ctx.beginPath();
-                ctx.moveTo(cx + (r - 6) * co, cy - (r - 6) * si);
+                ctx.beginPath(); ctx.moveTo(cx + (r - 6) * co, cy - (r - 6) * si);
                 ctx.lineTo(cx + r * co, cy - r * si);
-                ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.2; ctx.stroke();
+                ctx.strokeStyle = lineC3; ctx.lineWidth = 1.2; ctx.stroke();
             }
         }
 
         // Center dot
-        ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-        const accent = _pLocked ? '#ff9500' : '#5bd4c8';
-        ctx.fillStyle = accent; ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fillStyle = accent; ctx.fill();
 
-        // Pointer line
-        const pRad = _pAngle * Math.PI / 180;
-        const pc = Math.cos(pRad), ps = Math.sin(pRad);
-
+        // --- Pointer 1 ---
+        const r1 = _pAngle * Math.PI / 180, c1 = Math.cos(r1), s1 = Math.sin(r1);
+        // Guide line (extends across screen)
+        if (_guideLine) {
+            ctx.save(); ctx.beginPath();
+            ctx.moveTo(cx - cssW * c1, cy + cssW * s1);
+            ctx.lineTo(cx + cssW * c1, cy - cssW * s1);
+            ctx.strokeStyle = accent.replace(')', ',0.15)').replace('rgb', 'rgba').replace('#5bd4c8', 'rgba(91,212,200,0.15)').replace('#ff9500', 'rgba(255,149,0,0.15)');
+            ctx.setLineDash([4, 8]); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+            ctx.restore();
+        }
         ctx.beginPath(); ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (r + 10) * pc, cy - (r + 10) * ps);
+        ctx.lineTo(cx + (r + 10) * c1, cy - (r + 10) * s1);
         ctx.strokeStyle = accent; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.stroke();
-
-        // Handle circle
-        const hx = cx + r * 0.72 * pc, hy = cy - r * 0.72 * ps;
-        ctx.beginPath(); ctx.arc(hx, hy, 22, 0, Math.PI * 2);
+        // Handle 1
+        const hx1 = cx + r * 0.72 * c1, hy1 = cy - r * 0.72 * s1;
+        ctx.beginPath(); ctx.arc(hx1, hy1, 22, 0, Math.PI * 2);
         ctx.fillStyle = _pLocked ? 'rgba(255,149,0,0.18)' : 'rgba(91,212,200,0.22)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(hx, hy, 10, 0, Math.PI * 2);
-        ctx.fillStyle = accent; ctx.fill();
+        ctx.beginPath(); ctx.arc(hx1, hy1, 10, 0, Math.PI * 2); ctx.fillStyle = accent; ctx.fill();
 
-        // Large angle text
-        ctx.save();
-        ctx.fillStyle = accent;
-        ctx.font = `bold ${Math.max(30, r * 0.22)}px -apple-system,BlinkMacSystemFont,sans-serif`;
+        // --- Pointer 2 (dual mode) ---
+        if (_dualMode) {
+            const r2a = _pAngle2 * Math.PI / 180, c2a = Math.cos(r2a), s2a = Math.sin(r2a);
+            if (_guideLine) {
+                ctx.save(); ctx.beginPath();
+                ctx.moveTo(cx - cssW * c2a, cy + cssW * s2a);
+                ctx.lineTo(cx + cssW * c2a, cy - cssW * s2a);
+                ctx.strokeStyle = 'rgba(255,107,107,0.15)';
+                ctx.setLineDash([4, 8]); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+                ctx.restore();
+            }
+            ctx.beginPath(); ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (r + 10) * c2a, cy - (r + 10) * s2a);
+            ctx.strokeStyle = accent2; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke();
+            const hx2 = cx + r * 0.72 * c2a, hy2 = cy - r * 0.72 * s2a;
+            ctx.beginPath(); ctx.arc(hx2, hy2, 20, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,107,107,0.2)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(hx2, hy2, 9, 0, Math.PI * 2); ctx.fillStyle = accent2; ctx.fill();
+            // Angle arc between pointers
+            const aMin = Math.min(_pAngle, _pAngle2) * Math.PI / 180;
+            const aMax = Math.max(_pAngle, _pAngle2) * Math.PI / 180;
+            ctx.beginPath(); ctx.arc(cx, cy, r * 0.35, -aMax, -aMin, false);
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 2; ctx.stroke();
+        }
+
+        // Angle text
+        const dispA = _dispAngle();
+        ctx.save(); ctx.fillStyle = accent;
+        ctx.font = `bold ${Math.max(30, r * 0.22)}px ${_font}`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-        ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 10;
-        ctx.fillText(_pAngle + '°', cx, cy - 20);
-        ctx.restore();
+        ctx.shadowColor = tC ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)'; ctx.shadowBlur = 10;
+        ctx.fillText(dispA + '°', cx, cy - 20); ctx.restore();
+
+        if (_dualMode) {
+            ctx.save(); ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = `bold ${Math.max(9, r * 0.065)}px ${_font}`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText('夹角', cx, cy - 14); ctx.restore();
+        }
 
         if (_pLocked) {
-            ctx.save();
-            ctx.fillStyle = 'rgba(255,149,0,0.8)';
-            ctx.font = `bold ${Math.max(11, r * 0.08)}px -apple-system,BlinkMacSystemFont,sans-serif`;
+            ctx.save(); ctx.fillStyle = 'rgba(255,149,0,0.8)';
+            ctx.font = `bold ${Math.max(11, r * 0.08)}px ${_font}`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.fillText('已锁定', cx, cy + 10);
+            ctx.fillText('已锁定', cx, cy + 10); ctx.restore();
+        }
+
+        // Level bubble
+        if (_levelOn) {
+            const bx = cx, by = cy + r + 40;
+            const bw = Math.min(r * 1.2, 140), bh = 14;
+            // Track
+            ctx.beginPath();
+            ctx.roundRect(bx - bw / 2, by - bh / 2, bw, bh, bh / 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+            // Center mark
+            ctx.beginPath(); ctx.moveTo(bx, by - bh / 2 - 3); ctx.lineTo(bx, by + bh / 2 + 3);
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+            // Bubble
+            const clampTilt = Math.max(-45, Math.min(45, _tiltAngle));
+            const bubbleX = bx + (clampTilt / 45) * (bw / 2 - 8);
+            const isLevel = Math.abs(_tiltAngle) < 2;
+            ctx.beginPath(); ctx.arc(bubbleX, by, 5, 0, Math.PI * 2);
+            ctx.fillStyle = isLevel ? '#34c759' : '#ff9500'; ctx.fill();
+            // Label
+            ctx.save(); ctx.fillStyle = isLevel ? 'rgba(52,199,89,0.8)' : 'rgba(255,149,0,0.8)';
+            ctx.font = `bold ${Math.max(9, r * 0.06)}px ${_font}`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(isLevel ? '水平 ✓' : Math.abs(_tiltAngle).toFixed(1) + '° 倾斜', bx, by + bh / 2 + 5);
             ctx.restore();
         }
 
