@@ -325,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.3</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4887,264 +4887,393 @@
 <!-- 角度测量器模态窗 -->
 <div id="protractor-modal" class="fixed inset-0 z-[9999] bg-black hidden flex-col">
     <!-- 顶部栏 -->
-    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top)] bg-gradient-to-b from-black/70 to-transparent pb-6" style="padding-top:max(env(safe-area-inset-top),12px)">
+    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 bg-gradient-to-b from-black/70 to-transparent pb-6" style="padding-top:max(env(safe-area-inset-top),12px)">
         <button onclick="closeProtractor()" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white active:scale-90 transition-transform">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
-        <div id="protractor-angle-badge" class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-lg tracking-wide">0°</div>
+        <div id="protractor-angle-badge" class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-lg tracking-wide tabular-nums">45°</div>
         <div class="w-9"></div>
     </div>
     <!-- 摄像头视频 -->
     <video id="protractor-video" class="absolute inset-0 w-full h-full object-cover" playsinline autoplay muted></video>
     <!-- 量角器 Canvas 叠加 -->
     <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full" style="touch-action:none;"></canvas>
-    <!-- 底部提示 -->
-    <div class="absolute bottom-0 left-0 right-0 z-10 text-center pb-[env(safe-area-inset-bottom)] bg-gradient-to-t from-black/70 to-transparent pt-8" style="padding-bottom:max(env(safe-area-inset-bottom),16px)">
-        <p class="text-white/80 text-[11px] font-bold tracking-wide">将摄像头对准大腿侧面，拖动指针对齐大腿方向读取角度</p>
+    <!-- 摄像头错误提示 -->
+    <div id="protractor-cam-error" class="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
+    <!-- 底部工具栏 -->
+    <div class="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent pt-10" style="padding-bottom:max(env(safe-area-inset-bottom),12px)">
+        <p class="text-white/50 text-[10px] font-bold tracking-wide text-center mb-3">对准大腿侧面 · 拖动指针对齐方向 · 可移动/缩放量角器</p>
+        <div class="flex items-center justify-center gap-3 px-5 pb-1">
+            <button id="btn-protractor-lock" onclick="toggleProtractorLock()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg id="protractor-lock-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
+                <span id="protractor-lock-text">锁定</span>
+            </button>
+            <button onclick="protractorScreenshot()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
+                截图
+            </button>
+            <button onclick="useProtractorAngle()" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[11px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                使用此角度
+            </button>
+        </div>
     </div>
 </div>
 
 <script>
 (function() {
-    let _protractorStream = null;
-    let _protractorAngle = 45;
-    let _isDragging = false;
-    let _protractorRAF = null;
-    let _centerX = 0, _centerY = 0, _radius = 0;
+    let _pStream = null;
+    let _pAngle = 45;
+    let _pRAF = null;
+    let _pCX = 0, _pCY = 0, _pR = 0;
+    let _pLocked = false;
+
+    // Interaction state
+    let _mode = 'none'; // 'none' | 'rotate' | 'move' | 'pinch'
+    let _moveOffX = 0, _moveOffY = 0;
+    let _pinchStartDist = 0, _pinchStartR = 0;
+    let _prevAngleBucket = -1;
+    const HANDLE_DIST_THRESHOLD = 50;
+    const MIN_RADIUS = 60, MAX_RADIUS_RATIO = 0.48;
 
     window.openProtractor = function() {
         const modal = document.getElementById('protractor-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        _pLocked = false;
+        _updateLockUI();
 
         const video = document.getElementById('protractor-video');
         const canvas = document.getElementById('protractor-canvas');
+        const errEl = document.getElementById('protractor-cam-error');
+        errEl.classList.add('hidden');
 
-        // Size canvas to screen
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        _resizeCanvas();
 
-        // Start camera
+        // Default center
+        _pCX = canvas.width / 2;
+        _pCY = canvas.height * 0.58;
+        _pR = Math.min(canvas.width * 0.42, canvas.height * 0.34);
+        _pAngle = 45;
+        _prevAngleBucket = Math.floor(45 / 10);
+        _syncBadge();
+
+        // Camera
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
-            .then(stream => {
-                _protractorStream = stream;
-                video.srcObject = stream;
-                video.play().catch(() => {});
-            })
-            .catch(err => {
-                console.warn('[Protractor] camera error:', err);
+            .then(stream => { _pStream = stream; video.srcObject = stream; video.play().catch(() => {}); })
+            .catch(() => {
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 4000);
             });
 
-        // Compute layout
-        _computeLayout(canvas.width, canvas.height);
+        // Events
+        canvas.addEventListener('touchstart', _tStart, { passive: false });
+        canvas.addEventListener('touchmove', _tMove, { passive: false });
+        canvas.addEventListener('touchend', _tEnd, { passive: false });
+        canvas.addEventListener('touchcancel', _tEnd, { passive: false });
+        canvas.addEventListener('mousedown', _mDown);
+        canvas.addEventListener('mousemove', _mMove);
+        canvas.addEventListener('mouseup', _mUp);
+        window.addEventListener('resize', _onResize);
 
-        // Touch events
-        canvas.addEventListener('touchstart', _onTouchStart, { passive: false });
-        canvas.addEventListener('touchmove', _onTouchMove, { passive: false });
-        canvas.addEventListener('touchend', _onTouchEnd, { passive: false });
-        canvas.addEventListener('mousedown', _onMouseDown);
-        canvas.addEventListener('mousemove', _onMouseMove);
-        canvas.addEventListener('mouseup', _onMouseUp);
-
-        // Draw loop
-        _protractorAngle = 45;
-        _drawProtractor();
+        _drawLoop();
     };
 
     window.closeProtractor = function() {
         const modal = document.getElementById('protractor-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
-
-        if (_protractorRAF) { cancelAnimationFrame(_protractorRAF); _protractorRAF = null; }
+        if (_pRAF) { cancelAnimationFrame(_pRAF); _pRAF = null; }
 
         const canvas = document.getElementById('protractor-canvas');
-        canvas.removeEventListener('touchstart', _onTouchStart);
-        canvas.removeEventListener('touchmove', _onTouchMove);
-        canvas.removeEventListener('touchend', _onTouchEnd);
-        canvas.removeEventListener('mousedown', _onMouseDown);
-        canvas.removeEventListener('mousemove', _onMouseMove);
-        canvas.removeEventListener('mouseup', _onMouseUp);
+        canvas.removeEventListener('touchstart', _tStart);
+        canvas.removeEventListener('touchmove', _tMove);
+        canvas.removeEventListener('touchend', _tEnd);
+        canvas.removeEventListener('touchcancel', _tEnd);
+        canvas.removeEventListener('mousedown', _mDown);
+        canvas.removeEventListener('mousemove', _mMove);
+        canvas.removeEventListener('mouseup', _mUp);
+        window.removeEventListener('resize', _onResize);
 
-        if (_protractorStream) {
-            _protractorStream.getTracks().forEach(t => t.stop());
-            _protractorStream = null;
-        }
-        const video = document.getElementById('protractor-video');
-        video.srcObject = null;
+        if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
+        document.getElementById('protractor-video').srcObject = null;
     };
 
-    function _computeLayout(w, h) {
-        _radius = Math.min(w * 0.44, h * 0.38);
-        _centerX = w / 2;
-        _centerY = h * 0.62;
+    // --- Lock ---
+    window.toggleProtractorLock = function() {
+        _pLocked = !_pLocked;
+        _updateLockUI();
+    };
+    function _updateLockUI() {
+        const btn = document.getElementById('btn-protractor-lock');
+        const txt = document.getElementById('protractor-lock-text');
+        const ico = document.getElementById('protractor-lock-icon');
+        if (_pLocked) {
+            btn.classList.remove('bg-white/15', 'border-white/10');
+            btn.classList.add('bg-[#ff9500]/70', 'border-[#ff9500]/40');
+            txt.textContent = '已锁定';
+            ico.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6-6V7a6 6 0 1112 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"/>';
+        } else {
+            btn.classList.add('bg-white/15', 'border-white/10');
+            btn.classList.remove('bg-[#ff9500]/70', 'border-[#ff9500]/40');
+            txt.textContent = '锁定';
+            ico.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/>';
+        }
     }
 
-    function _angleFromPoint(x, y) {
-        const dx = x - _centerX;
-        const dy = _centerY - y;
+    // --- Screenshot ---
+    window.protractorScreenshot = function() {
+        const video = document.getElementById('protractor-video');
+        const pCanvas = document.getElementById('protractor-canvas');
+        const tmp = document.createElement('canvas');
+        tmp.width = pCanvas.width; tmp.height = pCanvas.height;
+        const ctx = tmp.getContext('2d');
+        if (video.srcObject && video.readyState >= 2) {
+            ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
+        } else {
+            ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, tmp.width, tmp.height);
+        }
+        ctx.drawImage(pCanvas, 0, 0);
+        tmp.toBlob(blob => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `angle_${_pAngle}deg_${Date.now()}.png`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 3000);
+        }, 'image/png');
+        if (navigator.vibrate) navigator.vibrate(30);
+    };
+
+    // --- Use angle (fill into current test field) ---
+    window.useProtractorAngle = function() {
+        const testType = document.querySelector('input[name="testType"]:checked');
+        const testSide = document.querySelector('input[name="testSide"]:checked');
+        if (!testType || !testSide) { closeProtractor(); return; }
+        const t = testType.value, s = testSide.value.toLowerCase();
+        const fieldMap = { slr: 'm-slr-', hip: 'm-hip-', shoulder: 'm-sh-' };
+        const prefix = fieldMap[t];
+        if (prefix) {
+            const input = document.getElementById(prefix + s);
+            if (input) { input.value = _pAngle; input.dispatchEvent(new Event('input', { bubbles: true })); }
+        }
+        closeProtractor();
+        const manualPanel = document.getElementById('manual-input-panel');
+        if (manualPanel && manualPanel.classList.contains('hidden')) {
+            const btn = document.getElementById('btn-manual-input');
+            if (btn) btn.click();
+        }
+    };
+
+    // --- Resize ---
+    function _resizeCanvas() {
+        const c = document.getElementById('protractor-canvas');
+        c.width = window.innerWidth; c.height = window.innerHeight;
+    }
+    function _onResize() {
+        const oldW = document.getElementById('protractor-canvas').width;
+        const oldH = document.getElementById('protractor-canvas').height;
+        _resizeCanvas();
+        const c = document.getElementById('protractor-canvas');
+        _pCX = _pCX * (c.width / oldW);
+        _pCY = _pCY * (c.height / oldH);
+        _pR = Math.min(_pR, Math.min(c.width, c.height) * MAX_RADIUS_RATIO);
+    }
+
+    // --- Angle calc ---
+    function _angleAt(x, y) {
+        const dx = x - _pCX, dy = _pCY - y;
         let a = Math.atan2(dy, dx) * (180 / Math.PI);
-        a = Math.max(0, Math.min(180, a));
-        return Math.round(a);
+        return Math.max(0, Math.min(180, Math.round(a)));
+    }
+    function _syncBadge() {
+        document.getElementById('protractor-angle-badge').textContent = _pAngle + '°';
+    }
+    function _handleFromAngle() {
+        const rad = (180 - _pAngle) * Math.PI / 180;
+        return { x: _pCX + _pR * 0.7 * Math.cos(rad), y: _pCY - _pR * 0.7 * Math.sin(rad) };
+    }
+    function _dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+    function _pinchDist(t) { return Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY); }
+
+    // --- Touch ---
+    function _tStart(e) {
+        e.preventDefault();
+        if (e.touches.length === 2) {
+            _mode = 'pinch';
+            _pinchStartDist = _pinchDist(e.touches);
+            _pinchStartR = _pR;
+            return;
+        }
+        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+        const h = _handleFromAngle();
+        if (_dist(tx, ty, h.x, h.y) < HANDLE_DIST_THRESHOLD && !_pLocked) {
+            _mode = 'rotate';
+            _setAngle(tx, ty);
+        } else {
+            _mode = 'move';
+            _moveOffX = tx - _pCX;
+            _moveOffY = ty - _pCY;
+        }
+    }
+    function _tMove(e) {
+        e.preventDefault();
+        if (_mode === 'pinch' && e.touches.length === 2) {
+            const d = _pinchDist(e.touches);
+            const maxR = Math.min(window.innerWidth, window.innerHeight) * MAX_RADIUS_RATIO;
+            _pR = Math.max(MIN_RADIUS, Math.min(maxR, _pinchStartR * (d / _pinchStartDist)));
+            return;
+        }
+        const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+        if (_mode === 'rotate' && !_pLocked) _setAngle(tx, ty);
+        else if (_mode === 'move') { _pCX = tx - _moveOffX; _pCY = ty - _moveOffY; }
+    }
+    function _tEnd(e) {
+        if (e.touches.length < 2) _mode = 'none';
     }
 
-    function _onTouchStart(e) { e.preventDefault(); _isDragging = true; const t = e.touches[0]; _updateAngle(t.clientX, t.clientY); }
-    function _onTouchMove(e) { e.preventDefault(); if (!_isDragging) return; const t = e.touches[0]; _updateAngle(t.clientX, t.clientY); }
-    function _onTouchEnd(e) { _isDragging = false; }
-    function _onMouseDown(e) { _isDragging = true; _updateAngle(e.clientX, e.clientY); }
-    function _onMouseMove(e) { if (!_isDragging) return; _updateAngle(e.clientX, e.clientY); }
-    function _onMouseUp(e) { _isDragging = false; }
+    // --- Mouse (desktop) ---
+    function _mDown(e) {
+        const h = _handleFromAngle();
+        if (_dist(e.clientX, e.clientY, h.x, h.y) < HANDLE_DIST_THRESHOLD && !_pLocked) {
+            _mode = 'rotate'; _setAngle(e.clientX, e.clientY);
+        } else {
+            _mode = 'move'; _moveOffX = e.clientX - _pCX; _moveOffY = e.clientY - _pCY;
+        }
+    }
+    function _mMove(e) {
+        if (_mode === 'rotate' && !_pLocked) _setAngle(e.clientX, e.clientY);
+        else if (_mode === 'move') { _pCX = e.clientX - _moveOffX; _pCY = e.clientY - _moveOffY; }
+    }
+    function _mUp() { _mode = 'none'; }
 
-    function _updateAngle(x, y) {
-        _protractorAngle = _angleFromPoint(x, y);
-        document.getElementById('protractor-angle-badge').textContent = _protractorAngle + '°';
+    function _setAngle(x, y) {
+        _pAngle = _angleAt(x, y);
+        _syncBadge();
+        const bucket = Math.floor(_pAngle / 10);
+        if (bucket !== _prevAngleBucket) {
+            _prevAngleBucket = bucket;
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
     }
 
-    function _drawProtractor() {
+    // --- Draw ---
+    function _drawLoop() {
         const canvas = document.getElementById('protractor-canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const cx = _centerX, cy = _centerY, r = _radius;
-        const r2 = r * 0.78; // inner ring
+        const cx = _pCX, cy = _pCY, r = _pR;
+        const r2 = r * 0.78;
 
-        // Semi-transparent background arc
+        // BG arc
         ctx.beginPath();
         ctx.moveTo(cx - r - 20, cy);
         ctx.arc(cx, cy, r + 20, Math.PI, 0, false);
         ctx.closePath();
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
         ctx.fill();
 
         // Outer arc
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0, false);
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
 
         // Inner arc
-        ctx.beginPath();
-        ctx.arc(cx, cy, r2, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r2, Math.PI, 0, false);
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1; ctx.stroke();
 
         // Baseline
         ctx.beginPath();
-        ctx.moveTo(cx - r - 10, cy);
-        ctx.lineTo(cx + r + 10, cy);
-        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.moveTo(cx - r - 12, cy); ctx.lineTo(cx + r + 12, cy);
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
 
-        // Tick marks & labels
+        // Ticks & labels
+        const fontSize = Math.max(9, r * 0.072);
+        const fontSm = Math.max(7, r * 0.055);
         for (let deg = 0; deg <= 180; deg++) {
             const rad = (180 - deg) * Math.PI / 180;
-            const cos = Math.cos(rad), sin = Math.sin(rad);
-
+            const c = Math.cos(rad), s = Math.sin(rad);
             if (deg % 10 === 0) {
-                // Long tick
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 14) * cos, cy - (r - 14) * sin);
-                ctx.lineTo(cx + r * cos, cy - r * sin);
-                ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                ctx.moveTo(cx + (r - 13) * c, cy - (r - 13) * s);
+                ctx.lineTo(cx + r * c, cy - r * s);
+                ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
 
-                // Inner tick
                 ctx.beginPath();
-                ctx.moveTo(cx + r2 * cos, cy - r2 * sin);
-                ctx.lineTo(cx + (r2 + 10) * cos, cy - (r2 + 10) * sin);
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+                ctx.moveTo(cx + r2 * c, cy - r2 * s);
+                ctx.lineTo(cx + (r2 + 9) * c, cy - (r2 + 9) * s);
+                ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-                // Outer label
                 ctx.save();
-                ctx.fillStyle = 'rgba(255,255,255,0.9)';
-                ctx.font = `bold ${Math.max(10, r * 0.075)}px -apple-system, sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                const lx = cx + (r + 16) * cos, ly = cy - (r + 16) * sin;
-                ctx.fillText(deg.toString(), lx, ly);
+                ctx.fillStyle = 'rgba(255,255,255,0.88)';
+                ctx.font = `bold ${fontSize}px -apple-system,sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(deg.toString(), cx + (r + 15) * c, cy - (r + 15) * s);
                 ctx.restore();
 
-                // Inner label (supplementary)
                 if (deg > 0 && deg < 180) {
                     ctx.save();
-                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-                    ctx.font = `${Math.max(8, r * 0.058)}px -apple-system, sans-serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    const lx2 = cx + (r2 - 14) * cos, ly2 = cy - (r2 - 14) * sin;
-                    ctx.fillText((180 - deg).toString(), lx2, ly2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.38)';
+                    ctx.font = `${fontSm}px -apple-system,sans-serif`;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText((180 - deg).toString(), cx + (r2 - 13) * c, cy - (r2 - 13) * s);
                     ctx.restore();
                 }
             } else if (deg % 5 === 0) {
-                // Medium tick
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 10) * cos, cy - (r - 10) * sin);
-                ctx.lineTo(cx + r * cos, cy - r * sin);
-                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
+                ctx.moveTo(cx + (r - 9) * c, cy - (r - 9) * s);
+                ctx.lineTo(cx + r * c, cy - r * s);
+                ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
             } else {
-                // Short tick
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 6) * cos, cy - (r - 6) * sin);
-                ctx.lineTo(cx + r * cos, cy - r * sin);
-                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                ctx.moveTo(cx + (r - 5) * c, cy - (r - 5) * s);
+                ctx.lineTo(cx + r * c, cy - r * s);
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
             }
         }
 
         // Center dot
-        ctx.beginPath();
-        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-        ctx.fillStyle = '#5bd4c8';
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = _pLocked ? '#ff9500' : '#5bd4c8'; ctx.fill();
 
-        // Pointer line
-        const pRad = (180 - _protractorAngle) * Math.PI / 180;
-        const pCos = Math.cos(pRad), pSin = Math.sin(pRad);
-        const pLen = r + 8;
+        // Pointer
+        const pRad = (180 - _pAngle) * Math.PI / 180;
+        const pc = Math.cos(pRad), ps = Math.sin(pRad);
+        const accentColor = _pLocked ? '#ff9500' : '#5bd4c8';
 
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + pLen * pCos, cy - pLen * pSin);
-        ctx.strokeStyle = '#5bd4c8';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (r + 8) * pc, cy - (r + 8) * ps);
+        ctx.strokeStyle = accentColor; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke();
 
-        // Drag handle
-        const hx = cx + (r * 0.7) * pCos, hy = cy - (r * 0.7) * pSin;
-        ctx.beginPath();
-        ctx.arc(hx, hy, 16, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(91,212,200,0.3)';
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(hx, hy, 8, 0, Math.PI * 2);
-        ctx.fillStyle = '#5bd4c8';
-        ctx.fill();
+        // Handle
+        const hx = cx + r * 0.7 * pc, hy = cy - r * 0.7 * ps;
+        ctx.beginPath(); ctx.arc(hx, hy, 18, 0, Math.PI * 2);
+        ctx.fillStyle = _pLocked ? 'rgba(255,149,0,0.2)' : 'rgba(91,212,200,0.25)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI * 2);
+        ctx.fillStyle = accentColor; ctx.fill();
 
-        // Large angle text near center
+        // Angle text
         ctx.save();
-        ctx.fillStyle = '#5bd4c8';
-        ctx.font = `bold ${Math.max(28, r * 0.2)}px -apple-system, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.shadowColor = 'rgba(0,0,0,0.5)';
-        ctx.shadowBlur = 8;
-        ctx.fillText(_protractorAngle + '°', cx, cy - 18);
+        ctx.fillStyle = accentColor;
+        ctx.font = `bold ${Math.max(26, r * 0.19)}px -apple-system,sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 8;
+        ctx.fillText(_pAngle + '°', cx, cy - 16);
         ctx.restore();
 
-        _protractorRAF = requestAnimationFrame(_drawProtractor);
+        if (_pLocked) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,149,0,0.7)';
+            ctx.font = `bold ${Math.max(10, r * 0.07)}px -apple-system,sans-serif`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText('已锁定', cx, cy + 8);
+            ctx.restore();
+        }
+
+        _pRAF = requestAnimationFrame(_drawLoop);
     }
 })();
 </script>
