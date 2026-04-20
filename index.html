@@ -325,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.3</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.4</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4925,16 +4925,42 @@
     let _pStream = null;
     let _pAngle = 45;
     let _pRAF = null;
+    // CSS pixels (not device pixels) — all coordinates in CSS space
     let _pCX = 0, _pCY = 0, _pR = 0;
     let _pLocked = false;
+    let _dpr = 1;
 
-    // Interaction state
+    // Interaction
     let _mode = 'none'; // 'none' | 'rotate' | 'move' | 'pinch'
     let _moveOffX = 0, _moveOffY = 0;
     let _pinchStartDist = 0, _pinchStartR = 0;
     let _prevAngleBucket = -1;
-    const HANDLE_DIST_THRESHOLD = 50;
-    const MIN_RADIUS = 60, MAX_RADIUS_RATIO = 0.48;
+    // Incremental rotation state
+    let _lastTouchAngleRad = null;
+    const HANDLE_DIST = 60;
+    const MIN_R = 80, MAX_R_RATIO = 0.46;
+
+    // --- HiDPI canvas ---
+    function _setupCanvas() {
+        const c = document.getElementById('protractor-canvas');
+        _dpr = Math.min(window.devicePixelRatio || 1, 3);
+        const cssW = window.innerWidth, cssH = window.innerHeight;
+        c.width = cssW * _dpr;
+        c.height = cssH * _dpr;
+        c.style.width = cssW + 'px';
+        c.style.height = cssH + 'px';
+    }
+
+    function _defaultLayout() {
+        const cssW = window.innerWidth, cssH = window.innerHeight;
+        const isLandscape = cssW > cssH;
+        _pR = isLandscape
+            ? Math.min(cssW * 0.30, cssH * 0.42)
+            : Math.min(cssW * 0.42, cssH * 0.32);
+        _pR = Math.max(_pR, MIN_R);
+        _pCX = cssW / 2;
+        _pCY = isLandscape ? cssH * 0.55 : cssH * 0.52;
+    }
 
     window.openProtractor = function() {
         const modal = document.getElementById('protractor-modal');
@@ -4944,29 +4970,20 @@
         _updateLockUI();
 
         const video = document.getElementById('protractor-video');
-        const canvas = document.getElementById('protractor-canvas');
         const errEl = document.getElementById('protractor-cam-error');
         errEl.classList.add('hidden');
 
-        _resizeCanvas();
-
-        // Default center
-        _pCX = canvas.width / 2;
-        _pCY = canvas.height * 0.58;
-        _pR = Math.min(canvas.width * 0.42, canvas.height * 0.34);
+        _setupCanvas();
+        _defaultLayout();
         _pAngle = 45;
         _prevAngleBucket = Math.floor(45 / 10);
         _syncBadge();
 
-        // Camera
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
             .then(stream => { _pStream = stream; video.srcObject = stream; video.play().catch(() => {}); })
-            .catch(() => {
-                errEl.classList.remove('hidden');
-                setTimeout(() => errEl.classList.add('hidden'), 4000);
-            });
+            .catch(() => { errEl.classList.remove('hidden'); setTimeout(() => errEl.classList.add('hidden'), 4000); });
 
-        // Events
+        const canvas = document.getElementById('protractor-canvas');
         canvas.addEventListener('touchstart', _tStart, { passive: false });
         canvas.addEventListener('touchmove', _tMove, { passive: false });
         canvas.addEventListener('touchend', _tEnd, { passive: false });
@@ -4984,7 +5001,6 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         if (_pRAF) { cancelAnimationFrame(_pRAF); _pRAF = null; }
-
         const canvas = document.getElementById('protractor-canvas');
         canvas.removeEventListener('touchstart', _tStart);
         canvas.removeEventListener('touchmove', _tMove);
@@ -4994,7 +5010,6 @@
         canvas.removeEventListener('mousemove', _mMove);
         canvas.removeEventListener('mouseup', _mUp);
         window.removeEventListener('resize', _onResize);
-
         if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
         document.getElementById('protractor-video').srcObject = null;
     };
@@ -5045,7 +5060,7 @@
         if (navigator.vibrate) navigator.vibrate(30);
     };
 
-    // --- Use angle (fill into current test field) ---
+    // --- Use angle ---
     window.useProtractorAngle = function() {
         const testType = document.querySelector('input[name="testType"]:checked');
         const testSide = document.querySelector('input[name="testSide"]:checked');
@@ -5066,35 +5081,53 @@
     };
 
     // --- Resize ---
-    function _resizeCanvas() {
-        const c = document.getElementById('protractor-canvas');
-        c.width = window.innerWidth; c.height = window.innerHeight;
-    }
     function _onResize() {
-        const oldW = document.getElementById('protractor-canvas').width;
-        const oldH = document.getElementById('protractor-canvas').height;
-        _resizeCanvas();
-        const c = document.getElementById('protractor-canvas');
-        _pCX = _pCX * (c.width / oldW);
-        _pCY = _pCY * (c.height / oldH);
-        _pR = Math.min(_pR, Math.min(c.width, c.height) * MAX_RADIUS_RATIO);
+        const oldCssW = window.innerWidth, oldCssH = window.innerHeight;
+        // keep relative position
+        const rxRatio = _pCX / (document.getElementById('protractor-canvas').width / _dpr);
+        const ryRatio = _pCY / (document.getElementById('protractor-canvas').height / _dpr);
+        _setupCanvas();
+        _pCX = oldCssW * rxRatio;
+        _pCY = oldCssH * ryRatio;
+        const maxR = Math.min(oldCssW, oldCssH) * MAX_R_RATIO;
+        _pR = Math.max(MIN_R, Math.min(_pR, maxR));
     }
 
-    // --- Angle calc ---
-    function _angleAt(x, y) {
-        const dx = x - _pCX, dy = _pCY - y;
-        let a = Math.atan2(dy, dx) * (180 / Math.PI);
-        return Math.max(0, Math.min(180, Math.round(a)));
+    // --- Angle helpers ---
+    function _rawAngleRad(x, y) {
+        return Math.atan2(_pCY - y, x - _pCX);
     }
     function _syncBadge() {
         document.getElementById('protractor-angle-badge').textContent = _pAngle + '°';
     }
-    function _handleFromAngle() {
-        const rad = (180 - _pAngle) * Math.PI / 180;
-        return { x: _pCX + _pR * 0.7 * Math.cos(rad), y: _pCY - _pR * 0.7 * Math.sin(rad) };
+    function _handlePos() {
+        const rad = _pAngle * Math.PI / 180;
+        return { x: _pCX + _pR * 0.72 * Math.cos(rad), y: _pCY - _pR * 0.72 * Math.sin(rad) };
     }
     function _dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
     function _pinchDist(t) { return Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY); }
+
+    // --- Incremental angle update (smooth, no jumps) ---
+    function _beginRotate(x, y) {
+        _mode = 'rotate';
+        _lastTouchAngleRad = _rawAngleRad(x, y);
+    }
+    function _updateRotate(x, y) {
+        const cur = _rawAngleRad(x, y);
+        if (_lastTouchAngleRad === null) { _lastTouchAngleRad = cur; return; }
+        let delta = (cur - _lastTouchAngleRad) * (180 / Math.PI);
+        // Wrap delta to [-180, 180]
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+        _lastTouchAngleRad = cur;
+        _pAngle = Math.max(0, Math.min(180, Math.round(_pAngle + delta)));
+        _syncBadge();
+        const bucket = Math.floor(_pAngle / 10);
+        if (bucket !== _prevAngleBucket) {
+            _prevAngleBucket = bucket;
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+    }
 
     // --- Touch ---
     function _tStart(e) {
@@ -5106,10 +5139,9 @@
             return;
         }
         const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        const h = _handleFromAngle();
-        if (_dist(tx, ty, h.x, h.y) < HANDLE_DIST_THRESHOLD && !_pLocked) {
-            _mode = 'rotate';
-            _setAngle(tx, ty);
+        const h = _handlePos();
+        if (_dist(tx, ty, h.x, h.y) < HANDLE_DIST && !_pLocked) {
+            _beginRotate(tx, ty);
         } else {
             _mode = 'move';
             _moveOffX = tx - _pCX;
@@ -5120,156 +5152,154 @@
         e.preventDefault();
         if (_mode === 'pinch' && e.touches.length === 2) {
             const d = _pinchDist(e.touches);
-            const maxR = Math.min(window.innerWidth, window.innerHeight) * MAX_RADIUS_RATIO;
-            _pR = Math.max(MIN_RADIUS, Math.min(maxR, _pinchStartR * (d / _pinchStartDist)));
+            const maxR = Math.min(window.innerWidth, window.innerHeight) * MAX_R_RATIO;
+            _pR = Math.max(MIN_R, Math.min(maxR, _pinchStartR * (d / _pinchStartDist)));
             return;
         }
         const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
-        if (_mode === 'rotate' && !_pLocked) _setAngle(tx, ty);
+        if (_mode === 'rotate' && !_pLocked) _updateRotate(tx, ty);
         else if (_mode === 'move') { _pCX = tx - _moveOffX; _pCY = ty - _moveOffY; }
     }
     function _tEnd(e) {
-        if (e.touches.length < 2) _mode = 'none';
+        if (e.touches.length < 2) { _mode = 'none'; _lastTouchAngleRad = null; }
     }
 
-    // --- Mouse (desktop) ---
+    // --- Mouse ---
     function _mDown(e) {
-        const h = _handleFromAngle();
-        if (_dist(e.clientX, e.clientY, h.x, h.y) < HANDLE_DIST_THRESHOLD && !_pLocked) {
-            _mode = 'rotate'; _setAngle(e.clientX, e.clientY);
+        const h = _handlePos();
+        if (_dist(e.clientX, e.clientY, h.x, h.y) < HANDLE_DIST && !_pLocked) {
+            _beginRotate(e.clientX, e.clientY);
         } else {
             _mode = 'move'; _moveOffX = e.clientX - _pCX; _moveOffY = e.clientY - _pCY;
         }
     }
     function _mMove(e) {
-        if (_mode === 'rotate' && !_pLocked) _setAngle(e.clientX, e.clientY);
+        if (_mode === 'rotate' && !_pLocked) _updateRotate(e.clientX, e.clientY);
         else if (_mode === 'move') { _pCX = e.clientX - _moveOffX; _pCY = e.clientY - _moveOffY; }
     }
-    function _mUp() { _mode = 'none'; }
+    function _mUp() { _mode = 'none'; _lastTouchAngleRad = null; }
 
-    function _setAngle(x, y) {
-        _pAngle = _angleAt(x, y);
-        _syncBadge();
-        const bucket = Math.floor(_pAngle / 10);
-        if (bucket !== _prevAngleBucket) {
-            _prevAngleBucket = bucket;
-            if (navigator.vibrate) navigator.vibrate(10);
-        }
-    }
-
-    // --- Draw ---
+    // --- Draw (HiDPI) ---
     function _drawLoop() {
         const canvas = document.getElementById('protractor-canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
+
+        const d = _dpr;
+        ctx.setTransform(d, 0, 0, d, 0, 0); // scale for HiDPI
+        const cssW = canvas.width / d, cssH = canvas.height / d;
+        ctx.clearRect(0, 0, cssW, cssH);
 
         const cx = _pCX, cy = _pCY, r = _pR;
-        const r2 = r * 0.78;
+        const r2 = r * 0.76;
 
         // BG arc
         ctx.beginPath();
-        ctx.moveTo(cx - r - 20, cy);
-        ctx.arc(cx, cy, r + 20, Math.PI, 0, false);
+        ctx.moveTo(cx - r - 24, cy);
+        ctx.arc(cx, cy, r + 24, Math.PI, 0, false);
         ctx.closePath();
-        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.fillStyle = 'rgba(0,0,0,0.28)';
         ctx.fill();
 
         // Outer arc
         ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 2.5; ctx.stroke();
 
         // Inner arc
         ctx.beginPath(); ctx.arc(cx, cy, r2, Math.PI, 0, false);
-        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-        // Baseline
+        // Baseline (dashed)
         ctx.beginPath();
-        ctx.moveTo(cx - r - 12, cy); ctx.lineTo(cx + r + 12, cy);
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5;
-        ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.moveTo(cx - r - 16, cy); ctx.lineTo(cx + r + 16, cy);
+        ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 2;
+        ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([]);
 
-        // Ticks & labels
-        const fontSize = Math.max(9, r * 0.072);
-        const fontSm = Math.max(7, r * 0.055);
+        // Ticks & labels — bigger, bolder
+        const fBig = Math.max(12, r * 0.09);
+        const fSm = Math.max(9, r * 0.065);
         for (let deg = 0; deg <= 180; deg++) {
-            const rad = (180 - deg) * Math.PI / 180;
-            const c = Math.cos(rad), s = Math.sin(rad);
+            const rad = deg * Math.PI / 180;
+            const co = Math.cos(rad), si = Math.sin(rad);
             if (deg % 10 === 0) {
+                // Long tick outer
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 13) * c, cy - (r - 13) * s);
-                ctx.lineTo(cx + r * c, cy - r * s);
-                ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.moveTo(cx + (r - 16) * co, cy - (r - 16) * si);
+                ctx.lineTo(cx + r * co, cy - r * si);
+                ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 2.5; ctx.stroke();
 
+                // Long tick inner
                 ctx.beginPath();
-                ctx.moveTo(cx + r2 * c, cy - r2 * s);
-                ctx.lineTo(cx + (r2 + 9) * c, cy - (r2 + 9) * s);
-                ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.moveTo(cx + r2 * co, cy - r2 * si);
+                ctx.lineTo(cx + (r2 + 11) * co, cy - (r2 + 11) * si);
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; ctx.stroke();
 
+                // Outer label
                 ctx.save();
-                ctx.fillStyle = 'rgba(255,255,255,0.88)';
-                ctx.font = `bold ${fontSize}px -apple-system,sans-serif`;
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${fBig}px -apple-system,BlinkMacSystemFont,sans-serif`;
                 ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText(deg.toString(), cx + (r + 15) * c, cy - (r + 15) * s);
+                ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 4;
+                ctx.fillText(deg.toString(), cx + (r + 20) * co, cy - (r + 20) * si);
                 ctx.restore();
 
+                // Inner label (supplementary)
                 if (deg > 0 && deg < 180) {
                     ctx.save();
-                    ctx.fillStyle = 'rgba(255,255,255,0.38)';
-                    ctx.font = `${fontSm}px -apple-system,sans-serif`;
+                    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                    ctx.font = `bold ${fSm}px -apple-system,BlinkMacSystemFont,sans-serif`;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText((180 - deg).toString(), cx + (r2 - 13) * c, cy - (r2 - 13) * s);
+                    ctx.fillText((180 - deg).toString(), cx + (r2 - 16) * co, cy - (r2 - 16) * si);
                     ctx.restore();
                 }
             } else if (deg % 5 === 0) {
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 9) * c, cy - (r - 9) * s);
-                ctx.lineTo(cx + r * c, cy - r * s);
-                ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.moveTo(cx + (r - 10) * co, cy - (r - 10) * si);
+                ctx.lineTo(cx + r * co, cy - r * si);
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.stroke();
             } else {
                 ctx.beginPath();
-                ctx.moveTo(cx + (r - 5) * c, cy - (r - 5) * s);
-                ctx.lineTo(cx + r * c, cy - r * s);
-                ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+                ctx.moveTo(cx + (r - 6) * co, cy - (r - 6) * si);
+                ctx.lineTo(cx + r * co, cy - r * si);
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.2; ctx.stroke();
             }
         }
 
         // Center dot
-        ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-        ctx.fillStyle = _pLocked ? '#ff9500' : '#5bd4c8'; ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+        const accent = _pLocked ? '#ff9500' : '#5bd4c8';
+        ctx.fillStyle = accent; ctx.fill();
 
-        // Pointer
-        const pRad = (180 - _pAngle) * Math.PI / 180;
+        // Pointer line
+        const pRad = _pAngle * Math.PI / 180;
         const pc = Math.cos(pRad), ps = Math.sin(pRad);
-        const accentColor = _pLocked ? '#ff9500' : '#5bd4c8';
 
         ctx.beginPath(); ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (r + 8) * pc, cy - (r + 8) * ps);
-        ctx.strokeStyle = accentColor; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.lineTo(cx + (r + 10) * pc, cy - (r + 10) * ps);
+        ctx.strokeStyle = accent; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.stroke();
 
-        // Handle
-        const hx = cx + r * 0.7 * pc, hy = cy - r * 0.7 * ps;
-        ctx.beginPath(); ctx.arc(hx, hy, 18, 0, Math.PI * 2);
-        ctx.fillStyle = _pLocked ? 'rgba(255,149,0,0.2)' : 'rgba(91,212,200,0.25)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI * 2);
-        ctx.fillStyle = accentColor; ctx.fill();
+        // Handle circle
+        const hx = cx + r * 0.72 * pc, hy = cy - r * 0.72 * ps;
+        ctx.beginPath(); ctx.arc(hx, hy, 22, 0, Math.PI * 2);
+        ctx.fillStyle = _pLocked ? 'rgba(255,149,0,0.18)' : 'rgba(91,212,200,0.22)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(hx, hy, 10, 0, Math.PI * 2);
+        ctx.fillStyle = accent; ctx.fill();
 
-        // Angle text
+        // Large angle text
         ctx.save();
-        ctx.fillStyle = accentColor;
-        ctx.font = `bold ${Math.max(26, r * 0.19)}px -apple-system,sans-serif`;
+        ctx.fillStyle = accent;
+        ctx.font = `bold ${Math.max(30, r * 0.22)}px -apple-system,BlinkMacSystemFont,sans-serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-        ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 8;
-        ctx.fillText(_pAngle + '°', cx, cy - 16);
+        ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 10;
+        ctx.fillText(_pAngle + '°', cx, cy - 20);
         ctx.restore();
 
         if (_pLocked) {
             ctx.save();
-            ctx.fillStyle = 'rgba(255,149,0,0.7)';
-            ctx.font = `bold ${Math.max(10, r * 0.07)}px -apple-system,sans-serif`;
+            ctx.fillStyle = 'rgba(255,149,0,0.8)';
+            ctx.font = `bold ${Math.max(11, r * 0.08)}px -apple-system,BlinkMacSystemFont,sans-serif`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.fillText('已锁定', cx, cy + 8);
+            ctx.fillText('已锁定', cx, cy + 10);
             ctx.restore();
         }
 
