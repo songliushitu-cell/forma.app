@@ -325,7 +325,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.4</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.7.5</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4954,12 +4954,14 @@
     function _defaultLayout() {
         const cssW = window.innerWidth, cssH = window.innerHeight;
         const isLandscape = cssW > cssH;
+        const shortEdge = Math.min(cssW, cssH);
+        // Use short edge as base so protractor scales proportionally in any orientation
         _pR = isLandscape
-            ? Math.min(cssW * 0.30, cssH * 0.42)
-            : Math.min(cssW * 0.42, cssH * 0.32);
+            ? shortEdge * 0.40   // landscape: 40% of height (short edge)
+            : shortEdge * 0.42;  // portrait: 42% of width (short edge)
         _pR = Math.max(_pR, MIN_R);
         _pCX = cssW / 2;
-        _pCY = isLandscape ? cssH * 0.55 : cssH * 0.52;
+        _pCY = isLandscape ? cssH * 0.48 : cssH * 0.52;
     }
 
     window.openProtractor = function() {
@@ -5080,17 +5082,11 @@
         }
     };
 
-    // --- Resize ---
+    // --- Resize / orientation change ---
     function _onResize() {
-        const oldCssW = window.innerWidth, oldCssH = window.innerHeight;
-        // keep relative position
-        const rxRatio = _pCX / (document.getElementById('protractor-canvas').width / _dpr);
-        const ryRatio = _pCY / (document.getElementById('protractor-canvas').height / _dpr);
         _setupCanvas();
-        _pCX = oldCssW * rxRatio;
-        _pCY = oldCssH * ryRatio;
-        const maxR = Math.min(oldCssW, oldCssH) * MAX_R_RATIO;
-        _pR = Math.max(MIN_R, Math.min(_pR, maxR));
+        // Fully recalculate layout so protractor scales to new orientation
+        _defaultLayout();
     }
 
     // --- Angle helpers ---
