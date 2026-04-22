@@ -1,6 +1,6 @@
 {
   "name": "forma-basic",
-  "version": "1.8.11",
+  "version": "1.8.13",
   "private": true,
   "scripts": {
     "license:server": "node server/license-server.js",

@@ -820,7 +820,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.12</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.14</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1134,7 +1134,8 @@
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div id="vp-title" class="text-[13px] font-bold text-slate-800 leading-snug">根据你的评估结果，推荐以下训练内容</div>
+                            <div id="vp-plan-label" class="text-[9px] font-bold text-[#0a84ff] tracking-[0.16em] uppercase mb-1">专属训练路径</div>
+                            <div id="vp-title" class="text-[13px] font-bold text-slate-800 leading-snug">你接下来该怎么练</div>
                             <div id="vp-tagline" class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">加载中...</div>
                         </div>
                         <svg id="vp-chevron" class="w-4 h-4 text-slate-300 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -1142,21 +1143,33 @@
                     <!-- 展开详情（默认隐藏） -->
                     <div id="vp-detail" class="hidden border-t border-slate-100">
                         <div class="px-5 py-4 flex flex-col gap-3">
+                            <div class="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-3.5">
+                                <div class="text-[9px] font-bold text-emerald-700 tracking-[0.18em] uppercase mb-1.5">先送你一个免费方向</div>
+                                <p id="vp-starter-tip" class="text-[11px] text-emerald-800 leading-relaxed">加载中...</p>
+                            </div>
                             <div>
-                                <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">方案包含内容</div>
+                                <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">完整方案会告诉你</div>
                                 <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
                             </div>
-                            <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                动作已选好、顺序已排好、注意事项已写好——跟着做就行。
+                            <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括动作顺序，不用自己猜先练哪一个。</div>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括每周怎么安排，避免练两天停三天。</div>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括常见错误提醒，减少越练越紧。</div>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括现阶段先别急着做什么。</div>
                             </div>
+                            <div class="bg-amber-50/80 border border-amber-100 rounded-2xl p-3.5">
+                                <div class="text-[9px] font-bold text-amber-700 tracking-[0.18em] uppercase mb-2">为什么现在别急着乱练</div>
+                                <ul id="vp-avoid-list" class="flex flex-col gap-1.5"></ul>
+                            </div>
+                            <div id="vp-fit-note" class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100"></div>
                             <div class="flex items-center justify-between gap-3 pt-1">
                                 <span class="text-[13px] font-bold text-slate-700">¥299</span>
                                 <button id="btn-get-video-plan" class="flex-shrink-0 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-sm transition-all">
-                                    查看详情
+                                    看看我该怎么练
                                 </button>
                             </div>
                             <p class="text-[9px] text-slate-400 leading-relaxed text-center">
-                                付款后添加微信 <b class="text-slate-600">songjiaotou999</b> 发送截图，确认后发送专属方案
+                                如果你希望我直接把顺序给你配好，再扫码后添加微信 <b class="text-slate-600">songjiaotou999</b>，我会按这次结果发对应版本
                             </p>
                         </div>
                     </div>
@@ -1255,14 +1268,33 @@
             </div>
             <!-- 内容 -->
             <div class="p-5 flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
+                <div class="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-3.5">
+                    <div class="text-[9px] font-bold text-emerald-700 tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
+                    <p id="vpm-starter-tip" class="text-[11px] text-emerald-800 leading-relaxed"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">按顺序排好的 3 步训练路径</div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">每一步该练什么，不该急着练什么</div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">更适合一周怎么安排</div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">常见代偿和练错提醒</div>
+                </div>
                 <!-- 包含内容 -->
                 <div>
-                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] mb-2 uppercase">方案包含内容</div>
+                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] mb-2 uppercase">这份方案适合你，如果你想</div>
+                    <p id="vpm-fit-text" class="text-[11px] text-slate-600 leading-relaxed mb-3"></p>
                     <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
                 </div>
                 <!-- 说明 -->
                 <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                    动作已选好、顺序已排好、注意事项已写好——跟着做就行，相当于一次线下训练指导。
+                    这不是一套通用跟练视频，而是按你这次结果匹配的训练顺序。你拿到的不只是动作列表，还有先后顺序、频率建议和避坑提醒。
+                </div>
+                <div class="bg-amber-50/80 border border-amber-100 rounded-2xl p-3.5">
+                    <div class="text-[9px] font-bold text-amber-700 tracking-[0.18em] uppercase mb-2">为什么现在不建议直接乱练</div>
+                    <ul id="vpm-avoid-list" class="flex flex-col gap-2"></ul>
+                </div>
+                <div id="vpm-caution-text" class="text-[10px] text-amber-700 leading-relaxed bg-amber-50 p-3.5 rounded-xl border border-amber-100"></div>
+                <div class="text-[10px] text-slate-400 leading-relaxed">
+                    购买后扫码并添加微信 <span class="font-bold text-slate-600">songjiaotou999</span>，发付款截图即可，我会按你的这次结果发送对应版本。
                 </div>
                 <!-- 二维码 -->
                 <div class="flex flex-col items-center gap-3 pt-1">
@@ -1276,7 +1308,7 @@
                     <div class="text-center">
                         <span class="text-[13px] font-bold text-slate-800">¥299</span>
                         <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                            扫码付款后添加微信 <span class="font-bold text-slate-600">songjiaotou999</span><br>发送截图，确认后发送专属方案
+                            适合不想自己试错、希望直接知道下一步怎么练的人
                         </p>
                     </div>
                 </div>
@@ -1284,7 +1316,7 @@
             <!-- 底部 -->
             <div class="px-5 pb-5 pt-2 border-t border-slate-100">
                 <button id="btn-close-video-plan-bottom" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors text-[11px] tracking-wider">
-                    关闭
+                    先保留这份报告
                 </button>
             </div>
         </div>
@@ -5319,6 +5351,92 @@
             }
         };
 
+        function getVideoPlanStarterTip(plan) {
+            const firstStep = plan?.videos?.[0];
+            if (!firstStep) return '你今天不用一下子做很多，先把最外层的紧张或拉扯感降下来，再进入后面的训练。';
+            const cleanName = firstStep.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim();
+            return `如果你今天只先做一件事，就先从“${cleanName}”开始。${firstStep.desc}`;
+        }
+
+        function getVideoPlanFitText(comboKey, plan) {
+            if (comboKey.startsWith('mixed_')) {
+                return '先把基础稳定和顺序建立起来，不想一边看报告一边自己猜先练什么、练多久、什么时候复测。';
+            }
+            return '想直接知道自己该先松哪里、再练哪里、哪些动作先别急着做，减少越练越紧、越练越歪的试错。';
+        }
+
+        function getVideoPlanCautionText(comboKey) {
+            return comboKey.startsWith('mixed_')
+                ? '如果你现在有明显急性疼痛、夜间痛、麻木放射或测试后症状明显加重，建议先做线下排查，不建议直接跟练完整方案。'
+                : '如果你现在处于急性疼痛、夜间痛、麻木放射，或测试动作本身就会明显加重不适，建议先排查禁忌，再决定是否进入训练方案。';
+        }
+
+        function getVideoPlanCardFitNote(comboKey) {
+            return comboKey.startsWith('mixed_')
+                ? '这份更适合想先把基础稳定建立起来，再按复测结果继续推进的人。'
+                : '这份更适合已经想开始练，但不想再靠感觉乱试动作的人。';
+        }
+
+        function getVideoPlanAvoidItems(comboKey) {
+            if (comboKey.startsWith('posterior_')) {
+                return [
+                    {
+                        title: '别一上来猛练后侧链',
+                        desc: '现在后侧已经在替你硬撑，直接大量臀桥、硬拉、后踢腿，容易把原本的顶住感练得更重。'
+                    },
+                    {
+                        title: '别把“感觉酸”当成练对了',
+                        desc: '如果总是腰后侧、臀后侧先酸，往往说明身体还在走旧代偿，不代表真正练到了该练的位置。'
+                    }
+                ];
+            }
+            if (comboKey.startsWith('anterior_')) {
+                return [
+                    {
+                        title: '别急着上大重量练腿前侧',
+                        desc: '当前前侧拉扯已经偏多，太早做高强度分腿蹲、抬腿和腿前侧主导动作，容易让髋前更紧。'
+                    },
+                    {
+                        title: '别把拉伸做成顶腰',
+                        desc: '很多人一想放松前侧就猛顶腰，结果髋前更卡、下腰更挤，反而更难把骨盆收回来。'
+                    }
+                ];
+            }
+            if (comboKey.startsWith('mixed_')) {
+                return [
+                    {
+                        title: '别急着选边站',
+                        desc: '当前更需要先把基础稳定和顺序建立起来，而不是一会儿练左一会儿练右，越练越乱。'
+                    },
+                    {
+                        title: '别看到一个动作有效就一直重复',
+                        desc: '方向还没完全定清楚时，单个动作短期舒服不代表路线对，还是要看顺序和复测变化。'
+                    }
+                ];
+            }
+            return [
+                {
+                    title: '别直接照搬通用跟练',
+                    desc: '同样叫骨盆问题，不同分型的训练入口差别很大，直接套通用动作最容易白练。'
+                }
+            ];
+        }
+
+        function renderVideoPlanAvoidList(elementId, comboKey, compact = false) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
+            const items = getVideoPlanAvoidItems(comboKey);
+            container.innerHTML = items.map((item) => `
+                <li class="flex items-start gap-2.5">
+                    <span class="mt-[6px] w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                    <div class="min-w-0">
+                        <div class="${compact ? 'text-[10px]' : 'text-[11px]'} font-bold text-amber-800 leading-snug">${item.title}</div>
+                        <div class="${compact ? 'text-[10px]' : 'text-[10px]'} text-amber-700/90 mt-0.5 leading-relaxed">${item.desc}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
         function renderVideoPlanCard(comboKey) {
             const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
             const card = document.getElementById('video-plan-card');
@@ -5328,8 +5446,12 @@
             const jumpLink = document.querySelector('.id-jump-video');
             if(jumpLink) jumpLink.classList.remove('hidden');
 
-            document.getElementById('vp-title').textContent = plan.title;
+            document.getElementById('vp-plan-label').textContent = plan.title;
+            document.getElementById('vp-title').textContent = '你接下来该怎么练';
             document.getElementById('vp-tagline').textContent = plan.tagline;
+            document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
+            document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
+            renderVideoPlanAvoidList('vp-avoid-list', comboKey, true);
             // price is now static HTML in card template
 
             const videoList = document.getElementById('vp-video-list');
@@ -5353,8 +5475,12 @@
             const comboKey = card?.dataset.comboKey || 'posterior_LeftAIC';
             const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
 
-            document.getElementById('vpm-title').textContent = plan.title;
+            document.getElementById('vpm-title').textContent = '你的完整训练方案';
             document.getElementById('vpm-tagline').textContent = plan.tagline;
+            document.getElementById('vpm-starter-tip').textContent = getVideoPlanStarterTip(plan);
+            document.getElementById('vpm-fit-text').textContent = getVideoPlanFitText(comboKey, plan);
+            document.getElementById('vpm-caution-text').textContent = getVideoPlanCautionText(comboKey);
+            renderVideoPlanAvoidList('vpm-avoid-list', comboKey, false);
             const list = document.getElementById('vpm-video-list');
             list.innerHTML = plan.videos.map((v, i) => `
                 <li class="flex items-start gap-2.5">
@@ -5376,7 +5502,7 @@
                 if (btnGet) {
                     btnGet.classList.remove('bg-slate-800', 'hover:bg-slate-700');
                     btnGet.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                    btnGet.textContent = '已了解，等待发送';
+                    btnGet.textContent = '已查看完整方案';
                 }
             }
         }
