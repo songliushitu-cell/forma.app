@@ -528,9 +528,9 @@
         addLabel(`右侧`, `right:18%;top:44%;color:${!frontSideLeft ? accent : 'rgba(255,255,255,0.45)'};font-size:11px;font-weight:700;transform:translate(50%,-50%);`);
         if (data.heightMarker?.active) {
             const highOnLeft = data.heightMarker.highSide !== 'right';
-            addLabel(`${highOnLeft ? '左高' : '右高'} ↑`, `top:16px;${highOnLeft ? 'left:14%;' : 'right:14%;'}color:${accent};font-size:13px;font-weight:800;`);
+            addLabel(`${highOnLeft ? '左高' : '右高'} ↑`, `top:16px;${highOnLeft ? 'left:14%;' : 'right:14%;'}color:#ff5a5f;font-size:13px;font-weight:800;`);
             if (data.heightMarker.lowSide) {
-                addLabel(`${data.heightMarker.lowSide === 'right' ? '右低' : '左低'} ↓`, `top:36px;${data.heightMarker.lowSide === 'right' ? 'right:14%;' : 'left:14%;'}color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;`);
+                addLabel(`${data.heightMarker.lowSide === 'right' ? '右低' : '左低'} ↓`, `top:36px;${data.heightMarker.lowSide === 'right' ? 'right:14%;' : 'left:14%;'}color:#5ac8fa;font-size:12px;font-weight:700;`);
             }
         }
         if (data.rotationMarker?.active) {
@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.18</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.19</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
