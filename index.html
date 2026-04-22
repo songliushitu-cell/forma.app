@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.22</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.23</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -5563,7 +5563,8 @@
     <!-- 量角器 Canvas 叠加 -->
     <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full" style="touch-action:none;"></canvas>
     <!-- 摄像头错误提示 -->
-    <div id="protractor-cam-error" class="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
+    <div id="protractor-cam-status" class="absolute left-1/2 top-[30%] -translate-x-1/2 -translate-y-1/2 z-20 px-5 py-3 rounded-2xl bg-black/55 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap border border-white/10">未启动实时画面<br><span class="text-white/65 text-[10px]">可先导入相册，或点下方按钮再打开摄像头</span></div>
+    <div id="protractor-cam-error" class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
     <!-- 底部工具栏 -->
     <div class="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent pt-6" style="padding-bottom:max(env(safe-area-inset-bottom),10px)">
         <!-- ±1° 微调 -->
@@ -5633,6 +5634,7 @@
     // History
     let _history = JSON.parse(localStorage.getItem('p_history') || '[]');
     let _protractorImageUrl = null;
+    let _pCameraLoading = false;
     // Angle ranges per test type
     const RANGES = {
         slr:      { green: [60, 80], label: 'SLR 正常' },
@@ -5671,12 +5673,32 @@
         return !!(img && !img.classList.contains('hidden') && img.getAttribute('src'));
     }
 
+    function _hasActiveProtractorStream() {
+        return !!(_pStream && _pStream.getVideoTracks().some(track => track.readyState === 'live'));
+    }
+
+    function _syncProtractorCameraStatus() {
+        const status = document.getElementById('protractor-cam-status');
+        if (!status) return;
+        if (_isProtractorImageMode() || _hasActiveProtractorStream()) {
+            status.classList.add('hidden');
+            return;
+        }
+        status.classList.remove('hidden');
+        if (_pCameraLoading) {
+            status.innerHTML = '正在连接摄像头<br><span class="text-white/65 text-[10px]">首次使用可能会看到浏览器权限提示</span>';
+        } else {
+            status.innerHTML = '未启动实时画面<br><span class="text-white/65 text-[10px]">可先导入相册，或点下方按钮再打开摄像头</span>';
+        }
+    }
+
     function _syncProtractorModeUI() {
         const btn = document.getElementById('btn-protractor-capture');
         const text = document.getElementById('protractor-capture-text');
         const icon = document.getElementById('protractor-capture-icon');
         const hint = document.getElementById('protractor-mode-hint');
         const isImageMode = _isProtractorImageMode();
+        const hasLiveStream = _hasActiveProtractorStream();
         if (!btn || !text || !icon || !hint) return;
         if (isImageMode) {
             btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
@@ -5684,13 +5706,20 @@
             text.textContent = '返回实时';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
             hint.textContent = '当前为静态图片模式，可精细拖动量角器，点“返回实时”回到摄像头';
-        } else {
+        } else if (hasLiveStream) {
             btn.classList.add('bg-white/15', 'border-white/10');
             btn.classList.remove('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             text.textContent = '拍照定格';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/>';
             hint.textContent = '支持实时对准、拍照定格和相册导入';
+        } else {
+            btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
+            btn.classList.remove('bg-white/15', 'border-white/10');
+            text.textContent = _pCameraLoading ? '连接中' : '启动实时';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
+            hint.textContent = _pCameraLoading ? '正在连接摄像头，你也可以直接改用相册导入' : '初次打开不会立即调用摄像头，可按需启动实时或直接导入相册';
         }
+        _syncProtractorCameraStatus();
     }
 
     function _clearProtractorImage() {
@@ -5731,13 +5760,12 @@
         document.getElementById('protractor-cam-error').classList.add('hidden');
         document.getElementById('protractor-history-panel').classList.add('hidden');
         _clearProtractorImage();
+        _pCameraLoading = false;
         if (video) video.classList.remove('hidden');
 
         _setupCanvas(); _defaultLayout();
         _pAngle = 45; _pAngle2 = 120; _prevBucket = 4; _syncBadge();
         _syncProtractorModeUI();
-
-        _startCamera(_facingBack);
 
         const c = document.getElementById('protractor-canvas');
         c.addEventListener('touchstart', _tStart, { passive: false });
@@ -5763,6 +5791,7 @@
         c.removeEventListener('mousemove', _mMove);
         c.removeEventListener('mouseup', _mUp);
         window.removeEventListener('resize', _onResize);
+        _pCameraLoading = false;
         _stopCamera(); _stopGyro(); _clearProtractorImage();
     };
 
@@ -5770,18 +5799,44 @@
     function _startCamera(back) {
         const video = document.getElementById('protractor-video');
         const errEl = document.getElementById('protractor-cam-error');
+        if (_hasActiveProtractorStream() || _pCameraLoading) return;
+        _pCameraLoading = true;
         if (video) video.classList.remove('hidden');
+        _syncProtractorModeUI();
         navigator.mediaDevices.getUserMedia({ video: { facingMode: back ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
-            .then(s => { _pStream = s; video.srcObject = s; video.play().catch(() => {}); })
-            .catch(() => { errEl.classList.remove('hidden'); setTimeout(() => errEl.classList.add('hidden'), 4000); });
+            .then(s => {
+                _pStream = s;
+                video.srcObject = s;
+                return video.play().catch(() => {});
+            })
+            .catch(() => {
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 4000);
+            })
+            .finally(() => {
+                _pCameraLoading = false;
+                _syncProtractorModeUI();
+            });
     }
     function _stopCamera() {
         if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
         document.getElementById('protractor-video').srcObject = null;
+        _syncProtractorModeUI();
     }
     window.pFlipCamera = function() {
-        _clearProtractorImage();
-        _facingBack = !_facingBack; _stopCamera(); _startCamera(_facingBack);
+        _facingBack = !_facingBack;
+        if (_isProtractorImageMode()) {
+            _syncProtractorModeUI();
+            if (_voiceOn) _speak(`已切换为${_facingBack ? '后置' : '前置'}摄像头，返回实时后生效`);
+            return;
+        }
+        if (_hasActiveProtractorStream()) {
+            _stopCamera();
+            _startCamera(_facingBack);
+        } else {
+            _syncProtractorModeUI();
+            if (_voiceOn) _speak(`已切换为${_facingBack ? '后置' : '前置'}摄像头`);
+        }
         _syncProtractorModeUI();
     };
 
@@ -5796,9 +5851,14 @@
         if (_isProtractorImageMode()) {
             _clearProtractorImage();
             if (video) video.classList.remove('hidden');
-            _stopCamera();
-            _startCamera(_facingBack);
+            if (!_hasActiveProtractorStream()) _startCamera(_facingBack);
             if (_voiceOn) _speak('已返回实时画面');
+            return;
+        }
+        if (!_hasActiveProtractorStream()) {
+            if (_pCameraLoading) return;
+            _startCamera(_facingBack);
+            if (_voiceOn) _speak('正在打开实时画面');
             return;
         }
         if (!video || !video.srcObject || video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
@@ -5923,19 +5983,58 @@
     // === Use angle ===
     window.useProtractorAngle = function() {
         const ang = _dispAngle();
-        // Save to history
         _addHistory(ang);
         const tt = document.querySelector('input[name="testType"]:checked');
         const ts = document.querySelector('input[name="testSide"]:checked');
         if (!tt || !ts) { closeProtractor(); return; }
-        const t = tt.value, s = ts.value.toLowerCase();
-        const map = { slr: 'm-slr-', hip: 'm-hip-', shoulder: 'm-sh-' };
-        const pfx = map[t];
-        if (pfx) { const inp = document.getElementById(pfx + s); if (inp) { inp.value = ang; inp.dispatchEvent(new Event('input', { bubbles: true })); } }
-        if (_voiceOn) _speak('已填入' + ang + '度');
+
+        const t = tt.value;
+        const s = ts.value;
+        const normalizedAngle = normalizeAngleValue(ang);
+        const captureMethod = _isProtractorImageMode() ? 'protractor-image' : 'protractor-live';
+
+        testRecords[t][s] = normalizedAngle;
+        setMeasurementRecord(t, s, {
+            sideIntegrity: 'manual',
+            manualAdjusted: true,
+            thresholdCloseness: false,
+            recaptureNeeded: false,
+            selectedSide: s,
+            pivotSide: s,
+            limbSide: s,
+            usedFallback: false,
+            fallbackSources: [],
+            captureMethod,
+            angle: normalizedAngle
+        });
+
+        saveHistoryToStorage({
+            type: 'single',
+            date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            name: `${s === 'L' ? '左侧' : '右侧'}${t === 'slr' ? '直抬腿' : (t === 'hip' ? '髋屈曲' : '肩屈')}`,
+            angle: formatAngleValue(normalizedAngle)
+        });
+
+        updateTrackerUI();
         closeProtractor();
-        const mp = document.getElementById('manual-input-panel');
-        if (mp && mp.classList.contains('hidden')) { const b = document.getElementById('btn-manual-input'); if (b) b.click(); }
+        resetCanvasForNewUpload();
+
+        const nextTest = getNextMissingTest();
+        if (nextTest) {
+            document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
+            document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
+            updateSaveButtonText();
+
+            if (_voiceOn) {
+                const nextTypeName = nextTest.type === 'slr' ? '主动直腿抬高' : (nextTest.type === 'hip' ? '主动髋屈曲' : '主动肩屈');
+                const nextSideName = nextTest.side === 'L' ? '左侧' : '右侧';
+                _speak(`已填入${normalizedAngle}度。下一项是${nextSideName}${nextTypeName}`);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            if (_voiceOn) _speak(`已填入${normalizedAngle}度，全部采集完成，正在生成报告`);
+            setTimeout(() => { beginFinalReportGeneration(); }, 800);
+        }
     };
 
     // === History ===
