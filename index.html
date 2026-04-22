@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.17</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.18</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1140,49 +1140,55 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-slate-200 shadow-sm bg-white">
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#ead9bf] shadow-[0_12px_28px_rgba(139,94,52,0.08)] bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf1_100%)]">
                     <!-- 摘要行（始终可见，点击展开/收起） -->
-                    <button id="btn-toggle-vp-detail" class="w-full px-5 py-3.5 flex items-center gap-3 text-left hover:bg-slate-50/50 transition-colors">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <button id="btn-toggle-vp-detail" class="w-full px-5 py-4 flex items-center gap-3 text-left hover:bg-[#fff7eb] transition-colors">
+                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-[#fff4df] border border-[#ead9bf] flex items-center justify-center shadow-sm">
+                            <svg class="w-4 h-4 text-[#8b5e34]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div id="vp-plan-label" class="text-[9px] font-bold text-[#0a84ff] tracking-[0.16em] uppercase mb-1">专属训练路径</div>
-                            <div id="vp-title" class="text-[13px] font-bold text-slate-800 leading-snug">你接下来该怎么练</div>
-                            <div id="vp-tagline" class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">加载中...</div>
+                            <div id="vp-plan-label" class="text-[9px] font-bold text-[#9a6700] tracking-[0.16em] uppercase mb-1">下一步训练方案</div>
+                            <div id="vp-title" class="text-[14px] font-bold text-slate-800 leading-snug">根据这次结果，你接下来该怎么练</div>
+                            <div id="vp-tagline" class="text-[10px] text-[#7c6a55] mt-0.5 leading-relaxed">加载中...</div>
                         </div>
-                        <svg id="vp-chevron" class="w-4 h-4 text-slate-300 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg id="vp-chevron" class="w-4 h-4 text-[#c2ac8e] flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <!-- 展开详情（默认隐藏） -->
-                    <div id="vp-detail" class="hidden border-t border-slate-100">
+                    <div id="vp-detail" class="hidden border-t border-[#f0e3ce]">
                         <div class="px-5 py-4 flex flex-col gap-3">
-                            <div class="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-3.5">
-                                <div class="text-[9px] font-bold text-emerald-700 tracking-[0.18em] uppercase mb-1.5">先送你一个免费方向</div>
-                                <p id="vp-starter-tip" class="text-[11px] text-emerald-800 leading-relaxed">加载中...</p>
+                            <div class="bg-[#eef7f1] border border-[#d7e8dd] rounded-2xl p-3.5">
+                                <div class="text-[9px] font-bold text-[#2f5d50] tracking-[0.18em] uppercase mb-1.5">先给你一个起步方向</div>
+                                <p id="vp-starter-tip" class="text-[11px] text-[#2f5d50] leading-relaxed">加载中...</p>
                             </div>
                             <div>
-                                <div class="text-[9px] font-bold text-slate-400 tracking-[0.2em] mb-2 uppercase">完整方案会告诉你</div>
+                                <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.2em] mb-2 uppercase">完整方案会直接告诉你</div>
                                 <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括动作顺序，不用自己猜先练哪一个。</div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括每周怎么安排，避免练两天停三天。</div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括常见错误提醒，减少越练越紧。</div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">包括现阶段先别急着做什么。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">包括动作顺序，不用自己猜先练哪一个。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">包括每周怎么安排，避免练两天停三天。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">包括常见错误提醒，减少越练越紧。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">包括现阶段先别急着做什么。</div>
                             </div>
-                            <div class="bg-amber-50/80 border border-amber-100 rounded-2xl p-3.5">
-                                <div class="text-[9px] font-bold text-amber-700 tracking-[0.18em] uppercase mb-2">为什么现在别急着乱练</div>
+                            <div class="bg-[#fff4e8] border border-[#f1dcc2] rounded-2xl p-3.5">
+                                <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-2">为什么现在不建议自己乱试</div>
                                 <ul id="vp-avoid-list" class="flex flex-col gap-1.5"></ul>
                             </div>
-                            <div id="vp-fit-note" class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100"></div>
-                            <div class="flex items-center justify-between gap-3 pt-1">
-                                <span class="text-[13px] font-bold text-slate-700">¥299</span>
-                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-sm transition-all">
-                                    看看我该怎么练
-                                </button>
+                            <div id="vp-fit-note" class="text-[11px] text-slate-600 leading-relaxed bg-white/90 p-3 rounded-xl border border-[#efe3d0]"></div>
+                            <div class="rounded-2xl border border-[#ead9bf] bg-[linear-gradient(135deg,#fff8ea_0%,#fff3dc_100%)] px-4 py-3.5">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-1">完整方案</div>
+                                        <div class="text-[15px] font-black text-[#8b5e34] leading-none">¥299</div>
+                                        <p class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed">不是通用跟练，而是按你这次结果匹配的训练顺序。</p>
+                                    </div>
+                                    <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#2f5d50] hover:bg-[#244a40] active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-[0_8px_20px_rgba(47,93,80,0.22)] transition-all">
+                                        查看完整方案
+                                    </button>
+                                </div>
                             </div>
-                            <p class="text-[9px] text-slate-400 leading-relaxed text-center">
-                                如果你希望我直接把顺序给你配好，再扫码后添加微信 <b class="text-slate-600">songjiaotou999</b>，我会按这次结果发对应版本
+                            <p class="text-[9px] text-[#8a7b68] leading-relaxed text-center">
+                                购买后添加微信 <b class="text-[#5f5140]">songjiaotou999</b>，我会按你这次结果发送对应版本
                             </p>
                         </div>
                     </div>
@@ -1268,67 +1274,67 @@
 
     <!-- 视频方案确认 Modal -->
     <div id="video-plan-modal" class="fixed inset-0 z-[109] bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
-        <div class="bg-white w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/50">
+        <div class="bg-[linear-gradient(180deg,#fffdf9_0%,#fff7eb_100%)] w-full max-w-[340px] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-[#ead9bf]">
             <!-- 头部 -->
-            <div class="px-5 pt-5 pb-4 flex justify-between items-start border-b border-slate-100">
+            <div class="px-5 pt-5 pb-4 flex justify-between items-start border-b border-[#f0e3ce]">
                 <div class="min-w-0">
                     <h2 id="vpm-title" class="text-[15px] font-bold text-slate-900 leading-snug">训练方案详情</h2>
-                    <p id="vpm-tagline" class="text-[10px] text-slate-400 mt-1 leading-relaxed"></p>
+                    <p id="vpm-tagline" class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed"></p>
                 </div>
-                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-[#fff4df] flex items-center justify-center text-[#9a6700] hover:text-[#8b5e34] transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <!-- 内容 -->
             <div class="p-5 flex flex-col gap-4 max-h-[65vh] overflow-y-auto">
-                <div class="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-3.5">
-                    <div class="text-[9px] font-bold text-emerald-700 tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
-                    <p id="vpm-starter-tip" class="text-[11px] text-emerald-800 leading-relaxed"></p>
+                <div class="bg-[#eef7f1] border border-[#d7e8dd] rounded-2xl p-3.5">
+                    <div class="text-[9px] font-bold text-[#2f5d50] tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
+                    <p id="vpm-starter-tip" class="text-[11px] text-[#2f5d50] leading-relaxed"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">按顺序排好的 3 步训练路径</div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">每一步该练什么，不该急着练什么</div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">更适合一周怎么安排</div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">常见代偿和练错提醒</div>
+                    <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">按顺序排好的 3 步训练路径</div>
+                    <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">每一步该练什么，不该急着练什么</div>
+                    <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">更适合一周怎么安排</div>
+                    <div class="bg-white/90 p-3 rounded-xl border border-[#efe3d0]">常见代偿和练错提醒</div>
                 </div>
                 <!-- 包含内容 -->
                 <div>
-                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] mb-2 uppercase">这份方案适合你，如果你想</div>
+                    <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] mb-2 uppercase">这份方案适合你，如果你想</div>
                     <p id="vpm-fit-text" class="text-[11px] text-slate-600 leading-relaxed mb-3"></p>
                     <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
                 </div>
                 <!-- 说明 -->
-                <div class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <div class="text-[11px] text-slate-600 leading-relaxed bg-white/90 p-3.5 rounded-xl border border-[#efe3d0]">
                     这不是一套通用跟练视频，而是按你这次结果匹配的训练顺序。你拿到的不只是动作列表，还有先后顺序、频率建议和避坑提醒。
                 </div>
-                <div class="bg-amber-50/80 border border-amber-100 rounded-2xl p-3.5">
-                    <div class="text-[9px] font-bold text-amber-700 tracking-[0.18em] uppercase mb-2">为什么现在不建议直接乱练</div>
+                <div class="bg-[#fff4e8] border border-[#f1dcc2] rounded-2xl p-3.5">
+                    <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-2">为什么现在不建议直接乱练</div>
                     <ul id="vpm-avoid-list" class="flex flex-col gap-2"></ul>
                 </div>
-                <div id="vpm-caution-text" class="text-[10px] text-amber-700 leading-relaxed bg-amber-50 p-3.5 rounded-xl border border-amber-100"></div>
-                <div class="text-[10px] text-slate-400 leading-relaxed">
-                    购买后扫码并添加微信 <span class="font-bold text-slate-600">songjiaotou999</span>，发付款截图即可，我会按你的这次结果发送对应版本。
+                <div id="vpm-caution-text" class="text-[10px] text-[#8b5e34] leading-relaxed bg-[#fff4e8] p-3.5 rounded-xl border border-[#f1dcc2]"></div>
+                <div class="text-[10px] text-[#8a7b68] leading-relaxed">
+                    购买后添加微信 <span class="font-bold text-[#5f5140]">songjiaotou999</span>，发付款截图即可，我会按你的这次结果发送对应版本。
                 </div>
                 <!-- 二维码 -->
                 <div class="flex flex-col items-center gap-3 pt-1">
-                    <div class="w-40 h-40 bg-white border border-slate-200 p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
+                    <div class="w-40 h-40 bg-white border border-[#efe3d0] p-2 rounded-2xl shadow-sm flex items-center justify-center overflow-hidden relative">
                         <img src="IMG_1456.jpeg" alt="付款二维码" class="w-full h-full object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                         <div class="absolute inset-0 flex-col items-center justify-center bg-slate-50 text-slate-400 hidden p-2 text-center flex">
                             <svg class="w-8 h-8 mb-2 opacity-50 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             <span class="text-[10px] leading-tight">未找到二维码</span>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <span class="text-[13px] font-bold text-slate-800">¥299</span>
-                        <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                    <div class="text-center bg-[linear-gradient(135deg,#fff8ea_0%,#fff3dc_100%)] border border-[#ead9bf] rounded-2xl px-4 py-3 w-full">
+                        <span class="text-[16px] font-black text-[#8b5e34]">¥299</span>
+                        <p class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed">
                             适合不想自己试错、希望直接知道下一步怎么练的人
                         </p>
                     </div>
                 </div>
             </div>
             <!-- 底部 -->
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100">
-                <button id="btn-close-video-plan-bottom" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors text-[11px] tracking-wider">
+            <div class="px-5 pb-5 pt-2 border-t border-[#f0e3ce]">
+                <button id="btn-close-video-plan-bottom" class="w-full py-2.5 bg-[#2f5d50] hover:bg-[#244a40] text-white rounded-xl font-bold transition-colors text-[11px] tracking-wider shadow-[0_8px_20px_rgba(47,93,80,0.18)]">
                     先保留这份报告
                 </button>
             </div>
@@ -5346,7 +5352,7 @@
             if (comboKey.startsWith('mixed_')) {
                 return '先把基础稳定和顺序建立起来，不想一边看报告一边自己猜先练什么、练多久、什么时候复测。';
             }
-            return '想直接知道自己该先松哪里、再练哪里、哪些动作先别急着做，减少越练越紧、越练越歪的试错。';
+            return '已经想开始调整，但不想再自己反复试动作、猜顺序、凭感觉练。';
         }
 
         function getVideoPlanCautionText(comboKey) {
@@ -5357,8 +5363,8 @@
 
         function getVideoPlanCardFitNote(comboKey) {
             return comboKey.startsWith('mixed_')
-                ? '这份更适合想先把基础稳定建立起来，再按复测结果继续推进的人。'
-                : '这份更适合已经想开始练，但不想再靠感觉乱试动作的人。';
+                ? '更适合想先把基础稳定建立起来，再按复测结果继续推进的人。'
+                : '更适合已经想开始练，但不想再靠感觉乱试动作、反复试错的人。';
         }
 
         function getVideoPlanAvoidItems(comboKey) {
@@ -5431,7 +5437,7 @@
             if(jumpLink) jumpLink.classList.remove('hidden');
 
             document.getElementById('vp-plan-label').textContent = plan.title;
-            document.getElementById('vp-title').textContent = '你接下来该怎么练';
+            document.getElementById('vp-title').textContent = '根据这次结果，你接下来该怎么练';
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
@@ -5459,7 +5465,7 @@
             const comboKey = card?.dataset.comboKey || 'posterior_LeftAIC';
             const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
 
-            document.getElementById('vpm-title').textContent = '你的完整训练方案';
+            document.getElementById('vpm-title').textContent = '根据这次结果匹配的完整方案';
             document.getElementById('vpm-tagline').textContent = plan.tagline;
             document.getElementById('vpm-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vpm-fit-text').textContent = getVideoPlanFitText(comboKey, plan);
@@ -5484,8 +5490,8 @@
             if (isFromBottomBtn) {
                 const btnGet = document.getElementById('btn-get-video-plan');
                 if (btnGet) {
-                    btnGet.classList.remove('bg-slate-800', 'hover:bg-slate-700');
-                    btnGet.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    btnGet.classList.remove('bg-[#2f5d50]', 'hover:bg-[#244a40]');
+                    btnGet.classList.add('bg-emerald-700', 'hover:bg-emerald-800');
                     btnGet.textContent = '已查看完整方案';
                 }
             }
