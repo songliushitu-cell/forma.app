@@ -13,4 +13,4 @@ if ! command -v node >/dev/null 2>&1; then
 fi
 
 node "$repo_root/scripts/bump_version.js" >/dev/null
-git add -- "$repo_root/index.html"
+git add -- "$repo_root/index.html" "$repo_root/package.json" "$repo_root/package-lock.json"
