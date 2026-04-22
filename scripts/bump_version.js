@@ -4,23 +4,65 @@ const fs = require('fs');
 const path = require('path');
 
 const indexPath = path.resolve(__dirname, '..', 'index.html');
-const html = fs.readFileSync(indexPath, 'utf8');
-const versionPattern = /v(\d+)\.(\d+)\.(\d+)/;
-const match = html.match(versionPattern);
+const packagePath = path.resolve(__dirname, '..', 'package.json');
+const lockPath = path.resolve(__dirname, '..', 'package-lock.json');
+const versionPattern = /(\d+)\.(\d+)\.(\d+)/;
+const htmlVersionPattern = /v(\d+)\.(\d+)\.(\d+)/;
 
-if (!match) {
-  console.error('Version badge not found in index.html');
-  process.exit(1);
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-const major = Number(match[1]);
-const minor = Number(match[2]);
-const patch = Number(match[3]) + 1;
-const nextVersion = `v${major}.${minor}.${patch}`;
-const nextHtml = html.replace(versionPattern, nextVersion);
+function writeJson(filePath, value) {
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
 
-if (nextHtml !== html) {
+function normalizeVersion(input) {
+  if (!input) return null;
+  const clean = String(input).trim().replace(/^v/i, '');
+  if (!versionPattern.test(clean)) return null;
+  return clean;
+}
+
+function bumpPatch(version) {
+  const [major, minor, patch] = version.split('.').map(Number);
+  return `${major}.${minor}.${patch + 1}`;
+}
+
+function syncAll(version) {
+  const packageJson = readJson(packagePath);
+  const packageLock = readJson(lockPath);
+  const html = fs.readFileSync(indexPath, 'utf8');
+  const htmlMatch = html.match(htmlVersionPattern);
+
+  if (!htmlMatch) {
+    console.error('Version badge not found in index.html');
+    process.exit(1);
+  }
+
+  packageJson.version = version;
+  packageLock.version = version;
+  if (packageLock.packages && packageLock.packages['']) {
+    packageLock.packages[''].version = version;
+  }
+
+  const nextHtml = html.replace(htmlVersionPattern, `v${version}`);
+
+  writeJson(packagePath, packageJson);
+  writeJson(lockPath, packageLock);
   fs.writeFileSync(indexPath, nextHtml, 'utf8');
 }
 
-process.stdout.write(nextVersion);
+const packageJson = readJson(packagePath);
+const explicitVersion = normalizeVersion(process.argv[2]);
+const syncMode = process.argv.includes('--sync');
+const currentVersion = normalizeVersion(packageJson.version);
+
+if (!currentVersion) {
+  console.error('package.json version not found or invalid');
+  process.exit(1);
+}
+
+const targetVersion = explicitVersion || (syncMode ? currentVersion : bumpPatch(currentVersion));
+syncAll(targetVersion);
+process.stdout.write(`v${targetVersion}`);

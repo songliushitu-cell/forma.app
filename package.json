@@ -1,8 +1,11 @@
 {
   "name": "forma-basic",
-  "version": "1.8.17",
+  "version": "1.8.20",
   "private": true,
   "scripts": {
+    "version:sync": "node scripts/bump_version.js --sync",
+    "version:bump": "node scripts/bump_version.js",
+    "version": "node scripts/bump_version.js $npm_package_version && git add index.html package.json package-lock.json",
     "license:server": "node server/license-server.js",
     "license:create": "node scripts/generate_unlock_code.js",
     "worker:dev": "npx wrangler dev /Users/songxuan/Desktop/jichuban/worker/license-worker.js --config /Users/songxuan/Desktop/jichuban/worker/wrangler.toml",
