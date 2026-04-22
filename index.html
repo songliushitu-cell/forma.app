@@ -63,94 +63,305 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    function buildPelvisMesh(color) {
-        const group = new THREE.Group();
-        const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
-        const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
-        function addMesh(geo, m, x, y, z, rx, ry, rz) {
-            const mesh = new THREE.Mesh(geo, m);
-            mesh.position.set(x||0, y||0, z||0);
-            if (rx) mesh.rotation.x = rx;
-            if (ry) mesh.rotation.y = ry;
-            if (rz) mesh.rotation.z = rz;
-            mesh.castShadow = true; mesh.receiveShadow = true;
-            group.add(mesh); return mesh;
+    const PELVIS_RENDER_HEIGHT = 260;
+    const PELVIS_DEFAULT_DATA = {
+        rotation: -8,
+        heightDiff: 0,
+        compressionType: 'posterior',
+        affectedSide: 'left',
+        severity: 'mild',
+        color: '#0a84ff',
+        comboKey: 'posterior_baseline'
+    };
+
+    function clampPelvisValue(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    function getPelvisAccentColor(compressionType, explicitColor) {
+        if (explicitColor) return explicitColor;
+        if (compressionType === 'anterior') return '#ff9500';
+        if (compressionType === 'posterior') return '#0a84ff';
+        return '#8e8e93';
+    }
+
+    function normalizePelvisReportData(comboKey = '', source = {}) {
+        const input = source || {};
+        const type = typeof comboKey === 'string' ? comboKey : '';
+        const isAnterior = type.startsWith('anterior');
+        const isPosterior = type.startsWith('posterior');
+        const isMixed = type.startsWith('mixed');
+        const isOblique = type.includes('oblique');
+        const isLateral = type.includes('lateral');
+
+        const compressionType = input.compressionType
+            || (isAnterior ? 'anterior' : (isPosterior ? 'posterior' : (isMixed ? 'neutral' : PELVIS_DEFAULT_DATA.compressionType)));
+        const color = getPelvisAccentColor(compressionType, input.color);
+
+        let rotation = input.rotation;
+        if (rotation == null && typeof input.ry === 'number') {
+            rotation = THREE.MathUtils.radToDeg(input.ry);
         }
-        // 骶骨
-        addMesh(new THREE.CylinderGeometry(0.18, 0.28, 0.55, 5, 1), mat, 0, 0, -0.38, Math.PI*0.08);
-        // 髂翼
+        if (rotation == null) {
+            rotation = isOblique ? -18 : -9;
+        }
+
+        let heightDiff = input.heightDiff;
+        if (heightDiff == null && typeof input.rz === 'number') {
+            const legacyMm = Math.round(Math.abs(input.rz) * 28);
+            heightDiff = input.rz >= 0 ? legacyMm : -legacyMm;
+        }
+        if (heightDiff == null) {
+            heightDiff = isOblique ? 10 : (isLateral ? 7 : 0);
+        }
+
+        let severity = input.severity;
+        if (!severity) {
+            severity = isOblique ? 'severe' : (isLateral ? 'moderate' : 'mild');
+        }
+
+        return {
+            ...PELVIS_DEFAULT_DATA,
+            comboKey: type || input.comboKey || PELVIS_DEFAULT_DATA.comboKey,
+            color,
+            compressionType,
+            affectedSide: input.affectedSide || 'left',
+            severity,
+            rotation: clampPelvisValue(rotation, -24, 24),
+            heightDiff: clampPelvisValue(heightDiff, -14, 14)
+        };
+    }
+
+    function getPelvisLabels(data) {
+        const direction = data.compressionType === 'anterior'
+            ? '前侧牵拉'
+            : data.compressionType === 'posterior'
+                ? '后侧推顶'
+                : '方向待复核';
+        const tilt = data.heightDiff > 1
+            ? '左高右低'
+            : data.heightDiff < -1
+                ? '右高左低'
+                : '高低差不明显';
+        const rotation = data.affectedSide === 'right' ? '右侧略靠前' : '左侧略靠前';
+        const severity = data.severity === 'severe' ? '偏移明显' : data.severity === 'moderate' ? '偏移中等' : '轻度偏移';
+        return { direction, tilt, rotation, severity };
+    }
+
+    function rememberPelvisTransform(object) {
+        object.userData.basePosition = object.position.clone();
+        object.userData.baseRotation = object.rotation.clone();
+        object.userData.baseScale = object.scale.clone();
+        return object;
+    }
+
+    function restorePelvisTransform(object) {
+        if (!object?.userData?.basePosition) return;
+        object.position.copy(object.userData.basePosition);
+        object.rotation.copy(object.userData.baseRotation);
+        object.scale.copy(object.userData.baseScale);
+    }
+
+    function disposePelvisObject(root) {
+        if (!root) return;
+        root.traverse((child) => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                materials.forEach((material) => {
+                    if (material?.dispose) material.dispose();
+                });
+            }
+        });
+    }
+
+    function buildPelvisMesh(reportData) {
+        const data = normalizePelvisReportData(reportData?.comboKey, reportData);
+        const group = new THREE.Group();
+        const baseBone = new THREE.Color('#e8ddd0');
+        const accent = new THREE.Color(data.color);
+
+        const leftMat = new THREE.MeshStandardMaterial({ color: baseBone.clone(), roughness: 0.52, metalness: 0.02, side: THREE.DoubleSide });
+        const rightMat = leftMat.clone();
+        const crestMatL = new THREE.MeshStandardMaterial({ color: baseBone.clone().lerp(accent, 0.12), roughness: 0.38, metalness: 0.06 });
+        const crestMatR = crestMatL.clone();
+        const sacrumMat = new THREE.MeshStandardMaterial({ color: baseBone.clone().lerp(new THREE.Color('#cfc3b3'), 0.35), roughness: 0.6, metalness: 0.0, side: THREE.DoubleSide });
+        const bridgeMat = new THREE.MeshStandardMaterial({ color: baseBone.clone().lerp(accent, 0.08), roughness: 0.58, metalness: 0.0, side: THREE.DoubleSide });
+        const markerMatL = new THREE.MeshStandardMaterial({ color: accent.clone(), emissive: accent.clone(), emissiveIntensity: 0.22, roughness: 0.28, metalness: 0.12 });
+        const markerMatR = markerMatL.clone();
+        const edgeMatL = new THREE.LineBasicMaterial({ color: 0x95a6b8, transparent: true, opacity: 0.30 });
+        const edgeMatR = edgeMatL.clone();
+        const edgeMatMid = new THREE.LineBasicMaterial({ color: 0x7f8a98, transparent: true, opacity: 0.25 });
+
+        function addMesh(geo, material, position = {}, rotation = {}, scale = null) {
+            const mesh = new THREE.Mesh(geo, material);
+            mesh.position.set(position.x || 0, position.y || 0, position.z || 0);
+            mesh.rotation.set(rotation.x || 0, rotation.y || 0, rotation.z || 0);
+            if (scale) mesh.scale.set(scale.x ?? 1, scale.y ?? 1, scale.z ?? 1);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            group.add(mesh);
+            return rememberPelvisTransform(mesh);
+        }
+
+        function addEdges(geo, material, position = {}, rotation = {}, scale = null) {
+            const line = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), material);
+            line.position.set(position.x || 0, position.y || 0, position.z || 0);
+            line.rotation.set(rotation.x || 0, rotation.y || 0, rotation.z || 0);
+            if (scale) line.scale.set(scale.x ?? 1, scale.y ?? 1, scale.z ?? 1);
+            group.add(line);
+            return rememberPelvisTransform(line);
+        }
+
+        const sacrum = addMesh(
+            new THREE.CylinderGeometry(0.18, 0.28, 0.55, 5, 1),
+            sacrumMat,
+            { x: 0, y: 0, z: -0.38 },
+            { x: Math.PI * 0.08 }
+        );
+
         function makeWing(side) {
             const pts = [];
-            for (let i=0; i<=10; i++) {
-                const t=i/10;
-                pts.push(new THREE.Vector3(side*(0.25+t*0.52), 0.12-t*0.05+Math.sin(t*Math.PI)*0.1, -0.12+t*0.22-Math.sin(t*Math.PI)*0.28));
+            for (let i = 0; i <= 10; i++) {
+                const t = i / 10;
+                pts.push(new THREE.Vector3(
+                    side * (0.25 + t * 0.52),
+                    0.12 - t * 0.05 + Math.sin(t * Math.PI) * 0.1,
+                    -0.12 + t * 0.22 - Math.sin(t * Math.PI) * 0.28
+                ));
             }
             const curve = new THREE.CatmullRomCurve3(pts);
             const shape = new THREE.Shape();
-            shape.moveTo(-0.01,0); shape.bezierCurveTo(-0.01,0.18,0.01,0.22,0,0.26); shape.bezierCurveTo(-0.01,0.22,0.01,0.18,0,0);
-            return new THREE.ExtrudeGeometry(shape, { steps:14, extrudePath:curve, bevelEnabled:false });
+            shape.moveTo(-0.01, 0);
+            shape.bezierCurveTo(-0.01, 0.18, 0.01, 0.22, 0, 0.26);
+            shape.bezierCurveTo(-0.01, 0.22, 0.01, 0.18, 0, 0);
+            return new THREE.ExtrudeGeometry(shape, { steps: 14, extrudePath: curve, bevelEnabled: false });
         }
-        addMesh(makeWing(1), mat, 0,0,0);
-        addMesh(makeWing(-1), mat, 0,0,0);
-        // 髂嵴管
+
+        const leftWingGeo = makeWing(-1);
+        const rightWingGeo = makeWing(1);
+        const leftWing = addMesh(leftWingGeo, leftMat);
+        const rightWing = addMesh(rightWingGeo, rightMat);
+        const leftWingEdge = addEdges(leftWingGeo, edgeMatL);
+        const rightWingEdge = addEdges(rightWingGeo, edgeMatR);
+
         function makeCrest(side) {
-            const pts = [new THREE.Vector3(side*0.25,0.22,-0.12),new THREE.Vector3(side*0.50,0.26,-0.05),new THREE.Vector3(side*0.72,0.20,0.12),new THREE.Vector3(side*0.65,0.10,0.28),new THREE.Vector3(side*0.42,0.06,0.38)];
+            const pts = [
+                new THREE.Vector3(side * 0.25, 0.22, -0.12),
+                new THREE.Vector3(side * 0.50, 0.26, -0.05),
+                new THREE.Vector3(side * 0.72, 0.20, 0.12),
+                new THREE.Vector3(side * 0.65, 0.10, 0.28),
+                new THREE.Vector3(side * 0.42, 0.06, 0.38)
+            ];
             return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.038, 7, false);
         }
-        addMesh(makeCrest(1), mat, 0,0,0);
-        addMesh(makeCrest(-1), mat, 0,0,0);
-        // 坐骨结节
-        const isGeo = new THREE.SphereGeometry(0.11,10,8); isGeo.scale(1,0.7,1.1);
-        addMesh(isGeo, mat, 0.48,-0.18,0.35);
-        const isGeo2 = new THREE.SphereGeometry(0.11,10,8); isGeo2.scale(1,0.7,1.1);
-        addMesh(isGeo2, mat, -0.48,-0.18,0.35);
-        // 耻骨联合
-        addMesh(new THREE.BoxGeometry(0.30,0.14,0.12), mat, 0,-0.05,0.44);
-        // 耻骨支弧
+
+        const leftCrestGeo = makeCrest(-1);
+        const rightCrestGeo = makeCrest(1);
+        const leftCrest = addMesh(leftCrestGeo, crestMatL);
+        const rightCrest = addMesh(rightCrestGeo, crestMatR);
+
+        const leftTubGeo = new THREE.SphereGeometry(0.11, 10, 8);
+        leftTubGeo.scale(1, 0.7, 1.1);
+        const rightTubGeo = new THREE.SphereGeometry(0.11, 10, 8);
+        rightTubGeo.scale(1, 0.7, 1.1);
+        const leftTub = addMesh(leftTubGeo, bridgeMat, { x: -0.48, y: -0.18, z: 0.35 });
+        const rightTub = addMesh(rightTubGeo, bridgeMat, { x: 0.48, y: -0.18, z: 0.35 });
+
+        const pubis = addMesh(new THREE.BoxGeometry(0.30, 0.14, 0.12), bridgeMat, { x: 0, y: -0.05, z: 0.44 });
+        const pubisEdge = addEdges(new THREE.BoxGeometry(0.30, 0.14, 0.12), edgeMatMid, { x: 0, y: -0.05, z: 0.44 });
+
         function makePubRamus(side) {
-            const pts=[new THREE.Vector3(side*0.12,-0.04,0.44),new THREE.Vector3(side*0.28,0.00,0.42),new THREE.Vector3(side*0.42,0.04,0.38)];
-            return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,0.045,6,false);
+            const pts = [
+                new THREE.Vector3(side * 0.12, -0.04, 0.44),
+                new THREE.Vector3(side * 0.28, 0.00, 0.42),
+                new THREE.Vector3(side * 0.42, 0.04, 0.38)
+            ];
+            return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.045, 6, false);
         }
-        addMesh(makePubRamus(1), mat, 0,0,0);
-        addMesh(makePubRamus(-1), mat, 0,0,0);
-        // L/R 标记球
-        const mkGeo = new THREE.SphereGeometry(0.045,8,6);
-        addMesh(mkGeo, markerMat,  0.78,0.22,0.0);
-        addMesh(new THREE.SphereGeometry(0.045,8,6), markerMat, -0.78,0.22,0.0);
+
+        const leftRamusGeo = makePubRamus(-1);
+        const rightRamusGeo = makePubRamus(1);
+        const leftRamus = addMesh(leftRamusGeo, bridgeMat);
+        const rightRamus = addMesh(rightRamusGeo, bridgeMat);
+
+        const markerGeo = new THREE.SphereGeometry(0.05, 12, 10);
+        const leftMarker = addMesh(markerGeo, markerMatL, { x: -0.8, y: 0.22, z: 0.02 });
+        const rightMarker = addMesh(markerGeo, markerMatR, { x: 0.8, y: 0.22, z: 0.02 });
+
+        rememberPelvisTransform(group);
+        group.userData.parts = {
+            leftWing,
+            rightWing,
+            leftWingEdge,
+            rightWingEdge,
+            leftCrest,
+            rightCrest,
+            sacrum,
+            leftTub,
+            rightTub,
+            pubis,
+            pubisEdge,
+            leftRamus,
+            rightRamus,
+            leftMarker,
+            rightMarker
+        };
+        group.userData.materials = {
+            leftMat,
+            rightMat,
+            crestMatL,
+            crestMatR,
+            sacrumMat,
+            bridgeMat,
+            markerMatL,
+            markerMatR,
+            edgeMatL,
+            edgeMatR,
+            edgeMatMid
+        };
+        group.scale.set(1.5, 1.5, 1.5);
+        rememberPelvisTransform(group);
+        applyReportData(group, data);
         return group;
     }
 
-    function buildPelvisFallbackMesh(color) {
+    function buildPelvisFallbackMesh(reportData) {
+        const data = normalizePelvisReportData(reportData?.comboKey, reportData);
         const group = new THREE.Group();
-        const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
-        const markerMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: 0.5, metalness: 0.1 });
+        const accent = new THREE.Color(data.color);
+        const baseMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#e8ddd0'), roughness: 0.62, metalness: 0.0, side: THREE.DoubleSide });
+        const leftMat = baseMat.clone();
+        const rightMat = baseMat.clone();
+        const markerMatL = new THREE.MeshStandardMaterial({ color: accent.clone(), emissive: accent.clone(), emissiveIntensity: 0.18, roughness: 0.34, metalness: 0.08 });
+        const markerMatR = markerMatL.clone();
 
-        const sacrum = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.6, 10, 1), mat);
+        const sacrum = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.6, 10, 1), baseMat.clone());
         sacrum.position.set(0, 0, -0.25);
         sacrum.rotation.x = Math.PI * 0.1;
-        group.add(sacrum);
+        group.add(rememberPelvisTransform(sacrum));
 
-        const iliumL = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), mat);
+        const iliumL = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), leftMat);
         iliumL.scale.set(1.2, 0.8, 0.5);
         iliumL.position.set(-0.48, 0.05, -0.05);
-        group.add(iliumL);
+        group.add(rememberPelvisTransform(iliumL));
 
-        const iliumR = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), mat);
+        const iliumR = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 12), rightMat);
         iliumR.scale.set(1.2, 0.8, 0.5);
         iliumR.position.set(0.48, 0.05, -0.05);
-        group.add(iliumR);
+        group.add(rememberPelvisTransform(iliumR));
 
-        const pubis = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.16, 0.12), mat);
+        const pubis = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.16, 0.12), baseMat.clone());
         pubis.position.set(0, -0.08, 0.38);
-        group.add(pubis);
+        group.add(rememberPelvisTransform(pubis));
 
-        const markerL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMat);
+        const markerL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMatL);
         markerL.position.set(-0.8, 0.22, 0.0);
-        group.add(markerL);
+        group.add(rememberPelvisTransform(markerL));
 
-        const markerR = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMat);
+        const markerR = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), markerMatR);
         markerR.position.set(0.8, 0.22, 0.0);
-        group.add(markerR);
+        group.add(rememberPelvisTransform(markerR));
 
         group.traverse((m) => {
             if (m.isMesh) {
@@ -159,23 +370,209 @@
             }
         });
 
+        group.userData.parts = {
+            leftWing: iliumL,
+            rightWing: iliumR,
+            sacrum,
+            pubis,
+            leftMarker: markerL,
+            rightMarker: markerR
+        };
+        group.userData.materials = {
+            leftMat,
+            rightMat,
+            bridgeMat: pubis.material,
+            sacrumMat: sacrum.material,
+            markerMatL,
+            markerMatR
+        };
+        rememberPelvisTransform(group);
+        applyReportData(group, data);
         return group;
     }
 
-    function drawPelvis2DFallback(canvas, cfg) {
+    function applyReportData(group, input) {
+        if (!group) return;
+        const data = normalizePelvisReportData(input?.comboKey || group.userData?.reportData?.comboKey, input || group.userData?.reportData || {});
+        const parts = group.userData?.parts || {};
+        const mats = group.userData?.materials || {};
+        const accent = new THREE.Color(data.color);
+        const activeColor = new THREE.Color('#e8ddd0').lerp(accent, 0.42);
+        const passiveColor = new THREE.Color('#e8ddd0').lerp(accent, 0.12);
+        const basePitch = data.compressionType === 'anterior' ? 0.40 : data.compressionType === 'posterior' ? 0.30 : 0.34;
+        const severityScale = data.severity === 'severe' ? 1 : data.severity === 'moderate' ? 0.7 : 0.45;
+        const frontSide = data.affectedSide === 'right' ? 1 : -1;
+        const heightTilt = THREE.MathUtils.degToRad(data.heightDiff * 0.9);
+        const yaw = THREE.MathUtils.degToRad(data.rotation);
+        const leftHigh = data.heightDiff > 1;
+        const rightHigh = data.heightDiff < -1;
+
+        group.userData.reportData = data;
+        restorePelvisTransform(group);
+        Object.values(parts).forEach((part) => restorePelvisTransform(part));
+
+        group.rotation.set(
+            basePitch + frontSide * 0.035 * severityScale,
+            yaw,
+            heightTilt
+        );
+        group.position.set(frontSide * 0.06, -0.04, 0);
+
+        if (parts.leftWing) {
+            parts.leftWing.position.y += leftHigh ? 0.08 * severityScale : (rightHigh ? -0.02 : 0);
+            parts.leftWing.position.z += frontSide < 0 ? 0.08 * severityScale : -0.015;
+            parts.leftWing.rotation.y += frontSide < 0 ? -0.12 * severityScale : 0.03;
+            parts.leftWing.rotation.z += leftHigh ? 0.05 * severityScale : (rightHigh ? -0.01 : 0);
+        }
+        if (parts.rightWing) {
+            parts.rightWing.position.y += leftHigh ? -0.05 : (rightHigh ? 0.08 * severityScale : 0);
+            parts.rightWing.position.z += frontSide > 0 ? 0.08 * severityScale : -0.015;
+            parts.rightWing.rotation.y += frontSide > 0 ? 0.12 * severityScale : -0.03;
+            parts.rightWing.rotation.z += leftHigh ? 0.01 : (rightHigh ? -0.05 * severityScale : 0);
+        }
+        if (parts.leftCrest) {
+            parts.leftCrest.position.y += leftHigh ? 0.03 * severityScale : (rightHigh ? -0.01 : 0);
+            parts.leftCrest.position.z += frontSide < 0 ? 0.04 * severityScale : 0;
+        }
+        if (parts.rightCrest) {
+            parts.rightCrest.position.y += leftHigh ? -0.015 : (rightHigh ? 0.03 * severityScale : 0);
+            parts.rightCrest.position.z += frontSide > 0 ? 0.04 * severityScale : 0;
+        }
+        if (parts.leftTub) parts.leftTub.position.y += leftHigh ? 0.02 * severityScale : (rightHigh ? -0.01 : 0);
+        if (parts.rightTub) parts.rightTub.position.y += leftHigh ? -0.015 : (rightHigh ? 0.02 * severityScale : 0);
+        if (parts.pubis) {
+            parts.pubis.rotation.z += heightTilt * 0.35;
+            parts.pubis.position.z += 0.02 * severityScale;
+        }
+        if (parts.pubisEdge) {
+            parts.pubisEdge.rotation.z += heightTilt * 0.35;
+            parts.pubisEdge.position.z += 0.02 * severityScale;
+        }
+        if (parts.sacrum) {
+            parts.sacrum.rotation.y += yaw * 0.4;
+            parts.sacrum.position.z -= 0.02 * severityScale;
+        }
+        if (parts.leftMarker) {
+            parts.leftMarker.scale.setScalar(frontSide < 0 ? 1.35 : 0.92);
+            parts.leftMarker.position.y += leftHigh ? 0.05 : (rightHigh ? -0.01 : 0);
+        }
+        if (parts.rightMarker) {
+            parts.rightMarker.scale.setScalar(frontSide > 0 ? 1.35 : 0.92);
+            parts.rightMarker.position.y += leftHigh ? -0.01 : (rightHigh ? 0.05 : 0);
+        }
+
+        if (mats.leftMat) {
+            mats.leftMat.color.copy(frontSide < 0 ? activeColor : passiveColor);
+            mats.leftMat.emissive.copy(accent.clone().multiplyScalar(frontSide < 0 ? 0.18 : 0.05));
+            mats.leftMat.emissiveIntensity = frontSide < 0 ? 0.55 : 0.18;
+        }
+        if (mats.rightMat) {
+            mats.rightMat.color.copy(frontSide > 0 ? activeColor : passiveColor);
+            mats.rightMat.emissive.copy(accent.clone().multiplyScalar(frontSide > 0 ? 0.18 : 0.05));
+            mats.rightMat.emissiveIntensity = frontSide > 0 ? 0.55 : 0.18;
+        }
+        if (mats.crestMatL) {
+            mats.crestMatL.color.copy((frontSide < 0 ? activeColor : passiveColor).clone().lerp(new THREE.Color('#ffffff'), 0.10));
+        }
+        if (mats.crestMatR) {
+            mats.crestMatR.color.copy((frontSide > 0 ? activeColor : passiveColor).clone().lerp(new THREE.Color('#ffffff'), 0.10));
+        }
+        if (mats.bridgeMat) {
+            mats.bridgeMat.color.copy(new THREE.Color('#e0d6c9').lerp(accent, 0.08));
+        }
+        if (mats.sacrumMat) {
+            mats.sacrumMat.color.copy(new THREE.Color('#d6cab9').lerp(accent, 0.12));
+        }
+        if (mats.markerMatL) {
+            mats.markerMatL.color.copy(accent);
+            mats.markerMatL.emissive.copy(accent);
+            mats.markerMatL.emissiveIntensity = frontSide < 0 ? 0.55 : 0.18;
+        }
+        if (mats.markerMatR) {
+            mats.markerMatR.color.copy(accent);
+            mats.markerMatR.emissive.copy(accent);
+            mats.markerMatR.emissiveIntensity = frontSide > 0 ? 0.55 : 0.18;
+        }
+        if (mats.edgeMatL) mats.edgeMatL.color.set(frontSide < 0 ? accent.clone().lerp(new THREE.Color('#8ba0b4'), 0.35) : 0x8ea0af);
+        if (mats.edgeMatR) mats.edgeMatR.color.set(frontSide > 0 ? accent.clone().lerp(new THREE.Color('#8ba0b4'), 0.35) : 0x8ea0af);
+    }
+
+    function createLabelsOverlay(container, input) {
+        const stage = container?.parentElement || container;
+        if (!stage) return;
+        document.querySelectorAll('.p3d-lbl').forEach((e) => e.remove());
+        if (getComputedStyle(stage).position === 'static') stage.style.position = 'relative';
+
+        const data = normalizePelvisReportData(input?.comboKey, input);
+        const labels = getPelvisLabels(data);
+        const accent = data.color;
+        const frontSideLeft = data.affectedSide !== 'right';
+
+        function addLabel(text, cssText) {
+            const element = document.createElement('div');
+            element.className = 'p3d-lbl';
+            element.innerHTML = text;
+            element.style.cssText = `position:absolute;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Display\",sans-serif;text-shadow:0 1px 6px rgba(0,0,0,0.45);${cssText}`;
+            stage.appendChild(element);
+            return element;
+        }
+
+        addLabel('可拖拽旋转 · 双指缩放', 'top:10px;right:12px;color:rgba(255,255,255,0.55);font-size:10px;font-weight:600;letter-spacing:0.02em;');
+        addLabel(`左侧`, `left:18%;top:44%;color:${frontSideLeft ? accent : 'rgba(255,255,255,0.45)'};font-size:11px;font-weight:700;transform:translate(-50%,-50%);`);
+        addLabel(`右侧`, `right:18%;top:44%;color:${!frontSideLeft ? accent : 'rgba(255,255,255,0.45)'};font-size:11px;font-weight:700;transform:translate(50%,-50%);`);
+        if (Math.abs(data.heightDiff) > 1) {
+            addLabel(data.heightDiff > 0 ? '左高' : '右高', `top:16px;${data.heightDiff > 0 ? 'left:14%;' : 'right:14%;'}color:${accent};font-size:13px;font-weight:800;`);
+            addLabel(data.heightDiff > 0 ? '右低' : '左低', `top:36px;${data.heightDiff > 0 ? 'right:14%;' : 'left:14%;'}color:rgba(255,255,255,0.32);font-size:12px;font-weight:700;`);
+        }
+        addLabel(labels.rotation, 'bottom:34px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.66);font-size:10px;font-weight:600;white-space:nowrap;');
+
+        const pills = document.createElement('div');
+        pills.className = 'p3d-lbl';
+        pills.style.cssText = 'position:absolute;left:10px;right:10px;bottom:8px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;pointer-events:none;';
+        [labels.direction, labels.tilt, labels.severity].forEach((text, index) => {
+            const pill = document.createElement('span');
+            pill.textContent = text;
+            pill.style.cssText = `padding:4px 8px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:0.01em;background:${index === 0 ? `${accent}20` : 'rgba(255,255,255,0.08)'};color:${index === 0 ? accent : 'rgba(255,255,255,0.75)'};backdrop-filter:blur(4px);`;
+            pills.appendChild(pill);
+        });
+        stage.appendChild(pills);
+    }
+
+    function canUsePelvisWebGL() {
+        try {
+            const testCanvas = document.createElement('canvas');
+            const gl = testCanvas.getContext('webgl', { alpha: true, antialias: true })
+                || testCanvas.getContext('experimental-webgl', { alpha: true, antialias: true });
+            const ok = !!gl;
+            const loseContext = gl && gl.getExtension && gl.getExtension('WEBGL_lose_context');
+            if (loseContext) loseContext.loseContext();
+            return ok;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function renderPelvisFallback(canvas, cfg) {
+        drawPelvis2DFallback(canvas, cfg);
+        createLabelsOverlay(canvas, cfg);
+    }
+
+    function drawPelvis2DFallback(canvas, input) {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
         const w = canvas.width || 340;
         const h = canvas.height || 220;
-        const c = cfg?.color || '#8e8e93';
+        const data = normalizePelvisReportData(input?.comboKey, input);
+        const c = data.color || '#8e8e93';
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = '#0d1117';
         ctx.fillRect(0, 0, w, h);
 
         const cx = w / 2;
         const cy = h / 2 + 6;
-        const tilt = (cfg?.rz || 0) * 35;
-        const pitch = (cfg?.rx || 0.28) * 26;
+        const tilt = data.heightDiff * 1.5;
+        const pitch = (data.compressionType === 'anterior' ? 0.4 : 0.3) * 26;
+        const frontShift = data.affectedSide === 'right' ? 12 : -12;
 
         ctx.save();
         ctx.translate(cx, cy);
@@ -184,10 +581,10 @@
         ctx.strokeStyle = '#e8ddd0';
         ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.ellipse(-56, -8 - pitch * 0.4, 54, 36, 0.25, 0, Math.PI * 2);
+        ctx.ellipse(-56 + (frontShift < 0 ? 8 : -3), -8 - pitch * 0.4 - (data.heightDiff > 0 ? 8 : 0), 54, 36, 0.25, 0, Math.PI * 2);
         ctx.stroke();
         ctx.beginPath();
-        ctx.ellipse(56, 8 + pitch * 0.4, 54, 36, -0.25, 0, Math.PI * 2);
+        ctx.ellipse(56 + (frontShift > 0 ? 8 : -3), 8 + pitch * 0.4 + (data.heightDiff > 0 ? 8 : 0), 54, 36, -0.25, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.beginPath();
@@ -205,20 +602,40 @@
         ctx.restore();
     }
 
+    function preparePelvisCanvas(canvas, width, height) {
+        if (!canvas?.parentNode) return canvas;
+        const freshCanvas = canvas.cloneNode(false);
+        freshCanvas.width = width;
+        freshCanvas.height = height;
+        if (canvas.id) freshCanvas.id = canvas.id;
+        if (canvas.className) freshCanvas.className = canvas.className;
+        if (canvas.getAttribute('style')) freshCanvas.setAttribute('style', canvas.getAttribute('style'));
+        canvas.parentNode.replaceChild(freshCanvas, canvas);
+        return freshCanvas;
+    }
+
     function cleanupPelvisRuntime() {
         if (!window._pelvisRuntime) return;
         const rt = window._pelvisRuntime;
         if (rt.rafId) cancelAnimationFrame(rt.rafId);
+        if (rt.resizeHandler) {
+            try { window.removeEventListener('resize', rt.resizeHandler); } catch(e) {}
+        }
         if (rt.controls) {
             try { rt.controls.dispose(); } catch(e) {}
+        }
+        if (rt.sceneRoot) {
+            try { disposePelvisObject(rt.sceneRoot); } catch(e) {}
         }
         if (rt.renderer) {
             try { rt.renderer.dispose(); } catch(e) {}
             try { rt.renderer.forceContextLoss(); } catch(e) {}
         }
+        document.querySelectorAll('.p3d-lbl').forEach(e => e.remove());
         window._pelvisRuntime = null;
         window._activePelvisRenderer = null;
     }
+    window._pelvisCleanup = cleanupPelvisRuntime;
 
     window._pelvisRender = function(canvas, comboKey, pelvisAnimMap) {
         const hideLoading = () => {
@@ -228,70 +645,148 @@
         try {
             cleanupPelvisRuntime();
 
-            const cfg = (pelvisAnimMap || {})[comboKey] || { rx: 0.28, ry: -0.14, rz: 0.05, color: '#8e8e93' };
+            const cfg = normalizePelvisReportData(comboKey, (pelvisAnimMap || {})[comboKey] || {});
             const W = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
-            const H = 220;
-            canvas.width = W;
-            canvas.height = H;
+            const H = canvas.clientHeight || PELVIS_RENDER_HEIGHT;
+            canvas = preparePelvisCanvas(canvas, W, H);
 
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-            renderer.setSize(W, H);
+            if (!canUsePelvisWebGL()) {
+                hideLoading();
+                renderPelvisFallback(canvas, cfg);
+                return;
+            }
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+            renderer.setSize(W, H, false);
             renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
             renderer.setClearColor(0x0d1117, 1);
             renderer.shadowMap.enabled = true;
             window._activePelvisRenderer = renderer;
 
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, W / H, 0.01, 100);
-            camera.position.set(0, 0.3, 3.2);
+            scene.fog = new THREE.Fog(0x0d1117, 5.5, 13);
+            const camera = new THREE.PerspectiveCamera(34, W / H, 0.1, 100);
+            camera.position.set(0, 0.45, 6.1);
+            camera.lookAt(0, 0.15, 0);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-            const key = new THREE.DirectionalLight(0xffffff, 2.5);
-            key.position.set(3, 5, 3); key.castShadow = true; scene.add(key);
-            scene.add(Object.assign(new THREE.DirectionalLight(0xa0c8ff, 0.8), { position: new THREE.Vector3(-3, 2, -2) }));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.92));
+            const key = new THREE.DirectionalLight(0xffffff, 1.8);
+            key.position.set(4, 7, 5);
+            key.castShadow = true;
+            scene.add(key);
+            const fill = new THREE.DirectionalLight(new THREE.Color(cfg.color), 0.65);
+            fill.position.set(-4, 2, -3);
+            scene.add(fill);
+            const rim = new THREE.DirectionalLight(0xd8f7ff, 0.42);
+            rim.position.set(0, -1, -5);
+            scene.add(rim);
 
-            const grid = new THREE.GridHelper(3, 12, 0x334455, 0x1a2233);
-            grid.position.y = -1.0; scene.add(grid);
+            const grid = new THREE.GridHelper(4.8, 16, 0x29445e, 0x17212b);
+            grid.position.y = -1.35;
+            const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
+            gridMaterials.forEach((material) => {
+                material.transparent = true;
+                material.opacity = 0.24;
+            });
+            scene.add(grid);
 
             const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.dampingFactor = 0.08;
-            controls.minDistance = 0.5; controls.maxDistance = 8;
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.07;
+            controls.enablePan = false;
+            controls.minDistance = 4.4;
+            controls.maxDistance = 8.5;
+            controls.minPolarAngle = 0.9;
+            controls.maxPolarAngle = 2.15;
 
-            const render = () => { controls.update(); renderer.render(scene, camera); };
-            controls.addEventListener('change', render);
-
-            // Build procedural pelvis immediately — zero loading time
             let group;
             try {
-                group = buildPelvisMesh(cfg.color || '#8e8e93');
+                group = buildPelvisMesh(cfg);
             } catch (meshErr) {
                 console.error('[Pelvis] primary mesh build failed, using fallback mesh', meshErr);
-                group = buildPelvisFallbackMesh(cfg.color || '#8e8e93');
+                group = buildPelvisFallbackMesh(cfg);
             }
             scene.add(group);
+            createLabelsOverlay(canvas, cfg);
             hideLoading();
-            render();
 
-            // Smooth easeOut entrance animation
-            const t0 = performance.now(), dur = 1400;
-            const { rx: tRx, ry: tRy, rz: tRz } = cfg;
-            const easeOut = (t) => { const c = 1.70158, c3 = c + 1; return 1 + c3 * Math.pow(t-1,3) + c * Math.pow(t-1,2); };
-            (function animLoop() {
-                const rafId = requestAnimationFrame(animLoop);
-                if (!window._pelvisRuntime) return;
-                window._pelvisRuntime.rafId = rafId;
-                const p = easeOut(Math.min((performance.now() - t0) / dur, 1));
-                group.rotation.set(tRx * p, tRy * p, tRz * p);
+            const targetRotation = group.rotation.clone();
+            const targetPosition = group.position.clone();
+            const targetScale = group.scale.clone();
+            group.rotation.set(targetRotation.x * 0.4, targetRotation.y - 0.36, targetRotation.z * 0.2);
+            group.position.set(targetPosition.x * 0.45, targetPosition.y - 0.16, targetPosition.z);
+            group.scale.multiplyScalar(0.88);
+
+            let lastInteractionAt = 0;
+            let userInteracting = false;
+            controls.addEventListener('start', () => {
+                userInteracting = true;
+                lastInteractionAt = performance.now();
+            });
+            controls.addEventListener('end', () => {
+                userInteracting = false;
+                lastInteractionAt = performance.now();
+            });
+
+            const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+            const startedAt = performance.now();
+            const introMs = 1000;
+
+            const render = () => {
+                controls.update();
+                renderer.render(scene, camera);
+            };
+
+            const resizeHandler = () => {
+                const width = (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 340;
+                const height = canvas.clientHeight || PELVIS_RENDER_HEIGHT;
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height, false);
                 render();
-            })();
+            };
+            window.addEventListener('resize', resizeHandler);
 
-            window._pelvisRuntime = { renderer, controls, rafId: null };
+            const runtime = {
+                renderer,
+                controls,
+                rafId: null,
+                resizeHandler,
+                sceneRoot: group,
+                updateData: (nextData) => {
+                    const merged = normalizePelvisReportData(comboKey, { ...cfg, ...nextData });
+                    applyReportData(group, merged);
+                    createLabelsOverlay(canvas, merged);
+                }
+            };
+
+            function animate() {
+                if (!window._pelvisRuntime) return;
+                const now = performance.now();
+                const intro = easeOut(Math.min((now - startedAt) / introMs, 1));
+                const idle = userInteracting || (now - lastInteractionAt < 1600) ? 0.25 : 1;
+                const swing = now * 0.001;
+
+                group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, targetRotation.x + Math.sin(swing * 0.8) * 0.014 * idle, 0.08 + intro * 0.04);
+                group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, targetRotation.y + Math.sin(swing * 0.55) * 0.022 * idle, 0.08 + intro * 0.04);
+                group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, targetRotation.z + Math.cos(swing * 0.65) * 0.010 * idle, 0.08 + intro * 0.04);
+                group.position.x = THREE.MathUtils.lerp(group.position.x, targetPosition.x, 0.08);
+                group.position.y = THREE.MathUtils.lerp(group.position.y, targetPosition.y + Math.sin(swing * 0.6) * 0.02 * idle, 0.06);
+                group.scale.lerp(targetScale, 0.09);
+
+                runtime.rafId = requestAnimationFrame(animate);
+                render();
+            }
+
+            window._pelvisRuntime = runtime;
+            animate();
         } catch (e) {
             hideLoading();
             console.error('[Pelvis] error', e);
             try {
                 cleanupPelvisRuntime();
-                drawPelvis2DFallback(canvas, (pelvisAnimMap || {})[comboKey] || { rx: 0.28, rz: 0.05, color: '#8e8e93' });
+                canvas = preparePelvisCanvas(canvas, canvas?.clientWidth || 340, canvas?.clientHeight || PELVIS_RENDER_HEIGHT);
+                renderPelvisFallback(canvas, normalizePelvisReportData(comboKey, (pelvisAnimMap || {})[comboKey] || {}));
             } catch (fallbackErr) {
                 console.error('[Pelvis] 2D fallback error', fallbackErr);
             }
@@ -325,7 +820,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.2</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.3</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1558,6 +2053,11 @@
 
             document.getElementById('final-report-section').classList.remove('hidden');
             scrollToDisplayArea(document.getElementById('final-report-section'));
+            // 恢复骨盆 3D 模型
+            const meta = snapshot.assessmentMeta;
+            if (meta?.pelvisCfg && meta?.pelvisComboKey) {
+                setTimeout(() => renderPelvis3D(meta.pelvisCfg, meta.pelvisComboKey), 60);
+            }
         }
 
         function renderSavedReportsList() {
@@ -4141,6 +4641,45 @@
             }
         });
 
+        // --- 骨盆 3D 可视化 (Three.js WebGL) ---
+        let _pelvisRaf = null, _pelvisRenderer = null;
+        function _cleanupPelvis() {
+            if (typeof window._pelvisCleanup === 'function') {
+                window._pelvisCleanup();
+            }
+            _pelvisRaf = null;
+            _pelvisRenderer = null;
+        }
+        function renderPelvis3D(cfg, comboKey) {
+            _cleanupPelvis();
+            const canvas = document.getElementById('pelvis-canvas');
+            const loadEl = document.getElementById('pelvis-loading');
+            if (!canvas) { console.warn('[Pelvis3D] canvas not found'); return; }
+            if (loadEl) loadEl.style.display = 'flex';
+
+            const doRender = () => {
+                if (typeof window._pelvisRender !== 'function') return false;
+                window._pelvisRender(canvas, comboKey, { [comboKey]: cfg });
+                _pelvisRaf = window._pelvisRuntime?.rafId || null;
+                _pelvisRenderer = window._pelvisRuntime?.renderer || null;
+                return true;
+            };
+
+            if (doRender()) return;
+
+            let tries = 0;
+            const wait = setInterval(() => {
+                tries++;
+                if (doRender()) {
+                    clearInterval(wait);
+                } else if (tries >= 8) {
+                    clearInterval(wait);
+                    console.error('[Pelvis3D] renderer unavailable');
+                    if (loadEl) loadEl.innerHTML = '<span style="color:#ff6b6b;font-size:10px">3D模型初始化失败</span>';
+                }
+            }, 180);
+        }
+
         // --- 最终综合报告 ---
         function generateFinalReport(inputSymptomCheck = symptomCheckState) {
             speak("测试集采集完成！正在为您生成体态分析报告。");
@@ -4320,16 +4859,19 @@
             };
             const stageC = STAGE_COLOR[trainingStage];
 
-            // ---- 骨盆3D动画配置（弧度） ----
+            // ---- 骨盆3D数据配置（报告驱动） ----
             const PELVIS_ANIM = {
-                posterior_baseline: { rx:  0.28, ry: -0.14, rz: 0.05, color: '#0a84ff' },
-                posterior_lateral:  { rx:  0.28, ry: -0.14, rz: 0.26, color: '#0a84ff' },
-                posterior_oblique:  { rx:  0.28, ry: -0.35, rz: 0.21, color: '#0a84ff' },
-                anterior_baseline:  { rx:  0.38, ry: -0.14, rz: 0.05, color: '#ff9500' },
-                anterior_lateral:   { rx:  0.38, ry: -0.14, rz: 0.26, color: '#ff9500' },
-                anterior_oblique:   { rx:  0.38, ry: -0.35, rz: 0.21, color: '#ff9500' },
+                posterior_baseline: { compressionType: 'posterior', affectedSide: 'left', rotation: -9,  heightDiff: 0,  severity: 'mild',     color: '#0a84ff' },
+                posterior_lateral:  { compressionType: 'posterior', affectedSide: 'left', rotation: -11, heightDiff: 7,  severity: 'moderate', color: '#0a84ff' },
+                posterior_oblique:  { compressionType: 'posterior', affectedSide: 'left', rotation: -18, heightDiff: 10, severity: 'severe',   color: '#0a84ff' },
+                anterior_baseline:  { compressionType: 'anterior',  affectedSide: 'left', rotation: -9,  heightDiff: 0,  severity: 'mild',     color: '#ff9500' },
+                anterior_lateral:   { compressionType: 'anterior',  affectedSide: 'left', rotation: -11, heightDiff: 7,  severity: 'moderate', color: '#ff9500' },
+                anterior_oblique:   { compressionType: 'anterior',  affectedSide: 'left', rotation: -18, heightDiff: 10, severity: 'severe',   color: '#ff9500' },
+                mixed_baseline:     { compressionType: 'neutral',   affectedSide: 'left', rotation: -7,  heightDiff: 0,  severity: 'mild',     color: '#8e8e93' },
+                mixed_lateral:      { compressionType: 'neutral',   affectedSide: 'left', rotation: -10, heightDiff: 7,  severity: 'moderate', color: '#8e8e93' },
+                mixed_oblique:      { compressionType: 'neutral',   affectedSide: 'left', rotation: -16, heightDiff: 10, severity: 'severe',   color: '#8e8e93' },
             };
-            const pelvisCfg = PELVIS_ANIM[comboKey] || { rx: 0.28, ry: 0, rz: 0, color: '#8e8e93' };
+            const pelvisCfg = PELVIS_ANIM[comboKey] || { compressionType: 'neutral', affectedSide: 'left', rotation: -7, heightDiff: 0, severity: 'mild', color: '#8e8e93' };
             const pC = pelvisCfg.color;
             const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
 
@@ -4379,8 +4921,8 @@
                     <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
                     <span class="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
                 </div>
-                <div class="pelvis-stage mb-3 hidden" style="background:#0d1117;border-radius:1rem;position:relative;">
-                    <canvas id="pelvis-canvas" style="width:100%;height:220px;display:block;border-radius:1rem;"></canvas>
+                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;position:relative;overflow:hidden;">
+                    <canvas id="pelvis-canvas" style="width:100%;height:260px;display:block;border-radius:1rem;"></canvas>
                     <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
                         <span style="display:flex;align-items:center;gap:8px;">
                             <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
@@ -4607,7 +5149,7 @@
             const container = document.getElementById('empathic-report-container');
             container.innerHTML = `${typeHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${gluteHtml}${misdiagnosisHtml}${safetyHtml}${appendixHtml}`;
             container.classList.remove('hidden');
-            // 骨盆模型板块已临时隐藏
+            setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
             const mainSentence = reportSafetyBlocked ? '安全提示 - 已隐藏建议' : report.oneLiner;
             titleEl.innerText = mainSentence;
@@ -4620,7 +5162,7 @@
             document.getElementById('final-report-data').textContent = `数据依据：SLR ${slrL.toFixed(1)}°/${slrR.toFixed(1)}° · 髋屈 ${hipL.toFixed(1)}°/${hipR.toFixed(1)}° · 肩屈 ${shL.toFixed(1)}°/${shR.toFixed(1)}°`;
             document.getElementById('final-technical-content').innerHTML = '';
 
-            currentAssessmentResult = { compressionLayer: {key: compKey}, rotationLayer: {key: rotKey}, heightLayer: {key: heightKey}, routeIsolation, planKey, primaryRouteLabel: report.typeName, primarySummary: report.oneLiner, secondarySummary: report.what, symptomCheck };
+            currentAssessmentResult = { compressionLayer: {key: compKey}, rotationLayer: {key: rotKey}, heightLayer: {key: heightKey}, routeIsolation, planKey, primaryRouteLabel: report.typeName, primarySummary: report.oneLiner, secondarySummary: report.what, symptomCheck, pelvisCfg, pelvisComboKey: comboKey };
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
