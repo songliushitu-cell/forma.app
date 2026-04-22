@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.19</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.20</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -5532,8 +5532,8 @@
 <div id="protractor-modal" class="fixed inset-0 z-[9999] bg-black hidden flex-col">
     <!-- 顶部栏 -->
     <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 bg-gradient-to-b from-black/70 to-transparent pb-4" style="padding-top:max(env(safe-area-inset-top),10px)">
-        <button onclick="closeProtractor()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white active:scale-90 transition-transform">
-            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onclick="closeProtractor()" class="w-9 h-9 flex items-center justify-center rounded-full bg-red-500/90 backdrop-blur-sm text-white border border-red-300/40 shadow-[0_8px_18px_rgba(239,68,68,0.28)] active:scale-90 transition-transform" title="退出量角器">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         <div id="protractor-angle-badge" class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-base tracking-wide tabular-nums">45°</div>
         <!-- 功能开关按钮组 -->
@@ -5557,6 +5557,8 @@
     </div>
     <!-- 摄像头视频 -->
     <video id="protractor-video" class="absolute inset-0 w-full h-full object-cover" playsinline autoplay muted></video>
+    <img id="protractor-image" class="absolute inset-0 w-full h-full object-contain hidden bg-black" alt="导入的量角器图片">
+    <input id="protractor-image-input" type="file" accept="image/*" class="hidden">
     <!-- 量角器 Canvas 叠加 -->
     <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full" style="touch-action:none;"></canvas>
     <!-- 摄像头错误提示 -->
@@ -5571,6 +5573,10 @@
         </div>
         <!-- 主操作行 -->
         <div class="flex items-center justify-center gap-2.5 px-4 pb-1">
+            <button onclick="openProtractorImagePicker()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                相册
+            </button>
             <button id="btn-protractor-lock" onclick="toggleProtractorLock()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
                 <svg id="protractor-lock-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
                 <span id="protractor-lock-text">锁定</span>
@@ -5618,6 +5624,7 @@
     let _tiltAngle = 0, _gyroHandler = null;
     // History
     let _history = JSON.parse(localStorage.getItem('p_history') || '[]');
+    let _protractorImageUrl = null;
     // Angle ranges per test type
     const RANGES = {
         slr:      { green: [60, 80], label: 'SLR 正常' },
@@ -5651,9 +5658,34 @@
         else { b.classList.remove('bg-[#5bd4c8]/60','text-white'); b.classList.add('bg-white/15','text-white/70'); }
     }
 
+    function _clearProtractorImage() {
+        const img = document.getElementById('protractor-image');
+        const input = document.getElementById('protractor-image-input');
+        if (img) {
+            img.classList.add('hidden');
+            img.removeAttribute('src');
+        }
+        if (_protractorImageUrl) {
+            URL.revokeObjectURL(_protractorImageUrl);
+            _protractorImageUrl = null;
+        }
+        if (input) input.value = '';
+    }
+
+    function _showProtractorImage(url) {
+        const img = document.getElementById('protractor-image');
+        const video = document.getElementById('protractor-video');
+        if (!img || !video) return;
+        _stopCamera();
+        video.classList.add('hidden');
+        img.src = url;
+        img.classList.remove('hidden');
+    }
+
     // === Open / Close ===
     window.openProtractor = function() {
         const modal = document.getElementById('protractor-modal');
+        const video = document.getElementById('protractor-video');
         modal.classList.remove('hidden'); modal.classList.add('flex');
         _pLocked = false; _updateLockUI();
         _dualMode = false; _togBtn('btn-p-dual', false);
@@ -5661,6 +5693,8 @@
         _voiceOn = false; _togBtn('btn-p-voice', false);
         document.getElementById('protractor-cam-error').classList.add('hidden');
         document.getElementById('protractor-history-panel').classList.add('hidden');
+        _clearProtractorImage();
+        if (video) video.classList.remove('hidden');
 
         _setupCanvas(); _defaultLayout();
         _pAngle = 45; _pAngle2 = 120; _prevBucket = 4; _syncBadge();
@@ -5691,13 +5725,14 @@
         c.removeEventListener('mousemove', _mMove);
         c.removeEventListener('mouseup', _mUp);
         window.removeEventListener('resize', _onResize);
-        _stopCamera(); _stopGyro();
+        _stopCamera(); _stopGyro(); _clearProtractorImage();
     };
 
     // === Camera ===
     function _startCamera(back) {
         const video = document.getElementById('protractor-video');
         const errEl = document.getElementById('protractor-cam-error');
+        if (video) video.classList.remove('hidden');
         navigator.mediaDevices.getUserMedia({ video: { facingMode: back ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
             .then(s => { _pStream = s; video.srcObject = s; video.play().catch(() => {}); })
             .catch(() => { errEl.classList.remove('hidden'); setTimeout(() => errEl.classList.add('hidden'), 4000); });
@@ -5707,8 +5742,24 @@
         document.getElementById('protractor-video').srcObject = null;
     }
     window.pFlipCamera = function() {
+        _clearProtractorImage();
         _facingBack = !_facingBack; _stopCamera(); _startCamera(_facingBack);
     };
+
+    window.openProtractorImagePicker = function() {
+        const input = document.getElementById('protractor-image-input');
+        if (input) input.click();
+    };
+
+    function _handleProtractorImageUpload(event) {
+        const file = event?.target?.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) return;
+        _clearProtractorImage();
+        _protractorImageUrl = URL.createObjectURL(file);
+        _showProtractorImage(_protractorImageUrl);
+        if (_voiceOn) _speak('图片已导入，可以开始测量角度');
+    }
 
     // === Gyro / Level ===
     function _startGyro() {
@@ -5775,11 +5826,12 @@
 
     // === Screenshot ===
     window.protractorScreenshot = function() {
-        const video = document.getElementById('protractor-video'), pc = document.getElementById('protractor-canvas');
+        const video = document.getElementById('protractor-video'), img = document.getElementById('protractor-image'), pc = document.getElementById('protractor-canvas');
         const tmp = document.createElement('canvas');
         tmp.width = pc.width; tmp.height = pc.height;
         const ctx = tmp.getContext('2d');
-        if (video.srcObject && video.readyState >= 2) ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
+        if (img && !img.classList.contains('hidden') && img.complete) ctx.drawImage(img, 0, 0, tmp.width, tmp.height);
+        else if (video.srcObject && video.readyState >= 2) ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
         else { ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, tmp.width, tmp.height); }
         ctx.drawImage(pc, 0, 0);
         tmp.toBlob(b => {
@@ -5839,6 +5891,8 @@
 
     // === Resize ===
     function _onResize() { _setupCanvas(); _defaultLayout(); }
+
+    document.getElementById('protractor-image-input').addEventListener('change', _handleProtractorImageUpload);
 
     // === Helpers ===
     function _dispAngle() { return _dualMode ? Math.abs(_pAngle - _pAngle2) : _pAngle; }
