@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.21</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.22</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -984,23 +984,21 @@
                         <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         启动实时捕捉
                     </button>
-                    <!-- 四分块次要操作 -->
-                    <div class="flex gap-1.5 text-center items-center justify-center">
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 高清抓拍
-                            <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden">
-                        </label>
-                        <label class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 相册分析
-                            <input type="file" accept="image/*" id="albumInput" class="hidden">
-                        </label>
-                        <button id="btn-manual-input" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider active:scale-[0.98]">
+                    <div class="grid grid-cols-[0.95fr,1.25fr] gap-1.5 text-center items-center justify-center">
+                        <button id="btn-manual-input" class="cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-1 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider active:scale-[0.98]">
                             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 手动录入
                         </button>
-                        <button id="btn-protractor" onclick="openProtractor()" class="flex-1 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-0.5 sm:gap-1 tracking-wider active:scale-[0.98]">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20h16M12 20V4m0 0L6 10m6-6l6 6"></path><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg> 量角器
+                        <button id="btn-protractor" onclick="openProtractor()" class="cursor-pointer bg-white hover:bg-slate-50 text-slate-700 py-2 sm:py-2.5 px-1 rounded-xl text-[9px] sm:text-[10px] font-bold shadow-sm border border-slate-200 transition-colors flex items-center justify-center gap-1 tracking-wider active:scale-[0.98]">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20h16M12 20V4m0 0L6 10m6-6l6 6"></path><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                            <span>量角器测量</span>
+                            <span class="px-1.5 py-0.5 rounded-full bg-[#f8f3e8] text-[#8b5e34] text-[8px] sm:text-[9px] tracking-normal">拍照/相册</span>
                         </button>
                     </div>
+                    <p class="text-[10px] sm:text-[11px] text-slate-500 leading-relaxed px-1">
+                        静态图片入口已收进量角器，支持实时对准、拍照定格、相册导入和测量后直接回填。
+                    </p>
+                    <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden">
+                    <input type="file" accept="image/*" id="albumInput" class="hidden">
                 </div>
             </div>
 
@@ -5553,6 +5551,9 @@
             <button id="btn-p-theme" onclick="pToggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="主题">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
             </button>
+            <button id="btn-p-history-top" onclick="pToggleHistory()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="测量记录">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </button>
         </div>
     </div>
     <!-- 摄像头视频 -->
@@ -5572,27 +5573,34 @@
             <button onclick="pNudge(1)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white text-lg font-black active:scale-90 transition-transform border border-white/10">+</button>
         </div>
         <!-- 主操作行 -->
-        <div class="flex items-center justify-center gap-2.5 px-4 pb-1">
-            <button onclick="openProtractorImagePicker()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+        <div class="grid grid-cols-3 gap-2 px-4 pb-1">
+            <button id="btn-protractor-capture" onclick="captureProtractorFrame()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg id="protractor-capture-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
+                <span id="protractor-capture-text">拍照定格</span>
+            </button>
+            <button onclick="openProtractorImagePicker()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 相册
+            </button>
+            <button onclick="resetProtractorLayout()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                重置
             </button>
             <button id="btn-protractor-lock" onclick="toggleProtractorLock()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
                 <svg id="protractor-lock-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
                 <span id="protractor-lock-text">锁定</span>
             </button>
-            <button onclick="protractorScreenshot()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
+            <button onclick="protractorScreenshot()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
                 截图
             </button>
-            <button id="btn-p-history" onclick="pToggleHistory()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                记录
-            </button>
-            <button onclick="useProtractorAngle()" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
+            <button onclick="useProtractorAngle()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 使用
             </button>
+        </div>
+        <div id="protractor-mode-hint" class="px-4 pt-2 text-center text-[10px] font-medium tracking-wide text-white/55">
+            支持实时对准、拍照定格和相册导入
         </div>
     </div>
     <!-- 历史记录面板 -->
@@ -5658,6 +5666,33 @@
         else { b.classList.remove('bg-[#5bd4c8]/60','text-white'); b.classList.add('bg-white/15','text-white/70'); }
     }
 
+    function _isProtractorImageMode() {
+        const img = document.getElementById('protractor-image');
+        return !!(img && !img.classList.contains('hidden') && img.getAttribute('src'));
+    }
+
+    function _syncProtractorModeUI() {
+        const btn = document.getElementById('btn-protractor-capture');
+        const text = document.getElementById('protractor-capture-text');
+        const icon = document.getElementById('protractor-capture-icon');
+        const hint = document.getElementById('protractor-mode-hint');
+        const isImageMode = _isProtractorImageMode();
+        if (!btn || !text || !icon || !hint) return;
+        if (isImageMode) {
+            btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
+            btn.classList.remove('bg-white/15', 'border-white/10');
+            text.textContent = '返回实时';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
+            hint.textContent = '当前为静态图片模式，可精细拖动量角器，点“返回实时”回到摄像头';
+        } else {
+            btn.classList.add('bg-white/15', 'border-white/10');
+            btn.classList.remove('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
+            text.textContent = '拍照定格';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/>';
+            hint.textContent = '支持实时对准、拍照定格和相册导入';
+        }
+    }
+
     function _clearProtractorImage() {
         const img = document.getElementById('protractor-image');
         const input = document.getElementById('protractor-image-input');
@@ -5670,6 +5705,7 @@
             _protractorImageUrl = null;
         }
         if (input) input.value = '';
+        _syncProtractorModeUI();
     }
 
     function _showProtractorImage(url) {
@@ -5680,6 +5716,7 @@
         video.classList.add('hidden');
         img.src = url;
         img.classList.remove('hidden');
+        _syncProtractorModeUI();
     }
 
     // === Open / Close ===
@@ -5698,6 +5735,7 @@
 
         _setupCanvas(); _defaultLayout();
         _pAngle = 45; _pAngle2 = 120; _prevBucket = 4; _syncBadge();
+        _syncProtractorModeUI();
 
         _startCamera(_facingBack);
 
@@ -5744,11 +5782,37 @@
     window.pFlipCamera = function() {
         _clearProtractorImage();
         _facingBack = !_facingBack; _stopCamera(); _startCamera(_facingBack);
+        _syncProtractorModeUI();
     };
 
     window.openProtractorImagePicker = function() {
         const input = document.getElementById('protractor-image-input');
         if (input) input.click();
+    };
+
+    window.captureProtractorFrame = function() {
+        const video = document.getElementById('protractor-video');
+        const errEl = document.getElementById('protractor-cam-error');
+        if (_isProtractorImageMode()) {
+            _clearProtractorImage();
+            if (video) video.classList.remove('hidden');
+            _stopCamera();
+            _startCamera(_facingBack);
+            if (_voiceOn) _speak('已返回实时画面');
+            return;
+        }
+        if (!video || !video.srcObject || video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+            errEl.classList.remove('hidden');
+            setTimeout(() => errEl.classList.add('hidden'), 2200);
+            return;
+        }
+        const temp = document.createElement('canvas');
+        temp.width = video.videoWidth;
+        temp.height = video.videoHeight;
+        const tempCtx = temp.getContext('2d');
+        tempCtx.drawImage(video, 0, 0, temp.width, temp.height);
+        _showProtractorImage(temp.toDataURL('image/png'));
+        if (_voiceOn) _speak('画面已定格，可以开始测量');
     };
 
     function _handleProtractorImageUpload(event) {
@@ -5760,6 +5824,18 @@
         _showProtractorImage(_protractorImageUrl);
         if (_voiceOn) _speak('图片已导入，可以开始测量角度');
     }
+
+    window.resetProtractorLayout = function() {
+        _defaultLayout();
+        _pAngle = 45;
+        _pAngle2 = 120;
+        _prevBucket = 4;
+        _pLocked = false;
+        _updateLockUI();
+        _syncBadge();
+        if (navigator.vibrate) navigator.vibrate(12);
+        if (_voiceOn) _speak('量角器已重置');
+    };
 
     // === Gyro / Level ===
     function _startGyro() {
