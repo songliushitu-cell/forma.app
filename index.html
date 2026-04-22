@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.23</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.25</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1405,7 +1405,7 @@
             <div class="p-4 bg-[#f5f5f7] text-slate-800 flex justify-between items-center border-b border-[#e5e5ea]">
                 <div class="min-w-0">
                     <h2 class="text-sm font-bold tracking-widest">补充体感与安全提示</h2>
-                    <p id="symptom-check-subtitle" class="text-[10px] text-slate-500 mt-1 leading-relaxed">这一步是可选补充，只用于微调“更容易累或不适的区域”提示，不会反向改写动作分型。</p>
+                    <p id="symptom-check-subtitle" class="text-[10px] text-slate-500 mt-1 leading-relaxed">这一步是可选补充，会把你的日常体感和这次骨盆分型对照起来，帮助报告补充更值得留意的区域，但不会反向改写动作分型。</p>
                 </div>
                 <button id="btn-close-symptom-check" class="text-slate-400 hover:text-slate-600 p-1 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -1413,7 +1413,7 @@
             </div>
             <div class="p-5 overflow-y-auto flex flex-col gap-4">
                 <div class="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3 text-[11px] text-slate-600 leading-relaxed">
-                    以下 5 题帮助系统推断你的身体可能存在哪些具体问题，回答越准确，推断越精准。
+                    以下 5 题帮助系统把你的主观体感和这次动作分型对照起来，回答越准确，报告里的推测越贴近日常感觉。
                 </div>
                 <div class="flex flex-col gap-3">
                     <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
@@ -2802,7 +2802,8 @@
                 return {
                     ...baseLoadRisk,
                     alignment: 'neutral',
-                    alignmentNote: baseLoadRisk.note
+                    alignmentNote: baseLoadRisk.note,
+                    signalProfile: deriveSymptomSignalProfile(symptomCheck?.answers || {})
                 };
             }
 
@@ -2812,22 +2813,34 @@
                     alignment: 'neutral',
                     alignmentNote: symptomCheck?.blocked
                         ? '由于勾选了安全红旗，报告不会继续强化负担区域推测。'
-                        : '这次没有补充主诉题，所以负担区域保持基础可信度。'
+                        : '这次没有补充主诉题，所以负担区域保持基础可信度。',
+                    signalProfile: deriveSymptomSignalProfile(symptomCheck?.answers || {})
                 };
             }
 
             const answers = symptomCheck.answers || {};
-            const primaryZone = answers.primaryZone;
-            const sideAnswers = [answers.standingSide, answers.singleLegSide].filter(side => side === 'left' || side === 'right');
+            const signalProfile = deriveSymptomSignalProfile(answers);
+            if (!signalProfile.answeredCount) {
+                return {
+                    ...baseLoadRisk,
+                    alignment: 'neutral',
+                    alignmentNote: '这次没有补充到足够明确的体感信息，所以负担区域保持基础可信度。',
+                    signalProfile
+                };
+            }
+
+            const primaryZone = signalProfile.primaryZone;
+            const sideAnswers = signalProfile.sideAnswers;
+            const expectedSides = deriveLoadRiskExpectedSides(baseLoadRisk);
             const primarySupported = Boolean(primaryZone && primaryZone !== 'unclear' && baseLoadRisk.focusTags.includes(primaryZone));
-            const primaryConflict = Boolean(primaryZone && primaryZone !== 'unclear' && !baseLoadRisk.focusTags.includes(primaryZone));
-            const sideSupportCount = sideAnswers.filter(side => baseLoadRisk.supportedSides.includes(side)).length;
-            const sideConflictCount = sideAnswers.filter(side => !baseLoadRisk.supportedSides.includes(side)).length;
+            const primaryConflict = Boolean(primaryZone && primaryZone !== 'unclear' && baseLoadRisk.focusTags.length && !baseLoadRisk.focusTags.includes(primaryZone));
+            const sideSupportCount = sideAnswers.filter(side => expectedSides.includes(side)).length;
+            const sideConflictCount = sideAnswers.filter(side => expectedSides.length && !expectedSides.includes(side)).length;
 
             let alignment = 'neutral';
             if (primarySupported || sideSupportCount >= 2 || (primarySupported && sideSupportCount >= 1)) {
                 alignment = 'supportive';
-            } else if ((primaryConflict && sideSupportCount === 0) || (sideAnswers.length >= 2 && sideConflictCount === sideAnswers.length)) {
+            } else if ((primaryConflict && sideSupportCount === 0) || (sideAnswers.length >= 1 && sideConflictCount === sideAnswers.length)) {
                 alignment = 'conflicting';
             }
 
@@ -2836,7 +2849,8 @@
                     ...baseLoadRisk,
                     confidenceKey: stepConfidenceKey(baseLoadRisk.confidenceKey, 1),
                     alignment,
-                    alignmentNote: '你的补充体感和这次动作证据基本同向，所以负担区域可信度上调了一档。'
+                    alignmentNote: '你的补充体感和这次动作证据基本同向，所以负担区域可信度上调了一档。',
+                    signalProfile
                 };
             }
 
@@ -2847,14 +2861,16 @@
                     alignment,
                     areas: dedupeLoadRiskAreas(baseLoadRisk.areas.map(generalizeLoadRiskArea)).slice(0, 3),
                     summary: '你的主诉和这次动作证据没有明显同向，所以只保留广义区域，不做侧别强化。',
-                    alignmentNote: '补充主诉和动作结果出现明显冲突时，报告只保留广义区域，避免把左右侧别写得过满。'
+                    alignmentNote: '补充主诉和动作结果出现明显冲突时，报告只保留广义区域，避免把左右侧别写得过满。',
+                    signalProfile
                 };
             }
 
             return {
                 ...baseLoadRisk,
                 alignment,
-                alignmentNote: '补充主诉没有明显支持或反对当前方向，所以负担区域保持基础可信度。'
+                alignmentNote: '补充主诉没有明显支持或反对当前方向，所以负担区域保持基础可信度。',
+                signalProfile
             };
         }
 
@@ -3082,6 +3098,45 @@
             };
         }
 
+        const SYMPTOM_ANSWER_LABELS = {
+            back: {
+                backCenter: '后腰正中或偏左容易酸',
+                beltLike: '腰两侧像勒着一圈紧',
+                frontPull: '小腹下方或腰前方有牵拉感',
+                leftMore: '左侧腰比右侧更紧',
+                none: '没有明显腰部不适'
+            },
+            sit: {
+                backStiff: '久坐起身后后腰发僵',
+                hipTight: '久坐起身后髋前很紧',
+                shifted: '久坐起身后重心偏向一侧',
+                nothing: '久坐起身后没有明显异常'
+            },
+            breath: {
+                backCant: '深呼吸时后背很难扩开',
+                bellyHold: '小腹和前肋总是收着',
+                uneven: '呼吸时左右肋骨明显不对称',
+                nothing: '呼吸时没有明显异常'
+            },
+            glute: {
+                fakeButt: '臀部看着翘但常伴腰酸',
+                flat: '臀部偏扁、发力差',
+                asymm: '左右臀明显不一样',
+                nothing: '臀部没有明显异常'
+            },
+            side: {
+                leftTired: '左边腰/髋/臀更容易累',
+                rightWeak: '右边更不稳、更使不上劲',
+                same: '两边差不多',
+                unclear: '暂时说不准左右差异'
+            }
+        };
+
+        function getSymptomAnswerLabel(group, value) {
+            if (!value) return '';
+            return SYMPTOM_ANSWER_LABELS[group]?.[value] || '';
+        }
+
         function createDefaultSymptomCheckState() {
             return {
                 questionnaireTriggered: true,
@@ -3180,6 +3235,109 @@
             }
 
             return features;
+        }
+
+        function deriveSymptomSignalProfile(answers = {}) {
+            const zoneScores = {};
+            const sideScores = {};
+            const selectedLabels = [];
+
+            const addZone = (zone, weight = 1) => {
+                if (!zone || zone === 'unclear') return;
+                zoneScores[zone] = (zoneScores[zone] || 0) + weight;
+            };
+
+            const addSide = (side, weight = 1) => {
+                if (side !== 'left' && side !== 'right') return;
+                sideScores[side] = (sideScores[side] || 0) + weight;
+            };
+
+            const remember = (group, value) => {
+                const label = getSymptomAnswerLabel(group, value);
+                if (label) selectedLabels.push(label);
+            };
+
+            remember('back', answers.back);
+            remember('sit', answers.sit);
+            remember('breath', answers.breath);
+            remember('glute', answers.glute);
+            remember('side', answers.side);
+
+            if (answers.back === 'backCenter') {
+                addZone('leftBack', 2);
+                addSide('left', 1);
+            } else if (answers.back === 'beltLike') {
+                addZone('leftBack', 1);
+            } else if (answers.back === 'frontPull') {
+                addZone('leftFrontHip', 2);
+                addZone('frontLowBack', 1);
+            } else if (answers.back === 'leftMore') {
+                addZone('leftBack', 2);
+                addSide('left', 2);
+            }
+
+            if (answers.sit === 'backStiff') {
+                addZone('leftBack', 2);
+            } else if (answers.sit === 'hipTight') {
+                addZone('leftFrontHip', 2);
+                addZone('frontLowBack', 1);
+            } else if (answers.sit === 'shifted') {
+                addZone('leftBack', 1);
+                addZone('rightLoadChain', 1);
+            }
+
+            if (answers.breath === 'backCant') {
+                addZone('leftBack', 2);
+            } else if (answers.breath === 'bellyHold') {
+                addZone('frontLowBack', 2);
+                addZone('leftFrontHip', 1);
+            }
+
+            if (answers.glute === 'fakeButt') {
+                addZone('leftBack', 2);
+            } else if (answers.glute === 'flat') {
+                addZone('leftFrontHip', 1);
+                addZone('rightLoadChain', 1);
+            } else if (answers.glute === 'asymm') {
+                addZone('leftBack', 1);
+                addZone('rightLoadChain', 1);
+            }
+
+            if (answers.side === 'leftTired') {
+                addZone('leftBack', 1);
+                addZone('leftFrontHip', 1);
+                addSide('left', 2);
+            } else if (answers.side === 'rightWeak') {
+                addZone('rightLoadChain', 2);
+                addSide('right', 2);
+            }
+
+            const primaryZone = Object.entries(zoneScores)
+                .sort((a, b) => b[1] - a[1])[0]?.[0] || 'unclear';
+            const sideAnswers = Object.entries(sideScores)
+                .sort((a, b) => b[1] - a[1])
+                .map(([side]) => side);
+
+            return {
+                primaryZone,
+                sideAnswers,
+                zoneScores,
+                sideScores,
+                selectedLabels,
+                answeredCount: selectedLabels.length
+            };
+        }
+
+        function deriveLoadRiskExpectedSides(baseLoadRisk) {
+            const expectedSides = new Set();
+            (baseLoadRisk.focusTags || []).forEach((tag) => {
+                if (tag === 'leftBack' || tag === 'leftFrontHip') expectedSides.add('left');
+                if (tag === 'rightLoadChain') expectedSides.add('right');
+            });
+            (baseLoadRisk.areas || []).forEach((area) => {
+                if (area.side === 'left' || area.side === 'right') expectedSides.add(area.side);
+            });
+            return Array.from(expectedSides);
         }
 
         function buildProblemInference(comboKey, answers) {
@@ -5083,6 +5241,44 @@
             const pelvisCfg = derivePelvisVisualConfig(routeIsolation, metrics, comboKey, compKey);
             const pC = pelvisCfg.color;
             const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
+            const baseLoadRisk = buildBaseLoadRisk({
+                compressionLayer: compressionEvaluation,
+                rotationLayer: rotationEvaluation,
+                heightLayer: routeIsolation.heightResult,
+                routeIsolation
+            });
+            const tunedLoadRisk = applySymptomCheckToLoadRisk(baseLoadRisk, symptomCheck);
+            const symptomSignalProfile = tunedLoadRisk.signalProfile || deriveSymptomSignalProfile(symptomCheck?.answers || {});
+            const inferredProblems = symptomCheck.answered && !reportSafetyBlocked
+                ? buildProblemInference(comboKey, symptomCheck.answers).slice(0, 2)
+                : [];
+            const symptomAlignmentLead = tunedLoadRisk.alignment === 'supportive'
+                ? `你补充的体感和本次“${report.typeName}”基本同向，说明这次分型和你日常能感觉到的偏差是对得上的。`
+                : tunedLoadRisk.alignment === 'conflicting'
+                    ? `你补充的体感和本次“${report.typeName}”暂时没有完全对上，所以这次报告会保守处理，不把左右侧别写得过满。`
+                    : `你补充的体感可以作为本次“${report.typeName}”的补充参考，但目前还不足以单独改写动作分型。`;
+            const symptomSelectedHtml = symptomSignalProfile.selectedLabels.length ? `
+                <div class="flex flex-wrap gap-2 mb-3">
+                    ${symptomSignalProfile.selectedLabels.slice(0, 5).map((label) => `
+                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">${label}</span>`).join('')}
+                </div>` : '';
+            const symptomAreaHtml = !reportSafetyBlocked && tunedLoadRisk.available && tunedLoadRisk.areas.length ? `
+                <div class="grid gap-2 sm:grid-cols-2 mt-3">
+                    ${tunedLoadRisk.areas.slice(0, 2).map((area) => `
+                    <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
+                        <div class="text-[12px] font-bold text-slate-800 mb-1">${area.area}</div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">${area.why}</p>
+                    </div>`).join('')}
+                </div>` : '';
+            const symptomInsightHtml = symptomCheck.answered && !reportSafetyBlocked ? `
+            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">体感与分型对照</div>
+                ${symptomSelectedHtml}
+                <p class="text-[12px] text-slate-700 leading-relaxed">${symptomAlignmentLead}</p>
+                <p class="text-[12px] text-slate-600 leading-relaxed mt-2">${tunedLoadRisk.summary || tunedLoadRisk.note || report.feel}</p>
+                <p class="text-[11px] text-slate-500 leading-relaxed mt-2">${tunedLoadRisk.alignmentNote}</p>
+                ${symptomAreaHtml}
+            </div>` : '';
 
             const summaryHtml = `
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
@@ -5165,9 +5361,6 @@
                     </div>`).join('')}
                 </div>` : '';
 
-            const inferredProblems = symptomCheck.answered && !reportSafetyBlocked
-                ? buildProblemInference(comboKey, symptomCheck.answers).slice(0, 2)
-                : [];
             const problemHtml = inferredProblems.length ? `
                 <div class="mt-3 pt-3 border-t border-slate-100">
                     <div class="text-[11px] font-bold text-slate-700 mb-2">结合你填写的体感，当前更值得留意的部位</div>
@@ -5227,7 +5420,7 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${summaryHtml}${stageHtml}${dataHtml}${supplementaryHtml}${safetyHtml}`;
+            container.innerHTML = `${typeHtml}${summaryHtml}${symptomInsightHtml}${stageHtml}${dataHtml}${supplementaryHtml}${safetyHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
@@ -5615,6 +5808,37 @@
             <button onclick="pClearHistory()" class="w-full py-1.5 rounded-lg bg-red-500/20 text-red-400 text-[10px] font-bold tracking-wider active:scale-95">清空记录</button>
         </div>
     </div>
+    <div id="protractor-assign-modal" class="absolute inset-0 z-40 hidden items-center justify-center bg-black/55 backdrop-blur-sm px-5">
+        <div class="w-full max-w-[320px] rounded-[1.75rem] border border-white/10 bg-[#141414]/95 text-white shadow-2xl overflow-hidden">
+            <div class="px-5 pt-5 pb-4 border-b border-white/10">
+                <div class="text-[11px] font-bold tracking-[0.2em] text-white/45">确认归类</div>
+                <div class="mt-2 text-lg font-black tracking-wide">这次角度要记到哪一项？</div>
+                <div id="protractor-assign-angle" class="mt-3 inline-flex items-center rounded-full bg-[#5bd4c8]/15 border border-[#5bd4c8]/25 px-3 py-1 text-sm font-black text-[#8be5dc]">45°</div>
+                <p class="mt-3 text-[11px] leading-relaxed text-white/60">默认会带入你首页当前选中的项目，你也可以在这里直接改成真正测的动作和左右侧。</p>
+            </div>
+            <div class="px-5 py-4 flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                    <div class="text-[10px] font-bold tracking-[0.18em] text-white/45">动作类型</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="protractor-assign-type-slr" onclick="pAssignSetType('slr')" class="rounded-xl border border-white/10 bg-white/5 px-2 py-2 text-[11px] font-bold tracking-wide transition-colors">直腿抬高</button>
+                        <button id="protractor-assign-type-hip" onclick="pAssignSetType('hip')" class="rounded-xl border border-white/10 bg-white/5 px-2 py-2 text-[11px] font-bold tracking-wide transition-colors">髋屈曲</button>
+                        <button id="protractor-assign-type-shoulder" onclick="pAssignSetType('shoulder')" class="rounded-xl border border-white/10 bg-white/5 px-2 py-2 text-[11px] font-bold tracking-wide transition-colors">肩屈</button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="text-[10px] font-bold tracking-[0.18em] text-white/45">左右侧</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="protractor-assign-side-L" onclick="pAssignSetSide('L')" class="rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-[11px] font-bold tracking-wide transition-colors">左侧</button>
+                        <button id="protractor-assign-side-R" onclick="pAssignSetSide('R')" class="rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-[11px] font-bold tracking-wide transition-colors">右侧</button>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 pb-5 grid grid-cols-2 gap-2">
+                <button onclick="pCloseAssignModal()" class="rounded-xl border border-white/10 bg-white/5 py-3 text-[11px] font-bold tracking-wider text-white/70 transition-colors">返回修改</button>
+                <button onclick="pConfirmAssignAngle()" class="rounded-xl border border-[#5bd4c8]/30 bg-[#5bd4c8]/80 py-3 text-[11px] font-black tracking-wider text-white transition-colors">确认使用</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -5635,6 +5859,7 @@
     let _history = JSON.parse(localStorage.getItem('p_history') || '[]');
     let _protractorImageUrl = null;
     let _pCameraLoading = false;
+    let _pAssignSelection = { type: 'slr', side: 'L', angle: 45 };
     // Angle ranges per test type
     const RANGES = {
         slr:      { green: [60, 80], label: 'SLR 正常' },
@@ -5690,6 +5915,52 @@
         } else {
             status.innerHTML = '未启动实时画面<br><span class="text-white/65 text-[10px]">可先导入相册，或点下方按钮再打开摄像头</span>';
         }
+    }
+
+    function _getShortTestLabel(testType) {
+        return testType === 'slr' ? '直腿抬高' : (testType === 'hip' ? '髋屈曲' : '肩屈');
+    }
+
+    function _syncProtractorAssignUI() {
+        ['slr', 'hip', 'shoulder'].forEach(type => {
+            const btn = document.getElementById(`protractor-assign-type-${type}`);
+            if (!btn) return;
+            const active = _pAssignSelection.type === type;
+            btn.className = active
+                ? 'rounded-xl border border-[#5bd4c8]/35 bg-[#5bd4c8]/22 px-2 py-2 text-[11px] font-bold tracking-wide text-white transition-colors'
+                : 'rounded-xl border border-white/10 bg-white/5 px-2 py-2 text-[11px] font-bold tracking-wide text-white/72 transition-colors';
+        });
+        ['L', 'R'].forEach(side => {
+            const btn = document.getElementById(`protractor-assign-side-${side}`);
+            if (!btn) return;
+            const active = _pAssignSelection.side === side;
+            btn.className = active
+                ? 'rounded-xl border border-[#5bd4c8]/35 bg-[#5bd4c8]/22 px-2 py-2.5 text-[11px] font-bold tracking-wide text-white transition-colors'
+                : 'rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-[11px] font-bold tracking-wide text-white/72 transition-colors';
+        });
+    }
+
+    function _openProtractorAssignModal(angle) {
+        const modal = document.getElementById('protractor-assign-modal');
+        const tt = document.querySelector('input[name="testType"]:checked');
+        const ts = document.querySelector('input[name="testSide"]:checked');
+        _pAssignSelection = {
+            type: tt ? tt.value : 'slr',
+            side: ts ? ts.value : 'L',
+            angle: normalizeAngleValue(angle) ?? 0
+        };
+        document.getElementById('protractor-assign-angle').textContent = `${formatAngleValue(_pAssignSelection.angle)}°`;
+        document.getElementById('protractor-history-panel').classList.add('hidden');
+        _syncProtractorAssignUI();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function _closeProtractorAssignModal() {
+        const modal = document.getElementById('protractor-assign-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 
     function _syncProtractorModeUI() {
@@ -5759,6 +6030,7 @@
         _voiceOn = false; _togBtn('btn-p-voice', false);
         document.getElementById('protractor-cam-error').classList.add('hidden');
         document.getElementById('protractor-history-panel').classList.add('hidden');
+        _closeProtractorAssignModal();
         _clearProtractorImage();
         _pCameraLoading = false;
         if (video) video.classList.remove('hidden');
@@ -5791,6 +6063,7 @@
         c.removeEventListener('mousemove', _mMove);
         c.removeEventListener('mouseup', _mUp);
         window.removeEventListener('resize', _onResize);
+        _closeProtractorAssignModal();
         _pCameraLoading = false;
         _stopCamera(); _stopGyro(); _clearProtractorImage();
     };
@@ -5982,40 +6255,41 @@
 
     // === Use angle ===
     window.useProtractorAngle = function() {
-        const ang = _dispAngle();
-        _addHistory(ang);
-        const tt = document.querySelector('input[name="testType"]:checked');
-        const ts = document.querySelector('input[name="testSide"]:checked');
-        if (!tt || !ts) { closeProtractor(); return; }
+        _openProtractorAssignModal(_dispAngle());
+    };
 
-        const t = tt.value;
-        const s = ts.value;
-        const normalizedAngle = normalizeAngleValue(ang);
+    function _applyProtractorAngle(type, side, angle) {
+        if (!type || !side) return;
+        const normalizedAngle = normalizeAngleValue(angle);
         const captureMethod = _isProtractorImageMode() ? 'protractor-image' : 'protractor-live';
 
-        testRecords[t][s] = normalizedAngle;
-        setMeasurementRecord(t, s, {
+        testRecords[type][side] = normalizedAngle;
+        setMeasurementRecord(type, side, {
             sideIntegrity: 'manual',
             manualAdjusted: true,
             thresholdCloseness: false,
             recaptureNeeded: false,
-            selectedSide: s,
-            pivotSide: s,
-            limbSide: s,
+            selectedSide: side,
+            pivotSide: side,
+            limbSide: side,
             usedFallback: false,
             fallbackSources: [],
             captureMethod,
             angle: normalizedAngle
         });
 
+        _addHistory(normalizedAngle, { type, side });
         saveHistoryToStorage({
             type: 'single',
             date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-            name: `${s === 'L' ? '左侧' : '右侧'}${t === 'slr' ? '直抬腿' : (t === 'hip' ? '髋屈曲' : '肩屈')}`,
+            name: `${side === 'L' ? '左侧' : '右侧'}${type === 'slr' ? '直抬腿' : (type === 'hip' ? '髋屈曲' : '肩屈')}`,
             angle: formatAngleValue(normalizedAngle)
         });
 
+        document.querySelector(`input[name="testType"][value="${type}"]`).checked = true;
+        document.querySelector(`input[name="testSide"][value="${side}"]`).checked = true;
         updateTrackerUI();
+        updateSaveButtonText();
         closeProtractor();
         resetCanvasForNewUpload();
 
@@ -6035,13 +6309,32 @@
             if (_voiceOn) _speak(`已填入${normalizedAngle}度，全部采集完成，正在生成报告`);
             setTimeout(() => { beginFinalReportGeneration(); }, 800);
         }
+    }
+
+    window.pAssignSetType = function(type) {
+        _pAssignSelection.type = type;
+        _syncProtractorAssignUI();
+    };
+
+    window.pAssignSetSide = function(side) {
+        _pAssignSelection.side = side;
+        _syncProtractorAssignUI();
+    };
+
+    window.pCloseAssignModal = function() {
+        _closeProtractorAssignModal();
+    };
+
+    window.pConfirmAssignAngle = function() {
+        _closeProtractorAssignModal();
+        _applyProtractorAngle(_pAssignSelection.type, _pAssignSelection.side, _pAssignSelection.angle);
     };
 
     // === History ===
-    function _addHistory(ang) {
-        const tt = document.querySelector('input[name="testType"]:checked');
-        const ts = document.querySelector('input[name="testSide"]:checked');
-        const label = (tt ? { slr: '直腿抬高', hip: '髋屈曲', shoulder: '肩屈' }[tt.value] || '' : '') + (ts ? (ts.value === 'L' ? '(左)' : '(右)') : '');
+    function _addHistory(ang, assignment = null) {
+        const type = assignment?.type || null;
+        const side = assignment?.side || null;
+        const label = type && side ? `${_getShortTestLabel(type)}(${side === 'L' ? '左' : '右'})` : '待指定';
         _history.unshift({ angle: ang, label: label, time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) });
         if (_history.length > 50) _history.length = 50;
         localStorage.setItem('p_history', JSON.stringify(_history));
