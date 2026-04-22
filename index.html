@@ -820,7 +820,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.14</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.15</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2151,7 +2151,7 @@
 
         function scoreDiffMagnitude(value, threshold = 10, nearThreshold = 5) {
             const absValue = Math.abs(value);
-            if (absValue > threshold) return 2;
+            if (absValue >= threshold) return 2;
             if (absValue >= nearThreshold) return 1;
             return 0;
         }
@@ -2310,6 +2310,16 @@
                 };
             }
 
+            if (lateralHits === 1) {
+                return {
+                    key: 'clue',
+                    patternKey: 'LateralClue',
+                    evidenceHits: lateralHits,
+                    confidenceKey: 'low',
+                    checks: lateralChecks
+                };
+            }
+
             const largeDiffCount = [Math.abs(metrics.diffHip), Math.abs(metrics.diffSLR), Math.abs(metrics.diffSh)].filter(d => d >= metrics.threshold).length;
             if (largeDiffCount >= 2 && rotationResult.key === 'unclear') {
                 return {
@@ -2341,7 +2351,12 @@
             const compressionResult = buildCompressionIsolationResult(metrics);
             const heightResult = buildHeightIsolationResult(rotationResult, metrics);
             const primaryRoute = 'compression-first';
-            const hasMeaningfulLateral = triggerItems.length >= 2 && (rotationResult.key !== 'unclear' || heightResult.key !== 'unclear');
+            const hasMeaningfulLateral = triggerItems.length >= 2 && (
+                rotationResult.key !== 'unclear' ||
+                heightResult.key === 'leftHigh' ||
+                heightResult.key === 'uneven'
+            );
+            const hasLateralClue = triggerItems.length >= 1 && (rotationResult.evidenceHits >= 1 || heightResult.evidenceHits >= 1);
             const stage1Entry = metrics.slrFinal < 45 && metrics.shoulderFinal < 90;
             const sagittalReadyForStage3 = metrics.slrFinal >= 70 && metrics.hipFinal >= 110 && metrics.shoulderFinal >= 120;
             const dynamicBearingNeeded = hasMeaningfulLateral;
@@ -2352,6 +2367,7 @@
                 thresholdDeg: metrics.threshold,
                 triggerItems,
                 hasMeaningfulLateral,
+                hasLateralClue,
                 sagittalReadyForStage3,
                 dynamicBearingNeeded,
                 trainingStage,
@@ -4803,6 +4819,7 @@
             const rotKey = rotationEvaluation.key;
             const heightKey = routeIsolation.heightResult.key;
             const hasMeaningfulLateral = routeIsolation.hasMeaningfulLateral;
+            const hasLateralClue = routeIsolation.hasLateralClue;
             const trainingStage = routeIsolation.trainingStage;
 
             // ---- 六类分型判定 ----
@@ -4905,14 +4922,15 @@
 
             const report = REPORT[comboKey] || REPORT['mixed_baseline'];
             const compLabel = compKey === 'posterior' ? '骨盆后侧肌肉紧张' : compKey === 'anterior' ? '骨盆前侧肌肉紧张' : '方向待确认';
-            const rotLabel = !hasMeaningfulLateral
-                ? '三项差值未形成稳定分型'
-                : rotKey === 'LeftAIC' ? '基线型偏移（左侧略靠前）'
+            const rotLabel = rotKey === 'LeftAIC' ? '基线型偏移（左侧略靠前）'
                 : rotKey === 'Oblique' ? '斜轴型（左侧又高又靠前）'
                 : routeIsolation.heightResult.patternKey === 'Lateral' ? '横向型（左高右低）'
-                : '方向待复核';
+                : rotationEvaluation.evidenceHits >= 1 ? `已有 ${rotationEvaluation.evidenceHits} 项左右朝向线索，暂不直接定型`
+                : hasLateralClue ? '已有左右偏移线索，仍需复测确认'
+                : '三项差值未形成稳定分型';
             const heightLabel = heightKey === 'leftHigh'
                 ? (routeIsolation.heightResult.patternKey === 'Oblique' ? '左高右低（斜轴叠加）' : '左高右低')
+                : heightKey === 'clue' ? '有左高右低线索，暂不作为稳定结论'
                 : heightKey === 'uneven' ? '存在高低差，仍偏过渡型' : '暂无明显差异';
             const subTypeLabel = !hasMeaningfulLateral
                 ? '主要是前后压缩，左右差值均在 10° 以内'
@@ -4921,6 +4939,43 @@
                 : '左前右后不对称';
             const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
             const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
+            const plainCompressionText = compKey === 'posterior'
+                ? '更像是后背和腰后侧一直在替你顶着骨盆。'
+                : compKey === 'anterior'
+                    ? '更像是髋前和大腿前侧一直在把骨盆往前拽。'
+                    : '前后哪一侧更紧暂时还不够明确，先看基础空间和复测趋势。';
+            const plainLateralText = hasMeaningfulLateral
+                ? subType === 'oblique'
+                    ? '左右线索已经比较明确：左边既偏高，也更靠前。'
+                    : subType === 'lateral'
+                        ? '左右线索已经比较明确：更偏向左高右低。'
+                        : '左右线索已经比较明确：更偏向左前右后。'
+                : hasLateralClue
+                    ? '这次已经看到左右差值线索，但证据还不够把你直接定成固定分型。'
+                    : '这次暂时还不能直接下“左高右低”或“左前右后”的结论。';
+            const plainNextStepText = trainingStage === 1
+                ? '先把基础活动度拉起来，再谈前后和左右修正。'
+                : trainingStage === 2
+                    ? '先把呼吸、后背/髋前的基础空间做出来，别急着一上来修左右。'
+                    : '现在可以开始更有针对性地处理左右偏移和承重问题。';
+            const plainLanguageHtml = `
+            <div class="bg-[#f7fafc] rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
+                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">如果只看重点</div>
+                <div class="flex flex-col gap-2.5">
+                    <div class="bg-white rounded-xl border border-slate-100 px-3.5 py-3">
+                        <div class="text-[11px] font-bold text-slate-700 mb-1">现在更像什么</div>
+                        <p class="text-[12px] text-slate-600 leading-relaxed">${plainCompressionText}</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-100 px-3.5 py-3">
+                        <div class="text-[11px] font-bold text-slate-700 mb-1">左右有没有线索</div>
+                        <p class="text-[12px] text-slate-600 leading-relaxed">${plainLateralText}</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-100 px-3.5 py-3">
+                        <div class="text-[11px] font-bold text-slate-700 mb-1">你现在先做什么</div>
+                        <p class="text-[12px] text-slate-600 leading-relaxed">${plainNextStepText}</p>
+                    </div>
+                </div>
+            </div>`;
 
             // ---- 训练阶段配置（模块八三阶段） ----
             const STAGE_LABEL = { 1: '第一阶段 · 建立基础', 2: '第二阶段 · 压缩修复', 3: subType === 'baseline' ? '第三阶段 · 旋转修正' : '第三阶段 · 偏移修正' };
@@ -4928,8 +4983,8 @@
             const STAGE_TIP = {
                 1: '直腿抬高和肩屈均低于基础阈值（SLR < 45°、肩屈 < 90°），优先建立双侧呼吸基础和骨盆底色，再处理前后与左右问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈 > 90°、直腿抬高 > 45°、髋屈 > 90°，达到后即可进入第二阶段。</span>',
                 2: hasMeaningfulLateral
-                    ? '虽然已经出现左右偏移线索，但按照资料链路，现阶段仍应先处理前后压缩与堆叠底色，不急着直接进左右专项。<strong>先把呼吸、后背扩张、髋屈/直腿抬高/肩屈的基础空间提起来</strong>，再看左右修正才能更稳。<br><span style="opacity:0.75">📌 建议先把肩屈提升到 120°、直腿抬高提升到 70° 左右、髋屈提升到 110° 以上，再进入第三阶段。</span>'
-                    : '当前主要问题仍在前后压缩层，左右差异还不足以稳定分型。此阶段<strong>允许轻微左右不对称暂时存在</strong>，先通过呼吸和骨盆重定位解决前后问题。<br><span style="opacity:0.75">📌 本阶段目标：肩屈达到 120°、直腿抬高达到 70° 左右、髋屈达到 110° 以上，再复测是否需要进入偏移修正。</span>',
+                    ? '这次已经能看到左右偏移线索，但现阶段更重要的是先把基础空间做出来，而不是急着直接修左右。先把呼吸、后背扩张、髋屈、直腿抬高和肩屈这些底子提上来，后面的左右修正才更稳。<br><span style="opacity:0.75">📌 建议先把肩屈提升到 120°、直腿抬高提升到 70° 左右、髋屈提升到 110° 以上，再进入更明确的左右专项。</span>'
+                    : '这次更像是前后方向的问题比左右更明显。你现在不用急着给自己贴“左高右低”或“左前右后”的标签，先把呼吸、后背或髋前的基础空间做出来，复测时左右线索通常会更清楚。<br><span style="opacity:0.75">📌 先把肩屈提到 120° 左右、直腿抬高提到 70° 左右、髋屈提到 110° 以上，再看要不要进入左右修正。</span>',
                 3: (() => {
                     const m = {
                         baseline: rotKey === 'LeftAIC'
@@ -4962,7 +5017,7 @@
             <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
                 <div class="flex items-center gap-2 mb-2">
                     <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
-                    ${routeIsolation.sagittalReadyForStage3 ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">已达到左右专项门槛</span>' : '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">仍以底色修复为先</span>'}
+                    ${routeIsolation.sagittalReadyForStage3 ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">已达到左右专项门槛</span>' : (hasLateralClue ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600">已有左右线索，先别急着定型</span>' : '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">仍以底色修复为先</span>')}
                 </div>
                 <p class="text-[12px] text-slate-600 leading-relaxed">${STAGE_TIP[trainingStage]}</p>
             </div>`;
@@ -5239,7 +5294,7 @@
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${stageHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${gluteHtml}${misdiagnosisHtml}${safetyHtml}${appendixHtml}`;
+            container.innerHTML = `${typeHtml}${plainLanguageHtml}${stageHtml}${feelHtml}${mirrorCheckHtml}${whatHtml}${problemHtml}${gluteHtml}${misdiagnosisHtml}${safetyHtml}${appendixHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
@@ -5247,7 +5302,7 @@
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-confidence').textContent = `综合可信度：${confLabel}`;
-            document.getElementById('final-report-confidence-detail').innerHTML = `${compLabel} · ${rotLabel} · 高低：${heightLabel}`;
+            document.getElementById('final-report-confidence-detail').innerHTML = `说人话：${plainCompressionText}<br>左右判断：${plainLateralText}<br>当前结论：${rotLabel} · 高低：${heightLabel}`;
             document.getElementById('final-combo-label').textContent = `${report.typeName}`;
             document.getElementById('final-pelvic-orientation').innerHTML = rotLabel;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
