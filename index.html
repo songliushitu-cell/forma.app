@@ -19,27 +19,92 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .report-accordion summary::-webkit-details-marker { display: none; }
         .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
+        .report-shell {
+            background: linear-gradient(180deg, #fcfcfd 0%, #f5f6f8 100%);
+        }
         .report-hero {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(244,248,255,0.96) 58%, rgba(234,243,255,0.96) 100%);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(246,249,255,0.97) 52%, rgba(237,244,255,0.96) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 40px rgba(15, 23, 42, 0.06);
         }
-        .report-key-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(245,245,247,0.98) 100%);
+        .report-panel {
+            background: rgba(255,255,255,0.96);
+            border: 1px solid rgba(229, 231, 235, 0.96);
+            border-radius: 28px;
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
         }
-        .report-reading {
-            gap: 16px;
+        .report-soft-box {
+            background: linear-gradient(180deg, rgba(247,248,250,0.96) 0%, rgba(255,255,255,0.98) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            border-radius: 20px;
         }
-        .report-reading p {
-            margin: 0;
-            padding: 14px 16px;
+        .report-soft-box.report-soft-box-warm {
+            background: linear-gradient(180deg, rgba(255,249,240,0.96) 0%, rgba(255,255,255,0.98) 100%);
+            border-color: rgba(243, 220, 194, 0.95);
+        }
+        .report-eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .report-section-title {
+            font-size: 18px;
+            line-height: 1.35;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+        .report-body-text {
+            font-size: 14px;
+            line-height: 1.85;
+            color: #475569;
+        }
+        .report-note {
+            font-size: 12px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+        .report-visual-card img {
+            width: 100%;
+            height: 136px;
+            object-fit: cover;
             border-radius: 16px;
-            border: 1px solid rgba(229, 229, 234, 0.9);
-            background: rgba(255,255,255,0.88);
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            display: block;
+            background: #f8fafc;
         }
-        .report-reading b {
-            display: inline-block;
-            margin-right: 2px;
+        .report-bullet-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .report-bullet-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #334155;
+        }
+        .report-bullet-list li::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            margin-top: 8px;
+            border-radius: 9999px;
+            background: #0a84ff;
+            flex-shrink: 0;
+        }
+        .report-bullet-list.report-bullet-list-warm li::before {
+            background: #f59e0b;
+        }
+        .report-data-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.92);
+            border-radius: 20px;
         }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
@@ -833,7 +898,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.27</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.29</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1080,16 +1145,16 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="hidden fade-in bg-white border border-white px-2.5 py-4 sm:px-3 sm:py-5 -mx-3 sm:-mx-3 rounded-[1.8rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-2.5">
-                <div class="absolute -top-20 -right-20 w-48 h-48 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/70 rounded-full blur-3xl pointer-events-none"></div>
+            <div id="final-report-section" class="report-shell hidden fade-in border border-[#edf0f4] px-2.5 py-4 sm:px-3 sm:py-5 -mx-3 sm:-mx-3 rounded-[2rem] shadow-[0_18px_60px_rgba(15,23,42,0.06)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-3">
+                <div class="absolute -top-24 -right-20 w-56 h-56 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-16 -left-10 w-44 h-44 bg-white/85 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 w-full report-hero rounded-[1.4rem] border border-white/80 px-3.5 py-4 sm:px-4 sm:py-4.5 overflow-hidden">
-                    <div class="absolute inset-x-0 top-0 h-20 bg-white/60 blur-2xl pointer-events-none"></div>
+                <div class="relative z-10 w-full report-hero rounded-[1.7rem] border border-white/85 px-4 py-4.5 sm:px-5 sm:py-5 overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-20 bg-white/65 blur-2xl pointer-events-none"></div>
                     <div class="relative">
                         <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
                             <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                            体态评估报告
+                            结果报告
                         </h2>
                         <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
                             评估时间：--
@@ -1101,16 +1166,16 @@
                         <div id="final-hero-image-container" class="mb-4 flex flex-col items-center justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80 shadow-sm hidden">
                             <!-- Image injected via JS -->
                         </div>
-                        <div class="flex justify-between items-start">
-                            <div id="final-result-title" class="text-[28px] sm:text-[32px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.25] flex-1">获取中...</div>
+                        <div class="flex justify-between items-start gap-3">
+                            <div id="final-result-title" class="text-[30px] sm:text-[34px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.18] flex-1">获取中...</div>
                             <a href="#video-plan-card" title="直接拿方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
                                 ↓ 直接拿方案
                             </a>
                         </div>
                         <div class="flex flex-col gap-3">
                             <div id="final-report-confidence" class="hidden">结果稳定度：--</div>
-                            <div id="final-report-confidence-detail" class="text-[14px] sm:text-[15px] text-slate-600 leading-7 bg-white/75 border border-white rounded-[1.2rem] px-4 py-3">
-                                结果摘要：--
+                            <div id="final-report-confidence-detail" class="text-[14px] sm:text-[15px] text-slate-600 leading-7 bg-white/88 border border-white/90 rounded-[1.35rem] px-4 py-3.5 shadow-[0_8px_20px_rgba(15,23,42,0.04)]">
+                                当前重点：--
                             </div>
                         </div>
                     </div>
@@ -2080,7 +2145,7 @@
             confidenceEl.textContent = snapshot.reportConfidenceText || '结果稳定度：--';
             if (snapshot.reportConfidenceClassName) confidenceEl.className = snapshot.reportConfidenceClassName;
 
-            document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '结果摘要：--';
+            document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '当前重点：--';
             
             const empathicContainer = document.getElementById('empathic-report-container');
             if (snapshot.empathicHtml) {
@@ -3449,6 +3514,189 @@
             }
 
             return results;
+        }
+
+        function getReportVisualPrefix(subType) {
+            if (subType === 'lateral') return '横向型';
+            if (subType === 'oblique') return '斜轴型';
+            return '基线型';
+        }
+
+        function getReportReferenceImages(subType) {
+            const prefix = getReportVisualPrefix(subType);
+            return [
+                { src: `资料/${prefix}-正面.png`, label: '正面示意' },
+                { src: `资料/${prefix}-背面.png`, label: '背面示意' }
+            ];
+        }
+
+        function getCompressionLeadText(compKey) {
+            if (compKey === 'posterior') return '目前更像身体后侧一直在帮你撑住骨盆。';
+            if (compKey === 'anterior') return '目前更像髋前和大腿前侧一直在把骨盆往前带。';
+            return '前后方向还需要继续观察，但骨盆不平衡已经出现了。';
+        }
+
+        function buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage }) {
+            let title = '骨盆已经出现不平衡';
+            let resultLine = '骨盆位置已经开始偏向一边。';
+
+            if (subType === 'oblique' && hasMeaningfulLateral) {
+                title = '左边更高，也更靠前';
+                resultLine = '左侧位置更高，也更容易往前跑。';
+            } else if (subType === 'lateral' && hasMeaningfulLateral) {
+                title = '左边偏高，身体两边受力已经不平衡';
+                resultLine = '目前更明显的是左右高低差。';
+            } else if (subType === 'lateral' && hasLateralClue) {
+                title = '左边偏高的线索已经出现';
+                resultLine = '左右不平衡已经开始显出来了。';
+            } else if (hasMeaningfulLateral) {
+                title = '左右位置已经开始偏向一边';
+                resultLine = '目前已经能看到明显的左右偏移。';
+            } else if (hasLateralClue) {
+                title = '骨盆已经出现不平衡';
+                resultLine = '左右差异已经有线索，但还没完全稳定。';
+            }
+
+            const nextStepLine = trainingStage === 3
+                ? '基础位置已经更稳，可以开始更具体地处理左右偏移。'
+                : '现阶段先做骨盆回正和基础稳定，再处理后面的左右偏移。';
+
+            return { title, resultLine, nextStepLine };
+        }
+
+        function buildSymptomInsightCards(comboKey, answers = {}) {
+            const items = [];
+            const push = (title, detail) => {
+                if (!title || !detail || items.some(item => item.title === title)) return;
+                items.push({ title, detail });
+            };
+
+            if (answers.back === 'backCenter') {
+                push('后腰更容易酸', '骨盆位置不稳时，腰后侧更容易一直替身体撑住，所以久站、弯腰起身后更容易酸。');
+            } else if (answers.back === 'beltLike') {
+                push('腰两侧总是发紧', '这通常不是单纯某一块肌肉的问题，而是身体两边没有平均分担力量，腰部一直在兜底。');
+            } else if (answers.back === 'frontPull') {
+                push('髋前或腹股沟前侧容易紧', '骨盆没有回到比较正的位置时，髋前更容易一直被拉着，所以抬腿、起身时会更明显。');
+            } else if (answers.back === 'leftMore') {
+                push('左侧腰更容易累', '左边偏高时，左侧腰更容易长期帮忙稳定身体，所以会比右侧更紧、更累。');
+            }
+
+            if (answers.sit === 'backStiff') {
+                push('久坐起身后后腰发僵', '坐久以后，腰后侧更容易继续帮身体撑住，所以起身时会觉得腰一下子不顺。');
+            } else if (answers.sit === 'hipTight') {
+                push('久坐后髋前更紧', '坐久后如果骨盆位置还是偏的，髋前更容易继续收紧，所以站起来走几步才会慢慢松开。');
+            } else if (answers.sit === 'shifted') {
+                push('久坐后重心更容易偏一边', '这说明身体没有平均落在两侧，一边更容易多做事，另一边没有真正接住力量。');
+            }
+
+            if (answers.breath === 'backCant') {
+                push('呼吸时后背不容易扩开', '后背扩不开时，身体会更容易把稳定压力放到腰和骨盆上，久了更容易僵和紧。');
+            } else if (answers.breath === 'bellyHold') {
+                push('小腹总是收着', '这通常不是单纯在用力，而是骨盆和肋骨没有回到更舒服的位置，所以腹前一直放不下来。');
+            } else if (answers.breath === 'uneven') {
+                push('左右肋骨感受不一样', '当身体两边受力不均时，呼吸也会跟着偏一边，所以你会觉得两边扩张感不一样。');
+            }
+
+            if (answers.side === 'leftTired') {
+                push('左边更容易累', '左边更容易累，通常说明左边长期在多做事，右边没有真正分担身体重量。');
+            } else if (answers.side === 'rightWeak') {
+                push('右边更不稳、更使不上劲', '这通常不是右边单独太弱，而是右边长期没有在正常位置上接住力量，所以更容易发空、不稳。');
+            }
+
+            if (answers.glute === 'fakeButt') {
+                push('臀部看着翘，但腰更容易累', '这种情况很多时候不是臀部真的在发力，而是骨盆位置偏了以后，外形被带出来了。');
+            } else if (answers.glute === 'flat') {
+                push('臀部不容易发力', '骨盆位置没回正时，臀部更容易处在接不住力量的位置，所以会觉得发力差、不饱满。');
+            } else if (answers.glute === 'asymm') {
+                push('两边臀部感觉不一样', '这和骨盆两边长期用力不同是对得上的，所以外形和发力感都更容易出现差别。');
+            }
+
+            if (!items.length) {
+                if (comboKey.endsWith('oblique')) {
+                    push('一侧更容易又累又紧', '当骨盆一边更高也更靠前时，腰、髋、臀的感觉更容易都偏在同一侧。');
+                } else if (comboKey.endsWith('lateral')) {
+                    push('两边不会平均受力', '左右高低差更明显时，一边更容易长期多做事，另一边更容易接不住。');
+                } else {
+                    push('身体更容易反复紧', '骨盆位置不稳时，腰和髋周围更容易反复发紧，站久和久坐后会更明显。');
+                }
+            }
+
+            return items.slice(0, 3);
+        }
+
+        function buildAppearanceCards(comboKey, bodyFeatures = [], answers = {}) {
+            const items = [];
+            const featureNames = new Set(bodyFeatures.map(item => item.name));
+            const push = (title, detail) => {
+                if (!title || !detail || items.some(item => item.title === title)) return;
+                items.push({ title, detail });
+            };
+
+            if (featureNames.has('假胯宽（左侧更明显）') || featureNames.has('假胯宽（左侧）')) {
+                push('单侧假胯宽更明显', '更像是一边骨盆位置偏了以后，髋外侧轮廓被带出来，所以一边会比另一边更明显。');
+            }
+            if (featureNames.has('双侧假胯宽')) {
+                push('双侧假胯宽更明显', '更像是骨盆整体还没回到比较正的位置，两侧髋外侧一起被带宽了。');
+            }
+            if (featureNames.has('臀部左右高低/大小不对称') || answers.glute === 'asymm' || comboKey.endsWith('lateral') || comboKey.endsWith('oblique')) {
+                push('大小臀更明显', '两边长期用力方式不同，外观看起来就更容易出现一边更饱满、一边更薄的差别。');
+                push('臀包线不对称', '背面看时，一边更高、更挂，另一边更平、更低，臀线更容易不在同一水平。');
+            }
+            if (featureNames.has('右侧臀部凹陷')) {
+                push('一侧臀部更平', '骨盆两边受力不一样时，一边更容易显得扁、空，另一边则更容易挂出来。');
+            }
+            if (featureNames.has('双侧臀部不饱满') || answers.glute === 'flat') {
+                push('臀部不够饱满', '这更多和骨盆位置、两边受力方式有关，不是单纯臀练得不够。');
+            }
+            if (answers.glute === 'fakeButt' && comboKey.startsWith('posterior')) {
+                push('臀部看着翘，但不一定真发力', '外形上的翘感不一定代表臀部在正常发力，有时只是骨盆位置把轮廓带出来了。');
+            }
+
+            if (!items.length) {
+                if (comboKey.endsWith('oblique')) {
+                    push('左右外形更容易不一样', '当一边更高也更靠前时，站姿、臀线和髋外侧轮廓都会更容易出现左右差别。');
+                } else if (comboKey.endsWith('lateral')) {
+                    push('高低差会先出现在外形上', '最常见的是两边腰线、臀线和站姿高度感不一样。');
+                } else {
+                    push('外形变化通常慢慢出现', '骨盆位置长期没回正时，髋外侧轮廓和臀部饱满度也会慢慢跟着变。');
+                }
+            }
+
+            return items.slice(0, 3);
+        }
+
+        function buildActionCopy({ trainingStage, subType }) {
+            if (trainingStage === 3) {
+                return {
+                    headline: '你现在可以开始更具体地处理左右偏移。',
+                    lead: '基础位置已经比前面更稳，接下来可以把重点放到左右旋转和偏移的调整上。',
+                    doItems: [
+                        '继续保持骨盆回正和基础稳定',
+                        subType === 'oblique' ? '更具体地处理一边更高也更靠前的问题' : '更具体地处理左右高低或左右前后差',
+                        '让较弱的一边重新接住力量'
+                    ],
+                    avoidItems: [
+                        '不要只顾一边的外形变化',
+                        '不要一边调整，一边又回到旧的站姿和发力方式',
+                        '不要突然把训练强度拉得太高'
+                    ]
+                };
+            }
+
+            return {
+                headline: '你现在先把骨盆和身体带回更稳定、更居中的位置。',
+                lead: '先把基础位置拉回来，后面再处理更具体的左右偏移，效果会更稳，也更不容易反复。',
+                doItems: [
+                    '先做骨盆回正',
+                    '先做基础稳定和呼吸配合',
+                    '先让两边重新平均受力'
+                ],
+                avoidItems: [
+                    '不要只盯着高的一边往下压',
+                    '不要哪里紧就一直拉哪里',
+                    '不要太早做很强的单侧纠正'
+                ]
+            };
         }
 
         function initPelvisScene(comboKey, pelvisAnimMap) {
@@ -5085,324 +5333,44 @@
             const comboKey = `${compKey}_${subType}`;
             const planKeyMap = { baseline: 'LeftAIC', lateral: 'Lateral', oblique: 'Oblique' };
             const planKey = `${compKey}_${planKeyMap[subType]}`;
-
-            // ---- 详细内容配置 ----
-            const REPORT = {
-                posterior_baseline: {
-                    typeName: '骨盆后侧肌肉紧张 · 基础左右不对称', typeTag: '后侧紧张',
-                    oneLiner: '背部和腰部肌肉太紧，一直从后面把骨盆往前推',
-                    what: '你的骨盆后侧肌群——竖脊肌、腰方肌、背阔肌、腰髂肋肌——长期处于高张力状态，持续从后方把骨盆前推。这不是"后面弱了撑不住"，恰恰相反：是后侧太强、太会抢活，早已学会用持续紧绷代替真正稳定。结果是骨盆整日被"顶"在偏前位置，腰椎无法归位中立，后背的肌肉永远在工作、永远没有机会真正放松。同时你存在人体天生的基础不对称：左侧骨盆轻微靠前、右侧轻微偏高——在后侧高张力持续存在时，这个不对称会被进一步锁定和放大，单靠做动作往往难以自行纠正。',
-                    front: '左侧骨盆可能略微靠前，右侧稍微高一点。整个人有一种"后背在顶着你往前走"的感觉——不是你自己想前倾，而是后面的肌肉一直在推。',
-                    back: '后背和腰部看起来比较紧绷、有力。臀部可能有一种"假性翘臀"——不是臀肌真的很强，而是骨盆被后面的肌肉群（背阔肌、竖脊肌等）顶出来了。',
-                    side: '整个人偏前顶，胸口有点前飘，下面的肋骨容易打开，腰背一直像在"撑住你"。',
-                    feel: '日常中你可能觉得后背和腰总是很紧、很累，站久了腰部容易酸胀。深呼吸时后背扩不开，更多是靠前胸呼吸。弯腰后直起来那一瞬间，腰背特别"顶"。',
-                    avoid: ['避免使劲拉伸腰背、绳肌和臀部——后侧紧张明显时，后侧组织往往已经处在高负荷状态，越硬拉越容易应激收紧', '避免大量臀桥训练——容易诱发腰椎代偿，掩盖真正的骨盆问题', '避免忽视呼吸训练——让后背学会真正扩张才是第一步'],
-                    direction: '第①步 建立基础：慢呼气 + 后背肋骨扩张，让竖脊肌/腰方肌不再持续高张力，目标是深呼吸时后背真正能扩开。<br>第②步 前后方向调整：在后侧松开的基础上重建骨盆后侧活动空间，恢复重心后移能力，重建内旋空间，不再锁在前倾位。<br>第③步 微调不对称：后侧张力解除后，再针对左前右后的基础不对称做专项调整——顺序错了在这之前调不动。'
-                },
-                posterior_lateral: {
-                    typeName: '骨盆后侧肌肉紧张 · 左高右低', typeTag: '后侧紧张 + 左高右低',
-                    oneLiner: '后背和腰部肌肉太紧，同时骨盆左边高、右边低',
-                    what: '在后侧肌群高张力的基础上，你的骨盆还出现了明显的左高右低。左侧腰方肌不只是前后方向上"顶"着骨盆，还在侧向持续"提"着左骨盆——左边被上提，右边被往下压，两个维度同时偏移。右侧骨盆因持续被压低，右侧外展肌群（臀中肌、臀小肌）长期处于拉长无力状态，右侧稳定能力全面下滑。这不是"左边练得好、右边懒"，而是神经肌肉模式已经把左边设定为"默认接管者"，右边已经学会不出力。',
-                    front: '左肩可能更高，左侧骨盆更高，左侧腰线更短，右侧腰线更长。整体不只是往前顶，还带着一种"横着歪"的感觉——比较清晰的左边高、右边低。',
-                    back: '左臀峰更高，左侧腰背更紧、更"上提"。右边更低、更扁、更不挂。能明显看出两侧骨盆不在同一个水平面上。',
-                    side: '整个人前顶的同时，身体还有往一边偏的趋势。后背一样很紧，腰背一直在撑，但歪的感觉比单纯后侧紧张更明显。',
-                    feel: '你可能觉得左边腰部和髋部总是比右边紧，右边感觉"空空的、使不上劲"。站着时身体容易往左边挂，左侧腰和髋前容易累。做单腿动作时，右边明显比左边不稳。',
-                    avoid: ['避免只做左右对称的训练——你的两边已经不一样了，对称练只会加重差距', '避免大量侧弯拉伸——可能反而加重偏移', '避免忽视右侧承重能力的恢复——右边需要重新学会接住体重'],
-                    direction: '第①步 释放后侧：慢呼气 + 后背扩张释放后侧肌群，同时左侧呼气侧向扩张减少左侧腰方肌的主动"提拉"。<br>第②步 横向偏移修正：要减少左侧继续抢活、腰方肌持续上提骨盆；要建立右侧承重与装载感——优先做右腿单侧承重动作（右腿前弓步、右侧 RDL、右腿单腿站立），让右边重新接住体重。<br>第③步 整合稳定：左右承重趋于平衡后，整合双侧稳定训练，重建步态中两侧交替承重的协调性。'
-                },
-                posterior_oblique: {
-                    typeName: '骨盆后侧肌肉紧张 · 左边又高又靠前', typeTag: '后侧紧张 + 斜向偏移',
-                    oneLiner: '后背腰部肌肉太紧，同时左边骨盆又高又往前冲',
-                    what: '你的后侧肌群高张力，同时骨盆的偏移不是单纯的左高右低，而是沿对角线"拧"出去：左边既被拎高，又被拉到前方。这种斜向偏移叠加了两个维度——高度差 + 前后差——是六种分型中骨盆位置偏离最明显的一种。正因为是斜的，从任何单一角度看都会觉得"哪里不对但说不清楚"，只有多角度综合才能识别。左边整体扛着过大的代偿任务（既高又前），右边则处于全面"缺席"状态（既低又后），两侧之间的功能差距比单纯左高右低还要大得多。',
-                    front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是向左偏，而像左半边身体整体更往前、更往上。骨盆两边看起来不在一个平面上。',
-                    back: '左臀峰更高，左侧腰背更紧，左侧臀上缘更高、更方。右边更低、更扁、更薄。和单纯左高右低不同的是：这里左边不只是高，还明显更靠前。',
-                    side: '整个人前顶，胸廓前飘，下肋打开，腰背在顶。换个角度看左右两侧，会发现左边那一侧明显更"前"——这是骨盆斜向偏移最典型的标志。',
-                    feel: '左边特别会顶、会挂、会提——左边的腰、髋前、臀上缘、外髋很容易累。右边经常是"没感觉""接不住""发不上力"。做单腿动作时右边更容易塌，做双腿动作时身体又会跑回左前侧去稳定。',
-                    avoid: ['避免只想着把左边压下来——左边不只是高，还往前冲，两个维度都要处理', '避免大量对称深蹲——会加重左前偏移', '避免太早追求力量进阶——先让骨盆位置回来'],
-                    direction: '第①步 释放后侧：呼吸建立后背扩张，腰背不再作为主要稳定者。<br>第②步 斜向修正（同时处理两个维度）：要减少左边"高"和"前"两个方向的代偿，只处理高度不够；要建立右侧推进能力与重心接管能力，让右边真正接住体重。<br>第③步 整合堆叠：重新建立胸廓与骨盆的垂直堆叠关系，骨盆不再被斜向锁定，步态恢复两侧对称承重。'
-                },
-                anterior_baseline: {
-                    typeName: '骨盆前侧肌肉紧张 · 基础左右不对称', typeTag: '前侧紧张',
-                    oneLiner: '髋前和大腿前侧肌肉太紧，一直拽着骨盆往前走',
-                    what: '你的骨盆前侧肌群——髂腰肌、股直肌、阔筋膜张肌、内收肌群——张力偏高，从前方持续将骨盆牵拉向前。注意：与后侧紧张看起来都是"骨盆往前倾"，但机制完全相反。后侧紧张是"后面推你往前"；前侧紧张是"前面拽你往前"——两者处理方向南辕北辙，混淆会让干预完全失效。前侧肌群持续主导，身体越来越依赖它们稳定，真正应该工作的臀大肌和腘绳肌反而被持续抑制——肌肉不是不能用，而是已经被"关掉了"。底层仍存在基础不对称：左侧骨盆轻微靠前、右侧略偏高。',
-                    front: '左边可能仍略前、略外，右边相对略高。但整体不是那种"很顶、很撑"的感觉，更像前面一直收着、拉着。后侧紧张的人给人感觉是"后背撑着、整个人顶着"；前侧紧张更像"前面那几条线一直没松开"。',
-                    back: '后背没有那种特别紧绷、臀部像被顶出来的感觉。后侧更多表现为不够挂、不够饱满——臀部不一定假翘，反而更容易不够饱满、不够挂。',
-                    side: '大腿前侧和髋前比较紧，小腹像是一直在"收着"。臀部不是被顶出来的，反而更像后面接不住、挂不出来。',
-                    feel: '大腿前侧紧、髋前紧、小腹总是绷着，后面的臀部和腰方反而使不上劲。最大的体感区别：你不是后背撑着累，而是前面一直绷着累。',
-                    avoid: ['避免反复拉伸髂腰肌——它已经在过度工作了，硬拉只会更紧', '避免大量做卷腹、仰卧起坐等加重前侧收紧的动作', '避免孤立激活臀部而不先解决前侧拉力——前侧不松开，臀肌根本发不上力，顺序错了效果相反'],
-                    direction: '第①步 松开前侧拉力：呼气延长 + 前侧肋骨回落，让髂腰肌/股直肌不再持续缩短，目标是腹股沟和髋前能真正放松下来。<br>第②步 唤醒后侧：前侧松开后，用有控制的臀伸类动作重建臀大肌和腘绳肌的参与感，让后侧"接管"骨盆稳定。<br>第③步 整合左右：后侧能发力后，再针对左前右后的基础不对称做微调，整合步态中的均匀承重。'
-                },
-                anterior_lateral: {
-                    typeName: '骨盆前侧肌肉紧张 · 左高右低', typeTag: '前侧紧张 + 左高右低',
-                    oneLiner: '髋前和大腿前侧肌肉紧，同时骨盆左边高、右边低',
-                    what: '与"后侧紧张+左高右低"的本质区别：后侧是后面推你，前侧是前面拉你——外观相似，机制相反，处理完全不同。同样是骨盆左高右低，这里的"高"不是被腰方肌从后侧托起的，而是左侧髂腰肌/阔筋膜张肌持续收缩、将左骨盆往前上方拉扯所致。整个人不是"顶着撑着往前冲"，而是"被前面吊住、被牵引着走"——这是区分两类体态的关键观察视角，也是为什么用同样动作但处理方向不对，不但没有效果反而会加重的原因。',
-                    front: '左肩略高、左侧骨盆更高、左侧腰线更短、右侧腰线更长。但不是那种"左边高又很顶"的感觉，更像左边一直被提着，前面还在拉着。你从正面看会觉得：不是她自己在用后背顶住，而是前面有根绳子在把她往前吊——歪着，同时被前面吊着。',
-                    back: '左臀峰更高，但没有后侧紧张那种后背硬撑的味道。后侧整体偏薄、偏挂不住，不够饱满。',
-                    side: '髋前和腹前比较紧，但后背不像后侧紧张那样绷着。整个人更像被前侧肌肉群（髂腰肌、股直肌等）牵引着走，而不是被后背推着走。',
-                    feel: '左侧髋前和腹前容易紧，右边感觉空、接不住。不是后背累，而是前面一直收着的那种疲劳感，同时左右还有明显的不对称体感。',
-                    avoid: ['避免只处理左右高低差而忽略前侧的持续拉扯', '避免大量做前侧收紧的训练（如卷腹）', '避免忽视右侧的承重恢复——右边需要重新接住体重'],
-                    direction: '第①步 松开前侧拉力：呼气延长，释放髂腰肌/股直肌的持续收缩，让髋前和腹股沟能真正放松。<br>第②步 横向偏移修正：要减少左侧前侧肌群继续抢活、骨盆持续被拽向左前；要建立右侧承重空间——优先做右腿单侧承重动作，唤醒右侧臀肌，让右边重新接住体重。<br>第③步 整合步态：前侧松开 + 右侧能承重后，整合两侧交替承重的步态模式，消除代偿性的左侧优势。'
-                },
-                anterior_oblique: {
-                    typeName: '骨盆前侧肌肉紧张 · 左边又高又靠前', typeTag: '前侧紧张 + 斜向偏移',
-                    oneLiner: '髋前肌肉紧张拉着骨盆，同时左边又高又往前冲',
-                    what: '这是六种分型中最复杂的一种——三件事同时叠加：骨盆左边高、左边靠前、前侧肌群一直在拉。骨盆不只是左高右低，左边还明显更往前冲；而这一切不是后侧推出来的，是前侧髂腰肌/股直肌/阔筋膜张肌拽出来的。用一句话概括：左边又高又前，右边又低又后，身体还被前侧肌群持续"吊"着走。这种情况的复杂之处在于：三个问题相互锁定，随便只处理其中一个，其他两个会继续把它拉回来——必须按正确顺序、同时处理才有效。',
-                    front: '左肩更高、左侧骨盆更高、左侧腰线更短。身体中轴不只是偏左，而是左边整半边更在"前上方"的位置。',
-                    back: '左臀峰更高、左侧臀上缘更高更方，右侧臀峰更低，右边更薄、更掉。后背没有那种硬撑的味道，更多是"左边高又前，右边低又后"。',
-                    side: '不是"后背顶出来的前倾"，而更像前面那些肌肉一直在拉。髋前和腹前很紧，臀后侧和臀下缘更挂不出来。左半边从侧面看会明显更前。',
-                    feel: '左髋前、左腹股沟、左前侧特别紧，左边更容易累。右边更难真正承重，一做动作身体又回到左前方去挂住。关键感觉不是"后面顶"，而是"左前挂，右后掉"。',
-                    avoid: ['避免太早修臀型——顺序错了会让左边更高更前、假胯宽更明显', '避免大量对称训练——你的不对称需要针对性处理', '避免只想着把左边压下来——还要同时处理前冲和高度两个维度'],
-                    direction: '第①步 松开前侧拉力：呼气延长，前侧肋骨回落，让髂腰肌/股直肌先放开骨盆。这一步不做，后面全白费。<br>第②步 斜向修正（必须同时处理两个维度）：要减少左边"高"和"前"两个方向同时在抢活；要建立右侧推进 + 接管能力——前侧松开后才能真正激活臀肌，顺序不能反。<br>第③步 整合双侧平衡：右侧能承重后，整合步态与双侧交替平衡，左边不再是身体唯一的稳定依靠。'
-                }
-            };
-
-            // mixed fallback
-            if (!REPORT[comboKey]) {
-                REPORT['mixed_baseline'] = {
-                    typeName: '紧张方向待确认 · 基础左右不对称', typeTag: '方向待确认',
-                    oneLiner: '前后哪侧更紧还不够明确，建议过段时间复测',
-                    what: '目前测量数据显示，还不能明确判断是骨盆后侧肌肉更紧（背阔肌、腰方肌等）还是前侧肌肉更紧（髂腰肌、股直肌等）。但骨盆基础的左右不对称（左侧略靠前、右侧略偏高）依然存在。建议保持基础呼吸和核心训练，过段时间重新测试。',
-                    front: '可能存在轻微的左右不对称，但前后方向的特征目前不够典型。', back: '暂无法明确后侧是更紧还是更弱。', side: '前后方向的倾向需要进一步确认。',
-                    feel: '你可能感觉身体有些不对称，但具体是"后面顶"还是"前面拽"还不够明确。建议记录日常感受，下次复测时作为参考。',
-                    avoid: ['避免一次上太多复杂的纠正动作', '避免在方向不明确时强行做单方向矫正'],
-                    direction: '先做基础呼吸训练：慢呼气 + 后背肋骨扩张，让核心真正激活而非代偿收紧；同步练习双侧骨盆稳定（90/90 呼吸、仰卧腹式呼吸）。不需要等到方向完全明确才开始——这套训练对前后方向问题都有效，2-4 周后复测时方向通常会更清晰，届时再按具体分型调整重点。'
-                };
-                REPORT['mixed_lateral'] = { ...REPORT['mixed_baseline'], typeName: '紧张方向待确认 · 左高右低', oneLiner: '前后哪侧更紧待确认，但骨盆左边高、右边低已经出现',
-                    what: '前后哪侧肌肉更紧还不够明确，但骨盆左高右低的偏移是清晰的。目前优先关注左右的不对称，同时通过复测进一步确认前后方向。'
-                };
-                REPORT['mixed_oblique'] = { ...REPORT['mixed_baseline'], typeName: '紧张方向待确认 · 左边又高又靠前', oneLiner: '前后哪侧更紧待确认，但骨盆已出现斜向偏移趋势',
-                    what: '前后哪侧肌肉更紧还不够明确，但骨盆已经出现左边又高又靠前的斜向偏移趋势。目前优先关注这个斜向偏移的纠正方向，同时通过复测进一步确认。'
-                };
-            }
-
-            const report = REPORT[comboKey] || REPORT['mixed_baseline'];
-            const compLabel = compKey === 'posterior' ? '后侧紧张主导' : compKey === 'anterior' ? '前侧牵拉主导' : '前后方向待确认';
-            const rotLabel = rotKey === 'LeftAIC'
-                ? '已形成左前右后的前后偏移'
-                : rotKey === 'Oblique'
-                    ? '已形成左侧更高且更靠前的斜向偏移'
-                    : routeIsolation.heightResult.patternKey === 'Lateral'
-                        ? '已形成左高右低的左右高低差'
-                        : rotationEvaluation.evidenceHits >= 1
-                            ? `已有 ${rotationEvaluation.evidenceHits} 项前后偏移线索，暂不定型`
-                            : hasLateralClue
-                                ? '已有左右线索，建议结合复测继续观察'
-                                : '当前未形成稳定的左右偏移结论';
-            const heightLabel = heightKey === 'leftHigh'
-                ? (routeIsolation.heightResult.patternKey === 'Oblique' ? '左高右低，并伴随前后偏移' : '左高右低')
-                : heightKey === 'clue'
-                    ? '已出现左高右低线索，暂不直接定型'
-                    : heightKey === 'uneven'
-                        ? '已见左右高低差，但仍需结合复测确认'
-                        : '当前未见明确高低差';
-            const confLabel = compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低';
-            const confTone = compressionEvaluation.confidenceKey === 'high' ? 'text-emerald-600' : compressionEvaluation.confidenceKey === 'medium' ? 'text-amber-600' : 'text-slate-500';
-            const plainCompressionText = compKey === 'posterior'
-                ? '目前更偏向后背和腰后侧持续参与稳定，后侧紧张主导更明显。'
-                : compKey === 'anterior'
-                    ? '目前更偏向髋前和大腿前侧持续牵拉骨盆，前侧牵拉主导更明显。'
-                    : '前后哪一侧更主导暂时还不够明确，建议先看基础活动度和复测趋势。';
-            const plainLateralText = hasMeaningfulLateral
-                ? subType === 'oblique'
-                    ? '左右线索已经比较明确，左侧同时更高、也更靠前。'
-                    : subType === 'lateral'
-                        ? '左右线索已经比较明确，目前更偏向左高右低。'
-                        : '左右线索已经比较明确，目前更偏向左前右后。'
-                : hasLateralClue
-                    ? '这次已经出现左右差值线索，但证据还不足以直接判定为固定类型。'
-                    : '这次还不能直接下左高右低或左前右后的稳定结论。';
-            const plainNextStepText = trainingStage === 1
-                ? '先恢复基础活动度与呼吸配合，再考虑更具体的左右调整。'
-                : trainingStage === 2
-                    ? '先把前后方向的活动空间和呼吸配合建立起来，再进入左右专项。'
-                    : '基础条件已经接近左右专项门槛，可以开始更有针对性的偏移调整。';
-
-            const STAGE_LABEL = {
-                1: '第一阶段 · 基础恢复',
-                2: '第二阶段 · 前后方向调整',
-                3: subType === 'baseline' ? '第三阶段 · 旋转调整' : '第三阶段 · 左右偏移调整'
-            };
-            const STAGE_COLOR = { 1: '#8e8e93', 2: compKey === 'anterior' ? '#ff9500' : '#0a84ff', 3: '#7c3aed' };
-            const STAGE_TIP = {
-                1: '直腿抬高和肩屈仍低于基础门槛，当前重点是先把呼吸配合、肩屈、髋屈和直腿抬高提升到更稳定的基础水平。<br><span style="opacity:0.75">建议目标：肩屈达到 90° 以上、直腿抬高达到 45° 以上、髋屈达到 90° 以上，再进入下一阶段。</span>',
-                2: hasMeaningfulLateral
-                    ? '虽然已经能看到左右线索，但现阶段更重要的是先把前后方向的活动空间和呼吸配合建立起来。当前不建议急着只盯左右一侧处理。<br><span style="opacity:0.75">建议先把肩屈提升到 120° 左右、直腿抬高提升到 70° 左右、髋屈提升到 110° 以上，再进入更明确的左右专项。</span>'
-                    : '这次结果更提示前后方向的问题更突出，左右差异还没有形成稳定结论。建议先恢复基础活动度与呼吸配合，再结合复测看左右线索是否进一步明确。',
-                3: (() => {
-                    const m = {
-                        baseline: '当前已经进入左右专项阶段，重点是减少左前侧持续主导，逐步建立右侧更稳定的承重和推进能力，让胸廓与骨盆重新回到更均衡的对位。',
-                        lateral: '当前已经进入左右专项阶段，重点是减少左侧持续代偿，逐步恢复右侧承重、右侧活动空间和站立稳定性，让骨盆不再长期停在左高右低。',
-                        oblique: '当前已经进入左右专项阶段，重点是同时处理左侧更高和更靠前这两个维度，逐步建立右侧推进与承重接管能力，避免只处理其中一个方向。'
-                    };
-                    return m[subType] || m.baseline;
-                })()
-            };
-            const stageC = STAGE_COLOR[trainingStage];
             const pelvisCfg = derivePelvisVisualConfig(routeIsolation, metrics, comboKey, compKey);
-            const pC = pelvisCfg.color;
-            const cardStyle = `background:linear-gradient(135deg,${pC}10 0%,#fff 100%);border-color:${pC}28;`;
-            const baseLoadRisk = buildBaseLoadRisk({
-                compressionLayer: compressionEvaluation,
-                rotationLayer: rotationEvaluation,
-                heightLayer: routeIsolation.heightResult,
-                routeIsolation
-            });
-            const tunedLoadRisk = applySymptomCheckToLoadRisk(baseLoadRisk, symptomCheck);
-            const symptomSignalProfile = tunedLoadRisk.signalProfile || deriveSymptomSignalProfile(symptomCheck?.answers || {});
-            const inferredProblems = symptomCheck.answered && !reportSafetyBlocked
-                ? buildProblemInference(comboKey, symptomCheck.answers).slice(0, 2)
-                : [];
-            const symptomAlignmentLead = tunedLoadRisk.alignment === 'supportive'
-                ? `你补充的体感和本次“${report.typeName}”基本同向，说明这次分型和你日常能感觉到的偏差是对得上的。`
-                : tunedLoadRisk.alignment === 'conflicting'
-                    ? `你补充的体感和本次“${report.typeName}”暂时没有完全对上，所以这次报告会保守处理，不把左右侧别写得过满。`
-                    : `你补充的体感可以作为本次“${report.typeName}”的补充参考，但目前还不足以单独改写动作分型。`;
-            const symptomSelectedHtml = symptomSignalProfile.selectedLabels.length ? `
-                <div class="flex flex-wrap gap-2 mb-3">
-                    ${symptomSignalProfile.selectedLabels.slice(0, 5).map((label) => `
-                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-600">${label}</span>`).join('')}
-                </div>` : '';
-            const symptomAreaHtml = !reportSafetyBlocked && tunedLoadRisk.available && tunedLoadRisk.areas.length ? `
-                <div class="grid gap-2 sm:grid-cols-2 mt-3">
-                    ${tunedLoadRisk.areas.slice(0, 2).map((area) => `
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
-                        <div class="text-[12px] font-bold text-slate-800 mb-1">${area.area}</div>
-                        <p class="text-[11px] text-slate-500 leading-relaxed">${area.why}</p>
-                    </div>`).join('')}
-                </div>` : '';
-            const symptomInsightHtml = symptomCheck.answered && !reportSafetyBlocked ? `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">体感与分型对照</div>
-                ${symptomSelectedHtml}
-                <p class="text-[12px] text-slate-700 leading-relaxed">${symptomAlignmentLead}</p>
-                <p class="text-[12px] text-slate-600 leading-relaxed mt-2">${tunedLoadRisk.summary || tunedLoadRisk.note || report.feel}</p>
-                <p class="text-[11px] text-slate-500 leading-relaxed mt-2">${tunedLoadRisk.alignmentNote}</p>
-                ${symptomAreaHtml}
-            </div>` : '';
+            const compLabel = compKey === 'posterior' ? '后侧持续用力主导' : compKey === 'anterior' ? '前侧持续拉拽主导' : '前后方向继续观察';
+            const resultLabel = subType === 'oblique'
+                ? (hasMeaningfulLateral ? '左边更高，也更靠前' : '左边更高、也更靠前的线索已经出现')
+                : subType === 'lateral'
+                    ? (hasMeaningfulLateral ? '左边偏高' : '左高线索已经出现')
+                    : rotKey === 'LeftAIC'
+                        ? '左边更容易往前'
+                        : hasLateralClue
+                            ? '骨盆已经开始不平衡'
+                            : '骨盆已经出现不平衡';
+            const heroCopy = buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage });
+            const actionCopy = buildActionCopy({ trainingStage, subType });
+            const referenceImages = getReportReferenceImages(subType);
+            const bodyFeatures = buildBodyFeatureInference(comboKey, metrics);
+            const symptomCards = !reportSafetyBlocked ? buildSymptomInsightCards(comboKey, symptomCheck.answers || {}) : [];
+            const appearanceCards = buildAppearanceCards(comboKey, bodyFeatures, symptomCheck.answers || {});
+            const triggerLabels = routeIsolation.triggerItems.map(item => item.label).join('、');
+            const dataSummary = triggerLabels
+                ? `这次差值更明显的项目在 ${triggerLabels}，说明身体两边的活动和受力已经不在同一状态。`
+                : '当前 6 项数据已经提示身体两边的活动和受力不在同一状态。';
+            const selectedSymptomLabels = (symptomCheck?.answers
+                ? [
+                    getSymptomAnswerLabel('back', symptomCheck.answers.back),
+                    getSymptomAnswerLabel('sit', symptomCheck.answers.sit),
+                    getSymptomAnswerLabel('breath', symptomCheck.answers.breath),
+                    getSymptomAnswerLabel('glute', symptomCheck.answers.glute),
+                    getSymptomAnswerLabel('side', symptomCheck.answers.side)
+                ].filter(Boolean)
+                : []).slice(0, 4);
 
-            const summaryHtml = `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">结果摘要</div>
-                <div class="flex flex-col gap-2.5">
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
-                        <div class="text-[11px] font-bold text-slate-700 mb-1">前后方向判断</div>
-                        <p class="text-[12px] text-slate-600 leading-relaxed">${plainCompressionText}</p>
-                    </div>
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
-                        <div class="text-[11px] font-bold text-slate-700 mb-1">左右偏移判断</div>
-                        <p class="text-[12px] text-slate-600 leading-relaxed">${plainLateralText}</p>
-                    </div>
-                </div>
-            </div>`;
-
-            const stageHtml = `
-            <div class="bg-white rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="flex items-center gap-2 mb-2 flex-wrap">
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
-                    ${routeIsolation.sagittalReadyForStage3 ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">已达到左右专项门槛</span>' : (hasLateralClue ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600">已有左右线索，暂不急于定型</span>' : '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">先恢复基础活动度与呼吸配合</span>')}
-                </div>
-                <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-[0.15em]">当前优先处理方向</div>
-                <p class="text-[12px] text-slate-600 leading-relaxed">${plainNextStepText}</p>
-                <p class="text-[12px] text-slate-500 leading-relaxed mt-2">${STAGE_TIP[trainingStage]}</p>
-            </div>`;
-
-            const dataHtml = `
-            <div class="bg-slate-50/80 rounded-[2rem] p-5 border border-slate-100 shadow-sm mb-4">
-                <div class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-[0.15em]">数据依据</div>
-                <div class="grid grid-cols-3 gap-3 text-center mb-3">
-                    <div class="bg-white rounded-xl p-3">
-                        <div class="text-[10px] text-slate-400 font-bold mb-1">直腿抬高</div>
-                        <div class="text-[13px] font-black text-slate-800">左 ${slrL.toFixed(1)}°</div>
-                        <div class="text-[13px] font-black text-slate-800">右 ${slrR.toFixed(1)}°</div>
-                        <div class="text-[10px] ${Math.abs(diffSLR) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSLR)}</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-3">
-                        <div class="text-[10px] text-slate-400 font-bold mb-1">髋屈曲</div>
-                        <div class="text-[13px] font-black text-slate-800">左 ${hipL.toFixed(1)}°</div>
-                        <div class="text-[13px] font-black text-slate-800">右 ${hipR.toFixed(1)}°</div>
-                        <div class="text-[10px] ${Math.abs(diffHip) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffHip)}</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-3">
-                        <div class="text-[10px] text-slate-400 font-bold mb-1">肩屈</div>
-                        <div class="text-[13px] font-black text-slate-800">左 ${shL.toFixed(1)}°</div>
-                        <div class="text-[13px] font-black text-slate-800">右 ${shR.toFixed(1)}°</div>
-                        <div class="text-[10px] ${Math.abs(diffSh) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSh)}</div>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-2 pt-2 border-t border-slate-200/60">
-                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#0a84ff] shrink-0"></span>
-                        <span class="text-[11px] text-slate-600">前后方向判断：<span class="font-bold text-slate-800">${compLabel}</span></span>
-                        <span class="ml-auto text-[10px] ${confTone} font-bold">稳定度 ${confLabel}</span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0"></span>
-                        <span class="text-[11px] text-slate-600">前后偏移判断：<span class="font-bold text-slate-800">${rotLabel}</span></span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                        <span class="text-[11px] text-slate-600">左右高低判断：<span class="font-bold text-slate-800">${heightLabel}</span></span>
-                    </div>
-                </div>
-                <div class="text-[10px] text-slate-400 leading-relaxed mt-3">左右差值达到 10° 及以上时，会被视为更明确的左右线索。</div>
-            </div>`;
-
-            const observationItems = [
-                { label: '正面观察', text: report.front },
-                { label: '背面观察', text: report.back },
-                { label: '侧面观察', text: report.side }
-            ].filter(item => item.text).slice(0, 3);
-            const observationHtml = observationItems.length ? `
-                <div class="flex flex-col gap-2.5">
-                    ${observationItems.map(item => `
-                    <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
-                        <div class="text-[11px] font-bold text-slate-700 mb-1">${item.label}</div>
-                        <p class="text-[12px] text-slate-600 leading-relaxed">${item.text}</p>
-                    </div>`).join('')}
-                </div>` : '';
-
-            const problemHtml = inferredProblems.length ? `
-                <div class="mt-3 pt-3 border-t border-slate-100">
-                    <div class="text-[11px] font-bold text-slate-700 mb-2">结合你填写的体感，当前更值得留意的部位</div>
-                    <div class="flex flex-col gap-2">
-                        ${inferredProblems.map(item => `
-                        <div class="bg-slate-50 rounded-xl border border-slate-100 px-3.5 py-3">
-                            <div class="text-[12px] font-bold ${item.confirmed ? 'text-emerald-700' : 'text-slate-700'} mb-1">${item.title}</div>
-                            <p class="text-[11px] text-slate-500 leading-relaxed">${item.detail}</p>
-                        </div>`).join('')}
-                    </div>
-                </div>` : '';
-
-            const supplementaryHtml = `
-            <details class="report-accordion bg-white rounded-[2rem] border border-slate-100 shadow-sm mb-4 overflow-hidden">
-                <summary class="list-none cursor-pointer px-5 py-4 flex items-center gap-3">
-                    <div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">补充说明</div>
-                        <div class="text-[13px] font-bold text-slate-800 mt-1">展开查看体态观察与形成机制</div>
-                    </div>
-                    <span class="accordion-chevron ml-auto text-slate-400 transition-transform">⌄</span>
-                </summary>
-                <div class="px-5 pb-5">
-                    ${observationHtml}
-                    <div class="${observationHtml ? 'mt-3 pt-3 border-t border-slate-100' : ''}">
-                        <div class="text-[11px] font-bold text-slate-700 mb-2">形成机制</div>
-                        <p class="text-[12px] text-slate-600 leading-relaxed">${report.what}</p>
-                    </div>
-                    ${problemHtml}
-                </div>
-            </details>`;
-
-            const typeHtml = `
-            <div class="rounded-[2rem] p-5 border shadow-sm mb-4" style="${cardStyle}">
-                <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full" style="color:${pC};background:${pC}18">${report.typeTag}</span>
-                    <span class="text-[10px] font-bold text-slate-500">${report.typeName}</span>
-                    <span class="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style="color:${stageC};background:${stageC}18">${STAGE_LABEL[trainingStage]}</span>
-                </div>
-                <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-[0.15em]">本次评估结论</div>
-                <h3 class="text-[20px] sm:text-[22px] font-black text-slate-900 leading-tight mb-3">${report.oneLiner}</h3>
-                <div class="pelvis-stage mb-3" style="background:#0d1117;border-radius:1rem;position:relative;overflow:hidden;">
-                    <canvas id="pelvis-canvas" style="width:100%;height:260px;display:block;border-radius:1rem;"></canvas>
+            const visualHtml = `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">骨盆示意</div>
+                <div class="report-section-title mb-2">你现在的偏移方向</div>
+                <p class="report-note mb-4">模型和示意图只用来帮助你看懂方向，不代表骨骼结构异常。</p>
+                <div class="pelvis-stage mb-4" style="background:#0d1117;height:278px;border-radius:1.2rem;position:relative;overflow:hidden;">
+                    <canvas id="pelvis-canvas" style="width:100%;height:278px;display:block;border-radius:1.2rem;"></canvas>
                     <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
                         <span style="display:flex;align-items:center;gap:8px;">
                             <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
@@ -5410,37 +5378,138 @@
                         </span>
                     </div>
                 </div>
-                <p class="text-[12px] text-slate-500 leading-relaxed">模型会根据你的左右高低差、前后偏移线索和结果强度同步调整，仅用于帮助理解结果方向。</p>
+                <div class="grid grid-cols-2 gap-3">
+                    ${referenceImages.map((image) => `
+                    <figure class="report-soft-box report-visual-card p-2.5">
+                        <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
+                        <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
+                    </figure>`).join('')}
+                </div>
+            </div>`;
+
+            const relationHtml = reportSafetyBlocked ? '' : `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">身体感觉</div>
+                <div class="report-section-title mb-3">这和你现在的感觉有什么关系</div>
+                <p class="report-body-text">${selectedSymptomLabels.length ? '你在问卷里勾选的感觉，和这次结果是能对应起来的。' : '结合这次结果，下面这些感觉更容易出现。'}</p>
+                ${selectedSymptomLabels.length ? `<div class="flex flex-wrap gap-2 mt-3 mb-4">${selectedSymptomLabels.map((label) => `<span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-600">${label}</span>`).join('')}</div>` : '<div class="h-4"></div>'}
+                <div class="grid gap-3">
+                    ${symptomCards.map((item) => `
+                    <div class="report-soft-box p-4">
+                        <div class="text-[13px] font-bold text-slate-800 mb-1.5">${item.title}</div>
+                        <p class="report-note">${item.detail}</p>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+
+            const appearanceHtml = `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">体态变化</div>
+                <div class="report-section-title mb-3">你现在更可能出现的体态变化</div>
+                <div class="grid gap-3">
+                    ${appearanceCards.map((item) => `
+                    <div class="report-soft-box p-4">
+                        <div class="text-[13px] font-bold text-slate-800 mb-1.5">${item.title}</div>
+                        <p class="report-note">${item.detail}</p>
+                    </div>`).join('')}
+                </div>
+            </div>`;
+
+            const actionHtml = reportSafetyBlocked ? '' : `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">调整方向</div>
+                <div class="report-section-title mb-2">你现在怎么调整</div>
+                <p class="report-body-text mb-5">${actionCopy.headline}${actionCopy.lead}</p>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="report-soft-box p-4">
+                        <div class="text-[12px] font-bold text-[#0a84ff] mb-3">现在先做</div>
+                        <ul class="report-bullet-list">
+                            ${actionCopy.doItems.map((item) => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="report-soft-box report-soft-box-warm p-4">
+                        <div class="text-[12px] font-bold text-amber-700 mb-3">现阶段不建议</div>
+                        <ul class="report-bullet-list report-bullet-list-warm">
+                            ${actionCopy.avoidItems.map((item) => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+
+            const dataHtml = `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">测试数据</div>
+                <div class="report-section-title mb-4">这次判断主要看这里</div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="report-data-card p-4 text-center">
+                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">直腿抬高</div>
+                        <div class="text-[14px] font-black text-slate-800">左 ${slrL.toFixed(1)}°</div>
+                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${slrR.toFixed(1)}°</div>
+                        <div class="mt-2 text-[11px] ${Math.abs(diffSLR) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSLR)}</div>
+                    </div>
+                    <div class="report-data-card p-4 text-center">
+                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">髋屈曲</div>
+                        <div class="text-[14px] font-black text-slate-800">左 ${hipL.toFixed(1)}°</div>
+                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${hipR.toFixed(1)}°</div>
+                        <div class="mt-2 text-[11px] ${Math.abs(diffHip) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffHip)}</div>
+                    </div>
+                    <div class="report-data-card p-4 text-center">
+                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">肩屈</div>
+                        <div class="text-[14px] font-black text-slate-800">左 ${shL.toFixed(1)}°</div>
+                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${shR.toFixed(1)}°</div>
+                        <div class="mt-2 text-[11px] ${Math.abs(diffSh) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSh)}</div>
+                    </div>
+                </div>
+                <p class="report-body-text mt-4">${dataSummary}</p>
             </div>`;
 
             const safetyHtml = reportSafetyBlocked ? `
-            <div class="bg-rose-50 rounded-[2rem] p-5 border border-rose-200 shadow-sm mb-4">
+            <div class="report-panel bg-rose-50 rounded-[2rem] p-5 border border-rose-200 shadow-sm mb-4">
                 <div class="text-[11px] font-bold text-rose-600 mb-2">安全提示</div>
                 <p class="text-[13px] text-rose-700 leading-relaxed">检测到潜在风险项，训练建议已隐藏。请先咨询专业人士排除禁忌症后，再参考这次结果。</p>
             </div>` : '';
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${typeHtml}${summaryHtml}${symptomInsightHtml}${stageHtml}${dataHtml}${supplementaryHtml}${safetyHtml}`;
+            container.innerHTML = `${visualHtml}${relationHtml}${appearanceHtml}${actionHtml}${dataHtml}${safetyHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
-            const mainSentence = reportSafetyBlocked ? '本次评估已生成，训练建议已隐藏' : report.oneLiner;
+            const mainSentence = reportSafetyBlocked ? '本次评估已生成，训练建议已隐藏' : heroCopy.title;
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
-            document.getElementById('final-report-confidence').textContent = `结果稳定度：${confLabel}`;
-            document.getElementById('final-report-confidence-detail').innerHTML = `结果摘要：${compLabel}<br>左右偏移：${rotLabel}<br>当前建议：${plainNextStepText}`;
-            document.getElementById('final-combo-label').textContent = `${report.typeName}`;
-            document.getElementById('final-pelvic-orientation').innerHTML = rotLabel;
+            document.getElementById('final-report-confidence').textContent = `结果稳定度：${compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低'}`;
+            document.getElementById('final-report-confidence-detail').innerHTML = `骨盆表现：${resultLabel}<br>当前更像：${compLabel}<br>现在先做：${trainingStage === 3 ? '处理左右偏移' : '骨盆回正和基础稳定'}`;
+            document.getElementById('final-combo-label').textContent = resultLabel;
+            document.getElementById('final-pelvic-orientation').innerHTML = resultLabel;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
             document.getElementById('final-report-data').textContent = `数据依据：SLR ${slrL.toFixed(1)}°/${slrR.toFixed(1)}° · 髋屈 ${hipL.toFixed(1)}°/${hipR.toFixed(1)}° · 肩屈 ${shL.toFixed(1)}°/${shR.toFixed(1)}°`;
             document.getElementById('final-technical-content').innerHTML = '';
 
-            currentAssessmentResult = { compressionLayer: {key: compKey}, rotationLayer: {key: rotKey}, heightLayer: {key: heightKey}, routeIsolation, planKey, primaryRouteLabel: report.typeName, primarySummary: report.oneLiner, secondarySummary: report.what, symptomCheck, pelvisCfg, pelvisComboKey: comboKey };
+            currentAssessmentResult = {
+                compressionLayer: { key: compKey },
+                rotationLayer: { key: rotKey },
+                heightLayer: { key: heightKey },
+                routeIsolation,
+                planKey,
+                primaryRouteLabel: resultLabel,
+                primarySummary: heroCopy.title,
+                secondarySummary: `${heroCopy.resultLine}${getCompressionLeadText(compKey)}${actionCopy.headline}`,
+                symptomCheck,
+                pelvisCfg,
+                pelvisComboKey: comboKey
+            };
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
 
-            renderVideoPlanCard(planKey);
+            if (reportSafetyBlocked) {
+                const videoPlanCard = document.getElementById('video-plan-card');
+                if (videoPlanCard) videoPlanCard.classList.add('hidden');
+                const jumpLink = document.querySelector('.id-jump-video');
+                if (jumpLink) jumpLink.classList.add('hidden');
+            } else {
+                renderVideoPlanCard(planKey);
+            }
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
         }
@@ -5450,7 +5519,7 @@
         // ============================================================
         const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
-                title: '省心方案 · 基线型',
+                title: '完整训练方案 · 左右不平衡',
                 tagline: '根据你的评估结果定制：后侧紧张 + 左侧骨盆靠前 → 三步直接到位',
                 videos: [
                     { name: '第一步：先让身体后侧别一直绷着', desc: '身体后侧一直在帮你硬撑时，骨盆也更容易被带在前面。第一优先是先把这种紧绷感降下来，而不是一上来就追角度或翘臀。' },
@@ -5459,16 +5528,16 @@
                 ]
             },
             posterior_Oblique: {
-                title: '省心方案 · 斜向型',
+                title: '完整训练方案 · 左边更高也更靠前',
                 tagline: '根据你的评估结果定制：后侧紧张 + 左侧又高又前 → 三步直接到位',
                 videos: [
                     { name: '第一步：先让身体后侧别一直绷着', desc: '身体后侧一直在帮你硬撑时，骨盆就更容易被带在前面，同时左侧又比右侧更高更前，所以先把这层紧绷感降下来。' },
-                    { name: '第二步：恢复胸廓与骨盆的对角节奏', desc: '斜轴卡死意味着上下半身已经不在同一个旋转节奏里，让胸廓和骨盆重新建立交叉对齐是关键。' },
+                    { name: '第二步：恢复胸廓与骨盆的对角节奏', desc: '当身体已经明显偏在一边时，让胸廓和骨盆重新建立交叉对齐会更关键。' },
                     { name: '第三步：解除左侧更前更高的斜向锁定', desc: '外层降下来之后，专项纠正左高右低的斜向不均，避免单纯拉伸只处理一端。' }
                 ]
             },
             posterior_Lateral: {
-                title: '省心方案 · 侧向型',
+                title: '完整训练方案 · 左高右低',
                 tagline: '根据你的评估结果定制：后侧紧张 + 左高右低 → 三步直接到位',
                 videos: [
                     { name: '第一步：先让身体后侧别一直硬撑', desc: '身体后侧的紧绷感是最外层，先把这股一直撑着的力松开，骨盆才有空间重新找到更中立的位置。' },
@@ -5477,7 +5546,7 @@
                 ]
             },
             anterior_LeftAIC: {
-                title: '省心方案 · 基线型',
+                title: '完整训练方案 · 左右不平衡',
                 tagline: '根据你的评估结果定制：前侧牵拉 + 左侧骨盆靠前 → 三步直接到位',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '髋屈肌和股四头肌一直在把骨盆往前下方拉，第一步是把这种拉扯感松开，而不是直接去拉伸。' },
@@ -5486,16 +5555,16 @@
                 ]
             },
             anterior_Oblique: {
-                title: '省心方案 · 斜向型',
+                title: '完整训练方案 · 左边更高也更靠前',
                 tagline: '根据你的评估结果定制：前侧牵拉 + 左侧又高又前 → 三步直接到位',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧拉扯是外层，先把骨盆不再被一直往前拽的状态建立起来。' },
-                    { name: '第二步：恢复胸廓与骨盆的交叉对齐节奏', desc: '斜轴同时合并前侧拉扯，意味着上下半身已经完全脱节，重建交叉节奏比单独练某块肌肉更重要。' },
-                    { name: '第三步：解除左侧极度靠前且偏高的斜向卡死', desc: '减压完成后，专项修正对角线两端的高低与前后差异，避免训练越练越歪。' }
+                    { name: '第二步：恢复胸廓与骨盆的交叉对齐节奏', desc: '当身体已经明显偏向左前方时，先把上下半身重新带回同一个节奏，比单独练某一块肌肉更重要。' },
+                    { name: '第三步：把左侧过高又过前的状态拉回来', desc: '减压完成后，再专项处理高低和前后两个方向，避免训练越练越偏。' }
                 ]
             },
             anterior_Lateral: {
-                title: '省心方案 · 侧向型',
+                title: '完整训练方案 · 左高右低',
                 tagline: '根据你的评估结果定制：前侧牵拉 + 左高右低 → 三步直接到位',
                 videos: [
                     { name: '第一步：先减少前侧肌肉对骨盆的持续拉扯', desc: '前侧减压先行，骨盆停止被向前拽，才能让后面的横向纠正真正落地。' },
@@ -5504,7 +5573,7 @@
                 ]
             },
             mixed_LeftAIC: {
-                title: '基础稳定方案 · 方向待确认',
+                title: '完整训练方案 · 先做基础稳定',
                 tagline: '根据你的评估结果定制：前后方向暂不明确，先建立基础稳定，2-4 周后复测再定向',
                 videos: [
                     { name: '第一步：双侧呼吸基础建立', desc: '无论前后方向如何，呼吸模式都是优先处理的底层问题。先让横膈膜、骨盆底和腹斜肌协调工作，减少代偿模式，再叠加方向性干预。' },
@@ -5513,7 +5582,7 @@
                 ]
             },
             mixed_Lateral: {
-                title: '基础稳定方案 · 横向偏移待定向',
+                title: '完整训练方案 · 先把左右拉回平衡',
                 tagline: '根据你的评估结果定制：前后方向待确认，但骨盆左高右低已出现，先处理横向不对称',
                 videos: [
                     { name: '第一步：双侧呼吸基础建立', desc: '先建立均衡的呼吸模式，为横向纠正打好基础，避免代偿进一步放大左右差距。' },
@@ -5522,7 +5591,7 @@
                 ]
             },
             mixed_Oblique: {
-                title: '基础稳定方案 · 斜向偏移待定向',
+                title: '完整训练方案 · 先把骨盆拉回更居中',
                 tagline: '根据你的评估结果定制：前后方向待确认，但骨盆已出现左高左前斜向偏移，先处理斜向问题',
                 videos: [
                     { name: '第一步：双侧呼吸基础建立', desc: '先建立均衡的呼吸模式，为斜向纠正打好基础，减少整体代偿张力。' },
@@ -5563,7 +5632,7 @@
                 return [
                     {
                         title: '别一上来猛练后侧链',
-                        desc: '现在后侧已经在替你硬撑，直接大量臀桥、硬拉、后踢腿，容易把原本的顶住感练得更重。'
+                        desc: '现在后侧已经在替你硬撑，直接大量臀桥、硬拉、后踢腿，容易把原本的紧绷感练得更重。'
                     },
                     {
                         title: '别把“感觉酸”当成练对了',
@@ -5578,8 +5647,8 @@
                         desc: '当前前侧拉扯已经偏多，太早做高强度分腿蹲、抬腿和腿前侧主导动作，容易让髋前更紧。'
                     },
                     {
-                        title: '别把拉伸做成顶腰',
-                        desc: '很多人一想放松前侧就猛顶腰，结果髋前更卡、下腰更挤，反而更难把骨盆收回来。'
+                        title: '别把拉伸做成塌腰',
+                        desc: '很多人一想放松前侧就把腰往前送，结果髋前更紧、下腰更挤，反而更难把骨盆收回来。'
                     }
                 ];
             }
