@@ -833,7 +833,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.26</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.27</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -5875,6 +5875,7 @@
     let _history = JSON.parse(localStorage.getItem('p_history') || '[]');
     let _protractorImageUrl = null;
     let _pCameraLoading = false;
+    let _pCameraTimeout = null;
     let _pAssignSelection = { type: 'slr', side: 'L', angle: 45 };
     let _pendingReportPrompt = null;
     // Angle ranges per test type
@@ -6068,7 +6069,7 @@
         _closeProtractorReportConfirm();
         _pendingReportPrompt = null;
         _clearProtractorImage();
-        _pCameraLoading = true;
+        _pCameraLoading = false;
         if (video) video.classList.remove('hidden');
 
         _setupCanvas(); _defaultLayout();
@@ -6113,8 +6114,23 @@
         const errEl = document.getElementById('protractor-cam-error');
         if (_hasActiveProtractorStream() || _pCameraLoading) return;
         _pCameraLoading = true;
+        if (_pCameraTimeout) {
+            clearTimeout(_pCameraTimeout);
+            _pCameraTimeout = null;
+        }
+        if (errEl) errEl.classList.add('hidden');
         if (video) video.classList.remove('hidden');
         _syncProtractorModeUI();
+        _pCameraTimeout = setTimeout(() => {
+            if (!_hasActiveProtractorStream() && _pCameraLoading) {
+                _pCameraLoading = false;
+                if (errEl) {
+                    errEl.classList.remove('hidden');
+                    errEl.innerHTML = '摄像头启动超时<br><span class="text-white/60 text-[10px]">可点“启动实时”重试，或先用相册继续</span>';
+                }
+                _syncProtractorModeUI();
+            }
+        }, 6000);
         navigator.mediaDevices.getUserMedia({ video: { facingMode: back ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
             .then(s => {
                 _pStream = s;
@@ -6122,15 +6138,25 @@
                 return video.play().catch(() => {});
             })
             .catch(() => {
-                errEl.classList.remove('hidden');
-                setTimeout(() => errEl.classList.add('hidden'), 4000);
+                if (errEl) {
+                    errEl.classList.remove('hidden');
+                    errEl.innerHTML = '摄像头无法启动<br><span class="text-white/60 text-[10px]">可点“启动实时”重试，或先用相册继续</span>';
+                }
             })
             .finally(() => {
+                if (_pCameraTimeout) {
+                    clearTimeout(_pCameraTimeout);
+                    _pCameraTimeout = null;
+                }
                 _pCameraLoading = false;
                 _syncProtractorModeUI();
             });
     }
     function _stopCamera() {
+        if (_pCameraTimeout) {
+            clearTimeout(_pCameraTimeout);
+            _pCameraTimeout = null;
+        }
         if (_pStream) { _pStream.getTracks().forEach(t => t.stop()); _pStream = null; }
         document.getElementById('protractor-video').srcObject = null;
         _syncProtractorModeUI();
