@@ -106,6 +106,205 @@
             border: 1px solid rgba(229, 231, 235, 0.92);
             border-radius: 20px;
         }
+        .report-panel-empathy {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,250,245,0.98) 0%, rgba(255,255,255,0.98) 100%);
+            border: 1px solid rgba(251, 191, 153, 0.9);
+            box-shadow: 0 16px 34px rgba(251, 146, 60, 0.08);
+            overflow: hidden;
+        }
+        .report-panel-empathy::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 18px;
+            bottom: 18px;
+            width: 5px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #fb923c 0%, #f97360 100%);
+        }
+        .report-badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .report-badge-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            background: rgba(255,255,255,0.92);
+            font-size: 11px;
+            font-weight: 700;
+            color: #334155;
+            line-height: 1;
+        }
+        .report-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            flex-shrink: 0;
+        }
+        .report-transition-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 13px 15px;
+            border-radius: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            background: rgba(248, 250, 252, 0.96);
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .daily-life-grid {
+            display: grid;
+            gap: 16px;
+        }
+        .daily-life-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,248,243,0.98) 100%);
+            border: 1px solid rgba(251, 191, 153, 0.58);
+            border-radius: 22px;
+            padding: 16px;
+            box-shadow: 0 12px 30px rgba(248, 113, 113, 0.05);
+        }
+        .daily-life-card.is-checked {
+            border-color: rgba(249, 115, 22, 0.95);
+            box-shadow: 0 14px 34px rgba(249, 115, 22, 0.12);
+        }
+        .daily-life-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255,237,213,1) 0%, rgba(255,255,255,0.98) 100%);
+            border: 1px solid rgba(251, 191, 153, 0.75);
+            color: #ea580c;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            flex-shrink: 0;
+        }
+        .daily-life-line {
+            display: grid;
+            gap: 5px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(254, 215, 170, 0.75);
+        }
+        .daily-life-line-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #f97316;
+        }
+        .daily-life-line-text {
+            font-size: 13px;
+            line-height: 1.75;
+            color: #475569;
+        }
+        .daily-life-footer {
+            font-size: 11px;
+            line-height: 1.7;
+            color: #7c2d12;
+            background: rgba(255,247,237,0.92);
+            border: 1px solid rgba(254, 215, 170, 0.88);
+            border-radius: 16px;
+            padding: 11px 12px;
+        }
+        .report-advantage-card {
+            background: linear-gradient(180deg, rgba(240,249,255,0.96) 0%, rgba(255,255,255,0.98) 100%);
+            border: 1px solid rgba(186, 230, 253, 0.95);
+            border-radius: 20px;
+            padding: 15px 16px;
+        }
+        .micro-action-list {
+            display: grid;
+            gap: 12px;
+        }
+        .micro-action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            background: rgba(255,255,255,0.96);
+        }
+        .micro-action-item.is-done {
+            border-color: rgba(16, 185, 129, 0.6);
+            background: linear-gradient(180deg, rgba(236, 253, 245, 0.96) 0%, rgba(255,255,255,0.98) 100%);
+        }
+        .micro-action-toggle {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(148, 163, 184, 0.75);
+            background: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            margin-top: 2px;
+        }
+        .micro-action-item.is-done .micro-action-toggle {
+            border-color: rgba(16, 185, 129, 0.95);
+            background: #10b981;
+            color: #fff;
+        }
+        .report-feedback-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(226, 232, 240, 0.98);
+            background: rgba(255,255,255,0.96);
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .report-feedback-chip.is-active {
+            border-color: rgba(10, 132, 255, 0.35);
+            background: rgba(10, 132, 255, 0.1);
+            color: #0a84ff;
+            box-shadow: 0 8px 20px rgba(10, 132, 255, 0.1);
+        }
+        .report-feedback-note {
+            width: 100%;
+            min-height: 88px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.98);
+            background: rgba(255,255,255,0.96);
+            padding: 12px 14px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #334155;
+            resize: vertical;
+            outline: none;
+        }
+        .report-feedback-note:focus {
+            border-color: rgba(10, 132, 255, 0.45);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
+        }
+        .report-disclaimer {
+            font-size: 11px;
+            line-height: 1.7;
+            color: #64748b;
+            text-align: center;
+            padding: 0 8px;
+        }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
         .bg-mac-blue { background-color: #0a84ff; }
@@ -898,7 +1097,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.29</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.30</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1159,6 +1358,7 @@
                         <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
                             评估时间：--
                         </div>
+                        <div id="final-report-badges" class="report-badge-row"></div>
                         <!-- 收费功能已根据要求隐藏 report-access-status -->
                         <div id="report-access-status" class="hidden inline-flex items-center gap-1.5 mb-3 ml-2 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/8 text-[#0a84ff] border border-[#0a84ff]/15 shadow-sm">
                             免费报告剩余 5 次
@@ -1776,6 +1976,10 @@
         const AI_INIT_TIMEOUT = 12000;
         const REPORT_STORAGE_KEY = 'pelvic_report_archive_v1';
         const USAGE_GATE_STORAGE_KEY = 'pelvic_usage_gate_v1';
+        const DAILY_LIFE_FEEDBACK_STORAGE_KEY = 'pelvic_daily_life_feedback_v1';
+        const REPORT_HELPFULNESS_STORAGE_KEY = 'pelvic_report_helpfulness_v1';
+        const MICRO_ACTION_STORAGE_KEY = 'pelvic_micro_actions_v1';
+        const DAILY_LIFE_COPY_VERSION = '1.1.0';
         const DEMO_SAFETY_NOTICE = '若出现疼痛、串麻感或明显不适，请立即停止测试。';
         const VOICE_SAFETY_SUFFIX = '如果过程中出现疼痛、串麻感或明显不适，请立即停止测试。';
         const LICENSE_PLAN_CONFIG = {
@@ -1790,6 +1994,327 @@
         };
         const USAGE_GATE_CONFIG = {
             freeQuota: 3
+        };
+        const DAILY_LIFE_COPY_BY_SUBTYPE = {
+            version: DAILY_LIFE_COPY_VERSION,
+            updatedAt: '2026-04-24',
+            cardsBySubtype: {
+                baseline: [
+                    {
+                        id: 'baseline_wear_right_high',
+                        icon: '裤',
+                        title: '裤腰右侧更容易偏高',
+                        scene: '你平时可能会发现，内裤、瑜伽裤或裤腰线在右侧更容易往上跑，整理完站一会儿又会回到那个位置。',
+                        reason: '这和本次结果能对上的原因是，基线型更常见的特点是右侧略高、左侧更容易往前往外，所以穿在身上的线条也会先把这个方向带出来。',
+                        actionTip: '小行动提示：每次整理裤腰时，顺手把左侧肋骨和左侧骨盆轻轻带回中间，不用用力夹紧。',
+                        confidenceNote: '很多人会先从穿衣服的高度差里认出自己的身体特点。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['wear', 'baseline', 'right']
+                    },
+                    {
+                        id: 'baseline_photo_right_glute',
+                        icon: '影',
+                        title: '拍照时右侧线条更容易抢镜',
+                        scene: '你平时可能会发现，背面拍照或穿紧身裤时，右侧臀线和腰线更容易显得高一点，左边则像往外飘一点。',
+                        reason: '这和本次结果能对上的原因是，基线型会先在外观上留下右高左前的底色，所以镜头比肉眼更容易把这种习惯性模式放大。',
+                        actionTip: '小行动提示：拍照或照镜子时，先让双脚均匀踩地，再看两边腰线会更真实。',
+                        confidenceNote: '很多用户反馈，照片往往比平时更容易把这个特点显示出来。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['photo', 'appearance', 'baseline']
+                    },
+                    {
+                        id: 'baseline_stand_right_load',
+                        icon: '站',
+                        title: '站久了右边更像在接重量',
+                        scene: '你平时可能会发现，排队、刷牙或做饭站久以后，身体会不自觉把重量放到右边，左边像在旁边挂着。',
+                        reason: '这和本次结果能对上的原因是，基线型常见的当前表现就是右侧更愿意接重量，左侧更容易往前往外找位置。',
+                        actionTip: '小行动提示：站着时提醒自己把左脚大脚趾轻轻踩住地面，帮助两边重新平均用力。',
+                        confidenceNote: '这类站姿习惯很常见，通常在需要久站的时候最容易被发现。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['stand', 'load', 'right']
+                    },
+                    {
+                        id: 'baseline_bag_right',
+                        icon: '包',
+                        title: '提包更习惯放在右侧',
+                        scene: '你平时可能会发现，单肩包、手提包或抱电脑时，更容易把重量交给右边，左边反而不太想接。',
+                        reason: '这和本次结果能对上的原因是，右侧更容易被身体当成稳定的一边，拿东西时自然也会优先走这条熟悉路线。',
+                        actionTip: '小行动提示：日常提包可以偶尔换边，但先从轻重量开始，不要突然强行纠正。',
+                        confidenceNote: '很多人是在长期提包的习惯里，第一次意识到自己的左右特点。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['bag', 'right', 'load']
+                    }
+                ],
+                lateral: [
+                    {
+                        id: 'lateral_wear_left_high',
+                        icon: '裤',
+                        title: '左侧裤腰总比右侧更高',
+                        scene: '你平时可能会发现，内裤、短裤或紧身裤穿在身上时，左侧总比右侧高一点，整理完还是会慢慢回去。',
+                        reason: '这和本次结果能对上的原因是，横向型最容易先表现成左高右低，所以身上的高度线最先把这个特点说出来。',
+                        actionTip: '小行动提示：穿裤后先别急着只压左边，先让右脚更稳地踩住地面，再观察高度会更准。',
+                        confidenceNote: '很多人最早就是从裤腰高度差，认出自己的横向型特点。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['wear', 'lateral', 'left']
+                    },
+                    {
+                        id: 'lateral_stairs_right_weak',
+                        icon: '阶',
+                        title: '上楼或单腿站时右边更虚',
+                        scene: '你平时可能会发现，上楼、穿裤子、单腿站或换鞋时，右边更容易晃一下，左边更像一直在托着身体。',
+                        reason: '这和本次结果能对上的原因是，左高右低时，右侧通常更难稳定接住重量，所以一到单腿任务就会更明显。',
+                        actionTip: '小行动提示：上楼时先把注意力放在右脚跟和右脚外侧的稳定上，不急着快。',
+                        confidenceNote: '这类感觉常见于需要右边单独接重量的时刻。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['stairs', 'single_leg', 'right']
+                    },
+                    {
+                        id: 'lateral_photo_line',
+                        icon: '影',
+                        title: '背面照片的高低差更明显',
+                        scene: '你平时可能会发现，平时肉眼不一定总注意到，但一拍背面照、紧身裤照或视频截图，两边腰线和臀线的高低差会更显眼。',
+                        reason: '这和本次结果能对上的原因是，横向型的高度差在静态画面里更容易被固定下来，所以照片往往比镜子更诚实。',
+                        actionTip: '小行动提示：复测时保留同角度的背面照，能更直观看到身体特点是不是在变柔和。',
+                        confidenceNote: '很多用户反馈，照片是最容易帮助他们建立信任感的证据。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['photo', 'appearance', 'lateral']
+                    },
+                    {
+                        id: 'lateral_shoe_left_outer',
+                        icon: '鞋',
+                        title: '左脚鞋底更容易先留痕',
+                        scene: '你平时可能会发现，常穿的鞋子里，左脚外侧或左边鞋跟更容易先磨出痕迹。',
+                        reason: '这和本次结果能对上的原因是，横向型更容易把身体挂到左边，所以走路和站立留下来的受力痕迹也常先出现在左侧。',
+                        actionTip: '小行动提示：换鞋或出门前看一眼鞋底磨损，能帮你更快觉察自己是不是又把重量挂回左边了。',
+                        confidenceNote: '鞋底留下的痕迹，常常比当下感觉更稳定。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['shoe', 'left', 'load']
+                    }
+                ],
+                oblique: [
+                    {
+                        id: 'oblique_seam_shift',
+                        icon: '线',
+                        title: '裤缝和裙缝更容易跑偏',
+                        scene: '你平时可能会发现，裤缝、裙缝或衣服中线不只是左右高低不同，还会像被左边一起带到前面去。',
+                        reason: '这和本次结果能对上的原因是，斜轴型不只是左边高，还会左边更前，所以线条会出现又高又往前跑的感觉。',
+                        actionTip: '小行动提示：照镜子时先看衣服中线有没有偏到左前侧，这会比只看高低更有帮助。',
+                        confidenceNote: '斜轴型最有辨识度的地方，就是高度和前后两个方向会同时露出来。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['wear', 'oblique', 'left_front']
+                    },
+                    {
+                        id: 'oblique_photo_left_front',
+                        icon: '影',
+                        title: '左边看起来总是更抢眼',
+                        scene: '你平时可能会发现，拍照时左边会显得更高、更满、更靠前，右边则更低、更安静一些。',
+                        reason: '这和本次结果能对上的原因是，斜轴型会让左边整侧都更容易站到前面，所以镜头里特别容易出现左边更抢眼的效果。',
+                        actionTip: '小行动提示：拍照前先把右脚轻轻踩稳，再让胸口不要继续跑向左前侧。',
+                        confidenceNote: '很多人是在拍照时，第一次意识到自己不是单纯左高右低。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['photo', 'appearance', 'left_front']
+                    },
+                    {
+                        id: 'oblique_walk_left_front',
+                        icon: '走',
+                        title: '走路时身体更容易挂回左前侧',
+                        scene: '你平时可能会发现，快走、转身或做单腿动作时，身体总会重新回到左前侧那个最熟悉的位置。',
+                        reason: '这和本次结果能对上的原因是，斜轴型会让左边既高又前，身体自然更想回到这个最省力的路线。',
+                        actionTip: '小行动提示：走路时想象右脚把身体送出去，而不是左边一直把身体挂住。',
+                        confidenceNote: '这种路线感通常在走路和动态动作里最明显。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['walk', 'single_leg', 'left_front']
+                    },
+                    {
+                        id: 'oblique_drive_left_hip',
+                        icon: '驾',
+                        title: '开车时左髋更容易往前顶',
+                        scene: '你平时可能会发现，开车、坐办公椅或坐沙发时，左侧髋部更容易先顶出来，身体会自己去找那个偏左前的位置。',
+                        reason: '这和本次结果能对上的原因是，斜轴型本来就更像左边在前面带路，坐下来以后这个特点会更明显。',
+                        actionTip: '小行动提示：久坐时先把右脚踩实，骨盆轻轻往椅面中间放，不急着把左边顶出去。',
+                        confidenceNote: '很多用户反馈，开车和久坐是最容易认出斜轴特点的时刻。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['drive', 'sit', 'left_front']
+                    }
+                ]
+            }
+        };
+        const DAILY_LIFE_COPY_BY_COMPRESSION = {
+            version: DAILY_LIFE_COPY_VERSION,
+            updatedAt: '2026-04-24',
+            cardsByCompression: {
+                posterior: [
+                    {
+                        id: 'posterior_stand_back',
+                        icon: '站',
+                        title: '站久后后腰更像一直撑着',
+                        scene: '你平时可能会发现，久站、排队或做家务以后，先累起来的常常是后腰和后侧，而不是前面。',
+                        reason: '这和本次结果能对上的原因是，后侧主导时，身体更习惯用后面那条线一直撑住，所以站久后后侧的存在感会特别强。',
+                        actionTip: '小行动提示：站久时先做一轮慢呼气，让后背也参与呼吸，不要只靠后腰顶住。',
+                        confidenceNote: '很多人会把这种感觉误以为是单纯腰没力，其实更像后侧一直太努力。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['posterior', 'stand', 'back']
+                    },
+                    {
+                        id: 'posterior_fake_lift',
+                        icon: '臀',
+                        title: '外形看着挺，但腰比臀更忙',
+                        scene: '你平时可能会发现，臀线看着有存在感，可一训练、久站或逛街久了，先累的却还是腰后侧。',
+                        reason: '这和本次结果能对上的原因是，后侧主导时，外形上的挺感不一定来自真正的臀部参与，很多时候是后面一直在撑。',
+                        actionTip: '小行动提示：练臀前先把呼气和腿后侧找出来，再进入大动作，会更容易把力量送到该去的地方。',
+                        confidenceNote: '很多用户反馈，这种“看着像练到了，身体却告诉你不是”的感觉很常见。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['posterior', 'training', 'glute']
+                    },
+                    {
+                        id: 'posterior_breath',
+                        icon: '呼',
+                        title: '呼吸总像停在前胸',
+                        scene: '你平时可能会发现，深呼吸时胸口和锁骨更容易先动，后背像总是没有完全打开。',
+                        reason: '这和本次结果能对上的原因是，后侧一直撑着时，后背空间会更难自然展开，所以呼吸也更容易停在前面。',
+                        actionTip: '小行动提示：每天给自己 3 次机会，把吸气往后背和侧腰送，不追求大，只追求慢。',
+                        confidenceNote: '这类呼吸感受通常和站久后腰更忙会一起出现。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['posterior', 'breath', 'back']
+                    },
+                    {
+                        id: 'posterior_sleep',
+                        icon: '床',
+                        title: '睡觉时更想把自己蜷起来',
+                        scene: '你平时可能会发现，睡觉时更容易喜欢把身体缩住一点，或者起床后后腰和后侧会先提醒你它昨晚也没太放松。',
+                        reason: '这和本次结果能对上的原因是，后侧主导的人连休息时也更容易保留那股撑住的习惯，所以睡醒后后侧更容易先有存在感。',
+                        actionTip: '小行动提示：起床前先做两次慢呼气，再起身，通常会比猛地坐起来更舒服。',
+                        confidenceNote: '这种起床感受在后侧一直偏忙的人身上并不少见。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['posterior', 'sleep', 'morning']
+                    }
+                ],
+                anterior: [
+                    {
+                        id: 'anterior_sit_front',
+                        icon: '坐',
+                        title: '久坐起身时髋前总先紧一下',
+                        scene: '你平时可能会发现，坐久站起来的第一下，髋前、大腿根或前侧会先提醒你，走几步之后才慢慢松开。',
+                        reason: '这和本次结果能对上的原因是，前侧牵拉主导时，身体更习惯靠前面那条线稳住，所以一坐久前侧就更容易一直收着。',
+                        actionTip: '小行动提示：每坐 40 到 60 分钟起身一次，先做一次长呼气，再迈第一步。',
+                        confidenceNote: '这是前侧一直偏忙的人最常见的生活线索之一。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['anterior', 'sit', 'front']
+                    },
+                    {
+                        id: 'anterior_training_front',
+                        icon: '练',
+                        title: '训练时总先跑到腿前和髋前',
+                        scene: '你平时可能会发现，做深蹲、分腿蹲、抬腿或臀桥时，最先有感觉的常常是大腿前侧、髋前和前腹，而不是你本来想找的后侧。',
+                        reason: '这和本次结果能对上的原因是，前侧牵拉主导时，前面这条线更习惯先接管，所以训练里也会先抢到感觉。',
+                        actionTip: '小行动提示：每次正式训练前，先做 1 轮慢呼气和后侧找感觉，再开始大动作。',
+                        confidenceNote: '很多用户会把这类感觉理解成自己不会发力，其实更像力量总先走熟悉路线。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['anterior', 'training', 'front']
+                    },
+                    {
+                        id: 'anterior_belly_hold',
+                        icon: '腹',
+                        title: '小腹和前肋总像收着',
+                        scene: '你平时可能会发现，哪怕没有刻意收腹，小腹和前肋也像一直没完全放下来，整个人前面总是很忙。',
+                        reason: '这和本次结果能对上的原因是，前侧牵拉主导时，前面这条线会更习惯一直工作，所以呼吸和站姿都会带着一点收着的味道。',
+                        actionTip: '小行动提示：白天想到时做一次慢长呼气，先把前肋放松下来，不急着挺胸。',
+                        confidenceNote: '这类前侧总在工作的感觉，常常会和久坐起身髋前紧一起出现。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['anterior', 'breath', 'front']
+                    },
+                    {
+                        id: 'anterior_morning',
+                        icon: '床',
+                        title: '起床时前侧比后侧更僵',
+                        scene: '你平时可能会发现，早上起床的第一会儿，前侧髋部和大腿根更容易先有卡住感，需要活动一下才比较顺。',
+                        reason: '这和本次结果能对上的原因是，前侧一直在拉着你时，休息后那条线也不一定真正放松，所以早上会先提醒你它还在忙。',
+                        actionTip: '小行动提示：起床后先走几步再开始弯腰或抬腿，会比一起来就做大动作更顺。',
+                        confidenceNote: '很多人是在晨起的第一分钟里，最容易认出前侧牵拉的特点。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['anterior', 'sleep', 'morning']
+                    }
+                ],
+                mixed: [
+                    {
+                        id: 'mixed_reset',
+                        icon: '中',
+                        title: '身体更像一直在找最省力的位置',
+                        scene: '你平时可能会发现，久坐、久站或开车时，身体会自己去找一个最熟悉的位置，但每次找到的都不太一样。',
+                        reason: '这和本次结果能对上的原因是，当前更适合先看整体路线，再慢慢把身体带回更居中的状态。',
+                        actionTip: '小行动提示：先别急着只盯一边，先从呼吸和双脚平均踩地开始。',
+                        confidenceNote: '当前更适合先收集线索，再用复测确认更清楚的方向。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['mixed', 'reset']
+                    },
+                    {
+                        id: 'mixed_daily_compare',
+                        icon: '看',
+                        title: '不同场景下感受会换来换去',
+                        scene: '你平时可能会发现，站着、坐着、训练时出现的感觉不完全一样，很难只用一句话概括自己。',
+                        reason: '这和本次结果能对上的原因是，当前前后方向还需要更多线索，所以先看稳定共通点会更有帮助。',
+                        actionTip: '小行动提示：这 1 周先记下最常出现的 2 个场景，复测时更容易看出方向。',
+                        confidenceNote: '这类阶段最重要的不是急着定结论，而是把线索看清楚。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['mixed', 'observe']
+                    },
+                    {
+                        id: 'mixed_base',
+                        icon: '稳',
+                        title: '先把身体带回更稳的中间位',
+                        scene: '你平时可能会发现，只要状态累一点、忙一点，身体就更容易回到自己最熟悉的习惯路线。',
+                        reason: '这和本次结果能对上的原因是，当前更适合先建立基础稳定，让后面的方向更清楚。',
+                        actionTip: '小行动提示：先做 2 周基础呼吸和平均受力，再回头看变化会更清楚。',
+                        confidenceNote: '这是很多人在进入更明确方向前都会经历的阶段。',
+                        empowerEnd: '这是你的身体在用最真实的方式告诉你：这里需要被看见和照顾。',
+                        priorityTags: ['mixed', 'stability']
+                    }
+                ]
+            }
+        };
+        const REPORT_ADVANTAGE_COPY = {
+            subtype: {
+                baseline: [
+                    '你通常更容易建立稳定输出，只要方向找对，身体会比较快记住新的站姿和受力方式。',
+                    '你对左右变化通常更敏感，所以小调整带来的反馈常常会比较清楚。'
+                ],
+                lateral: [
+                    '你对单侧差异的感知通常更清楚，这会让左右侧控制训练更容易找到感觉。',
+                    '只要把右侧接重量这件事慢慢建立起来，很多生活线索会比较快开始变化。'
+                ],
+                oblique: [
+                    '你对方向和旋转变化通常更敏感，交叉连接类训练往往更容易带来明显体感。',
+                    '一旦找回右侧和中线的稳定感，整个人会很快显得更顺。'
+                ]
+            },
+            compression: {
+                posterior: [
+                    '你天生有一定支撑感，重点不是更用力，而是把“撑住”换成“更会呼吸和分配”。'
+                ],
+                anterior: [
+                    '你前侧控制意识通常比较强，只要先把前面放松一点，学习新位置往往会很快。'
+                ],
+                mixed: [
+                    '你当前最有优势的地方，是身体对变化很敏感，先做基础稳定通常就能很快看见线索。'
+                ]
+            }
+        };
+        const MICRO_ACTION_COPY = {
+            breath: {
+                posterior: '今天先做 2 组慢呼气，让后背和侧腰也参与呼吸。',
+                anterior: '今天先做 2 组慢呼气，把前肋和髋前的紧张感放下来。',
+                mixed: '今天先做 2 组基础呼吸，把身体带回更居中的感觉。'
+            },
+            posture: {
+                baseline: '站着时留意别一直把重量锁在右边，给左脚一点重新回到中间的机会。',
+                lateral: '站着或排队时提醒自己别总把身体挂在左边，让右脚安静地接一点重量。',
+                oblique: '走路或转身时提醒自己别总往左前侧挂，先把右脚踩稳再动。'
+            },
+            load: {
+                baseline: '今天选一个轻场景，把提包或转身动作做得更平均一点。',
+                lateral: '今天选一次上楼或单腿动作，先让右边稳住，再把动作做完。',
+                oblique: '今天选一次开车、久坐或走路场景，留意左髋别一直顶在前面。'
+            }
         };
         const DEMO_ANIMATION_CONFIG = {
             videos: {
@@ -1837,6 +2362,132 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        }
+
+        function loadJsonStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (error) {
+                console.warn(`[storage] load failed for ${key}`, error);
+                return fallback;
+            }
+        }
+
+        function saveJsonStorage(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function getReportInteractionKey(reportId) {
+            return String(reportId || currentAssessmentResult?.reportId || currentReportSnapshot?.reportId || '');
+        }
+
+        function loadDailyLifeFeedbackStore() {
+            return loadJsonStorage(DAILY_LIFE_FEEDBACK_STORAGE_KEY, {});
+        }
+
+        function saveDailyLifeFeedbackStore(store) {
+            saveJsonStorage(DAILY_LIFE_FEEDBACK_STORAGE_KEY, store);
+        }
+
+        function loadReportHelpfulnessStore() {
+            return loadJsonStorage(REPORT_HELPFULNESS_STORAGE_KEY, {});
+        }
+
+        function saveReportHelpfulnessStore(store) {
+            saveJsonStorage(REPORT_HELPFULNESS_STORAGE_KEY, store);
+        }
+
+        function loadMicroActionStore() {
+            return loadJsonStorage(MICRO_ACTION_STORAGE_KEY, {});
+        }
+
+        function saveMicroActionStore(store) {
+            saveJsonStorage(MICRO_ACTION_STORAGE_KEY, store);
+        }
+
+        function getDailyLifeFeedbackState(reportId) {
+            const key = getReportInteractionKey(reportId);
+            return key ? (loadDailyLifeFeedbackStore()[key] || {}) : {};
+        }
+
+        function setDailyLifeFeedbackState(reportId, cardId, checked) {
+            const key = getReportInteractionKey(reportId);
+            if (!key || !cardId) return {};
+            const store = loadDailyLifeFeedbackStore();
+            store[key] = {
+                ...(store[key] || {}),
+                [cardId]: Boolean(checked)
+            };
+            saveDailyLifeFeedbackStore(store);
+            return store[key];
+        }
+
+        function getMicroActionState(reportId) {
+            const key = getReportInteractionKey(reportId);
+            return key ? (loadMicroActionStore()[key] || {}) : {};
+        }
+
+        function setMicroActionItemState(reportId, itemId, checked) {
+            const key = getReportInteractionKey(reportId);
+            if (!key || !itemId) return {};
+            const store = loadMicroActionStore();
+            store[key] = {
+                ...(store[key] || {}),
+                [itemId]: Boolean(checked)
+            };
+            saveMicroActionStore(store);
+            return store[key];
+        }
+
+        function getReportHelpfulnessState(reportId) {
+            const key = getReportInteractionKey(reportId);
+            const state = key ? (loadReportHelpfulnessStore()[key] || {}) : {};
+            return {
+                choice: state.choice || '',
+                note: state.note || ''
+            };
+        }
+
+        function setReportHelpfulnessChoice(reportId, choice) {
+            const key = getReportInteractionKey(reportId);
+            if (!key) return { choice: '', note: '' };
+            const store = loadReportHelpfulnessStore();
+            store[key] = {
+                ...(store[key] || {}),
+                choice: choice || ''
+            };
+            saveReportHelpfulnessStore(store);
+            return getReportHelpfulnessState(reportId);
+        }
+
+        function setReportHelpfulnessNote(reportId, note) {
+            const key = getReportInteractionKey(reportId);
+            if (!key) return { choice: '', note: '' };
+            const store = loadReportHelpfulnessStore();
+            store[key] = {
+                ...(store[key] || {}),
+                note: String(note || '').slice(0, 300)
+            };
+            saveReportHelpfulnessStore(store);
+            return getReportHelpfulnessState(reportId);
+        }
+
+        function buildReportFeedbackState(reportId) {
+            return {
+                dailyLifeFeedbackState: getDailyLifeFeedbackState(reportId),
+                reportHelpfulnessState: getReportHelpfulnessState(reportId),
+                microActionState: getMicroActionState(reportId)
+            };
+        }
+
+        function syncCurrentReportSnapshotInteractiveState(reportId = currentAssessmentResult?.reportId) {
+            if (!currentReportSnapshot) return;
+            const nextState = buildReportFeedbackState(reportId);
+            currentReportSnapshot.copyVersion = DAILY_LIFE_COPY_VERSION;
+            currentReportSnapshot.dailyLifeFeedbackState = nextState.dailyLifeFeedbackState;
+            currentReportSnapshot.reportHelpfulnessState = nextState.reportHelpfulnessState;
+            currentReportSnapshot.microActionState = nextState.microActionState;
         }
 
 
@@ -2107,12 +2758,16 @@
         }
 
         function buildCurrentReportSnapshot() {
+            const reportId = currentAssessmentResult?.reportId || currentReportSnapshot?.reportId || Date.now();
+            const feedbackState = buildReportFeedbackState(reportId);
             return {
                 id: Date.now(),
+                reportId,
                 savedAt: finalReportDateTime.textContent.replace('评估时间：', '').trim() || formatReportDateTime(),
                 titleText: document.getElementById('final-result-title').textContent,
                 titleClassName: document.getElementById('final-result-title').className,
                 reportDateTimeText: finalReportDateTime.textContent,
+                reportBadgesHtml: document.getElementById('final-report-badges').innerHTML,
                 reportConfidenceText: document.getElementById('final-report-confidence').textContent,
                 reportConfidenceClassName: document.getElementById('final-report-confidence').className,
                 reportConfidenceDetailHtml: document.getElementById('final-report-confidence-detail').innerHTML,
@@ -2127,16 +2782,25 @@
                 primarySummary: currentAssessmentResult?.primarySummary || '',
                 secondarySummary: currentAssessmentResult?.secondarySummary || '',
                 videoPlanComboKey: currentAssessmentResult?.planKey || '',
-                assessmentMeta: currentAssessmentResult
+                assessmentMeta: currentAssessmentResult,
+                copyVersion: DAILY_LIFE_COPY_VERSION,
+                dailyLifeFeedbackState: feedbackState.dailyLifeFeedbackState,
+                reportHelpfulnessState: feedbackState.reportHelpfulnessState,
+                microActionState: feedbackState.microActionState
             };
         }
 
         function applyReportSnapshot(snapshot) {
             if (!snapshot) return;
+            hydrateReportInteractionStores(snapshot);
             currentReportSnapshot = snapshot;
             currentAssessmentResult = snapshot.assessmentMeta || null;
+            if (currentAssessmentResult && !currentAssessmentResult.reportId) {
+                currentAssessmentResult.reportId = snapshot.reportId || snapshot.id;
+            }
             symptomCheckState = currentAssessmentResult?.symptomCheck || createDefaultSymptomCheckState();
             finalReportDateTime.textContent = snapshot.reportDateTimeText || `评估时间：${snapshot.savedAt || formatReportDateTime()}`;
+            document.getElementById('final-report-badges').innerHTML = snapshot.reportBadgesHtml || '';
             const titleEl = document.getElementById('final-result-title');
             titleEl.textContent = snapshot.titleText || '已保存报告';
             if (snapshot.titleClassName) titleEl.className = snapshot.titleClassName;
@@ -2166,6 +2830,7 @@
             if (jumpLink) jumpLink.classList.add('hidden');
 
             document.getElementById('final-report-section').classList.remove('hidden');
+            syncInteractiveUIState(snapshot.reportId || snapshot.assessmentMeta?.reportId || snapshot.id);
             scrollToDisplayArea(document.getElementById('final-report-section'));
             // 恢复骨盆 3D 模型
             const meta = snapshot.assessmentMeta;
@@ -2216,6 +2881,7 @@
                 return;
             }
 
+            syncCurrentReportSnapshotInteractiveState(currentReportSnapshot.reportId || currentAssessmentResult?.reportId);
             const reports = loadSavedReports();
             const snapshotToSave = {
                 ...currentReportSnapshot,
@@ -3533,27 +4199,27 @@
         function getCompressionLeadText(compKey) {
             if (compKey === 'posterior') return '目前更像身体后侧一直在帮你撑住骨盆。';
             if (compKey === 'anterior') return '目前更像髋前和大腿前侧一直在把骨盆往前带。';
-            return '前后方向还需要继续观察，但骨盆不平衡已经出现了。';
+            return '前后方向还需要继续观察，但骨盆已经开始偏向一边。';
         }
 
         function buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage }) {
-            let title = '骨盆已经出现不平衡';
+            let title = '骨盆已经开始偏向一边';
             let resultLine = '骨盆位置已经开始偏向一边。';
 
             if (subType === 'oblique' && hasMeaningfulLateral) {
                 title = '左边更高，也更靠前';
                 resultLine = '左侧位置更高，也更容易往前跑。';
             } else if (subType === 'lateral' && hasMeaningfulLateral) {
-                title = '左边偏高，身体两边受力已经不平衡';
+                title = '左边偏高，身体两边受力已经开始偏向不同方向';
                 resultLine = '目前更明显的是左右高低差。';
             } else if (subType === 'lateral' && hasLateralClue) {
                 title = '左边偏高的线索已经出现';
-                resultLine = '左右不平衡已经开始显出来了。';
+                resultLine = '左右差异已经开始显出来了。';
             } else if (hasMeaningfulLateral) {
                 title = '左右位置已经开始偏向一边';
                 resultLine = '目前已经能看到明显的左右偏移。';
             } else if (hasLateralClue) {
-                title = '骨盆已经出现不平衡';
+                title = '骨盆已经开始偏向一边';
                 resultLine = '左右差异已经有线索，但还没完全稳定。';
             }
 
@@ -3697,6 +4363,339 @@
                     '不要太早做很强的单侧纠正'
                 ]
             };
+        }
+
+        function getReportSubtype(comboKey = '') {
+            if (comboKey.endsWith('oblique')) return 'oblique';
+            if (comboKey.endsWith('lateral')) return 'lateral';
+            return 'baseline';
+        }
+
+        function getCompressionKey(comboKey = '') {
+            if (comboKey.startsWith('posterior_')) return 'posterior';
+            if (comboKey.startsWith('anterior_')) return 'anterior';
+            return 'mixed';
+        }
+
+        function escapeHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function buildSubtypeBadge(comboKey, compKey) {
+            const subType = getReportSubtype(comboKey);
+            const subTypeConfig = {
+                baseline: { label: '基线型右侧主导', color: '#f59e0b' },
+                lateral: { label: '横向型左高右低', color: '#0ea5e9' },
+                oblique: { label: '斜轴型左高左前', color: '#f97316' }
+            };
+            const compressionConfig = {
+                posterior: { label: '后侧主导', color: '#0a84ff' },
+                anterior: { label: '前侧牵拉', color: '#fb923c' },
+                mixed: { label: '基础稳定优先', color: '#94a3b8' }
+            };
+
+            return [
+                {
+                    label: subTypeConfig[subType].label,
+                    color: subTypeConfig[subType].color
+                },
+                {
+                    label: compressionConfig[compKey]?.label || compressionConfig.mixed.label,
+                    color: compressionConfig[compKey]?.color || compressionConfig.mixed.color
+                }
+            ];
+        }
+
+        function renderBadgeRowHtml(badges = []) {
+            if (!badges.length) return '';
+            return badges.map((badge) => `
+                <span class="report-badge-chip">
+                    <span class="report-badge-dot" style="background:${badge.color}"></span>
+                    <span>${badge.label}</span>
+                </span>
+            `).join('');
+        }
+
+        function deriveDailyLifeSignalTags(answers = {}) {
+            const tags = new Set();
+            const push = (...values) => values.forEach(value => value && tags.add(value));
+
+            if (answers.back === 'backCenter' || answers.back === 'beltLike' || answers.sit === 'backStiff' || answers.breath === 'backCant' || answers.glute === 'fakeButt') {
+                push('posterior', 'back');
+            }
+            if (answers.back === 'frontPull' || answers.sit === 'hipTight' || answers.breath === 'bellyHold' || answers.glute === 'flat') {
+                push('anterior', 'front');
+            }
+            if (answers.back === 'leftMore' || answers.side === 'leftTired') push('left');
+            if (answers.side === 'rightWeak') push('right', 'single_leg');
+            if (answers.sit === 'shifted' || answers.glute === 'asymm' || answers.breath === 'uneven') push('appearance', 'photo', 'lateral');
+            if (answers.sit === 'hipTight') push('sit');
+            if (answers.back === 'backCenter' || answers.back === 'beltLike' || answers.sit === 'backStiff') push('stand');
+            if (answers.glute === 'fakeButt' || answers.glute === 'flat') push('training');
+
+            return Array.from(tags);
+        }
+
+        function getPrioritizedDailyLifeCards(cards = [], signalTags = []) {
+            return cards
+                .map((card, index) => {
+                    const tags = card.priorityTags || [];
+                    const matchScore = tags.reduce((total, tag) => total + (signalTags.includes(tag) ? 1 : 0), 0);
+                    return {
+                        ...card,
+                        _matchScore: matchScore,
+                        _index: index
+                    };
+                })
+                .sort((a, b) => {
+                    if (b._matchScore !== a._matchScore) return b._matchScore - a._matchScore;
+                    return a._index - b._index;
+                });
+        }
+
+        function buildDailyLifeCards(comboKey, answers = {}, bodyFeatures = [], routeIsolation = null) {
+            const subType = getReportSubtype(comboKey);
+            const compKey = getCompressionKey(comboKey);
+            const signalTags = deriveDailyLifeSignalTags(answers);
+            const subtypeCards = getPrioritizedDailyLifeCards(
+                DAILY_LIFE_COPY_BY_SUBTYPE.cardsBySubtype[subType] || [],
+                signalTags
+            ).slice(0, 2);
+            const compressionCards = getPrioritizedDailyLifeCards(
+                DAILY_LIFE_COPY_BY_COMPRESSION.cardsByCompression[compKey] || DAILY_LIFE_COPY_BY_COMPRESSION.cardsByCompression.mixed || [],
+                signalTags
+            ).slice(0, 2);
+
+            const combined = [...subtypeCards, ...compressionCards];
+            const unique = [];
+            const seen = new Set();
+            combined.forEach((card) => {
+                if (!card || seen.has(card.id)) return;
+                seen.add(card.id);
+                unique.push({
+                    id: card.id,
+                    icon: card.icon,
+                    title: card.title,
+                    scene: card.scene,
+                    reason: card.reason,
+                    actionTip: card.actionTip,
+                    confidenceNote: card.confidenceNote,
+                    empowerEnd: card.empowerEnd
+                });
+            });
+
+            if (unique.length < 3) {
+                const fallbackPool = [
+                    ...(DAILY_LIFE_COPY_BY_SUBTYPE.cardsBySubtype[subType] || []),
+                    ...(DAILY_LIFE_COPY_BY_COMPRESSION.cardsByCompression[compKey] || [])
+                ];
+                fallbackPool.forEach((card) => {
+                    if (unique.length >= 4 || seen.has(card.id)) return;
+                    seen.add(card.id);
+                    unique.push({
+                        id: card.id,
+                        icon: card.icon,
+                        title: card.title,
+                        scene: card.scene,
+                        reason: card.reason,
+                        actionTip: card.actionTip,
+                        confidenceNote: card.confidenceNote,
+                        empowerEnd: card.empowerEnd
+                    });
+                });
+            }
+
+            return unique.slice(0, 4);
+        }
+
+        function buildAdvantageCards(comboKey, trainingStage) {
+            const subType = getReportSubtype(comboKey);
+            const compKey = getCompressionKey(comboKey);
+            const primary = (REPORT_ADVANTAGE_COPY.subtype[subType] || [])[0] || '你的身体对变化通常很敏感，只要方向清楚，反馈会来得很快。';
+            const secondary = (REPORT_ADVANTAGE_COPY.compression[compKey] || [])[0] || '现在最适合先把基础节奏找回来，再慢慢往更具体的方向推进。';
+            const stageLine = trainingStage === 3
+                ? '你已经具备进入更具体调整阶段的基础，接下来更适合把这些优势用在精细控制上。'
+                : '现阶段先把基础节奏稳下来，会更容易把这些优势变成真实变化。';
+
+            return [
+                { title: '你的主优势', detail: primary },
+                { title: '现在最值得放大的优势', detail: secondary },
+                { title: '接下来怎么用起来', detail: stageLine }
+            ].slice(0, 2);
+        }
+
+        function buildMicroActionChecklist(comboKey, trainingStage, actionCopy) {
+            const subType = getReportSubtype(comboKey);
+            const compKey = getCompressionKey(comboKey);
+            const loadingText = trainingStage === 3
+                ? '今天选一个单侧动作时，提醒自己先让较弱的一边安静接住重量。'
+                : (MICRO_ACTION_COPY.load[subType] || '今天选一个轻动作，提醒自己别急着回到最熟悉的老路线。');
+
+            return [
+                {
+                    id: 'breath_reset',
+                    label: '呼吸 / 归位',
+                    detail: MICRO_ACTION_COPY.breath[compKey] || MICRO_ACTION_COPY.breath.mixed
+                },
+                {
+                    id: 'posture_notice',
+                    label: '日常姿势觉察',
+                    detail: MICRO_ACTION_COPY.posture[subType] || MICRO_ACTION_COPY.posture.baseline
+                },
+                {
+                    id: 'load_notice',
+                    label: '承重 / 发力提醒',
+                    detail: loadingText
+                }
+            ];
+        }
+
+        function renderDailyLifeCardsHtml(cards = [], reportId) {
+            const feedbackState = getDailyLifeFeedbackState(reportId);
+            return cards.map((card) => {
+                const checked = Boolean(feedbackState[card.id]);
+                return `
+                    <article class="daily-life-card ${checked ? 'is-checked' : ''}" data-daily-card="${card.id}">
+                        <div class="flex items-start gap-3">
+                            <div class="daily-life-icon" aria-hidden="true">${escapeHtml(card.icon)}</div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <h4 class="text-[14px] font-bold text-slate-800 leading-snug">${escapeHtml(card.title)}</h4>
+                                        <p class="mt-1 text-[11px] leading-relaxed text-orange-700">${escapeHtml(card.confidenceNote)}</p>
+                                    </div>
+                                    <button type="button" class="report-feedback-chip ${checked ? 'is-active' : ''}" data-daily-feedback="${card.id}" aria-pressed="${checked ? 'true' : 'false'}">
+                                        这个描述和我对得上 ✓
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="daily-life-grid mt-4">
+                            <div class="daily-life-line">
+                                <div class="daily-life-line-label">生活线索</div>
+                                <div class="daily-life-line-text">${escapeHtml(card.scene)}</div>
+                            </div>
+                            <div class="daily-life-line">
+                                <div class="daily-life-line-label">为什么会这样</div>
+                                <div class="daily-life-line-text">${escapeHtml(card.reason)}</div>
+                            </div>
+                            <div class="daily-life-line">
+                                <div class="daily-life-line-label">小行动提示</div>
+                                <div class="daily-life-line-text">${escapeHtml(card.actionTip)}</div>
+                            </div>
+                        </div>
+                        <div class="daily-life-footer mt-4">${escapeHtml(card.empowerEnd)}</div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderAdvantageCardsHtml(cards = []) {
+            return cards.map((card) => `
+                <div class="report-advantage-card">
+                    <div class="text-[11px] font-bold tracking-[0.14em] text-sky-600 mb-2">${escapeHtml(card.title)}</div>
+                    <p class="report-note !text-slate-600">${escapeHtml(card.detail)}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderMicroActionChecklistHtml(items = [], reportId) {
+            const state = getMicroActionState(reportId);
+            return items.map((item, index) => {
+                const done = Boolean(state[item.id]);
+                return `
+                    <div class="micro-action-item ${done ? 'is-done' : ''}" data-micro-action-item="${item.id}">
+                        <button type="button" class="micro-action-toggle" data-micro-action="${item.id}" aria-pressed="${done ? 'true' : 'false'}">${done ? '✓' : ''}</button>
+                        <div class="min-w-0">
+                            <div class="text-[12px] font-bold text-slate-700 mb-1">${index + 1}. ${escapeHtml(item.label)}</div>
+                            <p class="report-note !text-slate-600">${escapeHtml(item.detail)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderReportHelpfulnessHtml(reportId) {
+            const state = getReportHelpfulnessState(reportId);
+            const upActive = state.choice === 'up';
+            const downActive = state.choice === 'down';
+            return `
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" class="report-feedback-chip ${upActive ? 'is-active' : ''}" data-helpfulness-choice="up" aria-pressed="${upActive ? 'true' : 'false'}">👍 有帮到我</button>
+                    <button type="button" class="report-feedback-chip ${downActive ? 'is-active' : ''}" data-helpfulness-choice="down" aria-pressed="${downActive ? 'true' : 'false'}">👎 还不够贴近</button>
+                </div>
+                <textarea class="report-feedback-note mt-3" placeholder="如果你愿意，可以留一句最有共鸣或最想继续优化的地方。" maxlength="300" data-helpfulness-note>${escapeHtml(state.note)}</textarea>
+            `;
+        }
+
+        function hydrateReportInteractionStores(snapshot) {
+            const reportId = snapshot?.reportId || snapshot?.assessmentMeta?.reportId || snapshot?.id;
+            const key = getReportInteractionKey(reportId);
+            if (!key) return;
+
+            if (snapshot.dailyLifeFeedbackState && Object.keys(snapshot.dailyLifeFeedbackState).length) {
+                const store = loadDailyLifeFeedbackStore();
+                store[key] = { ...(store[key] || {}), ...snapshot.dailyLifeFeedbackState };
+                saveDailyLifeFeedbackStore(store);
+            }
+            if (snapshot.reportHelpfulnessState && (snapshot.reportHelpfulnessState.choice || snapshot.reportHelpfulnessState.note)) {
+                const store = loadReportHelpfulnessStore();
+                store[key] = {
+                    ...(store[key] || {}),
+                    ...snapshot.reportHelpfulnessState
+                };
+                saveReportHelpfulnessStore(store);
+            }
+            if (snapshot.microActionState && Object.keys(snapshot.microActionState).length) {
+                const store = loadMicroActionStore();
+                store[key] = { ...(store[key] || {}), ...snapshot.microActionState };
+                saveMicroActionStore(store);
+            }
+        }
+
+        function syncInteractiveUIState(reportId) {
+            const container = document.getElementById('empathic-report-container');
+            if (!container) return;
+
+            const dailyLifeState = getDailyLifeFeedbackState(reportId);
+            Object.entries(dailyLifeState).forEach(([cardId, checked]) => {
+                const cardEl = container.querySelector(`[data-daily-card="${cardId}"]`);
+                const buttonEl = container.querySelector(`[data-daily-feedback="${cardId}"]`);
+                if (cardEl) cardEl.classList.toggle('is-checked', Boolean(checked));
+                if (buttonEl) {
+                    buttonEl.classList.toggle('is-active', Boolean(checked));
+                    buttonEl.setAttribute('aria-pressed', checked ? 'true' : 'false');
+                }
+            });
+
+            const microActionState = getMicroActionState(reportId);
+            Object.entries(microActionState).forEach(([itemId, checked]) => {
+                const itemEl = container.querySelector(`[data-micro-action-item="${itemId}"]`);
+                const toggleEl = container.querySelector(`[data-micro-action="${itemId}"]`);
+                if (itemEl) itemEl.classList.toggle('is-done', Boolean(checked));
+                if (toggleEl) {
+                    toggleEl.setAttribute('aria-pressed', checked ? 'true' : 'false');
+                    toggleEl.textContent = checked ? '✓' : '';
+                }
+            });
+
+            const helpfulnessState = getReportHelpfulnessState(reportId);
+            ['up', 'down'].forEach((choice) => {
+                const chipEl = container.querySelector(`[data-helpfulness-choice="${choice}"]`);
+                if (!chipEl) return;
+                const isActive = helpfulnessState.choice === choice;
+                chipEl.classList.toggle('is-active', isActive);
+                chipEl.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+            const noteEl = container.querySelector('[data-helpfulness-note]');
+            if (noteEl && noteEl.value !== helpfulnessState.note) {
+                noteEl.value = helpfulnessState.note;
+            }
         }
 
         function initPelvisScene(comboKey, pelvisAnimMap) {
@@ -4185,6 +5184,47 @@
                 persistSavedReports(nextReports);
                 renderSavedReportsList();
             }
+        });
+        document.getElementById('empathic-report-container').addEventListener('click', e => {
+            const reportId = currentAssessmentResult?.reportId || currentReportSnapshot?.reportId;
+            if (!reportId) return;
+
+            const dailyLifeButton = e.target.closest('[data-daily-feedback]');
+            if (dailyLifeButton) {
+                const cardId = dailyLifeButton.getAttribute('data-daily-feedback');
+                const currentState = getDailyLifeFeedbackState(reportId);
+                setDailyLifeFeedbackState(reportId, cardId, !currentState[cardId]);
+                syncInteractiveUIState(reportId);
+                syncCurrentReportSnapshotInteractiveState(reportId);
+                return;
+            }
+
+            const helpfulnessButton = e.target.closest('[data-helpfulness-choice]');
+            if (helpfulnessButton) {
+                const choice = helpfulnessButton.getAttribute('data-helpfulness-choice');
+                const currentChoice = getReportHelpfulnessState(reportId).choice;
+                setReportHelpfulnessChoice(reportId, currentChoice === choice ? '' : choice);
+                syncInteractiveUIState(reportId);
+                syncCurrentReportSnapshotInteractiveState(reportId);
+                return;
+            }
+
+            const microActionButton = e.target.closest('[data-micro-action]');
+            if (microActionButton) {
+                const itemId = microActionButton.getAttribute('data-micro-action');
+                const currentState = getMicroActionState(reportId);
+                setMicroActionItemState(reportId, itemId, !currentState[itemId]);
+                syncInteractiveUIState(reportId);
+                syncCurrentReportSnapshotInteractiveState(reportId);
+            }
+        });
+        document.getElementById('empathic-report-container').addEventListener('input', e => {
+            const reportId = currentAssessmentResult?.reportId || currentReportSnapshot?.reportId;
+            if (!reportId) return;
+            const noteField = e.target.closest('[data-helpfulness-note]');
+            if (!noteField) return;
+            setReportHelpfulnessNote(reportId, noteField.value);
+            syncCurrentReportSnapshotInteractiveState(reportId);
         });
         btnCloseDemo.addEventListener('click', () => closeDemoModal());
         btnConfirmDemo.addEventListener('click', () => closeDemoModal());
@@ -5342,14 +6382,19 @@
                     : rotKey === 'LeftAIC'
                         ? '左边更容易往前'
                         : hasLateralClue
-                            ? '骨盆已经开始不平衡'
-                            : '骨盆已经出现不平衡';
+                            ? '骨盆已经开始偏向一边'
+                            : '骨盆已经开始偏向一边';
             const heroCopy = buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage });
             const actionCopy = buildActionCopy({ trainingStage, subType });
             const referenceImages = getReportReferenceImages(subType);
             const bodyFeatures = buildBodyFeatureInference(comboKey, metrics);
             const symptomCards = !reportSafetyBlocked ? buildSymptomInsightCards(comboKey, symptomCheck.answers || {}) : [];
             const appearanceCards = buildAppearanceCards(comboKey, bodyFeatures, symptomCheck.answers || {});
+            const reportId = Date.now();
+            const reportBadges = buildSubtypeBadge(comboKey, compKey);
+            const dailyLifeCards = !reportSafetyBlocked ? buildDailyLifeCards(comboKey, symptomCheck.answers || {}, bodyFeatures, routeIsolation) : [];
+            const advantageCards = !reportSafetyBlocked ? buildAdvantageCards(comboKey, trainingStage) : [];
+            const microActionItems = !reportSafetyBlocked ? buildMicroActionChecklist(comboKey, trainingStage, actionCopy) : [];
             const triggerLabels = routeIsolation.triggerItems.map(item => item.label).join('、');
             const dataSummary = triggerLabels
                 ? `这次差值更明显的项目在 ${triggerLabels}，说明身体两边的活动和受力已经不在同一状态。`
@@ -5363,6 +6408,9 @@
                     getSymptomAnswerLabel('side', symptomCheck.answers.side)
                 ].filter(Boolean)
                 : []).slice(0, 4);
+            const transitionText = selectedSymptomLabels.length
+                ? '下面这些日常线索，和你刚才回答的问卷主诉高度吻合，我们一条条帮你对上。'
+                : '如果你刚才没有补充主诉，也可以先从这些高频生活线索开始对照自己。';
 
             const visualHtml = `
             <div class="report-panel p-5 sm:p-6">
@@ -5385,6 +6433,30 @@
                         <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
                     </figure>`).join('')}
                 </div>
+            </div>`;
+
+            const dailyLifeHtml = reportSafetyBlocked ? `
+            <div id="report-safety-block" class="report-panel report-panel-empathy p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">优先事项</div>
+                <div class="report-section-title mb-3">先看安全提醒，再决定下一步</div>
+                <p class="report-body-text">我们注意到你有需要优先处理的信号，建议先咨询专业评估师再进行针对性调整。</p>
+                <a href="#report-safety-block" class="inline-flex mt-4 items-center rounded-full bg-rose-50 px-4 py-2 text-[11px] font-bold text-rose-600 border border-rose-200 shadow-sm">
+                    跳过本报告，直接看安全建议
+                </a>
+            </div>` : `
+            <div class="report-panel report-panel-empathy p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">日常线索</div>
+                <div class="report-section-title mb-2">你平时怎么发现</div>
+                <p class="report-body-text mb-5">这部分会把结果翻译成你平时更容易认出来的生活线索，让你不只看到结论，也能看见自己。</p>
+                <div class="daily-life-grid">
+                    ${renderDailyLifeCardsHtml(dailyLifeCards, reportId)}
+                </div>
+            </div>`;
+
+            const transitionHtml = reportSafetyBlocked ? '' : `
+            <div class="report-transition-note">
+                <span class="mt-[2px] text-[14px] text-[#0a84ff]">●</span>
+                <span>${transitionText}</span>
             </div>`;
 
             const relationHtml = reportSafetyBlocked ? '' : `
@@ -5415,6 +6487,15 @@
                 </div>
             </div>`;
 
+            const advantageHtml = reportSafetyBlocked ? '' : `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">优势提示</div>
+                <div class="report-section-title mb-3">你的身体优势</div>
+                <div class="grid gap-3">
+                    ${renderAdvantageCardsHtml(advantageCards)}
+                </div>
+            </div>`;
+
             const actionHtml = reportSafetyBlocked ? '' : `
             <div class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">调整方向</div>
@@ -5433,6 +6514,16 @@
                             ${actionCopy.avoidItems.map((item) => `<li>${item}</li>`).join('')}
                         </ul>
                     </div>
+                </div>
+            </div>`;
+
+            const microActionHtml = reportSafetyBlocked ? '' : `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">微行动清单</div>
+                <div class="report-section-title mb-2">3 天微行动清单</div>
+                <p class="report-body-text mb-5">先把最容易做的 3 件小事做起来，比一开始就做很满更容易让身体给你正反馈。</p>
+                <div class="micro-action-list">
+                    ${renderMicroActionChecklistHtml(microActionItems, reportId)}
                 </div>
             </div>`;
 
@@ -5463,20 +6554,30 @@
                 <p class="report-body-text mt-4">${dataSummary}</p>
             </div>`;
 
-            const safetyHtml = reportSafetyBlocked ? `
-            <div class="report-panel bg-rose-50 rounded-[2rem] p-5 border border-rose-200 shadow-sm mb-4">
-                <div class="text-[11px] font-bold text-rose-600 mb-2">安全提示</div>
-                <p class="text-[13px] text-rose-700 leading-relaxed">检测到潜在风险项，训练建议已隐藏。请先咨询专业人士排除禁忌症后，再参考这次结果。</p>
-            </div>` : '';
+            const feedbackHtml = reportSafetyBlocked ? '' : `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="report-eyebrow mb-2">快速反馈</div>
+                <div class="report-section-title mb-2">这个报告帮到你了吗？</div>
+                <p class="report-body-text">你的反馈会帮助我们把报告写得更贴近真实生活，也更容易让下一位用户快速认出自己。</p>
+                <div class="mt-4">
+                    ${renderReportHelpfulnessHtml(reportId)}
+                </div>
+            </div>`;
+
+            const disclaimerHtml = `
+            <div class="report-disclaimer">
+                本报告基于姿势特征描述常见生活现象，不构成医学诊断。若有明显疼痛、麻木、夜间痛或持续加重，请优先寻求专业评估。
+            </div>`;
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${visualHtml}${relationHtml}${appearanceHtml}${actionHtml}${dataHtml}${safetyHtml}`;
+            container.innerHTML = `${visualHtml}${dailyLifeHtml}${transitionHtml}${relationHtml}${appearanceHtml}${advantageHtml}${actionHtml}${microActionHtml}${dataHtml}${feedbackHtml}${disclaimerHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
-            const mainSentence = reportSafetyBlocked ? '本次评估已生成，训练建议已隐藏' : heroCopy.title;
+            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : heroCopy.title.replace(/不平衡/g, '偏向').replace(/已经出现/g, '已经开始');
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
+            document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
             document.getElementById('final-report-confidence').textContent = `结果稳定度：${compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低'}`;
             document.getElementById('final-report-confidence-detail').innerHTML = `骨盆表现：${resultLabel}<br>当前更像：${compLabel}<br>现在先做：${trainingStage === 3 ? '处理左右偏移' : '骨盆回正和基础稳定'}`;
             document.getElementById('final-combo-label').textContent = resultLabel;
@@ -5496,8 +6597,10 @@
                 secondarySummary: `${heroCopy.resultLine}${getCompressionLeadText(compKey)}${actionCopy.headline}`,
                 symptomCheck,
                 pelvisCfg,
-                pelvisComboKey: comboKey
+                pelvisComboKey: comboKey,
+                reportId
             };
+            syncInteractiveUIState(reportId);
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
             document.getElementById('final-report-section').classList.remove('hidden');
