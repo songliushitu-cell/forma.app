@@ -73,6 +73,54 @@
             display: block;
             background: #f8fafc;
         }
+        .report-image-trigger {
+            width: 100%;
+            display: block;
+            position: relative;
+            border: none;
+            padding: 0;
+            background: transparent;
+            cursor: zoom-in;
+            text-align: left;
+        }
+        .report-image-trigger:focus-visible {
+            outline: 2px solid rgba(10, 132, 255, 0.6);
+            outline-offset: 4px;
+            border-radius: 18px;
+        }
+        .report-image-hint {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.7);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            pointer-events: none;
+        }
+        .report-image-modal-backdrop {
+            background: rgba(2, 6, 23, 0.76);
+            backdrop-filter: blur(12px);
+        }
+        .report-image-modal-card {
+            background: rgba(255,255,255,0.98);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 24px;
+            box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+        }
+        .report-image-modal-img {
+            width: 100%;
+            max-height: min(72vh, 760px);
+            object-fit: contain;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(248,250,252,1) 0%, rgba(241,245,249,1) 100%);
+        }
         .report-bullet-list {
             margin: 0;
             padding: 0;
@@ -1097,7 +1145,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.30</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.31</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1368,8 +1416,8 @@
                         </div>
                         <div class="flex justify-between items-start gap-3">
                             <div id="final-result-title" class="text-[30px] sm:text-[34px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.18] flex-1">获取中...</div>
-                            <a href="#video-plan-card" title="直接拿方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
-                                ↓ 直接拿方案
+                            <a href="#video-plan-card" title="查看对应方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
+                                ↓ 查看对应方案
                             </a>
                         </div>
                         <div class="flex flex-col gap-3">
@@ -1404,25 +1452,45 @@
 
                 <!-- 专属训练视频方案卡片 -->
                 <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#ead9bf] shadow-[0_12px_28px_rgba(139,94,52,0.08)] bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf1_100%)]">
-                    <!-- 摘要行（始终可见，点击展开/收起） -->
-                    <button id="btn-toggle-vp-detail" class="w-full px-5 py-4 flex items-center gap-3 text-left hover:bg-[#fff7eb] transition-colors">
-                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-[#fff4df] border border-[#ead9bf] flex items-center justify-center shadow-sm">
-                            <svg class="w-4 h-4 text-[#8b5e34]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div class="px-5 py-4 flex flex-col gap-3.5">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#fff4df] border border-[#ead9bf] flex items-center justify-center shadow-sm">
+                                <svg class="w-4 h-4 text-[#8b5e34]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div id="vp-plan-label" class="text-[9px] font-bold text-[#9a6700] tracking-[0.16em] uppercase mb-1">对应训练方案</div>
+                                <div id="vp-title" class="text-[15px] font-bold text-slate-800 leading-snug">如果你想直接开始训练，这里就是对应方案</div>
+                                <div id="vp-tagline" class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed">加载中...</div>
+                            </div>
                         </div>
-                        <div class="min-w-0 flex-1">
-                            <div id="vp-plan-label" class="text-[9px] font-bold text-[#9a6700] tracking-[0.16em] uppercase mb-1">下一步训练方案</div>
-                            <div id="vp-title" class="text-[14px] font-bold text-slate-800 leading-snug">根据这次结果，你接下来该怎么练</div>
-                            <div id="vp-tagline" class="text-[10px] text-[#7c6a55] mt-0.5 leading-relaxed">加载中...</div>
+                        <div class="bg-[#eef7f1] border border-[#d7e8dd] rounded-2xl p-3.5">
+                            <div class="text-[9px] font-bold text-[#2f5d50] tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
+                            <p id="vp-starter-tip" class="text-[11px] text-[#2f5d50] leading-relaxed">加载中...</p>
                         </div>
-                        <svg id="vp-chevron" class="w-4 h-4 text-[#c2ac8e] flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <!-- 展开详情（默认隐藏） -->
+                        <div>
+                            <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.2em] mb-2 uppercase">这份方案会直接告诉你</div>
+                            <div id="vp-quick-list" class="grid gap-2"></div>
+                        </div>
+                        <div class="rounded-2xl border border-[#ead9bf] bg-[linear-gradient(135deg,#fff8ea_0%,#fff3dc_100%)] px-4 py-3.5">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-1">完整方案</div>
+                                    <div class="text-[16px] font-black text-[#8b5e34] leading-none">¥299</div>
+                                    <p id="vp-fit-note" class="text-[10px] text-[#7c6a55] mt-1.5 leading-relaxed"></p>
+                                    <p class="text-[9px] text-[#8a7b68] mt-2 leading-relaxed">购买后添加微信 <b class="text-[#5f5140]">songjiaotou999</b>，我会按你这次结果发送对应版本。</p>
+                                </div>
+                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#2f5d50] hover:bg-[#244a40] active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-[0_8px_20px_rgba(47,93,80,0.22)] transition-all">
+                                    立即查看完整方案
+                                </button>
+                            </div>
+                        </div>
+                        <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#efe3d0] bg-white/88 px-4 py-3 text-[11px] font-bold text-[#8b5e34] hover:bg-white transition-colors">
+                            <span id="vp-detail-toggle-label">展开适合人群和避坑提醒</span>
+                            <svg id="vp-chevron" class="w-4 h-4 text-[#c2ac8e] flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
                     <div id="vp-detail" class="hidden border-t border-[#f0e3ce]">
                         <div class="px-5 py-4 flex flex-col gap-3">
-                            <div class="bg-[#eef7f1] border border-[#d7e8dd] rounded-2xl p-3.5">
-                                <div class="text-[9px] font-bold text-[#2f5d50] tracking-[0.18em] uppercase mb-1.5">先给你一个起步方向</div>
-                                <p id="vp-starter-tip" class="text-[11px] text-[#2f5d50] leading-relaxed">加载中...</p>
-                            </div>
                             <div>
                                 <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.2em] mb-2 uppercase">完整方案会直接告诉你</div>
                                 <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
@@ -1437,22 +1505,6 @@
                                 <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-2">为什么现在不建议自己乱试</div>
                                 <ul id="vp-avoid-list" class="flex flex-col gap-1.5"></ul>
                             </div>
-                            <div id="vp-fit-note" class="text-[11px] text-slate-600 leading-relaxed bg-white/90 p-3 rounded-xl border border-[#efe3d0]"></div>
-                            <div class="rounded-2xl border border-[#ead9bf] bg-[linear-gradient(135deg,#fff8ea_0%,#fff3dc_100%)] px-4 py-3.5">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-1">完整方案</div>
-                                        <div class="text-[15px] font-black text-[#8b5e34] leading-none">¥299</div>
-                                        <p class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed">不是通用跟练，而是按你这次结果匹配的训练顺序。</p>
-                                    </div>
-                                    <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#2f5d50] hover:bg-[#244a40] active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-[0_8px_20px_rgba(47,93,80,0.22)] transition-all">
-                                        查看完整方案
-                                    </button>
-                                </div>
-                            </div>
-                            <p class="text-[9px] text-[#8a7b68] leading-relaxed text-center">
-                                购买后添加微信 <b class="text-[#5f5140]">songjiaotou999</b>，我会按你这次结果发送对应版本
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -1601,6 +1653,21 @@
                     先保留这份报告
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div id="report-image-modal" class="fixed inset-0 z-[110] report-image-modal-backdrop hidden items-center justify-center p-4">
+        <div class="report-image-modal-card w-full max-w-[960px] p-4 sm:p-5">
+            <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="min-w-0">
+                    <div class="text-[10px] font-bold tracking-[0.18em] text-slate-400 uppercase mb-1">示意图放大查看</div>
+                    <div id="report-image-modal-title" class="text-[16px] font-bold text-slate-900 leading-snug">示意图</div>
+                </div>
+                <button id="btn-close-report-image-modal" type="button" class="flex-shrink-0 w-9 h-9 rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors flex items-center justify-center" aria-label="关闭示意图放大层">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <img id="report-image-modal-img" class="report-image-modal-img" src="" alt="">
         </div>
     </div>
 
@@ -4189,11 +4256,21 @@
         }
 
         function getReportReferenceImages(subType) {
-            const prefix = getReportVisualPrefix(subType);
-            return [
-                { src: `资料/${prefix}-正面.png`, label: '正面示意' },
-                { src: `资料/${prefix}-背面.png`, label: '背面示意' }
-            ];
+            const imageMap = {
+                baseline: [
+                    { src: '资料/基线型-正面.png', label: '正面示意' },
+                    { src: '资料/基线型-背面.png', label: '背面示意' }
+                ],
+                lateral: [
+                    { src: '资料/横向型-背面.png', label: '正面示意' },
+                    { src: '资料/横向型-正面.png', label: '背面示意' }
+                ],
+                oblique: [
+                    { src: '资料/斜轴型-正面.png', label: '正面示意' },
+                    { src: '资料/斜轴型-背面.png', label: '背面示意' }
+                ]
+            };
+            return imageMap[subType] || imageMap.baseline;
         }
 
         function getCompressionLeadText(compKey) {
@@ -5186,6 +5263,15 @@
             }
         });
         document.getElementById('empathic-report-container').addEventListener('click', e => {
+            const imageButton = e.target.closest('[data-report-image-src]');
+            if (imageButton) {
+                openReportImageModal(
+                    imageButton.getAttribute('data-report-image-src'),
+                    imageButton.getAttribute('data-report-image-label')
+                );
+                return;
+            }
+
             const reportId = currentAssessmentResult?.reportId || currentReportSnapshot?.reportId;
             if (!reportId) return;
 
@@ -5232,6 +5318,10 @@
             if (e.target === demoModal) {
                 closeDemoModal();
             }
+        });
+        document.getElementById('btn-close-report-image-modal').addEventListener('click', closeReportImageModal);
+        document.getElementById('report-image-modal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeReportImageModal();
         });
         demoAnimationVideo.addEventListener('error', () => {
             updateDemoVideoStatus('演示视频暂时未加载成功，你仍可先根据下方文字提示开始测试。');
@@ -6429,7 +6519,10 @@
                 <div class="grid grid-cols-2 gap-3">
                     ${referenceImages.map((image) => `
                     <figure class="report-soft-box report-visual-card p-2.5">
-                        <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
+                        <button type="button" class="report-image-trigger" data-report-image-src="${escapeHtml(image.src)}" data-report-image-label="${escapeHtml(image.label)}" aria-label="放大查看${escapeHtml(image.label)}">
+                            <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
+                            <span class="report-image-hint">点按放大</span>
+                        </button>
                         <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
                     </figure>`).join('')}
                 </div>
@@ -6517,15 +6610,7 @@
                 </div>
             </div>`;
 
-            const microActionHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">微行动清单</div>
-                <div class="report-section-title mb-2">3 天微行动清单</div>
-                <p class="report-body-text mb-5">先把最容易做的 3 件小事做起来，比一开始就做很满更容易让身体给你正反馈。</p>
-                <div class="micro-action-list">
-                    ${renderMicroActionChecklistHtml(microActionItems, reportId)}
-                </div>
-            </div>`;
+            const microActionHtml = '';
 
             const dataHtml = `
             <div class="report-panel p-5 sm:p-6">
@@ -6730,6 +6815,41 @@
                 : '更适合已经想开始练，但不想再靠感觉乱试动作、反复试错的人。';
         }
 
+        function getVideoPlanQuickItems(plan) {
+            const names = (plan?.videos || []).slice(0, 3).map((item, index) => ({
+                step: `0${index + 1}`,
+                text: item.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim()
+            }));
+            if (names.length) return names;
+            return [
+                { step: '01', text: '先知道今天第一步该练什么' },
+                { step: '02', text: '知道顺序，不再自己反复猜' },
+                { step: '03', text: '知道哪些动作现阶段别急着做' }
+            ];
+        }
+
+        function openReportImageModal(src, title) {
+            const modal = document.getElementById('report-image-modal');
+            const image = document.getElementById('report-image-modal-img');
+            const titleEl = document.getElementById('report-image-modal-title');
+            if (!modal || !image || !titleEl || !src) return;
+            image.src = src;
+            image.alt = title || '示意图';
+            titleEl.textContent = title || '示意图';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeReportImageModal() {
+            const modal = document.getElementById('report-image-modal');
+            const image = document.getElementById('report-image-modal-img');
+            if (!modal || !image) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            image.src = '';
+            image.alt = '';
+        }
+
         function getVideoPlanAvoidItems(comboKey) {
             if (comboKey.startsWith('posterior_')) {
                 return [
@@ -6800,10 +6920,17 @@
             if(jumpLink) jumpLink.classList.remove('hidden');
 
             document.getElementById('vp-plan-label').textContent = plan.title;
-            document.getElementById('vp-title').textContent = '根据这次结果，你接下来该怎么练';
+            document.getElementById('vp-title').textContent = '如果你想直接开始训练，这里就是对应方案';
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
+            const quickList = document.getElementById('vp-quick-list');
+            quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
+                <div class="flex items-start gap-2 rounded-xl border border-[#efe3d0] bg-white/90 px-3 py-3">
+                    <span class="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] text-[10px] font-black flex items-center justify-center">${item.step}</span>
+                    <div class="text-[11px] font-bold text-slate-700 leading-relaxed">${escapeHtml(item.text)}</div>
+                </div>
+            `).join('');
             renderVideoPlanAvoidList('vp-avoid-list', comboKey, true);
             // price is now static HTML in card template
 
@@ -6864,8 +6991,14 @@
         document.getElementById('btn-toggle-vp-detail').addEventListener('click', () => {
             const detail = document.getElementById('vp-detail');
             const chevron = document.getElementById('vp-chevron');
+            const label = document.getElementById('vp-detail-toggle-label');
             detail.classList.toggle('hidden');
             chevron.style.transform = detail.classList.contains('hidden') ? '' : 'rotate(180deg)';
+            if (label) {
+                label.textContent = detail.classList.contains('hidden')
+                    ? '展开适合人群和避坑提醒'
+                    : '收起适合人群和避坑提醒';
+            }
         });
         document.getElementById('btn-get-video-plan').addEventListener('click', openVideoPlanModal);
         document.getElementById('btn-close-video-plan').addEventListener('click', () => closeVideoPlanModal(false));
