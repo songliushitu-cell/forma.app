@@ -20,21 +20,45 @@
         .report-accordion summary::-webkit-details-marker { display: none; }
         .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
         .report-shell {
-            background: linear-gradient(180deg, #fcfcfd 0%, #f5f6f8 100%);
+            background:
+                radial-gradient(circle at 18% 4%, rgba(232, 130, 98, 0.16) 0%, transparent 28%),
+                radial-gradient(circle at 88% 0%, rgba(24, 61, 52, 0.14) 0%, transparent 30%),
+                linear-gradient(180deg, #f7f2ea 0%, #f1eadf 100%);
         }
         .report-hero {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(246,249,255,0.97) 52%, rgba(237,244,255,0.96) 100%);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 40px rgba(15, 23, 42, 0.06);
+            background: linear-gradient(135deg, #183d34 0%, #244e43 54%, #102a25 100%);
+            color: #fffaf0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 20px 52px rgba(24, 61, 52, 0.24);
+        }
+        .report-hero h2,
+        .report-hero #final-result-title {
+            color: #fffaf0 !important;
+        }
+        .report-hero #final-report-datetime {
+            background: rgba(255, 250, 240, 0.12);
+            color: rgba(255, 250, 240, 0.76);
+            border-color: rgba(255, 250, 240, 0.16);
+        }
+        .report-hero #final-report-confidence-detail {
+            background: rgba(255, 250, 240, 0.10);
+            border-color: rgba(255, 250, 240, 0.16);
+            color: rgba(255, 250, 240, 0.86);
+            box-shadow: none;
+        }
+        .report-hero .id-jump-video {
+            background: rgba(232, 130, 98, 0.18) !important;
+            color: #ffd8c9 !important;
+            border: 1px solid rgba(255, 216, 201, 0.26);
         }
         .report-panel {
-            background: rgba(255,255,255,0.96);
-            border: 1px solid rgba(229, 231, 235, 0.96);
+            background: rgba(255, 252, 246, 0.96);
+            border: 1px solid rgba(235, 225, 211, 0.96);
             border-radius: 28px;
-            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 16px 42px rgba(88, 63, 42, 0.07);
         }
         .report-soft-box {
-            background: linear-gradient(180deg, rgba(247,248,250,0.96) 0%, rgba(255,255,255,0.98) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.92);
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,246,238,0.98) 100%);
+            border: 1px solid rgba(235, 225, 211, 0.92);
             border-radius: 20px;
         }
         .report-soft-box.report-soft-box-warm {
@@ -45,25 +69,25 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.18em;
-            color: #94a3b8;
+            color: #9f7f68;
             text-transform: uppercase;
         }
         .report-section-title {
             font-size: 18px;
             line-height: 1.35;
             font-weight: 700;
-            color: #0f172a;
+            color: #183d34;
             letter-spacing: -0.02em;
         }
         .report-body-text {
             font-size: 14px;
             line-height: 1.85;
-            color: #475569;
+            color: #5f5140;
         }
         .report-note {
             font-size: 12px;
             line-height: 1.7;
-            color: #64748b;
+            color: #7c6a55;
         }
         .report-visual-card img {
             width: 100%;
@@ -156,9 +180,9 @@
         }
         .report-panel-empathy {
             position: relative;
-            background: linear-gradient(180deg, rgba(255,250,245,0.98) 0%, rgba(255,255,255,0.98) 100%);
-            border: 1px solid rgba(251, 191, 153, 0.9);
-            box-shadow: 0 16px 34px rgba(251, 146, 60, 0.08);
+            background: linear-gradient(180deg, rgba(255,248,240,0.98) 0%, rgba(255,253,248,0.98) 100%);
+            border: 1px solid rgba(232, 130, 98, 0.42);
+            box-shadow: 0 18px 42px rgba(232, 130, 98, 0.10);
             overflow: hidden;
         }
         .report-panel-empathy::before {
@@ -169,7 +193,7 @@
             bottom: 18px;
             width: 5px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #fb923c 0%, #f97360 100%);
+            background: linear-gradient(180deg, #e98262 0%, #c66a50 100%);
         }
         .report-badge-row {
             display: flex;
@@ -184,10 +208,10 @@
             padding: 7px 12px;
             border-radius: 999px;
             border: 1px solid rgba(226, 232, 240, 0.95);
-            background: rgba(255,255,255,0.92);
+            background: rgba(255,250,240,0.92);
             font-size: 11px;
             font-weight: 700;
-            color: #334155;
+            color: #244e43;
             line-height: 1;
         }
         .report-badge-dot {
@@ -203,8 +227,8 @@
             padding: 13px 15px;
             border-radius: 18px;
             border: 1px solid rgba(226, 232, 240, 0.95);
-            background: rgba(248, 250, 252, 0.96);
-            color: #475569;
+            background: rgba(255, 250, 240, 0.72);
+            color: #5f5140;
             font-size: 12px;
             line-height: 1.7;
         }
@@ -213,11 +237,11 @@
             gap: 16px;
         }
         .daily-life-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,248,243,0.98) 100%);
-            border: 1px solid rgba(251, 191, 153, 0.58);
-            border-radius: 22px;
-            padding: 16px;
-            box-shadow: 0 12px 30px rgba(248, 113, 113, 0.05);
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,247,240,0.98) 100%);
+            border: 1px solid rgba(232, 130, 98, 0.30);
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: 0 14px 34px rgba(159, 93, 62, 0.08);
         }
         .daily-life-card.is-checked {
             border-color: rgba(249, 115, 22, 0.95);
@@ -230,9 +254,9 @@
             width: 48px;
             height: 48px;
             border-radius: 16px;
-            background: linear-gradient(135deg, rgba(255,237,213,1) 0%, rgba(255,255,255,0.98) 100%);
-            border: 1px solid rgba(251, 191, 153, 0.75);
-            color: #ea580c;
+            background: linear-gradient(135deg, rgba(255,232,216,1) 0%, rgba(255,250,240,0.98) 100%);
+            border: 1px solid rgba(232, 130, 98, 0.42);
+            color: #c66a50;
             font-size: 18px;
             font-weight: 800;
             letter-spacing: 0.08em;
@@ -243,20 +267,20 @@
             gap: 5px;
             padding: 10px 12px;
             border-radius: 16px;
-            background: rgba(255,255,255,0.72);
-            border: 1px solid rgba(254, 215, 170, 0.75);
+            background: rgba(255,252,247,0.88);
+            border: 1px solid rgba(236, 211, 190, 0.78);
         }
         .daily-life-line-label {
             font-size: 10px;
             font-weight: 800;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: #f97316;
+            color: #c66a50;
         }
         .daily-life-line-text {
             font-size: 13px;
             line-height: 1.75;
-            color: #475569;
+            color: #5f5140;
         }
         .daily-life-footer {
             font-size: 11px;
@@ -266,6 +290,68 @@
             border: 1px solid rgba(254, 215, 170, 0.88);
             border-radius: 16px;
             padding: 11px 12px;
+        }
+        .report-proof-grid {
+            display: grid;
+            gap: 12px;
+        }
+        @media (min-width: 640px) {
+            .report-proof-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        .report-proof-card {
+            border-radius: 22px;
+            padding: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(250,246,238,0.98) 100%);
+            border: 1px solid rgba(235, 225, 211, 0.94);
+        }
+        .report-proof-card.is-strong {
+            border-color: rgba(232, 130, 98, 0.42);
+            background: linear-gradient(180deg, rgba(255,248,240,0.98) 0%, rgba(255,255,255,0.98) 100%);
+        }
+        .report-proof-value {
+            font-size: 20px;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: #183d34;
+        }
+        .report-proof-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #9f7f68;
+        }
+        .report-next-card {
+            background: linear-gradient(135deg, #183d34 0%, #2f5d50 100%);
+            border: 1px solid rgba(255,250,240,0.14);
+            color: #fffaf0;
+        }
+        .report-next-card .report-section-title,
+        .report-next-card .report-eyebrow,
+        .report-next-card .report-body-text {
+            color: #fffaf0;
+        }
+        .report-next-card .report-soft-box {
+            background: rgba(255,250,240,0.10);
+            border-color: rgba(255,250,240,0.16);
+        }
+        .report-next-card .report-bullet-list li {
+            color: rgba(255,250,240,0.86);
+        }
+        .report-next-card .report-bullet-list li::before {
+            background: #e98262;
+        }
+        .report-customer-quote {
+            border-radius: 22px;
+            padding: 16px;
+            background: rgba(255,250,240,0.12);
+            border: 1px solid rgba(255,250,240,0.18);
+            color: rgba(255,250,240,0.88);
+            font-size: 13px;
+            line-height: 1.75;
         }
         .report-advantage-card {
             background: linear-gradient(180deg, rgba(240,249,255,0.96) 0%, rgba(255,255,255,0.98) 100%);
@@ -1145,7 +1231,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.33</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.34</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1451,42 +1537,42 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.6rem] overflow-hidden border border-[#ead9bf] shadow-[0_12px_28px_rgba(139,94,52,0.08)] bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf1_100%)]">
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[1.75rem] overflow-hidden border border-[#183d34]/15 shadow-[0_18px_46px_rgba(24,61,52,0.18)] bg-[linear-gradient(135deg,#183d34_0%,#2f5d50_100%)]">
                     <div class="px-5 py-4 flex flex-col gap-3.5">
                         <div class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#fff4df] border border-[#ead9bf] flex items-center justify-center shadow-sm">
-                                <svg class="w-4 h-4 text-[#8b5e34]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#fffaf0]/12 border border-[#fffaf0]/18 flex items-center justify-center shadow-sm">
+                                <svg class="w-4 h-4 text-[#ffd8c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <div id="vp-plan-label" class="text-[9px] font-bold text-[#9a6700] tracking-[0.16em] uppercase mb-1">对应训练方案</div>
-                                <div id="vp-title" class="text-[15px] font-bold text-slate-800 leading-snug">如果你想直接开始训练，这里就是对应方案</div>
-                                <div id="vp-tagline" class="text-[10px] text-[#7c6a55] mt-1 leading-relaxed">加载中...</div>
+                                <div id="vp-plan-label" class="text-[9px] font-bold text-[#ffd8c9] tracking-[0.16em] uppercase mb-1">对应训练方案</div>
+                                <div id="vp-title" class="text-[18px] font-black text-[#fffaf0] leading-snug">你缺的不是动作，是顺序</div>
+                                <div id="vp-tagline" class="text-[10px] text-[#fffaf0]/72 mt-1 leading-relaxed">加载中...</div>
                             </div>
                         </div>
-                        <div class="bg-[#eef7f1] border border-[#d7e8dd] rounded-2xl p-3.5">
-                            <div class="text-[9px] font-bold text-[#2f5d50] tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
-                            <p id="vp-starter-tip" class="text-[11px] text-[#2f5d50] leading-relaxed">加载中...</p>
+                        <div class="bg-[#fffaf0]/10 border border-[#fffaf0]/16 rounded-2xl p-3.5">
+                            <div class="text-[9px] font-bold text-[#ffd8c9] tracking-[0.18em] uppercase mb-1.5">今天先做什么</div>
+                            <p id="vp-starter-tip" class="text-[11px] text-[#fffaf0]/86 leading-relaxed">加载中...</p>
                         </div>
                         <div>
-                            <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.2em] mb-2 uppercase">这份方案会直接告诉你</div>
+                            <div class="text-[9px] font-bold text-[#ffd8c9] tracking-[0.2em] mb-2 uppercase">这份方案会直接告诉你</div>
                             <div id="vp-quick-list" class="grid gap-2"></div>
                         </div>
-                        <div class="rounded-2xl border border-[#ead9bf] bg-[linear-gradient(135deg,#fff8ea_0%,#fff3dc_100%)] px-4 py-3.5">
+                        <div class="rounded-2xl border border-[#ffd8c9]/24 bg-[linear-gradient(135deg,rgba(255,250,240,0.14)_0%,rgba(232,130,98,0.20)_100%)] px-4 py-3.5">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
-                                    <div class="text-[9px] font-bold text-[#9a6700] tracking-[0.18em] uppercase mb-1">完整方案</div>
-                                    <div class="text-[16px] font-black text-[#8b5e34] leading-none">¥299</div>
-                                    <p id="vp-fit-note" class="text-[10px] text-[#7c6a55] mt-1.5 leading-relaxed"></p>
-                                    <p class="text-[9px] text-[#8a7b68] mt-2 leading-relaxed">购买后添加微信 <b class="text-[#5f5140]">songjiaotou999</b>，我会按你这次结果发送对应版本。</p>
+                                    <div class="text-[9px] font-bold text-[#ffd8c9] tracking-[0.18em] uppercase mb-1">完整方案</div>
+                                    <div class="text-[18px] font-black text-[#fffaf0] leading-none">¥299</div>
+                                    <p id="vp-fit-note" class="text-[10px] text-[#fffaf0]/76 mt-1.5 leading-relaxed"></p>
+                                    <p class="text-[9px] text-[#fffaf0]/70 mt-2 leading-relaxed">购买后添加微信 <b class="text-[#ffd8c9]">songjiaotou999</b>，我会按你这次结果发送对应版本。</p>
                                 </div>
-                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#2f5d50] hover:bg-[#244a40] active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-[0_8px_20px_rgba(47,93,80,0.22)] transition-all">
+                                <button id="btn-get-video-plan" class="flex-shrink-0 bg-[#e98262] hover:bg-[#d17358] active:scale-95 text-white rounded-xl px-4 py-2.5 text-[11px] font-bold tracking-wider shadow-[0_8px_20px_rgba(232,130,98,0.24)] transition-all">
                                     立即查看完整方案
                                 </button>
                             </div>
                         </div>
-                        <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#efe3d0] bg-white/88 px-4 py-3 text-[11px] font-bold text-[#8b5e34] hover:bg-white transition-colors">
+                        <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#fffaf0]/16 bg-[#fffaf0]/10 px-4 py-3 text-[11px] font-bold text-[#fffaf0] hover:bg-[#fffaf0]/14 transition-colors">
                             <span id="vp-detail-toggle-label">展开适合人群和避坑提醒</span>
-                            <svg id="vp-chevron" class="w-4 h-4 text-[#c2ac8e] flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <svg id="vp-chevron" class="w-4 h-4 text-[#ffd8c9] flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </div>
                     <div id="vp-detail" class="hidden border-t border-[#f0e3ce]">
@@ -4291,6 +4377,71 @@
             return { title, resultLine, nextStepLine };
         }
 
+        function buildCustomerResultCopy({ subType, compKey, resultLabel, trainingStage }) {
+            const compressionText = compKey === 'posterior'
+                ? '同时后腰和身体后侧一直在帮你撑着，所以站久以后腰比臀更先累。'
+                : compKey === 'anterior'
+                    ? '同时髋前和大腿前侧更容易拉着你，所以久坐起身和训练时前侧更抢感觉。'
+                    : '前后方向还需要继续观察，所以现在先把站姿和用力顺回来更稳。';
+
+            const headlineMap = {
+                lateral: '你不是单纯站歪，而是身体更习惯挂在左边，右边没有真正接住重量。',
+                oblique: '你不是单纯一边高，而是左侧更像又高又往前，身体会反复挂回左前侧。',
+                baseline: '你不是没有变化，而是右侧更习惯帮你站着，左侧更容易往前往外飘。',
+                transition: '你已经有左右差异，但方向还不稳定，现在先别急着给自己贴固定标签。'
+            };
+
+            const lifeHookMap = {
+                lateral: '最容易从裤腰左高、背面照臀线不平、上楼右边更虚里认出来。',
+                oblique: '最容易从裤缝跑偏、左髋往前顶、拍照左边更抢眼里认出来。',
+                baseline: '最容易从裤腰右高、站久右边接重量、提包更习惯右侧里认出来。',
+                transition: '最容易从拍照和久站时两边不一样，但方向每次不完全一样里认出来。'
+            };
+
+            return {
+                headline: headlineMap[subType] || headlineMap.baseline,
+                patternLine: `${resultLabel}。${compressionText}`,
+                lifeHook: lifeHookMap[subType] || lifeHookMap.baseline,
+                nextNeed: trainingStage === 3
+                    ? '下一步不是再找更多动作，而是按顺序处理高低、前后和承重。'
+                    : '下一步不是急着压某一边，而是先回正，再确认哪条路线最稳定。'
+            };
+        }
+
+        function formatEvidenceDiff(diff) {
+            const abs = Math.abs(diff).toFixed(1);
+            if (diff > 0) return `左侧多 ${abs}°`;
+            if (diff < 0) return `右侧多 ${abs}°`;
+            return '左右接近';
+        }
+
+        function buildDataEvidenceCards(metrics, routeIsolation) {
+            const tests = [
+                { key: 'slr', label: '直腿抬高', left: metrics.slrL, right: metrics.slrR, diff: metrics.diffSLR },
+                { key: 'hip', label: '髋屈曲', left: metrics.hipL, right: metrics.hipR, diff: metrics.diffHip },
+                { key: 'shoulder', label: '肩屈', left: metrics.shL, right: metrics.shR, diff: metrics.diffSh }
+            ];
+            return tests.map((item) => {
+                const strong = Math.abs(item.diff) >= metrics.threshold;
+                return {
+                    ...item,
+                    strong,
+                    diffText: formatEvidenceDiff(item.diff),
+                    detail: `${item.label}：左 ${item.left.toFixed(1)}° / 右 ${item.right.toFixed(1)}°，${formatEvidenceDiff(item.diff)}。`
+                };
+            });
+        }
+
+        function renderDataEvidenceCardsHtml(cards = []) {
+            return cards.map((card) => `
+                <div class="report-proof-card ${card.strong ? 'is-strong' : ''}">
+                    <div class="report-proof-label mb-3">${escapeHtml(card.label)}</div>
+                    <div class="report-proof-value">${escapeHtml(card.diffText)}</div>
+                    <p class="report-note mt-3">${escapeHtml(card.detail)}</p>
+                </div>
+            `).join('');
+        }
+
         function buildSymptomInsightCards(comboKey, answers = {}) {
             const items = [];
             const push = (title, detail) => {
@@ -4630,16 +4781,16 @@
                     detail: `这份报告看的是你现在的站姿、活动角度和用力习惯，不是疾病诊断。你现在更明显的是“${typeLabel}”，同时${frontBackLabel}。`
                 },
                 {
-                    title: '我现在该先做什么？',
-                    detail: `${startLine}如果你平时已经有明显疼痛、麻、夜间痛，先做线下评估。`
+                    title: '我现在最该避免什么？',
+                    detail: '先别只盯着高的一边压，也别哪里紧就一直拉哪里。很多人不是缺努力，而是顺序不对。'
+                },
+                {
+                    title: '为什么不建议自己乱试动作？',
+                    detail: '因为你现在不是缺一个动作，而是缺先后顺序。顺序错了，可能今天舒服，过几天又回到老样子。'
                 },
                 {
                     title: '多久复测比较合适？',
-                    detail: '如果开始训练，建议 2 到 4 周后用同样角度再测一次，比每天盯着感觉更可靠。'
-                },
-                {
-                    title: '什么情况适合看完整方案？',
-                    detail: '如果你已经想开始练，但不想自己猜动作顺序、练多久、哪些先别做，完整方案会更省时间。'
+                    detail: `${startLine}如果开始训练，建议 2 到 4 周后用同样角度再测一次，比每天盯着感觉更可靠。`
                 }
             ];
         }
@@ -4672,7 +4823,7 @@
 
         function renderDailyLifeCardsHtml(cards = [], reportId) {
             const feedbackState = getDailyLifeFeedbackState(reportId);
-            return cards.map((card) => {
+            return cards.slice(0, 3).map((card, index) => {
                 const checked = Boolean(feedbackState[card.id]);
                 const sceneText = String(card.scene || '').replace(/^你平时可能会发现，?/, '');
                 const reasonText = String(card.reason || '').replace(/^这和本次结果能对上的原因是，?/, '');
@@ -4683,6 +4834,7 @@
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
+                                        <div class="text-[10px] font-black tracking-[0.18em] text-[#c66a50] mb-1">场景 0${index + 1}</div>
                                         <h4 class="text-[14px] font-bold text-slate-800 leading-snug">${escapeHtml(card.title)}</h4>
                                         <p class="mt-1 text-[11px] leading-relaxed text-orange-700">${escapeHtml(card.confidenceNote)}</p>
                                     </div>
@@ -4694,11 +4846,11 @@
                         </div>
                         <div class="daily-life-grid mt-4">
                             <div class="daily-life-line">
-                                <div class="daily-life-line-label">生活线索</div>
+                                <div class="daily-life-line-label">你会怎么发现</div>
                                 <div class="daily-life-line-text">${escapeHtml(sceneText)}</div>
                             </div>
                             <div class="daily-life-line">
-                                <div class="daily-life-line-label">和结果怎么对上</div>
+                                <div class="daily-life-line-label">为什么对得上</div>
                                 <div class="daily-life-line-text">${escapeHtml(reasonText)}</div>
                             </div>
                         </div>
@@ -6533,10 +6685,12 @@
             const advantageCards = !reportSafetyBlocked ? buildAdvantageCards(comboKey, trainingStage) : [];
             const customerConcernCards = !reportSafetyBlocked ? buildCustomerConcernCards(comboKey, trainingStage) : [];
             const microActionItems = !reportSafetyBlocked ? buildMicroActionChecklist(comboKey, trainingStage, actionCopy) : [];
+            const customerResultCopy = buildCustomerResultCopy({ subType, compKey, resultLabel, trainingStage });
+            const evidenceCards = buildDataEvidenceCards(metrics, routeIsolation);
             const triggerLabels = routeIsolation.triggerItems.map(item => item.label).join('、');
             const dataSummary = triggerLabels
-                ? `这次差值更明显的项目在 ${triggerLabels}，说明身体两边的活动和受力已经不在同一状态。`
-                : '当前 6 项数据已经提示身体两边的活动和受力不在同一状态。';
+                ? `这次不是只看某一个角度，而是 ${triggerLabels} 同时给出线索，所以才会把它和你的日常表现放在一起判断。`
+                : '当前 6 项数据已经提示身体两边的活动和用力不在同一状态。';
             const selectedSymptomLabels = (symptomCheck?.answers
                 ? [
                     getSymptomAnswerLabel('back', symptomCheck.answers.back),
@@ -6586,9 +6740,9 @@
                 </a>
             </div>` : `
             <div class="report-panel report-panel-empathy p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">日常线索</div>
-                <div class="report-section-title mb-2">你平时怎么发现</div>
-                <p class="report-body-text mb-5">这部分会把结果翻译成你平时更容易认出来的生活线索，让你不只看到结论，也能看见自己。</p>
+                <div class="report-eyebrow mb-2">生活证据墙</div>
+                <div class="report-section-title mb-2">你最可能在这 3 个场景里认出自己</div>
+                <p class="report-body-text mb-5">${customerResultCopy.lifeHook}</p>
                 <div class="daily-life-grid">
                     ${renderDailyLifeCardsHtml(dailyLifeCards, reportId)}
                 </div>
@@ -6638,19 +6792,20 @@
             </div>`;
 
             const actionHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel p-5 sm:p-6">
+            <div class="report-panel report-next-card p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">调整方向</div>
-                <div class="report-section-title mb-2">你现在怎么调整</div>
-                <p class="report-body-text mb-5">${actionCopy.headline}${actionCopy.lead}</p>
+                <div class="report-section-title mb-2">你缺的不是动作，是顺序</div>
+                <p class="report-body-text mb-4">${actionCopy.headline}${actionCopy.lead}</p>
+                <div class="report-customer-quote mb-4">如果顺序错了，今天可能觉得松一点，过几天又回到原来的站姿；所以现在先别追求动作多，先把第一步做对。</div>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <div class="report-soft-box p-4">
-                        <div class="text-[12px] font-bold text-[#0a84ff] mb-3">现在先做</div>
+                        <div class="text-[12px] font-bold text-[#ffd8c9] mb-3">现在先做</div>
                         <ul class="report-bullet-list">
                             ${actionCopy.doItems.map((item) => `<li>${item}</li>`).join('')}
                         </ul>
                     </div>
-                    <div class="report-soft-box report-soft-box-warm p-4">
-                        <div class="text-[12px] font-bold text-amber-700 mb-3">现阶段不建议</div>
+                    <div class="report-soft-box p-4">
+                        <div class="text-[12px] font-bold text-[#ffd8c9] mb-3">现阶段不建议</div>
                         <ul class="report-bullet-list report-bullet-list-warm">
                             ${actionCopy.avoidItems.map((item) => `<li>${item}</li>`).join('')}
                         </ul>
@@ -6671,29 +6826,12 @@
 
             const dataHtml = `
             <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">测试数据</div>
-                <div class="report-section-title mb-4">这次判断主要看这里</div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="report-data-card p-4 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">直腿抬高</div>
-                        <div class="text-[14px] font-black text-slate-800">左 ${slrL.toFixed(1)}°</div>
-                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${slrR.toFixed(1)}°</div>
-                        <div class="mt-2 text-[11px] ${Math.abs(diffSLR) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSLR)}</div>
-                    </div>
-                    <div class="report-data-card p-4 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">髋屈曲</div>
-                        <div class="text-[14px] font-black text-slate-800">左 ${hipL.toFixed(1)}°</div>
-                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${hipR.toFixed(1)}°</div>
-                        <div class="mt-2 text-[11px] ${Math.abs(diffHip) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffHip)}</div>
-                    </div>
-                    <div class="report-data-card p-4 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 tracking-[0.12em] mb-2">肩屈</div>
-                        <div class="text-[14px] font-black text-slate-800">左 ${shL.toFixed(1)}°</div>
-                        <div class="text-[14px] font-black text-slate-800 mt-1">右 ${shR.toFixed(1)}°</div>
-                        <div class="mt-2 text-[11px] ${Math.abs(diffSh) >= 10 ? 'text-rose-500 font-bold' : 'text-slate-400'}">差值 ${fmt(diffSh)}</div>
-                    </div>
+                <div class="report-eyebrow mb-2">判断证据</div>
+                <div class="report-section-title mb-2">我为什么会这样判断你</div>
+                <p class="report-body-text mb-5">${dataSummary}</p>
+                <div class="report-proof-grid">
+                    ${renderDataEvidenceCardsHtml(evidenceCards)}
                 </div>
-                <p class="report-body-text mt-4">${dataSummary}</p>
             </div>`;
 
             const feedbackHtml = reportSafetyBlocked ? '' : `
@@ -6712,16 +6850,21 @@
             </div>`;
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${visualHtml}${dailyLifeHtml}${transitionHtml}${relationHtml}${appearanceHtml}${advantageHtml}${actionHtml}${customerConcernHtml}${microActionHtml}${dataHtml}${feedbackHtml}${disclaimerHtml}`;
+            container.innerHTML = `${dailyLifeHtml}${dataHtml}${transitionHtml}${relationHtml}${appearanceHtml}${actionHtml}${customerConcernHtml}${advantageHtml}${visualHtml}${microActionHtml}${feedbackHtml}${disclaimerHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
-            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : heroCopy.title.replace(/不平衡/g, '偏向').replace(/已经出现/g, '已经开始');
+            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : customerResultCopy.headline;
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
             document.getElementById('final-report-confidence').textContent = `结果稳定度：${compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低'}`;
-            document.getElementById('final-report-confidence-detail').innerHTML = `骨盆表现：${resultLabel}<br>当前更像：${compLabel}<br>现在先做：${trainingStage === 3 ? '处理左右偏移' : '先回正，再把站姿和用力顺回来'}`;
+            document.getElementById('final-report-confidence-detail').innerHTML = `
+                <div class="grid gap-2">
+                    <div><span class="font-black text-[#ffd8c9]">本次模式：</span>${escapeHtml(customerResultCopy.patternLine)}</div>
+                    <div><span class="font-black text-[#ffd8c9]">生活验证：</span>${escapeHtml(customerResultCopy.lifeHook)}</div>
+                    <div><span class="font-black text-[#ffd8c9]">下一步：</span>${escapeHtml(customerResultCopy.nextNeed)}</div>
+                </div>`;
             document.getElementById('final-combo-label').textContent = resultLabel;
             document.getElementById('final-pelvic-orientation').innerHTML = resultLabel;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
@@ -7004,15 +7147,15 @@
             if(jumpLink) jumpLink.classList.remove('hidden');
 
             document.getElementById('vp-plan-label').textContent = plan.title;
-            document.getElementById('vp-title').textContent = '如果你想直接开始训练，这里就是对应方案';
+            document.getElementById('vp-title').textContent = '你缺的不是动作，是顺序';
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
             const quickList = document.getElementById('vp-quick-list');
             quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
-                <div class="flex items-start gap-2 rounded-xl border border-[#efe3d0] bg-white/90 px-3 py-3">
-                    <span class="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] text-[10px] font-black flex items-center justify-center">${item.step}</span>
-                    <div class="text-[11px] font-bold text-slate-700 leading-relaxed">${escapeHtml(item.text)}</div>
+                <div class="flex items-start gap-2 rounded-xl border border-[#fffaf0]/14 bg-[#fffaf0]/9 px-3 py-3">
+                    <span class="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full bg-[#e98262]/24 text-[#ffd8c9] text-[10px] font-black flex items-center justify-center">${item.step}</span>
+                    <div class="text-[11px] font-bold text-[#fffaf0]/88 leading-relaxed">${escapeHtml(item.text)}</div>
                 </div>
             `).join('');
             renderVideoPlanAvoidList('vp-avoid-list', comboKey, true);
