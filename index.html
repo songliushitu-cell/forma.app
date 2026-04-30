@@ -21,13 +21,15 @@
         .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
         .report-shell {
             background:
-                radial-gradient(circle at 50% -8%, rgba(255,255,255,1) 0%, transparent 34%),
-                linear-gradient(180deg, #f5f5f7 0%, #f1f2f4 54%, #e8eaed 100%);
+                radial-gradient(circle at 50% -10%, rgba(255,255,255,1) 0%, transparent 36%),
+                radial-gradient(circle at 100% 14%, rgba(10,132,255,0.08) 0%, transparent 28%),
+                linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 48%, #ebeef2 100%);
         }
         .report-hero {
-            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,250,252,0.98) 58%, rgba(239,241,244,0.98) 100%);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,251,253,0.98) 60%, rgba(241,243,246,0.98) 100%);
             color: #111827;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.98), 0 24px 70px rgba(15, 23, 42, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 30px 90px rgba(15, 23, 42, 0.075);
         }
         .report-hero h2,
         .report-hero #final-result-title {
@@ -50,10 +52,10 @@
             border: 1px solid rgba(10,132,255,0.16);
         }
         .report-panel {
-            background: rgba(255,255,255,0.96);
-            border: 1px solid rgba(229,231,235,0.96);
-            border-radius: 30px;
-            box-shadow: 0 18px 50px rgba(15,23,42,0.045);
+            background: rgba(255,255,255,0.975);
+            border: 1px solid rgba(255,255,255,0.98);
+            border-radius: 32px;
+            box-shadow: 0 22px 64px rgba(15,23,42,0.055), inset 0 0 0 1px rgba(209,213,219,0.58);
         }
         .report-soft-box {
             background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
@@ -1230,7 +1232,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.36</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.37</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1392,7 +1394,7 @@
                         </button>
                     </div>
                     <p class="text-[10px] sm:text-[11px] text-slate-500 leading-relaxed px-1">
-                        静态图片入口已收进量角器，支持实时对准、拍照定格、相册导入和测量后直接回填。
+                        量角器现在只保留核心流程：拍照定格、相册导入、重置、锁定和确认使用。
                     </p>
                     <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden">
                     <input type="file" accept="image/*" id="albumInput" class="hidden">
@@ -1418,7 +1420,7 @@
                         <span class="text-5xl font-mono tracking-tighter" id="live-angle-display">0.0°</span>
                     </div>
                     <button id="btn-lock-frame" class="pointer-events-auto bg-white/95 text-slate-900 hover:bg-white backdrop-blur-sm px-6 py-3 rounded-full font-bold text-xs tracking-widest shadow-lg flex items-center gap-2 active:scale-95 transition-transform">
-                        提前手动定格
+                        手动定格
                     </button>
                 </div>
 
@@ -1477,11 +1479,12 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="report-shell hidden fade-in border border-[#edf0f4] px-3 py-4 sm:px-4 sm:py-5 mx-auto max-w-[860px] rounded-[2.2rem] shadow-[0_22px_70px_rgba(15,23,42,0.07)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-3">
-                <div class="absolute -top-24 -right-20 w-56 h-56 bg-white/80 rounded-full blur-3xl pointer-events-none"></div>
+            <div id="final-report-section" class="report-shell hidden fade-in border border-white/90 px-3 py-4 sm:px-5 sm:py-6 mx-auto max-w-[980px] rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
+                <div class="absolute -top-24 -right-20 w-64 h-64 bg-white/90 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute top-20 -left-20 w-52 h-52 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-16 -left-10 w-44 h-44 bg-white/85 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 w-full report-hero rounded-[1.9rem] border border-white/85 px-5 py-5 sm:px-7 sm:py-7 overflow-hidden">
+                <div class="relative z-10 w-full report-hero rounded-[2.05rem] border border-white/95 px-5 py-5 sm:px-8 sm:py-8 overflow-hidden">
                     <div class="absolute inset-x-0 top-0 h-20 bg-white/65 blur-2xl pointer-events-none"></div>
                     <div class="relative">
                         <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
@@ -1499,9 +1502,9 @@
                         <div id="final-hero-image-container" class="mb-4 flex flex-col items-center justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80 shadow-sm hidden">
                             <!-- Image injected via JS -->
                         </div>
-                        <div class="flex justify-between items-start gap-3">
-                            <div id="final-result-title" class="text-[30px] sm:text-[34px] font-black text-slate-900 mb-3 tracking-tight z-10 leading-[1.18] flex-1">获取中...</div>
-                            <a href="#video-plan-card" title="查看对应方案" class="id-jump-video hidden mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div id="final-result-title" class="text-[22px] sm:text-[34px] font-black text-slate-900 tracking-tight z-10 leading-[1.15] sm:leading-[1.18] flex-1 max-w-[18ch] sm:max-w-none">获取中...</div>
+                            <a href="#video-plan-card" title="查看对应方案" class="id-jump-video hidden self-start mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
                                 ↓ 查看对应方案
                             </a>
                         </div>
@@ -1536,54 +1539,54 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[2rem] overflow-hidden border border-[#d1d5db] shadow-[0_22px_70px_rgba(15,23,42,0.08)] bg-[linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)]">
-                    <div class="px-5 py-5 sm:px-6 sm:py-6 flex flex-col gap-4">
+                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[2.2rem] overflow-hidden border border-white/90 shadow-[0_28px_90px_rgba(15,23,42,0.08)] bg-[linear-gradient(145deg,#ffffff_0%,#f8f9fb_58%,#eef2f7_100%)]">
+                    <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-4">
                         <div class="flex items-start gap-3.5">
-                            <div class="flex-shrink-0 w-11 h-11 rounded-2xl bg-slate-900 flex items-center justify-center shadow-[0_14px_28px_rgba(15,23,42,0.18)]">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div class="flex-shrink-0 w-12 h-12 rounded-[1.15rem] bg-[linear-gradient(145deg,#ffffff_0%,#eef3fb_100%)] border border-white/95 flex items-center justify-center shadow-[0_16px_30px_rgba(10,132,255,0.12)]">
+                                <svg class="w-4.5 h-4.5 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <div id="vp-plan-label" class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1">对应训练方案</div>
-                                <div id="vp-title" class="text-[24px] sm:text-[28px] font-black text-slate-950 leading-[1.12] tracking-[-0.04em]">完整训练路径：先降紧张，再纠方向</div>
-                                <div id="vp-tagline" class="text-[12px] text-slate-500 mt-2 leading-relaxed">加载中...</div>
-                            </div>
-                        </div>
-                        <div class="grid gap-3 sm:grid-cols-[1.1fr_0.9fr]">
-                            <div class="bg-white border border-[#d1d5db] rounded-[1.35rem] p-4">
-                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么不是随便找动作练</div>
+                        <div id="vp-plan-label" class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-1.5">完整训练方案</div>
+                        <div id="vp-title" class="text-[25px] sm:text-[30px] font-black text-slate-950 leading-[1.08] tracking-[-0.05em]">按结果推进的完整训练方案</div>
+                        <div id="vp-tagline" class="text-[12px] text-slate-500 mt-2 leading-relaxed max-w-[48ch]">加载中...</div>
+                    </div>
+                </div>
+                        <div class="grid gap-3 sm:grid-cols-[1.15fr_0.85fr]">
+                            <div class="bg-white/92 border border-white/90 rounded-[1.45rem] p-4 shadow-[inset_0_0_0_1px_rgba(209,213,219,0.55)]">
+                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么要按这个顺序开始</div>
                                 <p id="vp-starter-tip" class="text-[12px] text-slate-700 leading-relaxed">加载中...</p>
                             </div>
-                            <div class="bg-slate-950 text-white rounded-[1.35rem] p-4 flex flex-col justify-between">
+                            <div class="bg-[linear-gradient(155deg,#ffffff_0%,#f4f7fb_50%,#edf3fb_100%)] rounded-[1.45rem] p-4 border border-white/95 shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)] flex flex-col justify-between">
                                 <div>
-                                    <div class="text-[9px] font-bold text-white/55 tracking-[0.18em] uppercase mb-2">完整方案</div>
+                                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-2">方案费用</div>
                                     <div class="flex items-end gap-2">
-                                        <span class="text-[30px] font-black tracking-[-0.05em]">¥299</span>
-                                        <span class="pb-1 text-[10px] text-white/55">一次匹配当前分型</span>
+                                        <span class="text-[30px] font-black tracking-[-0.05em] text-slate-950">¥299</span>
+                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果一对一匹配</span>
                                     </div>
                                 </div>
-                                <p id="vp-fit-note" class="text-[10px] text-white/70 mt-3 leading-relaxed"></p>
+                                <p id="vp-fit-note" class="text-[10px] text-slate-500 mt-3 leading-relaxed"></p>
                             </div>
                         </div>
                         <div>
                             <div class="flex items-end justify-between gap-3 mb-2">
-                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">完整方案包含</div>
-                                <div class="text-[10px] text-slate-400">按你这次结果匹配，不是通用跟练</div>
+                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">你会明确知道</div>
+                                <div class="text-[10px] text-slate-400">不是通用动作单，而是具体执行路径</div>
                             </div>
                             <div id="vp-quick-list" class="grid gap-2 sm:grid-cols-3"></div>
                         </div>
-                        <div class="rounded-[1.35rem] border border-[#d1d5db] bg-white px-4 py-4">
+                        <div class="rounded-[1.45rem] border border-white/90 bg-white/92 px-4 py-4 shadow-[inset_0_0_0_1px_rgba(209,213,219,0.58)]">
                             <div class="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
                                 <div class="min-w-0 space-y-2">
-                                    <div class="text-[13px] font-black text-slate-900">你付费买的不是“几个动作”，而是一条少走弯路的路径。</div>
-                                    <p class="text-[11px] text-slate-500 leading-relaxed">包含训练顺序、动作细节、常见错误、每周安排和复测标准。购买后添加微信 <b class="text-slate-800">songjiaotou999</b>，按本次结果领取对应版本。</p>
+                                    <div class="text-[14px] font-black text-slate-900">你买到的不是动作清单，而是先后顺序、训练边界和复测标准。</div>
+                                    <p class="text-[11px] text-slate-500 leading-relaxed">适合已经准备开始系统调整、不想继续靠碎片内容反复试的人。付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，按本次结果领取对应版本。</p>
                                 </div>
-                                <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[#0a84ff] hover:bg-blue-600 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_10px_24px_rgba(10,132,255,0.24)] transition-all">
+                                <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.26)] transition-all">
                                     查看方案内容与领取方式
                                 </button>
                             </div>
                         </div>
                         <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d1d5db] bg-white px-4 py-3 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">
-                            <span id="vp-detail-toggle-label">展开适合人群、交付清单和避坑提醒</span>
+                            <span id="vp-detail-toggle-label">展开适合人群、训练结构和常见误区</span>
                             <svg id="vp-chevron" class="w-4 h-4 text-slate-400 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </div>
@@ -1594,10 +1597,10 @@
                                 <ul id="vp-video-list" class="flex flex-col gap-1.5"></ul>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500">
-                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">动作顺序：先降紧张，再处理方向。</div>
-                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">训练剂量：每周怎么练、练到哪里停。</div>
-                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">错误边界：哪些感觉说明练偏了。</div>
-                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">复测标准：2-4 周后看什么变化。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">为什么先做这一步：先把最影响结果的那层力量放下来。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">训练剂量：每周练几次、每次做到什么感觉停。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">常见误区：哪些动作现在别急着上、哪些感觉说明练偏了。</div>
+                                <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]">复测标准：2 到 4 周后重点看哪些变化。</div>
                             </div>
                             <div class="bg-slate-50 border border-[#e5e5ea] rounded-2xl p-3.5">
                                 <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-2">为什么现在不建议自己乱试</div>
@@ -1687,11 +1690,11 @@
 
     <!-- 视频方案确认 Modal -->
     <div id="video-plan-modal" class="fixed inset-0 z-[109] bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
-        <div class="bg-[linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)] w-full max-w-[560px] rounded-[2.1rem] shadow-2xl flex flex-col overflow-hidden border border-white/70">
+        <div class="bg-[linear-gradient(180deg,#ffffff_0%,#f7f8fb_100%)] w-full max-w-[580px] rounded-[2.15rem] shadow-2xl flex flex-col overflow-hidden border border-white/80">
             <!-- 头部 -->
             <div class="px-5 pt-5 pb-4 flex justify-between items-start border-b border-[#e5e5ea]">
                 <div class="min-w-0">
-                    <h2 id="vpm-title" class="text-[20px] font-black text-slate-950 leading-tight tracking-[-0.035em]">训练方案详情</h2>
+                    <h2 id="vpm-title" class="text-[22px] font-black text-slate-950 leading-tight tracking-[-0.04em]">训练方案详情</h2>
                     <p id="vpm-tagline" class="text-[11px] text-slate-500 mt-1.5 leading-relaxed"></p>
                 </div>
                 <button id="btn-close-video-plan" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors">
@@ -1700,15 +1703,15 @@
             </div>
             <!-- 内容 -->
             <div class="p-5 flex flex-col gap-4 max-h-[68vh] overflow-y-auto">
-                <div class="bg-white border border-[#d1d5db] rounded-[1.4rem] p-4">
-                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">第一步从哪里开始</div>
+                <div class="bg-white border border-white/90 shadow-[inset_0_0_0_1px_rgba(209,213,219,0.58)] rounded-[1.45rem] p-4">
+                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么要按这个顺序开始</div>
                     <p id="vpm-starter-tip" class="text-[11px] text-slate-700 leading-relaxed"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-600">
-                    <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]"><b class="block text-slate-900 mb-1">顺序</b>不是动作堆叠，而是先后路径。</div>
-                    <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]"><b class="block text-slate-900 mb-1">剂量</b>每周练几次，练到什么感觉停。</div>
-                    <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]"><b class="block text-slate-900 mb-1">边界</b>哪些动作现在不建议急着做。</div>
-                    <div class="bg-white/90 p-3 rounded-xl border border-[#e5e5ea]"><b class="block text-slate-900 mb-1">复测</b>用同样角度判断是否走对。</div>
+                    <div class="bg-white/92 p-3 rounded-xl border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.8)]"><b class="block text-slate-900 mb-1">顺序</b>先降哪层紧，再拉回哪个方向。</div>
+                    <div class="bg-white/92 p-3 rounded-xl border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.8)]"><b class="block text-slate-900 mb-1">剂量</b>每周练几次，练到什么感觉停。</div>
+                    <div class="bg-white/92 p-3 rounded-xl border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.8)]"><b class="block text-slate-900 mb-1">边界</b>哪些动作先别急着做，哪些感觉说明偏了。</div>
+                    <div class="bg-white/92 p-3 rounded-xl border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.8)]"><b class="block text-slate-900 mb-1">复测</b>2 到 4 周后看什么变化才算对。</div>
                 </div>
                 <!-- 包含内容 -->
                 <div>
@@ -1717,15 +1720,15 @@
                     <ul id="vpm-video-list" class="flex flex-col gap-2"></ul>
                 </div>
                 <!-- 说明 -->
-                <div class="text-[11px] text-slate-600 leading-relaxed bg-white/90 p-4 rounded-[1.25rem] border border-[#e5e5ea]">
-                    这套方案的价值不在于“动作数量多”，而在于把动作放进正确顺序里：先降低最外层的紧张，再处理骨盆方向，最后用复测确认有没有真的变好。
+                <div class="text-[11px] text-slate-600 leading-relaxed bg-white/92 p-4 rounded-[1.3rem] border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.82)]">
+                    这份方案解决的不是“你还缺哪个动作”，而是“你现在先做哪一步，才不会越练越乱”。真正有价值的，是把动作放进对你这次结果更合适的顺序里。
                 </div>
                 <div class="bg-slate-50 border border-[#e5e5ea] rounded-2xl p-3.5">
                     <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-2">为什么现在不建议直接乱练</div>
                     <ul id="vpm-avoid-list" class="flex flex-col gap-2"></ul>
                 </div>
                 <div id="vpm-caution-text" class="text-[10px] text-slate-500 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-[#e5e5ea]"></div>
-                <div class="text-[10px] text-slate-500 leading-relaxed bg-white/80 border border-[#e5e5ea] rounded-xl p-3">
+                <div class="text-[10px] text-slate-500 leading-relaxed bg-white/88 border border-white/90 shadow-[inset_0_0_0_1px_rgba(229,231,235,0.82)] rounded-xl p-3">
                     领取方式：付款后添加微信 <span class="font-bold text-slate-800">songjiaotou999</span>，发送本次报告截图或分型结果，我会按你的结果发送对应版本。
                 </div>
                 <!-- 二维码 -->
@@ -1737,18 +1740,18 @@
                             <span class="text-[10px] leading-tight">未找到二维码</span>
                         </div>
                     </div>
-                    <div class="text-center bg-slate-950 text-white rounded-2xl px-4 py-3 w-full">
-                        <span class="text-[24px] font-black tracking-[-0.04em]">¥299</span>
-                        <p class="text-[10px] text-white/65 mt-1 leading-relaxed">
-                            一次匹配当前分型的完整训练路径，不替代线下诊疗
+                    <div class="text-center bg-[linear-gradient(145deg,#ffffff_0%,#eef4ff_100%)] border border-white/90 shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)] rounded-2xl px-4 py-3 w-full">
+                        <span class="text-[24px] font-black tracking-[-0.04em] text-slate-950">¥299</span>
+                        <p class="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                            当前结果一次匹配的完整训练方案，不替代线下诊疗
                         </p>
                     </div>
                 </div>
             </div>
             <!-- 底部 -->
             <div class="px-5 pb-5 pt-2 border-t border-[#e5e5ea]">
-                <button id="btn-close-video-plan-bottom" class="w-full py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl font-bold transition-colors text-[11px] tracking-wider shadow-[0_8px_20px_rgba(31,41,55,0.18)]">
-                    先保留这份报告
+                <button id="btn-close-video-plan-bottom" class="w-full py-3 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 text-white rounded-2xl font-bold transition-colors text-[11px] tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.24)]">
+                    我先保留这份报告
                 </button>
             </div>
         </div>
@@ -4397,10 +4400,10 @@
                     : '前后方向还需要继续观察，所以现在先把站姿、坐姿和复测做稳定。';
 
             const headlineMap = {
-                lateral: '这次更像左侧骨盆位置偏高，所以裤腰、坐姿和上楼感觉都可能一边不一样。',
-                oblique: '这次更像左侧骨盆又高又往前，所以衣服线条和坐姿更容易往一侧跑。',
-                baseline: '这次更像右侧更稳、左侧更容易往前或往外，所以站久和提东西时会有左右差。',
-                transition: '这次已经能看到左右差异，但方向还不够稳定，先别急着判断成固定类型。'
+                lateral: '左侧骨盆位置偏高，裤腰、坐姿和上楼感觉常会先提醒你。',
+                oblique: '左侧骨盆又高又往前，衣服线条和坐姿更容易先跑向一侧。',
+                baseline: '右侧更稳、左侧更容易往前或往外，站久和提东西时更容易有左右差。',
+                transition: '左右差异已经出现，但方向还不够稳定，先别急着写死类型。'
             };
 
             const lifeHookMap = {
@@ -6920,35 +6923,35 @@
         // ============================================================
         const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
-                title: '完整训练方案 · 左右用力不一样',
-                tagline: '根据你的评估结果定制：后腰容易顶住 + 左侧骨盆靠前 → 3 层训练路径',
+                title: '完整训练方案 · 左侧偏前校正',
+                tagline: '先把后腰一直顶着的力放下来，再把左侧偏前慢慢带回更中间的位置。',
                 videos: [
-                    { name: '第一步：先让后腰别一直绷着', desc: '后腰一直在帮你顶住时，骨盆也更容易被带在前面。第一优先是先把这股紧绷感降下来，而不是一上来就追角度或翘臀。' },
-                    { name: '第二步：让后背和骨盆后侧松一点', desc: '后腰和后背一直顶着时，呼吸和髋的活动范围都会跟着变差，这一步先让后侧有空间松下来。' },
-                    { name: '第三步：把左侧更靠前的位置带回来', desc: '后腰没那么紧之后，再处理左侧更靠前的方向，让两边慢慢回到更接近的位置。' }
+                    { name: '第一步：先让后腰别一直绷着', desc: '如果后腰一直在帮你撑住，骨盆就很难真的回到中间。第一步不是拼命练，而是先把这层外面的顶劲放下来。' },
+                    { name: '第二步：把后背和骨盆后侧松开一点', desc: '后侧有了空间，呼吸和髋的活动范围才更容易回来，这一步是在给后面拉回方向做准备。' },
+                    { name: '第三步：把左侧偏前慢慢带回来', desc: '前两步做对后，再把左侧更靠前的位置慢慢带回去，左右更容易重新对上。' }
                 ]
             },
             posterior_Oblique: {
-                title: '完整训练方案 · 左边更高也更靠前',
-                tagline: '根据你的评估结果定制：后腰容易顶住 + 左侧偏高也偏前 → 3 层训练路径',
+                title: '完整训练方案 · 左侧偏高偏前',
+                tagline: '先把后腰一直顶着的力放下来，再同时处理左侧偏高和偏前两个方向。',
                 videos: [
-                    { name: '第一步：先让后腰别一直绷着', desc: '后腰一直在帮你顶住时，骨盆就更容易被带在前面，同时左侧又比右侧更高更前，所以先把这层紧绷感降下来。' },
-                    { name: '第二步：让上半身和骨盆重新配合', desc: '当身体已经明显偏在一边时，上半身和骨盆要重新配合起来，不能只盯着某一块肌肉练。' },
-                    { name: '第三步：把左侧又高又往前的状态带回来', desc: '外层紧绷降下来之后，再同时处理高低和前后两个方向，避免单纯拉伸只处理一端。' }
+                    { name: '第一步：先让后腰别一直绷着', desc: '如果后腰一直帮你顶着，左边又高又往前的状态就会被越锁越死，所以先把最外层的紧劲降下来。' },
+                    { name: '第二步：让上半身和骨盆重新配合', desc: '身体已经偏向左前时，不能只盯着局部拉伸，要先让上半身和骨盆重新回到同一个节奏。' },
+                    { name: '第三步：把左侧偏高又偏前慢慢带回来', desc: '等紧劲先放下来后，再同时处理高低和前后两个方向，变化才更稳。' }
                 ]
             },
             posterior_Lateral: {
                 title: '完整训练方案 · 左侧偏高',
-                tagline: '根据你的评估结果定制：后腰容易顶住 + 左侧偏高 → 3 层训练路径',
+                tagline: '先把后腰一直顶着的力放下来，再处理左侧偏高带来的左右差。',
                 videos: [
-                    { name: '第一步：先让后腰别一直顶着', desc: '后腰的紧绷感是最外层，先把这股一直撑着的力松开，骨盆才有机会回到比较正的位置。' },
-                    { name: '第二步：减少把骨盆带偏的那股力', desc: '左右高低差不能只理解成哪边高哪边低，更重要的是先减少那股一直把骨盆带偏的用力习惯。' },
-                    { name: '第三步：让左右脚更会轮流踩稳', desc: '偏移降低后，让两边都能踩得踏实，避免身体总是偏在一边。' }
+                    { name: '第一步：先让后腰别一直顶着', desc: '后腰这股一直往上顶的劲先放下来，骨盆才有机会回到更平一点的位置。' },
+                    { name: '第二步：减少一直把骨盆带偏的那股力', desc: '高低差不只是外面看起来一高一低，更关键的是把那股一直拉偏你的用力习惯降下来。' },
+                    { name: '第三步：让左右脚重新轮流踩稳', desc: '偏移降下来后，让两只脚都能真正踩稳，身体才不容易又偏回去。' }
                 ]
             },
             posterior_Transition: {
-                title: '完整训练方案 · 方向待复核',
-                tagline: '根据你的评估结果定制：后腰容易顶住 + 左右差异待复核 → 先建立基础再确认方向',
+                title: '完整训练方案 · 先稳基础',
+                tagline: '先把后腰和站姿做稳，再用复测确认更具体的方向。',
                 videos: [
                     { name: '第一步：先让后腰别一直顶着', desc: '先把后腰一直撑着的感觉降下来，让骨盆有机会回到比较正的位置。' },
                     { name: '第二步：让双脚站得更平均', desc: '方向还没完全稳定时，先不要急着压某一边，重点让两只脚都能踩得踏实。' },
@@ -6956,35 +6959,35 @@
                 ]
             },
             anterior_LeftAIC: {
-                title: '完整训练方案 · 左右用力不一样',
-                tagline: '根据你的评估结果定制：髋前容易拉紧 + 左侧骨盆靠前 → 3 层训练路径',
+                title: '完整训练方案 · 左侧偏前校正',
+                tagline: '先减轻髋前一直拉着的力，再把左侧偏前慢慢带回更中间的位置。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '髋前和大腿前侧一直在把骨盆往前拉，第一步是让这股拉力降下来，而不是直接用力拉伸。' },
-                    { name: '第二步：让侧腹和腿后侧重新帮上忙', desc: '前侧没那么紧之后，还要让身体学会把骨盆往回收，不然它会继续往前跑。' },
-                    { name: '第三步：把左侧更靠前的位置带回来', desc: '前侧拉力降低后，再处理左侧更靠前，让两边慢慢回到更接近的位置。' }
+                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '髋前和大腿前侧一直在把骨盆往前带，第一步不是猛拉，而是先把这股持续往前拽的力降下来。' },
+                    { name: '第二步：让侧腹和腿后侧重新帮上忙', desc: '前侧松一点之后，还要把身体学会往回收，不然它还是会继续往前跑。' },
+                    { name: '第三步：把左侧偏前慢慢带回来', desc: '当前面那层拉力降下来后，再处理左侧更靠前的位置，方向会更容易回到中间。' }
                 ]
             },
             anterior_Oblique: {
-                title: '完整训练方案 · 左边更高也更靠前',
-                tagline: '根据你的评估结果定制：髋前容易拉紧 + 左侧偏高也偏前 → 3 层训练路径',
+                title: '完整训练方案 · 左侧偏高偏前',
+                tagline: '先减轻髋前一直拉着的力，再同时处理左侧偏高和偏前两个方向。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧一直拉着是外层，先让骨盆不再一直被往前拽。' },
-                    { name: '第二步：让上半身和骨盆重新配合', desc: '当身体已经明显偏向左前方时，先把上下半身重新带回同一个节奏，比单独练某一块肌肉更重要。' },
-                    { name: '第三步：把左侧过高又过前的状态拉回来', desc: '减压完成后，再专项处理高低和前后两个方向，避免训练越练越偏。' }
+                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧这层一直拉着的感觉先降下来，骨盆才不会一直被往前带。' },
+                    { name: '第二步：让上半身和骨盆重新配合', desc: '身体已经偏向左前方时，要先把上下半身带回一个节奏，不能只顾某一块地方酸不酸。' },
+                    { name: '第三步：把左侧偏高又偏前慢慢带回来', desc: '紧张先降下来后，再一起处理高低和前后两个方向，变化会更稳。' }
                 ]
             },
             anterior_Lateral: {
                 title: '完整训练方案 · 左侧偏高',
-                tagline: '根据你的评估结果定制：髋前容易拉紧 + 左侧偏高 → 3 层训练路径',
+                tagline: '先减轻髋前一直拉着的力，再处理左侧偏高带来的左右差。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧先松下来，骨盆不再一直被往前拽，后面的左右调整才更容易落地。' },
-                    { name: '第二步：减少把骨盆带偏的那股力', desc: '髋前容易拉紧加上左侧偏高时，两层会互相放大，所以先减少持续把骨盆带偏的用力习惯。' },
-                    { name: '第三步：让两边重新轮流踩稳', desc: '偏移改善后，让两侧轮流踩稳地面，让骨盆真正稳下来，而不只是暂时摆正。' }
+                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧先松下来，骨盆不再一直被往前拽，后面的左右调整才更容易真正落地。' },
+                    { name: '第二步：减少一直把骨盆带偏的那股力', desc: '髋前拉紧和左侧偏高会互相放大，所以第二步是把那股持续拉偏你的用力习惯降下来。' },
+                    { name: '第三步：让两边重新轮流踩稳', desc: '偏移改善后，让两边重新轮流踩稳地面，骨盆才不只是短暂摆正。' }
                 ]
             },
             anterior_Transition: {
-                title: '完整训练方案 · 方向待复核',
-                tagline: '根据你的评估结果定制：髋前容易拉紧 + 左右差异待复核 → 先建立基础再确认方向',
+                title: '完整训练方案 · 先稳基础',
+                tagline: '先把髋前和站姿做稳，再用复测确认更具体的方向。',
                 videos: [
                     { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '先让髋前和身体前侧没那么紧，避免一上来就把方向越练越乱。' },
                     { name: '第二步：让双脚站得更平均', desc: '方向还没完全稳定时，先让两边都能踩得踏实，比急着纠正某一边更可靠。' },
@@ -6993,7 +6996,7 @@
             },
             mixed_LeftAIC: {
                 title: '完整训练方案 · 先建立基础',
-                tagline: '根据你的评估结果定制：前后方向暂不明确，先把身体带回比较稳的位置，2-4 周后复测',
+                tagline: '先把呼吸、站姿和骨盆基础做稳，2 到 4 周后再看更细的方向。',
                 videos: [
                     { name: '第一步：先把呼吸做顺', desc: '无论前后方向如何，先让呼吸慢下来，让腰、肋骨和骨盆不再一直抢着用力。' },
                     { name: '第二步：让骨盆找到比较正的位置', desc: '前后方向不确定时，先帮助骨盆回到比较正的范围，为后续训练打好基础。' },
@@ -7001,8 +7004,8 @@
                 ]
             },
             mixed_Lateral: {
-                title: '完整训练方案 · 先把左右拉回来',
-                tagline: '根据你的评估结果定制：前后方向待确认，但左侧偏高已经出现，先处理左右差',
+                title: '完整训练方案 · 先处理左右差',
+                tagline: '前后方向先不急着定，先把已经出现的左右差处理掉。',
                 videos: [
                     { name: '第一步：先把呼吸做顺', desc: '先让呼吸和双脚站稳打好基础，避免左右差距继续被日常站姿放大。' },
                     { name: '第二步：减少左边一直托着，让右脚踩稳', desc: '左侧偏高已经清晰，优先让右脚重新踩得踏实，不需要等前后方向确认再开始这一步。' },
@@ -7010,8 +7013,8 @@
                 ]
             },
             mixed_Oblique: {
-                title: '完整训练方案 · 先把骨盆拉回更居中',
-                tagline: '根据你的评估结果定制：前后方向待确认，但骨盆已出现左侧偏高偏前斜向偏移，先处理斜向问题',
+                title: '完整训练方案 · 先拉回斜向偏移',
+                tagline: '前后方向先不急着定，先处理已经出现的左侧偏高偏前。',
                 videos: [
                     { name: '第一步：先把呼吸做顺', desc: '先让呼吸和双脚站稳打好基础，减少身体一直偏向左前方的习惯。' },
                     { name: '第二步：把左侧偏高也偏前慢慢带回来', desc: '这种情况有两个方向：高低和前后都要处理，只压高度是不够的。同步让右脚踩得更踏实。' },
@@ -7019,8 +7022,8 @@
                 ]
             },
             mixed_Transition: {
-                title: '完整训练方案 · 方向待复核',
-                tagline: '根据你的评估结果定制：前后和左右都还需要复核 → 先把基础站姿做顺',
+                title: '完整训练方案 · 先稳基础',
+                tagline: '前后和左右都还要继续观察，先把基础站姿做顺。',
                 videos: [
                     { name: '第一步：先把呼吸做顺', desc: '先让腰、肋骨和骨盆不要一直抢着用力，给身体一个更容易回到中间的起点。' },
                     { name: '第二步：让双脚站得更平均', desc: '先让两边都能踩得踏实，不急着判断哪一边一定高或一定低。' },
@@ -7031,16 +7034,16 @@
 
         function getVideoPlanStarterTip(plan) {
             const firstStep = plan?.videos?.[0];
-            if (!firstStep) return '你今天不用一下子做很多。先把最外层的紧张或拉扯感降下来，再进入后面的训练，顺序比动作数量更重要。';
+            if (!firstStep) return '你今天不用一下子做很多。先把最影响结果的第一步做对，再往后推进，顺序比动作数量更重要。';
             const cleanName = firstStep.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim();
-            return `如果你今天只先做一件事，就先从“${cleanName}”开始。原因是：${firstStep.desc}`;
+            return `这份方案第一步会先处理“${cleanName}”。${firstStep.desc}`;
         }
 
         function getVideoPlanFitText(comboKey, plan) {
             if (comboKey.startsWith('mixed_')) {
-                return '你不想一边看报告一边猜先练什么、练多久、什么时候复测；也愿意先用 2 到 4 周把基础站姿和呼吸做顺，再确认更具体方向。';
+                return '如果你更希望先把基础站姿、呼吸和骨盆位置做稳，再决定下一步往哪边细化，这份方案会更适合你。';
             }
-            return '你已经想开始调整，但不想继续在网上随机找动作、凭感觉试错；你更需要一条按本次结果排好的训练路径。';
+            return '如果你已经决定开始调整，但不想继续在网上随机找动作、凭感觉试错，这份方案会更适合你。';
         }
 
         function getVideoPlanCautionText(comboKey) {
@@ -7052,22 +7055,22 @@
         function getVideoPlanCardFitNote(comboKey) {
             return comboKey.startsWith('mixed_')
                 ? '适合先把基础做稳，再用复测决定下一步。'
-                : '适合想少试错、直接知道先练哪一步的人。';
+                : '适合想系统推进，而不是继续靠感觉拼动作。';
         }
 
         function getVideoPlanQuickItems(plan) {
             const names = (plan?.videos || []).slice(0, 3).map(item => item.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim());
             if (names.length) {
                 return [
-                    { step: '01', title: '训练入口', text: names[0] || '先找到今天第一步' },
-                    { step: '02', title: '推进顺序', text: names[1] || '再进入第二层调整' },
-                    { step: '03', title: '稳定与复测', text: names[2] || '最后用复测确认方向' }
+                    { step: '01', title: '今天先做什么', text: names[0] || '先找到今天第一步' },
+                    { step: '02', title: '接下来推进什么', text: names[1] || '再进入第二层调整' },
+                    { step: '03', title: '什么变化算走对', text: names[2] || '最后用复测确认方向' }
                 ];
             }
             return [
-                { step: '01', title: '训练入口', text: '先知道今天第一步该练什么' },
-                { step: '02', title: '推进顺序', text: '知道顺序，不再自己反复猜' },
-                { step: '03', title: '稳定与复测', text: '知道哪些动作现阶段别急着做' }
+                { step: '01', title: '今天先做什么', text: '先知道今天第一步该练什么' },
+                { step: '02', title: '接下来推进什么', text: '知道顺序，不再自己反复猜' },
+                { step: '03', title: '什么变化算走对', text: '知道哪些动作现阶段别急着做' }
             ];
         }
 
@@ -7163,7 +7166,7 @@
             if(jumpLink) jumpLink.classList.remove('hidden');
 
             document.getElementById('vp-plan-label').textContent = plan.title;
-            document.getElementById('vp-title').textContent = '完整训练路径：先降紧张，再纠方向';
+            document.getElementById('vp-title').textContent = '按结果推进的完整训练方案';
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
@@ -7171,7 +7174,7 @@
             quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
                 <div class="rounded-[1.15rem] border border-[#d1d5db] bg-white px-3.5 py-3.5">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-950 text-white text-[10px] font-black flex items-center justify-center">${item.step}</span>
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[linear-gradient(135deg,#e8f1ff_0%,#d8e8ff_100%)] text-[#0a84ff] text-[10px] font-black flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)]">${item.step}</span>
                         <span class="text-[10px] font-black text-slate-500 tracking-[0.12em]">${escapeHtml(item.title)}</span>
                     </div>
                     <div class="text-[12px] font-bold text-slate-800 leading-relaxed">${escapeHtml(item.text)}</div>
@@ -7201,7 +7204,7 @@
             const comboKey = card?.dataset.comboKey || 'posterior_LeftAIC';
             const plan = VIDEO_PLAN_CONFIG[comboKey] || VIDEO_PLAN_CONFIG['posterior_LeftAIC'];
 
-            document.getElementById('vpm-title').textContent = '根据这次结果匹配的完整方案';
+            document.getElementById('vpm-title').textContent = '根据这次结果匹配的完整训练方案';
             document.getElementById('vpm-tagline').textContent = plan.tagline;
             document.getElementById('vpm-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vpm-fit-text').textContent = getVideoPlanFitText(comboKey, plan);
@@ -7226,9 +7229,9 @@
             if (isFromBottomBtn) {
                 const btnGet = document.getElementById('btn-get-video-plan');
                 if (btnGet) {
-                    btnGet.classList.remove('bg-[#0a84ff]', 'hover:bg-blue-600');
-                    btnGet.classList.add('bg-slate-900', 'hover:bg-black');
-                    btnGet.textContent = '已查看完整方案';
+                    btnGet.classList.remove('bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)]', 'hover:brightness-105');
+                    btnGet.classList.add('bg-white', 'text-[#0a84ff]', 'border', 'border-[#0a84ff]/20', 'shadow-none');
+                    btnGet.textContent = '已查看方案详情';
                 }
             }
         }
@@ -7278,25 +7281,9 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         <div id="protractor-angle-badge" class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white font-black text-base tracking-wide tabular-nums">45°</div>
-        <!-- 功能开关按钮组 -->
         <div class="flex items-center gap-1">
-            <button id="btn-p-dual" onclick="pToggleDual()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="双指针">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m-5 5l5-5 5 5"/></svg>
-            </button>
-            <button id="btn-p-level" onclick="pToggleLevel()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="水平仪">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M12 4v16"/></svg>
-            </button>
-            <button id="btn-p-voice" onclick="pToggleVoice()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="语音播报">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586v12.828a1 1 0 01-1.707.707L5.586 15z"/></svg>
-            </button>
             <button onclick="pFlipCamera()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="翻转摄像头">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            </button>
-            <button id="btn-p-theme" onclick="pToggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="主题">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-            </button>
-            <button id="btn-p-history-top" onclick="pToggleHistory()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/15 text-white/70 active:scale-90 transition-all" title="测量记录">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </button>
         </div>
     </div>
@@ -7311,14 +7298,7 @@
     <div id="protractor-cam-error" class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
     <!-- 底部工具栏 -->
     <div class="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent pt-6" style="padding-bottom:max(env(safe-area-inset-bottom),10px)">
-        <!-- ±1° 微调 -->
-        <div class="flex items-center justify-center gap-4 mb-2">
-            <button onclick="pNudge(-1)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white text-lg font-black active:scale-90 transition-transform border border-white/10">−</button>
-            <span class="text-white/40 text-[10px] font-bold tracking-wider">微调 ±1°</span>
-            <button onclick="pNudge(1)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white text-lg font-black active:scale-90 transition-transform border border-white/10">+</button>
-        </div>
-        <!-- 主操作行 -->
-        <div class="grid grid-cols-3 gap-2 px-4 pb-1">
+        <div class="grid grid-cols-2 gap-2 px-4 pb-2">
             <button id="btn-protractor-capture" onclick="captureProtractorFrame()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
                 <svg id="protractor-capture-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
                 <span id="protractor-capture-text">拍照定格</span>
@@ -7335,17 +7315,13 @@
                 <svg id="protractor-lock-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6-2h12a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2 2v4a2 2 0 002 2z"/></svg>
                 <span id="protractor-lock-text">锁定</span>
             </button>
-            <button onclick="protractorScreenshot()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-white/10">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><circle cx="12" cy="13" r="3"/></svg>
-                截图
-            </button>
-            <button onclick="useProtractorAngle()" class="flex items-center justify-center gap-1 py-2 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30">
+            <button onclick="useProtractorAngle()" class="col-span-2 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#5bd4c8]/80 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all border border-[#5bd4c8]/30 shadow-[0_14px_30px_rgba(91,212,200,0.18)]">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                使用
+                确认使用
             </button>
         </div>
         <div id="protractor-mode-hint" class="px-4 pt-2 text-center text-[10px] font-medium tracking-wide text-white/55">
-            支持实时对准、拍照定格和相册导入
+            先对准，再锁定，最后确认使用
         </div>
     </div>
     <!-- 历史记录面板 -->
@@ -7562,19 +7538,19 @@
             btn.classList.remove('bg-white/15', 'border-white/10');
             text.textContent = '返回实时';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
-            hint.textContent = '当前为静态图片模式，可精细拖动量角器，点“返回实时”回到摄像头';
+            hint.textContent = '当前是静态图片模式，对准后可直接锁定并确认使用';
         } else if (hasLiveStream) {
             btn.classList.add('bg-white/15', 'border-white/10');
             btn.classList.remove('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             text.textContent = '拍照定格';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/>';
-            hint.textContent = '支持实时对准、拍照定格和相册导入';
+            hint.textContent = '先拍照定格，再锁定角度，最后确认使用';
         } else {
             btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             btn.classList.remove('bg-white/15', 'border-white/10');
             text.textContent = _pCameraLoading ? '连接中' : '启动实时';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
-            hint.textContent = _pCameraLoading ? '正在连接摄像头，你也可以直接改用相册导入' : '摄像头暂未就绪时，可先导入相册继续测量';
+            hint.textContent = _pCameraLoading ? '正在连接摄像头，也可以直接改用相册导入' : '摄像头暂未就绪时，可先导入相册继续测量';
         }
         _syncProtractorCameraStatus();
     }
