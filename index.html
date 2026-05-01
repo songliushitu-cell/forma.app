@@ -25,11 +25,47 @@
                 radial-gradient(circle at 100% 14%, rgba(10,132,255,0.08) 0%, transparent 28%),
                 linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 48%, #ebeef2 100%);
         }
+        .report-full-bleed {
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(calc(100vw - 14px), 1460px);
+            max-width: none;
+        }
         .report-hero {
             background:
                 linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,251,253,0.98) 60%, rgba(241,243,246,0.98) 100%);
             color: #111827;
             box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 30px 90px rgba(15, 23, 42, 0.075);
+        }
+        .report-hero-grid {
+            display: grid;
+            gap: 18px;
+        }
+        .report-summary-strip {
+            display: grid;
+            gap: 12px;
+        }
+        .report-summary-chip {
+            border-radius: 22px;
+            padding: 16px 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,247,249,0.98) 100%);
+            border: 1px solid rgba(229,231,235,0.92);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85);
+        }
+        .report-summary-chip-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #8e8e93;
+            margin-bottom: 6px;
+        }
+        .report-summary-chip-value {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #374151;
+            font-weight: 700;
         }
         .report-hero h2,
         .report-hero #final-result-title {
@@ -296,9 +332,34 @@
             display: grid;
             gap: 12px;
         }
+        .report-story-grid {
+            display: grid;
+            gap: 16px;
+        }
+        .report-story-grid.is-main {
+            align-items: start;
+        }
         @media (min-width: 640px) {
             .report-proof-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 920px) {
+            .report-hero-grid {
+                grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+                align-items: end;
+            }
+            .report-summary-strip {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .report-story-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .report-story-grid.is-main > :first-child {
+                min-width: 0;
+            }
+            .report-story-grid.is-main > :last-child {
+                min-width: 0;
             }
         }
         .report-proof-card {
@@ -433,12 +494,74 @@
             border-color: rgba(10, 132, 255, 0.45);
             box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
         }
+        .report-plan-shell {
+            background:
+                radial-gradient(circle at right top, rgba(10,132,255,0.12) 0%, transparent 26%),
+                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,246,248,0.98) 58%, rgba(234,237,241,0.98) 100%);
+            border: 1px solid rgba(255,255,255,0.95);
+            box-shadow: 0 28px 88px rgba(15,23,42,0.08), inset 0 0 0 1px rgba(209,213,219,0.48);
+        }
+        .report-plan-grid {
+            display: grid;
+            gap: 14px;
+        }
+        .report-plan-hero {
+            display: grid;
+            gap: 16px;
+        }
+        .report-plan-price {
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,246,249,0.98) 100%);
+            border: 1px solid rgba(229,231,235,0.95);
+            padding: 20px 18px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.88);
+        }
+        .report-plan-editorial {
+            border-radius: 24px;
+            padding: 18px;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid rgba(229,231,235,0.9);
+        }
+        .report-plan-checklist {
+            display: grid;
+            gap: 10px;
+        }
+        .report-plan-checklist-item {
+            border-radius: 20px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(209,213,219,0.82);
+            padding: 14px 14px 15px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.82);
+        }
+        .report-plan-cta {
+            border-radius: 24px;
+            padding: 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(243,246,250,0.96) 100%);
+            border: 1px solid rgba(229,231,235,0.9);
+        }
+        @media (min-width: 860px) {
+            .report-plan-hero {
+                grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.62fr);
+                align-items: stretch;
+            }
+            .report-plan-grid {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            }
+            .report-plan-checklist {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
         .report-disclaimer {
             font-size: 11px;
             line-height: 1.7;
             color: #64748b;
             text-align: center;
             padding: 0 8px;
+        }
+        @media (max-width: 639px) {
+            .report-full-bleed {
+                width: calc(100vw - 8px);
+            }
         }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
@@ -1232,7 +1355,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.39</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.41</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1479,39 +1602,45 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="report-shell hidden fade-in border border-white/90 px-3 py-4 sm:px-5 sm:py-6 mx-auto max-w-[980px] rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
+            <div id="final-report-section" class="report-shell report-full-bleed hidden fade-in border border-white/90 px-2.5 py-4 sm:px-5 sm:py-6 rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
                 <div class="absolute -top-24 -right-20 w-64 h-64 bg-white/90 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute top-20 -left-20 w-52 h-52 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-16 -left-10 w-44 h-44 bg-white/85 rounded-full blur-3xl pointer-events-none"></div>
 
                 <div class="relative z-10 w-full report-hero rounded-[2.05rem] border border-white/95 px-5 py-5 sm:px-8 sm:py-8 overflow-hidden">
                     <div class="absolute inset-x-0 top-0 h-20 bg-white/65 blur-2xl pointer-events-none"></div>
-                    <div class="relative">
-                        <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
+                    <div class="relative report-hero-grid">
+                        <div class="min-w-0">
+                            <h2 class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-[0.22em] mb-2 flex items-center gap-1.5">
                             <svg class="w-4 h-4 mac-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                             结果报告
-                        </h2>
-                        <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
-                            评估时间：--
-                        </div>
-                        <div id="final-report-badges" class="report-badge-row"></div>
-                        <!-- 收费功能已根据要求隐藏 report-access-status -->
-                        <div id="report-access-status" class="hidden inline-flex items-center gap-1.5 mb-3 ml-2 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/8 text-[#0a84ff] border border-[#0a84ff]/15 shadow-sm">
-                            免费报告剩余 5 次
-                        </div>
-                        <div id="final-hero-image-container" class="mb-4 flex flex-col items-center justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80 shadow-sm hidden">
-                            <!-- Image injected via JS -->
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                            <div id="final-result-title" class="text-[22px] sm:text-[34px] font-black text-slate-900 tracking-tight z-10 leading-[1.15] sm:leading-[1.18] flex-1 max-w-[18ch] sm:max-w-none">获取中...</div>
-                            <a href="#video-plan-card" title="查看对应方案" class="id-jump-video hidden self-start mt-0.5 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2 py-1.5 rounded-lg transition-colors">
-                                ↓ 查看对应方案
-                            </a>
-                        </div>
-                        <div class="flex flex-col gap-3">
+                            </h2>
+                            <div id="final-report-datetime" class="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-white text-slate-500 border border-[#e5e5ea] shadow-sm">
+                                评估时间：--
+                            </div>
+                            <div id="final-report-badges" class="report-badge-row"></div>
+                            <!-- 收费功能已根据要求隐藏 report-access-status -->
+                            <div id="report-access-status" class="hidden inline-flex items-center gap-1.5 mb-3 ml-2 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-wide bg-[#0a84ff]/8 text-[#0a84ff] border border-[#0a84ff]/15 shadow-sm">
+                                免费报告剩余 5 次
+                            </div>
+                            <div id="final-hero-image-container" class="mb-4 flex flex-col items-center justify-center bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80 shadow-sm hidden">
+                                <!-- Image injected via JS -->
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                                <div id="final-result-title" class="text-[24px] sm:text-[38px] font-black text-slate-900 tracking-tight z-10 leading-[1.12] sm:leading-[1.14] flex-1 max-w-[20ch] sm:max-w-none">获取中...</div>
+                                <a href="#video-plan-card" title="查看对应方案" class="id-jump-video hidden self-start mt-1 flex-shrink-0 text-[10px] font-bold text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-2.5 py-1.5 rounded-lg transition-colors">
+                                    查看完整训练路径
+                                </a>
+                            </div>
                             <div id="final-report-confidence" class="hidden">结果稳定度：--</div>
-                            <div id="final-report-confidence-detail" class="text-[14px] sm:text-[15px] text-slate-600 leading-7 bg-white/88 border border-white/90 rounded-[1.35rem] px-4 py-3.5 shadow-[0_8px_20px_rgba(15,23,42,0.04)]">
+                        </div>
+                        <div class="report-summary-strip">
+                            <div id="final-report-confidence-detail" class="report-summary-chip">
                                 当前重点：--
+                            </div>
+                            <div class="report-summary-chip">
+                                <div class="report-summary-chip-label">这份报告会回答</div>
+                                <div class="report-summary-chip-value">为什么会这样、平时怎么认出来、下一步为什么不能随便练。</div>
                             </div>
                         </div>
                     </div>
@@ -1539,46 +1668,61 @@
                 </div>
 
                 <!-- 专属训练视频方案卡片 -->
-                <div id="video-plan-card" class="hidden z-10 mt-2 rounded-[2.2rem] overflow-hidden border border-white/90 shadow-[0_28px_90px_rgba(15,23,42,0.08)] bg-[linear-gradient(145deg,#ffffff_0%,#f8f9fb_58%,#eef2f7_100%)]">
-                    <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-4">
-                        <div class="flex items-start gap-3.5">
-                            <div class="flex-shrink-0 w-12 h-12 rounded-[1.15rem] bg-[linear-gradient(145deg,#ffffff_0%,#eef3fb_100%)] border border-white/95 flex items-center justify-center shadow-[0_16px_30px_rgba(10,132,255,0.12)]">
+                <div id="video-plan-card" class="report-plan-shell hidden z-10 mt-2 rounded-[2.2rem] overflow-hidden">
+                    <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-5">
+                        <div class="report-plan-hero">
+                            <div class="min-w-0">
+                                <div class="flex items-start gap-3.5">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-[1.15rem] bg-[linear-gradient(145deg,#ffffff_0%,#eef3fb_100%)] border border-white/95 flex items-center justify-center shadow-[0_16px_30px_rgba(10,132,255,0.12)]">
                                 <svg class="w-4.5 h-4.5 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                        <div id="vp-plan-label" class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-1.5">完整训练方案</div>
-                        <div id="vp-title" class="text-[25px] sm:text-[30px] font-black text-slate-950 leading-[1.08] tracking-[-0.05em]">按结果推进的完整训练方案</div>
-                        <div id="vp-tagline" class="text-[12px] text-slate-500 mt-2 leading-relaxed max-w-[48ch]">加载中...</div>
-                    </div>
-                </div>
-                        <div class="grid gap-3 sm:grid-cols-[1.15fr_0.85fr]">
-                            <div class="bg-white/92 border border-white/90 rounded-[1.45rem] p-4 shadow-[inset_0_0_0_1px_rgba(209,213,219,0.55)]">
-                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么要按这个顺序开始</div>
-                                <p id="vp-starter-tip" class="text-[12px] text-slate-700 leading-relaxed">加载中...</p>
-                            </div>
-                            <div class="bg-[linear-gradient(155deg,#ffffff_0%,#f4f7fb_50%,#edf3fb_100%)] rounded-[1.45rem] p-4 border border-white/95 shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)] flex flex-col justify-between">
-                                <div>
-                                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-2">方案费用</div>
-                                    <div class="flex items-end gap-2">
-                                        <span class="text-[30px] font-black tracking-[-0.05em] text-slate-950">¥299</span>
-                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果一对一匹配</span>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div id="vp-plan-label" class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-1.5">完整训练方案</div>
+                                        <div id="vp-title" class="text-[28px] sm:text-[34px] font-black text-slate-950 leading-[1.04] tracking-[-0.05em]">对应你的完整训练路径</div>
+                                        <div id="vp-tagline" class="text-[13px] text-slate-500 mt-2 leading-relaxed max-w-[50ch]">加载中...</div>
                                     </div>
                                 </div>
-                                <p id="vp-fit-note" class="text-[10px] text-slate-500 mt-3 leading-relaxed"></p>
+                                <div class="report-plan-editorial mt-4">
+                                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么现在值得按路径走</div>
+                                    <p id="vp-starter-tip" class="text-[13px] text-slate-700 leading-relaxed">加载中...</p>
+                                </div>
+                                <div class="report-plan-grid mt-4">
+                                    <div class="report-plan-editorial">
+                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">这 299 买到的核心价值</div>
+                                        <p class="text-[12px] text-slate-700 leading-relaxed">不是多几个动作，而是把顺序、边界、每周推进节奏和复测标准一次讲清楚，帮你少走很多反复试错的路。</p>
+                                    </div>
+                                    <div class="report-plan-editorial">
+                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">适合现在的你，如果你想</div>
+                                        <p id="vp-fit-note" class="text-[12px] text-slate-700 leading-relaxed"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="report-plan-price flex flex-col justify-between gap-4">
+                                <div>
+                                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-2">完整路径价格</div>
+                                    <div class="flex items-end gap-2.5">
+                                        <span class="text-[34px] font-black tracking-[-0.06em] text-slate-950">¥299</span>
+                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果匹配，不是通用版</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-3 leading-relaxed">更适合已经准备认真开始的人。与其继续零散刷内容，不如把接下来 2 到 4 周的路线一次定清楚。</p>
+                                </div>
+                                <div class="rounded-[1.2rem] border border-[#dbe3ec] bg-white/85 px-3.5 py-3 text-[11px] text-slate-600 leading-relaxed">
+                                    付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，发送本次报告截图，即可领取对应版本。
+                                </div>
                             </div>
                         </div>
                         <div>
                             <div class="flex items-end justify-between gap-3 mb-2">
                                 <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">你会明确知道</div>
-                                <div class="text-[10px] text-slate-400">不是通用动作单，而是具体执行路径</div>
+                                <div class="text-[10px] text-slate-400">从今天开始，哪些事情该先做，哪些先别急</div>
                             </div>
-                            <div id="vp-quick-list" class="grid gap-2 sm:grid-cols-3"></div>
+                            <div id="vp-quick-list" class="report-plan-checklist"></div>
                         </div>
-                        <div class="rounded-[1.45rem] border border-white/90 bg-white/92 px-4 py-4 shadow-[inset_0_0_0_1px_rgba(209,213,219,0.58)]">
+                        <div class="report-plan-cta">
                             <div class="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
                                 <div class="min-w-0 space-y-2">
-                                    <div class="text-[14px] font-black text-slate-900">你买到的不是动作清单，而是先后顺序、训练边界和复测标准。</div>
-                                    <p class="text-[11px] text-slate-500 leading-relaxed">适合已经准备开始系统调整、不想继续靠碎片内容反复试的人。付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，按本次结果领取对应版本。</p>
+                                    <div class="text-[16px] font-black text-slate-900 leading-snug">真正值钱的，是把“先做什么、为什么这样排、做到什么变化再往下走”一次说明白。</div>
+                                    <p class="text-[11px] text-slate-500 leading-relaxed">这样你买到的不是一张价格截图，而是一条更省时间、也更不容易练乱的完整路径。</p>
                                 </div>
                                 <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.26)] transition-all">
                                     查看方案内容与领取方式
@@ -4394,32 +4538,32 @@
 
         function buildCustomerResultCopy({ subType, compKey, resultLabel, trainingStage }) {
             const compressionText = compKey === 'posterior'
-                ? '骨盆位置不一样时，下面坐着的支撑就不一样，上面的腰就容易出来帮忙保护，所以坐久、站久后腰会更容易紧。'
+                ? '骨盆前后位置不一样时，坐着和站着时下面的支撑会不平均，后腰就更容易先出来顶住，所以很多人最先感觉到的是坐久、站久后的腰紧。'
                 : compKey === 'anterior'
-                    ? '骨盆前侧更容易拉着时，髋前和大腿根会先有感觉，所以久坐起身、抬腿和训练时前侧更容易紧。'
+                    ? '骨盆前侧一直拉着时，髋前和大腿根会更容易先有感觉，所以久坐起身、抬腿和训练时，前侧常常比臀更早紧起来。'
                     : '前后方向还需要继续观察，所以现在先把站姿、坐姿和复测做稳定。';
 
             const headlineMap = {
-                lateral: '左侧骨盆位置偏高，裤腰、坐姿和上楼感觉常会先提醒你。',
-                oblique: '左侧骨盆又高又往前，衣服线条和坐姿更容易先跑向一侧。',
-                baseline: '右侧更稳、左侧更容易往前或往外，站久和提东西时更容易有左右差。',
-                transition: '左右差异已经出现，但方向还不够稳定，先别急着写死类型。'
+                lateral: '这次更像左侧偏高。很多人最先不是从疼痛认出来，而是从裤腰、照片和站姿先认出来。',
+                oblique: '这次更像左侧又高又往前。你平时看到的，往往不是骨盆三个字，而是衣服、坐姿和拍照线条先变了。',
+                baseline: '这次更像右侧略高、左侧更容易往前。很多人会先觉得站久时左右不一样，或者提东西总爱用同一边。',
+                transition: '这次已经能看到左右差异，但方向还不够稳定，所以现阶段更重要的是先把基础站姿和复测做稳。'
             };
 
             const lifeHookMap = {
-                lateral: '你可以用 3 个方法自查：穿好裤子后看左侧裤腰是不是高一点；拍背面照看两个腰眼是不是不在同一高度；上楼时感觉右脚那一下是不是没那么踏实。',
-                oblique: '你可以用 3 个方法自查：裤缝或裙缝是不是容易转歪；坐下后左侧髋部是不是更容易往前顶；拍照时左边是不是更高、更靠前。',
-                baseline: '你可以用 3 个方法自查：裤腰是不是右边更高；站久后是不是更爱靠右脚；提包或拿东西时是不是更习惯用右侧。',
-                transition: '你可以用 3 个方法自查：拍背面照看两边是否不一样；久站后看重心总偏哪边；2 到 4 周后用同样角度再测一次。'
+                lateral: '你可以先看三件小事：裤腰左侧是不是总更高一点；拍背面照时两边线条是不是不在一条水平线上；上楼时右脚那一下是不是总要追着身体走。',
+                oblique: '你可以先看三件小事：裤缝或裙缝是不是容易转歪；坐下后左边是不是更容易往前顶；拍照时左边是不是更容易显高、显抢眼。',
+                baseline: '你可以先看三件小事：裤腰是不是右边更容易偏高；站久后是不是更爱把身体放到右边；提包或抱东西时是不是更顺手用右侧。',
+                transition: '你可以先看三件小事：拍背面照时两边是不是已经不太一样；久站后身体总偏哪边；2 到 4 周后再用同样角度复测一次。'
             };
 
             return {
                 headline: headlineMap[subType] || headlineMap.baseline,
-                patternLine: `你可以先把骨盆理解成左右两块大的骨头，夹着中间一块骶骨。这次看到的是：${resultLabel}。${compressionText}`,
+                patternLine: `你可以先把骨盆理解成左右两块大的骨头，夹着中间一块中轴。现在看到的是：${resultLabel}。${compressionText}`,
                 lifeHook: lifeHookMap[subType] || lifeHookMap.baseline,
                 nextNeed: trainingStage === 3
-                    ? '下一步不是再找更多动作，而是先知道哪一步该先做、哪一步该放后面。'
-                    : '下一步不是急着压高的一边，而是先让骨盆回到比较中间的位置，再看坐姿和站姿有没有更平均。'
+                    ? '下一步不是再去找更多动作，而是把先后顺序、训练边界和复测标准定清楚。'
+                    : '下一步不是急着压某一边，而是先让骨盆回到更中间的位置，再看坐姿和站姿是不是开始更平均。'
             };
         }
 
@@ -6757,7 +6901,7 @@
             </div>` : `
             <div class="report-panel report-panel-empathy p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">日常自查</div>
-                <div class="report-section-title mb-2">你可以用这 3 个方法对照自己</div>
+                <div class="report-section-title mb-2">你平时最容易从这些细节认出自己</div>
                 <p class="report-body-text mb-5">${customerResultCopy.lifeHook}</p>
                 <div class="daily-life-grid">
                     ${renderDailyLifeCardsHtml(dailyLifeCards, reportId)}
@@ -6810,9 +6954,9 @@
             const actionHtml = reportSafetyBlocked ? '' : `
             <div class="report-panel report-next-card p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">调整方向</div>
-                <div class="report-section-title mb-2">你缺的不是动作，是顺序</div>
+                <div class="report-section-title mb-2">你现在更需要一条清楚的调整顺序</div>
                 <p class="report-body-text mb-4">${actionCopy.headline}${actionCopy.lead}</p>
-                <div class="report-customer-quote mb-4">如果顺序错了，今天可能觉得松一点，过几天又回到原来的站姿；所以现在先别追求动作多，先把第一步做对。</div>
+                <div class="report-customer-quote mb-4">很多人不是没练，而是第一步就练错了。顺序一错，今天觉得松一点，过几天又会回到原来的站姿和坐姿。</div>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <div class="report-soft-box p-4">
                         <div class="text-[12px] font-bold text-slate-700 mb-3">现在先做</div>
@@ -6866,7 +7010,16 @@
             </div>`;
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${visualHtml}${dailyLifeHtml}${dataHtml}${transitionHtml}${relationHtml}${appearanceHtml}${actionHtml}${customerConcernHtml}${advantageHtml}${microActionHtml}${feedbackHtml}${disclaimerHtml}`;
+            const storyPrimaryHtml = reportSafetyBlocked
+                ? `${dailyLifeHtml}${dataHtml}`
+                : `<div class="report-story-grid is-main">${dailyLifeHtml}${dataHtml}</div>`;
+            const storySecondaryHtml = reportSafetyBlocked
+                ? relationHtml + appearanceHtml
+                : `<div class="report-story-grid">${relationHtml}${appearanceHtml}</div>`;
+            const storyEndingHtml = reportSafetyBlocked
+                ? `${customerConcernHtml}${advantageHtml}`
+                : `<div class="report-story-grid">${customerConcernHtml}${advantageHtml}</div>`;
+            container.innerHTML = `${visualHtml}${storyPrimaryHtml}${transitionHtml}${storySecondaryHtml}${actionHtml}${storyEndingHtml}${microActionHtml}${feedbackHtml}${disclaimerHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
@@ -7034,16 +7187,16 @@
 
         function getVideoPlanStarterTip(plan) {
             const firstStep = plan?.videos?.[0];
-            if (!firstStep) return '你今天不用一下子做很多。先把最影响结果的第一步做对，再往后推进，顺序比动作数量更重要。';
+            if (!firstStep) return '你今天不用一下子做很多。先把入口做对，再往后推进，通常比一口气堆很多动作更有效。';
             const cleanName = firstStep.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim();
-            return `这份方案第一步会先处理“${cleanName}”。${firstStep.desc}`;
+            return `建议你先从“${cleanName}”开始。因为现在最影响结果的，往往不是动作不够多，而是身体还在用原来的站姿和用力方式。${firstStep.desc}`;
         }
 
         function getVideoPlanFitText(comboKey, plan) {
             if (comboKey.startsWith('mixed_')) {
-                return '如果你更希望先把基础站姿、呼吸和骨盆位置做稳，再决定下一步往哪边细化，这份方案会更适合你。';
+                return '如果你更希望先把基础站姿、呼吸和骨盆位置做稳，再决定下一步往哪边细化，这份路径会更适合你。';
             }
-            return '如果你已经决定开始调整，但不想继续在网上随机找动作、凭感觉试错，这份方案会更适合你。';
+            return '如果你已经准备开始调整，但不想继续在网上随机找动作、靠感觉试错，这份路径会更适合你。';
         }
 
         function getVideoPlanCautionText(comboKey) {
@@ -7054,23 +7207,23 @@
 
         function getVideoPlanCardFitNote(comboKey) {
             return comboKey.startsWith('mixed_')
-                ? '适合先把基础做稳，再用复测决定下一步。'
-                : '适合想系统推进，而不是继续靠感觉拼动作。';
+                ? '先把基础做稳，再用复测决定下一步，比一开始就乱选动作更省时间。'
+                : '适合想系统推进的人，把时间花在更有效的 2 到 4 周，而不是更随机的 30 天。';
         }
 
         function getVideoPlanQuickItems(plan) {
             const names = (plan?.videos || []).slice(0, 3).map(item => item.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim());
             if (names.length) {
                 return [
-                    { step: '01', title: '今天先做什么', text: names[0] || '先找到今天第一步' },
-                    { step: '02', title: '接下来推进什么', text: names[1] || '再进入第二层调整' },
-                    { step: '03', title: '什么变化算走对', text: names[2] || '最后用复测确认方向' }
+                    { step: '01', title: '今天先从哪一步开始', text: names[0] || '先找到今天第一步' },
+                    { step: '02', title: '下一层往哪里推进', text: names[1] || '再进入第二层调整' },
+                    { step: '03', title: '什么变化说明方向对了', text: names[2] || '最后用复测确认方向' }
                 ];
             }
             return [
-                { step: '01', title: '今天先做什么', text: '先知道今天第一步该练什么' },
-                { step: '02', title: '接下来推进什么', text: '知道顺序，不再自己反复猜' },
-                { step: '03', title: '什么变化算走对', text: '知道哪些动作现阶段别急着做' }
+                { step: '01', title: '今天先从哪一步开始', text: '先知道今天第一步该练什么' },
+                { step: '02', title: '下一层往哪里推进', text: '知道顺序，不再自己反复猜' },
+                { step: '03', title: '什么变化说明方向对了', text: '知道哪些动作现阶段别急着做' }
             ];
         }
 
@@ -7166,13 +7319,13 @@
             if(jumpLink) jumpLink.classList.remove('hidden');
 
             document.getElementById('vp-plan-label').textContent = plan.title;
-            document.getElementById('vp-title').textContent = '按结果推进的完整训练方案';
+            document.getElementById('vp-title').textContent = '对应你的完整训练路径';
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
             const quickList = document.getElementById('vp-quick-list');
             quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
-                <div class="rounded-[1.15rem] border border-[#d1d5db] bg-white px-3.5 py-3.5">
+                <div class="report-plan-checklist-item">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[linear-gradient(135deg,#e8f1ff_0%,#d8e8ff_100%)] text-[#0a84ff] text-[10px] font-black flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)]">${item.step}</span>
                         <span class="text-[10px] font-black text-slate-500 tracking-[0.12em]">${escapeHtml(item.title)}</span>
