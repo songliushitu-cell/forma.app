@@ -1232,7 +1232,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.37</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.38</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -7403,7 +7403,7 @@
     let _protractorImageUrl = null;
     let _pCameraLoading = false;
     let _pCameraTimeout = null;
-    let _pAssignSelection = { type: 'slr', side: 'L', angle: 45 };
+    let _pAssignSelection = { type: 'slr', side: 'L', angle: 45, rawAngle: 45 };
     let _pendingReportPrompt = null;
     // Angle ranges per test type
     const RANGES = {
@@ -7492,9 +7492,10 @@
         _pAssignSelection = {
             type: tt ? tt.value : 'slr',
             side: ts ? ts.value : 'L',
-            angle: normalizeAngleValue(angle) ?? 0
+            angle: normalizeAngleValue(angle) ?? 0,
+            rawAngle: _pAngle
         };
-        document.getElementById('protractor-assign-angle').textContent = `${formatAngleValue(_pAssignSelection.angle)}°`;
+        _syncProtractorAssignAnglePreview();
         document.getElementById('protractor-history-panel').classList.add('hidden');
         _syncProtractorAssignUI();
         modal.classList.remove('hidden');
@@ -7525,6 +7526,34 @@
         modal.classList.remove('flex');
     }
 
+    function _getCurrentProtractorSide() {
+        return document.querySelector('input[name="testSide"]:checked')?.value === 'R' ? 'R' : 'L';
+    }
+
+    function _getProtractorSideLabel(side = _getCurrentProtractorSide()) {
+        return side === 'R' ? '右侧刻度' : '左侧刻度';
+    }
+
+    function _displayAngleFromRaw(rawAngle, side = _getCurrentProtractorSide()) {
+        const normalized = Math.max(0, Math.min(180, Number(rawAngle) || 0));
+        return normalizeAngleValue(side === 'L' ? 180 - normalized : normalized);
+    }
+
+    function _rawAngleFromDisplay(displayAngle, side = _getCurrentProtractorSide()) {
+        const normalized = Math.max(0, Math.min(180, Number(displayAngle) || 0));
+        return side === 'L' ? 180 - normalized : normalized;
+    }
+
+    function _syncProtractorAssignAnglePreview() {
+        const angleEl = document.getElementById('protractor-assign-angle');
+        if (!angleEl) return;
+        const previewAngle = _dualMode
+            ? normalizeAngleValue(Math.abs(_pAngle - _pAngle2))
+            : _displayAngleFromRaw(_pAssignSelection.rawAngle ?? _pAngle, _pAssignSelection.side);
+        _pAssignSelection.angle = previewAngle;
+        angleEl.textContent = `${formatAngleValue(previewAngle)}°`;
+    }
+
     function _syncProtractorModeUI() {
         const btn = document.getElementById('btn-protractor-capture');
         const text = document.getElementById('protractor-capture-text');
@@ -7533,24 +7562,27 @@
         const isImageMode = _isProtractorImageMode();
         const hasLiveStream = _hasActiveProtractorStream();
         if (!btn || !text || !icon || !hint) return;
+        const sideHint = `当前按${_getProtractorSideLabel()}读数`;
         if (isImageMode) {
             btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             btn.classList.remove('bg-white/15', 'border-white/10');
             text.textContent = '返回实时';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
-            hint.textContent = '当前是静态图片模式，对准后可直接锁定并确认使用';
+            hint.textContent = `当前是静态图片模式，对准后可直接锁定并确认使用 · ${sideHint}`;
         } else if (hasLiveStream) {
             btn.classList.add('bg-white/15', 'border-white/10');
             btn.classList.remove('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             text.textContent = '拍照定格';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/>';
-            hint.textContent = '先拍照定格，再锁定角度，最后确认使用';
+            hint.textContent = `先拍照定格，再锁定角度，最后确认使用 · ${sideHint}`;
         } else {
             btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             btn.classList.remove('bg-white/15', 'border-white/10');
             text.textContent = _pCameraLoading ? '连接中' : '启动实时';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
-            hint.textContent = _pCameraLoading ? '正在连接摄像头，也可以直接改用相册导入' : '摄像头暂未就绪时，可先导入相册继续测量';
+            hint.textContent = _pCameraLoading
+                ? `正在连接摄像头，也可以直接改用相册导入 · ${sideHint}`
+                : `摄像头暂未就绪时，可先导入相册继续测量 · ${sideHint}`;
         }
         _syncProtractorCameraStatus();
     }
@@ -7600,7 +7632,9 @@
         if (video) video.classList.remove('hidden');
 
         _setupCanvas(); _defaultLayout();
-        _pAngle = 45; _pAngle2 = 120; _prevBucket = 4; _syncBadge();
+        _pAngle = _rawAngleFromDisplay(45);
+        _pAngle2 = _rawAngleFromDisplay(120, _getCurrentProtractorSide() === 'L' ? 'R' : 'L');
+        _prevBucket = 4; _syncBadge();
         _syncProtractorModeUI();
         _startCamera(_facingBack);
 
@@ -7752,8 +7786,8 @@
 
     window.resetProtractorLayout = function() {
         _defaultLayout();
-        _pAngle = 45;
-        _pAngle2 = 120;
+        _pAngle = _rawAngleFromDisplay(45);
+        _pAngle2 = _rawAngleFromDisplay(120, _getCurrentProtractorSide() === 'L' ? 'R' : 'L');
         _prevBucket = 4;
         _pLocked = false;
         _updateLockUI();
@@ -7920,6 +7954,7 @@
     window.pAssignSetSide = function(side) {
         _pAssignSelection.side = side;
         _syncProtractorAssignUI();
+        _syncProtractorAssignAnglePreview();
     };
 
     window.pCloseAssignModal = function() {
@@ -7977,9 +8012,22 @@
     function _onResize() { _setupCanvas(); _defaultLayout(); }
 
     document.getElementById('protractor-image-input').addEventListener('change', _handleProtractorImageUpload);
+    document.querySelectorAll('input[name="testSide"]').forEach(input => {
+        input.addEventListener('change', () => {
+            const modal = document.getElementById('protractor-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                _syncBadge();
+                _syncProtractorModeUI();
+            }
+        });
+    });
 
     // === Helpers ===
-    function _dispAngle() { return _dualMode ? Math.abs(_pAngle - _pAngle2) : _pAngle; }
+    function _dispAngle() {
+        return _dualMode
+            ? normalizeAngleValue(Math.abs(_pAngle - _pAngle2))
+            : _displayAngleFromRaw(_pAngle);
+    }
     function _syncBadge() {
         const a = _dispAngle();
         document.getElementById('protractor-angle-badge').textContent = a + '°';
@@ -8065,6 +8113,8 @@
         ctx.clearRect(0, 0, cssW, cssH);
 
         const cx = _pCX, cy = _pCY, r = _pR, r2 = r * 0.76;
+        const currentSide = _getCurrentProtractorSide();
+        const oppositeSide = currentSide === 'L' ? 'R' : 'L';
         const tC = _darkTheme; // true=dark overlay, false=light overlay
         const bgFill = tC ? 'rgba(0,0,0,0.30)' : 'rgba(255,255,255,0.35)';
         const lineC = tC ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.85)';
@@ -8084,11 +8134,14 @@
         const tt = document.querySelector('input[name="testType"]:checked');
         if (tt && RANGES[tt.value]) {
             const rng = RANGES[tt.value];
-            const a1 = rng.green[0] * Math.PI / 180, a2 = rng.green[1] * Math.PI / 180;
+            const rawA1 = _rawAngleFromDisplay(rng.green[0], currentSide);
+            const rawA2 = _rawAngleFromDisplay(rng.green[1], currentSide);
+            const a1 = Math.min(rawA1, rawA2) * Math.PI / 180;
+            const a2 = Math.max(rawA1, rawA2) * Math.PI / 180;
             ctx.beginPath(); ctx.arc(cx, cy, r - 2, -a2, -a1, false);
             ctx.strokeStyle = 'rgba(52,199,89,0.35)'; ctx.lineWidth = r * 0.12; ctx.stroke();
             // Label
-            const mid = (rng.green[0] + rng.green[1]) / 2 * Math.PI / 180;
+            const mid = _rawAngleFromDisplay((rng.green[0] + rng.green[1]) / 2, currentSide) * Math.PI / 180;
             ctx.save(); ctx.fillStyle = 'rgba(52,199,89,0.6)';
             ctx.font = `bold ${Math.max(8, r * 0.055)}px ${_font}`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -8117,14 +8170,16 @@
                 ctx.beginPath(); ctx.moveTo(cx + r2 * co, cy - r2 * si);
                 ctx.lineTo(cx + (r2 + 11) * co, cy - (r2 + 11) * si);
                 ctx.strokeStyle = lineC2; ctx.lineWidth = 2; ctx.stroke();
+                const primaryLabel = _displayAngleFromRaw(deg, currentSide);
+                const secondaryLabel = _displayAngleFromRaw(deg, oppositeSide);
                 ctx.save(); ctx.fillStyle = txtC;
                 ctx.font = `bold ${fB}px ${_font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.shadowColor = tC ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)'; ctx.shadowBlur = 4;
-                ctx.fillText(deg.toString(), cx + (r + 20) * co, cy - (r + 20) * si); ctx.restore();
+                ctx.fillText(primaryLabel.toString(), cx + (r + 20) * co, cy - (r + 20) * si); ctx.restore();
                 if (deg > 0 && deg < 180) {
                     ctx.save(); ctx.fillStyle = txtC2;
                     ctx.font = `bold ${fS}px ${_font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText((180 - deg).toString(), cx + (r2 - 16) * co, cy - (r2 - 16) * si); ctx.restore();
+                    ctx.fillText(secondaryLabel.toString(), cx + (r2 - 16) * co, cy - (r2 - 16) * si); ctx.restore();
                 }
             } else if (deg % 5 === 0) {
                 ctx.beginPath(); ctx.moveTo(cx + (r - 10) * co, cy - (r - 10) * si);
