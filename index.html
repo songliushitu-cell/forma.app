@@ -21,9 +21,10 @@
         .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
         .report-shell {
             background:
-                radial-gradient(circle at 50% -10%, rgba(255,255,255,1) 0%, transparent 36%),
-                radial-gradient(circle at 100% 14%, rgba(10,132,255,0.08) 0%, transparent 28%),
-                linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 48%, #ebeef2 100%);
+                radial-gradient(circle at 10% 0%, rgba(255,255,255,0.96) 0%, transparent 26%),
+                radial-gradient(circle at 88% 14%, rgba(90,200,250,0.12) 0%, transparent 26%),
+                radial-gradient(circle at 72% 0%, rgba(255,214,10,0.10) 0%, transparent 20%),
+                linear-gradient(180deg, #fcfcfe 0%, #f7f8fb 44%, #eef2f7 100%);
         }
         .report-full-bleed {
             position: relative;
@@ -34,9 +35,11 @@
         }
         .report-hero {
             background:
-                linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,251,253,0.98) 60%, rgba(241,243,246,0.98) 100%);
+                radial-gradient(circle at top right, rgba(90,200,250,0.14) 0%, transparent 24%),
+                radial-gradient(circle at top left, rgba(255,214,10,0.10) 0%, transparent 20%),
+                linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(251,252,254,0.99) 54%, rgba(243,246,250,0.99) 100%);
             color: #111827;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 30px 90px rgba(15, 23, 42, 0.075);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 34px 96px rgba(15, 23, 42, 0.07);
         }
         .report-hero-grid {
             display: grid;
@@ -67,6 +70,160 @@
             color: #374151;
             font-weight: 700;
         }
+        .report-direct-grid {
+            display: grid;
+            gap: 16px;
+            align-items: start;
+        }
+        .report-direct-model {
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at top right, rgba(90,200,250,0.16) 0%, transparent 28%),
+                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,250,253,0.98) 100%);
+            border: 1px solid rgba(226,232,240,0.88);
+            padding: 14px;
+            box-shadow: 0 24px 60px rgba(15,23,42,0.05), inset 0 0 0 1px rgba(255,255,255,0.9);
+        }
+        .report-model-stage {
+            position: relative;
+            overflow: hidden;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 70% 18%, rgba(90,200,250,0.34) 0%, transparent 24%),
+                radial-gradient(circle at 18% 14%, rgba(255,214,10,0.18) 0%, transparent 18%),
+                linear-gradient(180deg, #1f2937 0%, #273449 48%, #1f2937 100%);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .report-model-stage::after {
+            content: '';
+            position: absolute;
+            inset: auto 10% -18% 10%;
+            height: 42%;
+            background: radial-gradient(circle, rgba(90,200,250,0.22) 0%, transparent 68%);
+            filter: blur(18px);
+            pointer-events: none;
+        }
+        .report-direct-cards {
+            display: grid;
+            gap: 12px;
+        }
+        .report-direct-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 22px;
+            padding: 16px 16px 17px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%);
+            border: 1px solid rgba(226,232,240,0.92);
+            box-shadow: 0 18px 34px rgba(15,23,42,0.045);
+        }
+        .report-direct-card::after {
+            content: '';
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: linear-gradient(180deg, rgba(10,132,255,0.9) 0%, rgba(90,200,250,0.9) 100%);
+        }
+        .report-direct-card:nth-child(1) {
+            background: linear-gradient(180deg, rgba(248,252,255,0.99) 0%, rgba(239,247,255,0.96) 100%);
+            border-color: rgba(191,219,254,0.92);
+        }
+        .report-direct-card:nth-child(1)::after {
+            background: linear-gradient(180deg, #0a84ff 0%, #5ac8fa 100%);
+        }
+        .report-direct-card:nth-child(2) {
+            background: linear-gradient(180deg, rgba(255,251,245,0.99) 0%, rgba(255,246,232,0.96) 100%);
+            border-color: rgba(253,230,138,0.72);
+        }
+        .report-direct-card:nth-child(2)::after {
+            background: linear-gradient(180deg, #ff9f0a 0%, #ffd60a 100%);
+        }
+        .report-direct-card:nth-child(3) {
+            background: linear-gradient(180deg, rgba(250,249,255,0.99) 0%, rgba(243,240,255,0.96) 100%);
+            border-color: rgba(216,180,254,0.64);
+        }
+        .report-direct-card:nth-child(3)::after {
+            background: linear-gradient(180deg, #7c3aed 0%, #a855f7 100%);
+        }
+        .report-direct-card:nth-child(4) {
+            background: linear-gradient(180deg, rgba(247,252,250,0.99) 0%, rgba(237,249,243,0.96) 100%);
+            border-color: rgba(167,243,208,0.72);
+        }
+        .report-direct-card:nth-child(4)::after {
+            background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
+        }
+        .report-direct-card-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #8e8e93;
+            margin-bottom: 8px;
+        }
+        .report-direct-card-value {
+            font-size: 24px;
+            line-height: 1.12;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: #111827;
+        }
+        .report-direct-card-note {
+            margin-top: 7px;
+            font-size: 11px;
+            line-height: 1.65;
+            color: #6b7280;
+        }
+        .report-metric-table {
+            display: grid;
+            gap: 10px;
+        }
+        .report-metric-row {
+            display: grid;
+            gap: 10px;
+            border-radius: 20px;
+            padding: 14px 15px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,249,253,0.98) 100%);
+            border: 1px solid rgba(226,232,240,0.88);
+            box-shadow: 0 12px 24px rgba(15,23,42,0.03);
+        }
+        .report-metric-values {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .report-metric-pill {
+            border-radius: 16px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(229,231,235,0.92);
+            padding: 10px 10px 11px;
+        }
+        .report-metric-pill-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .report-metric-pill-value {
+            font-size: 14px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: #111827;
+        }
+        .report-hit-list {
+            display: grid;
+            gap: 8px;
+        }
+        .report-hit-item {
+            border-radius: 16px;
+            padding: 11px 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%);
+            border: 1px solid rgba(226,232,240,0.88);
+            font-size: 12px;
+            line-height: 1.65;
+            color: #475569;
+        }
         .report-hero h2,
         .report-hero #final-result-title {
             color: #111827 !important;
@@ -88,10 +245,12 @@
             border: 1px solid rgba(10,132,255,0.16);
         }
         .report-panel {
-            background: rgba(255,255,255,0.975);
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.88) 0%, transparent 26%),
+                rgba(255,255,255,0.975);
             border: 1px solid rgba(255,255,255,0.98);
             border-radius: 32px;
-            box-shadow: 0 22px 64px rgba(15,23,42,0.055), inset 0 0 0 1px rgba(209,213,219,0.58);
+            box-shadow: 0 26px 72px rgba(15,23,42,0.05), inset 0 0 0 1px rgba(209,213,219,0.48);
         }
         .report-soft-box {
             background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
@@ -361,6 +520,9 @@
             .report-story-grid.is-main > :last-child {
                 min-width: 0;
             }
+            .report-direct-grid {
+                grid-template-columns: minmax(420px, 0.95fr) minmax(0, 1.05fr);
+            }
         }
         .report-proof-card {
             border-radius: 22px;
@@ -369,8 +531,8 @@
             border: 1px solid rgba(229,231,235,0.94);
         }
         .report-proof-card.is-strong {
-            border-color: rgba(10,132,255,0.28);
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(242,247,255,0.98) 100%);
+            border-color: rgba(10,132,255,0.22);
+            background: linear-gradient(180deg, rgba(250,253,255,0.99) 0%, rgba(238,246,255,0.98) 100%);
         }
         .report-proof-value {
             font-size: 20px;
@@ -387,8 +549,11 @@
             color: #8e8e93;
         }
         .report-next-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(242,243,245,0.98) 100%);
-            border: 1px solid rgba(209,213,219,0.96);
+            background:
+                radial-gradient(circle at top right, rgba(90,200,250,0.10) 0%, transparent 24%),
+                radial-gradient(circle at top left, rgba(255,214,10,0.08) 0%, transparent 18%),
+                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,247,250,0.98) 100%);
+            border: 1px solid rgba(219,226,236,0.92);
             color: #111827;
         }
         .report-next-card .report-section-title,
@@ -496,10 +661,11 @@
         }
         .report-plan-shell {
             background:
-                radial-gradient(circle at right top, rgba(10,132,255,0.12) 0%, transparent 26%),
-                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,246,248,0.98) 58%, rgba(234,237,241,0.98) 100%);
+                radial-gradient(circle at right top, rgba(90,200,250,0.16) 0%, transparent 24%),
+                radial-gradient(circle at left top, rgba(255,214,10,0.10) 0%, transparent 18%),
+                linear-gradient(180deg, rgba(255,255,255,0.995) 0%, rgba(247,249,252,0.985) 58%, rgba(238,242,247,0.98) 100%);
             border: 1px solid rgba(255,255,255,0.95);
-            box-shadow: 0 28px 88px rgba(15,23,42,0.08), inset 0 0 0 1px rgba(209,213,219,0.48);
+            box-shadow: 0 30px 94px rgba(15,23,42,0.07), inset 0 0 0 1px rgba(209,213,219,0.4);
         }
         .report-plan-grid {
             display: grid;
@@ -1355,7 +1521,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.41</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.43</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1637,10 +1803,6 @@
                         <div class="report-summary-strip">
                             <div id="final-report-confidence-detail" class="report-summary-chip">
                                 当前重点：--
-                            </div>
-                            <div class="report-summary-chip">
-                                <div class="report-summary-chip-label">这份报告会回答</div>
-                                <div class="report-summary-chip-value">为什么会这样、平时怎么认出来、下一步为什么不能随便练。</div>
                             </div>
                         </div>
                     </div>
@@ -4567,6 +4729,135 @@
             };
         }
 
+        function buildDirectResultSummary(routeIsolation, metrics) {
+            const compKey = routeIsolation.compressionResult.key;
+            const rotKey = routeIsolation.rotationResult.key;
+            const heightKey = routeIsolation.heightResult.key;
+            const confidenceKey = routeIsolation.compressionResult.confidenceKey;
+
+            const frontBack = compKey === 'anterior'
+                ? {
+                    short: '前倾',
+                    value: '前倾型线索更明显',
+                    note: `主动直腿抬高短板 ${metrics.slrFinal.toFixed(1)}°，主动髋屈短板 ${metrics.hipFinal.toFixed(1)}°，主动肩屈短板 ${metrics.shoulderFinal.toFixed(1)}°。`
+                }
+                : compKey === 'posterior'
+                    ? {
+                        short: '前移',
+                        value: '前移型线索更明显',
+                        note: `主动直腿抬高短板 ${metrics.slrFinal.toFixed(1)}°，主动髋屈短板 ${metrics.hipFinal.toFixed(1)}°，主动肩屈短板 ${metrics.shoulderFinal.toFixed(1)}°。`
+                    }
+                    : {
+                        short: '待复核',
+                        value: '前倾 / 前移待复核',
+                        note: `当前短板值组合还没有稳定落到单一前后类型。`
+                    };
+
+            const iliacForward = rotKey === 'LeftAIC' || rotKey === 'Oblique'
+                ? {
+                    short: '左侧髂骨朝前',
+                    value: '左侧髂骨更朝前',
+                    note: `左右差命中 ${routeIsolation.rotationResult.evidenceHits}/3。`
+                }
+                : {
+                    short: '待复核',
+                    value: '左右前后差待复核',
+                    note: `当前没有稳定落到单侧髂骨朝前。`
+                };
+
+            const rotation = rotKey === 'LeftAIC' || rotKey === 'Oblique'
+                ? {
+                    short: '向右旋',
+                    value: '骨盆向右旋',
+                    note: `由左右前后差共同指向。`
+                }
+                : {
+                    short: '待复核',
+                    value: '旋转方向待复核',
+                    note: `当前旋转证据不足。`
+                };
+
+            const height = heightKey === 'leftHigh'
+                ? {
+                    short: '左高右低',
+                    value: '骨盆左高右低',
+                    note: `高低差命中 ${routeIsolation.heightResult.evidenceHits}/3。`
+                }
+                : heightKey === 'clue'
+                    ? {
+                        short: '左高线索',
+                        value: '左高线索已出现',
+                        note: `已有 1 项高低差线索。`
+                    }
+                    : heightKey === 'uneven'
+                        ? {
+                            short: '高低差待复核',
+                            value: '高低差已出现，方向待复核',
+                            note: `当前左右差已出现，但还不适合直接写死方向。`
+                        }
+                        : {
+                            short: '高度接近',
+                            value: '左右高度接近',
+                            note: `当前没有稳定落到左高右低。`
+                        };
+
+            const confidence = confidenceKey === 'high' ? '高' : confidenceKey === 'medium' ? '中' : '低';
+            const badges = [
+                { label: `前后：${frontBack.short}`, color: '#6b7280' },
+                { label: `髂骨：${iliacForward.short}`, color: '#6b7280' },
+                { label: `旋转：${rotation.short}`, color: '#6b7280' },
+                { label: `稳定度：${confidence}`, color: '#6b7280' }
+            ];
+
+            const hitRules = [
+                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `前移线索：${item.label}`),
+                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `前倾线索：${item.label}`),
+                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `高低差线索：${item.label}`)
+            ];
+
+            if (rotKey === 'LeftAIC') {
+                hitRules.unshift('旋转线索：左侧髋屈更大、左侧直腿抬高更小、左侧肩屈更小。');
+            } else if (rotKey === 'Oblique') {
+                hitRules.unshift('旋转线索：左侧更朝前，同时伴随左高右低。');
+            }
+
+            return {
+                headline: frontBack.short === '待复核'
+                    ? (iliacForward.short === '待复核' ? '骨盆方向待复核' : `骨盆方向待复核，${iliacForward.short}`)
+                    : `骨盆${frontBack.short}${iliacForward.short === '待复核' ? '' : `，${iliacForward.short}`}`,
+                frontBack,
+                iliacForward,
+                rotation,
+                height,
+                confidence,
+                badges,
+                hitRules: hitRules.slice(0, 6)
+            };
+        }
+
+        function buildDirectMetricRows(metrics) {
+            return [
+                {
+                    label: '直腿抬高',
+                    left: `${metrics.slrL.toFixed(1)}°`,
+                    right: `${metrics.slrR.toFixed(1)}°`,
+                    diff: formatEvidenceDiff(metrics.diffSLR)
+                },
+                {
+                    label: '髋屈曲',
+                    left: `${metrics.hipL.toFixed(1)}°`,
+                    right: `${metrics.hipR.toFixed(1)}°`,
+                    diff: formatEvidenceDiff(metrics.diffHip)
+                },
+                {
+                    label: '肩屈',
+                    left: `${metrics.shL.toFixed(1)}°`,
+                    right: `${metrics.shR.toFixed(1)}°`,
+                    diff: formatEvidenceDiff(metrics.diffSh)
+                }
+            ];
+        }
+
         function formatEvidenceDiff(diff) {
             const abs = Math.abs(diff).toFixed(1);
             if (diff > 0) return `左侧多 ${abs}°`;
@@ -6820,7 +7111,6 @@
             const planKeyMap = { baseline: 'LeftAIC', lateral: 'Lateral', oblique: 'Oblique', transition: 'Transition' };
             const planKey = `${compKey}_${planKeyMap[subType]}`;
             const pelvisCfg = derivePelvisVisualConfig(routeIsolation, metrics, comboKey, compKey);
-            const compLabel = compKey === 'posterior' ? '后腰更容易帮你顶住' : compKey === 'anterior' ? '髋前和大腿前侧更容易拉紧' : '前后方向继续观察';
             const resultLabel = subType === 'oblique'
                 ? (hasMeaningfulLateral ? '左边更高，也更靠前' : '左边更高、也更靠前的线索已经出现')
                 : subType === 'lateral'
@@ -6832,131 +7122,78 @@
                         : hasLateralClue
                             ? '骨盆已经开始偏向一边'
                             : '骨盆已经开始偏向一边';
-            const heroCopy = buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage });
             const actionCopy = buildActionCopy({ trainingStage, subType });
             const referenceImages = getReportReferenceImages(subType);
-            const bodyFeatures = buildBodyFeatureInference(comboKey, metrics);
-            const symptomCards = !reportSafetyBlocked ? buildSymptomInsightCards(comboKey, symptomCheck.answers || {}) : [];
-            const appearanceCards = buildAppearanceCards(comboKey, bodyFeatures, symptomCheck.answers || {});
             const reportId = Date.now();
-            const reportBadges = buildSubtypeBadge(comboKey, compKey);
-            const dailyLifeCards = !reportSafetyBlocked ? buildDailyLifeCards(comboKey, symptomCheck.answers || {}, bodyFeatures, routeIsolation) : [];
-            const advantageCards = !reportSafetyBlocked ? buildAdvantageCards(comboKey, trainingStage) : [];
-            const customerConcernCards = !reportSafetyBlocked ? buildCustomerConcernCards(comboKey, trainingStage) : [];
-            const microActionItems = !reportSafetyBlocked ? buildMicroActionChecklist(comboKey, trainingStage, actionCopy) : [];
-            const customerResultCopy = buildCustomerResultCopy({ subType, compKey, resultLabel, trainingStage });
+            const directSummary = buildDirectResultSummary(routeIsolation, metrics);
+            const reportBadges = directSummary.badges;
             const evidenceCards = buildDataEvidenceCards(metrics, routeIsolation);
-            const triggerLabels = routeIsolation.triggerItems.map(item => item.label).join('、');
-            const dataSummary = triggerLabels
-                ? `这次不是只看某一个角度，而是 ${triggerLabels} 同时给出线索，所以才会把它和你的日常表现放在一起判断。`
-                : '当前 6 项数据已经提示身体两边的活动和用力不在同一状态。';
-            const selectedSymptomLabels = (symptomCheck?.answers
-                ? [
-                    getSymptomAnswerLabel('back', symptomCheck.answers.back),
-                    getSymptomAnswerLabel('sit', symptomCheck.answers.sit),
-                    getSymptomAnswerLabel('breath', symptomCheck.answers.breath),
-                    getSymptomAnswerLabel('glute', symptomCheck.answers.glute),
-                    getSymptomAnswerLabel('side', symptomCheck.answers.side)
-                ].filter(Boolean)
-                : []).slice(0, 4);
-            const transitionText = selectedSymptomLabels.length
-                ? '下面这些日常线索，和你刚才回答的问卷主诉高度吻合，我们一条条帮你对上。'
-                : '如果你刚才没有补充主诉，也可以先从这些高频生活线索开始对照自己。';
+            const directMetricRows = buildDirectMetricRows(metrics);
 
-            const visualHtml = `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">骨盆示意</div>
-                <div class="report-section-title mb-2">先看懂骨盆为什么会影响腰和坐姿</div>
-                <p class="report-body-text mb-3">你可以简单理解成：骨盆像左右两块大的骨头，夹着中间一块骶骨。两边如果一高一低、一个更往前一个更往后，坐着时下面的支撑就不一样，上面的腰就容易出来帮你“顶住”。</p>
-                <p class="report-note mb-4">下面的模型只用来帮你看方向，不代表骨头坏了或变形。</p>
-                <div class="pelvis-stage mb-4" style="background:#0d1117;height:278px;border-radius:1.2rem;position:relative;overflow:hidden;">
-                    <canvas id="pelvis-canvas" style="width:100%;height:278px;display:block;border-radius:1.2rem;"></canvas>
-                    <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
-                        <span style="display:flex;align-items:center;gap:8px;">
-                            <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
-                            加载骨盆模型...
-                        </span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    ${referenceImages.map((image) => `
-                    <figure class="report-soft-box report-visual-card p-2.5">
-                        <button type="button" class="report-image-trigger" data-report-image-src="${escapeHtml(image.src)}" data-report-image-label="${escapeHtml(image.label)}" aria-label="放大查看${escapeHtml(image.label)}">
-                            <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
-                            <span class="report-image-hint">点按放大</span>
-                        </button>
-                        <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
-                    </figure>`).join('')}
-                </div>
-            </div>`;
-
-            const dailyLifeHtml = reportSafetyBlocked ? `
-            <div id="report-safety-block" class="report-panel report-panel-empathy p-5 sm:p-6">
+            const visualHtml = reportSafetyBlocked ? `
+            <div id="report-safety-block" class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">优先事项</div>
-                <div class="report-section-title mb-3">先看安全提醒，再决定下一步</div>
+                <div class="report-section-title mb-3">先处理安全提醒</div>
                 <p class="report-body-text">我们注意到你有需要优先处理的信号，建议先咨询专业评估师再进行针对性调整。</p>
                 <a href="#report-safety-block" class="inline-flex mt-4 items-center rounded-full bg-rose-50 px-4 py-2 text-[11px] font-bold text-rose-600 border border-rose-200 shadow-sm">
                     跳过本报告，直接看安全建议
                 </a>
             </div>` : `
-            <div class="report-panel report-panel-empathy p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">日常自查</div>
-                <div class="report-section-title mb-2">你平时最容易从这些细节认出自己</div>
-                <p class="report-body-text mb-5">${customerResultCopy.lifeHook}</p>
-                <div class="daily-life-grid">
-                    ${renderDailyLifeCardsHtml(dailyLifeCards, reportId)}
-                </div>
-            </div>`;
-
-            const transitionHtml = reportSafetyBlocked ? '' : `
-            <div class="report-transition-note">
-                <span class="mt-[2px] text-[14px] text-[#0a84ff]">●</span>
-                <span>${transitionText}</span>
-            </div>`;
-
-            const relationHtml = reportSafetyBlocked ? '' : `
             <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">身体感觉</div>
-                <div class="report-section-title mb-3">这和你现在的感觉有什么关系</div>
-                <p class="report-body-text">${selectedSymptomLabels.length ? '你在问卷里勾选的感觉，和这次结果是能对应起来的。' : '结合这次结果，下面这些感觉更容易出现。'}</p>
-                ${selectedSymptomLabels.length ? `<div class="flex flex-wrap gap-2 mt-3 mb-4">${selectedSymptomLabels.map((label) => `<span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-600">${label}</span>`).join('')}</div>` : '<div class="h-4"></div>'}
-                <div class="grid gap-3">
-                    ${symptomCards.map((item) => `
-                    <div class="report-soft-box p-4">
-                        <div class="text-[13px] font-bold text-slate-800 mb-1.5">${item.title}</div>
-                        <p class="report-note">${item.detail}</p>
-                    </div>`).join('')}
-                </div>
-            </div>`;
-
-            const appearanceHtml = `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">体态变化</div>
-                <div class="report-section-title mb-3">你现在更可能出现的体态变化</div>
-                <div class="grid gap-3">
-                    ${appearanceCards.map((item) => `
-                    <div class="report-soft-box p-4">
-                        <div class="text-[13px] font-bold text-slate-800 mb-1.5">${item.title}</div>
-                        <p class="report-note">${item.detail}</p>
-                    </div>`).join('')}
-                </div>
-            </div>`;
-
-            const advantageHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">优势提示</div>
-                <div class="report-section-title mb-3">你的身体优势</div>
-                <div class="grid gap-3">
-                    ${renderAdvantageCardsHtml(advantageCards)}
+                <div class="report-eyebrow mb-2">骨盆结果</div>
+                <div class="report-section-title mb-4">根据这次数据，直接看骨盆方向</div>
+                <div class="report-direct-grid">
+                    <div class="report-direct-model">
+                        <div class="pelvis-stage report-model-stage" style="height:318px;">
+                            <canvas id="pelvis-canvas" style="width:100%;height:318px;display:block;border-radius:1.2rem;"></canvas>
+                            <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
+                                <span style="display:flex;align-items:center;gap:8px;">
+                                    <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
+                                    加载骨盆模型...
+                                </span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            ${referenceImages.map((image) => `
+                            <figure class="report-soft-box report-visual-card p-2.5">
+                                <button type="button" class="report-image-trigger" data-report-image-src="${escapeHtml(image.src)}" data-report-image-label="${escapeHtml(image.label)}" aria-label="放大查看${escapeHtml(image.label)}">
+                                    <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
+                                    <span class="report-image-hint">点按放大</span>
+                                </button>
+                                <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
+                            </figure>`).join('')}
+                        </div>
+                    </div>
+                    <div class="report-direct-cards">
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">前后主方向</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.frontBack.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.frontBack.note)}</div>
+                        </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">哪侧髂骨更朝前</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.iliacForward.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.iliacForward.note)}</div>
+                        </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">骨盆旋转方向</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.rotation.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.rotation.note)}</div>
+                        </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">左右高低</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.height.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.height.note)}</div>
+                        </div>
+                    </div>
                 </div>
             </div>`;
 
             const actionHtml = reportSafetyBlocked ? '' : `
             <div class="report-panel report-next-card p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">调整方向</div>
-                <div class="report-section-title mb-2">你现在更需要一条清楚的调整顺序</div>
+                <div class="report-eyebrow mb-2">训练入口</div>
+                <div class="report-section-title mb-2">先按这个方向处理</div>
                 <p class="report-body-text mb-4">${actionCopy.headline}${actionCopy.lead}</p>
-                <div class="report-customer-quote mb-4">很多人不是没练，而是第一步就练错了。顺序一错，今天觉得松一点，过几天又会回到原来的站姿和坐姿。</div>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <div class="report-soft-box p-4">
                         <div class="text-[12px] font-bold text-slate-700 mb-3">现在先做</div>
@@ -6973,34 +7210,46 @@
                 </div>
             </div>`;
 
-            const customerConcernHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">线上答疑</div>
-                <div class="report-section-title mb-3">你可能最关心的 4 件事</div>
-                <div class="grid gap-3">
-                    ${renderCustomerConcernCardsHtml(customerConcernCards)}
-                </div>
-            </div>`;
-
-            const microActionHtml = '';
-
             const dataHtml = `
             <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">判断证据</div>
-                <div class="report-section-title mb-2">我为什么会这样判断你</div>
-                <p class="report-body-text mb-5">${dataSummary}</p>
-                <div class="report-proof-grid">
-                    ${renderDataEvidenceCardsHtml(evidenceCards)}
+                <div class="report-eyebrow mb-2">数据依据</div>
+                <div class="report-section-title mb-3">这次判定对应的数据</div>
+                <div class="report-metric-table">
+                    ${directMetricRows.map((row) => `
+                    <div class="report-metric-row">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="text-[13px] font-black text-slate-900">${escapeHtml(row.label)}</div>
+                            <div class="text-[11px] font-bold text-slate-500">${escapeHtml(row.diff)}</div>
+                        </div>
+                        <div class="report-metric-values">
+                            <div class="report-metric-pill">
+                                <div class="report-metric-pill-label">左侧</div>
+                                <div class="report-metric-pill-value">${escapeHtml(row.left)}</div>
+                            </div>
+                            <div class="report-metric-pill">
+                                <div class="report-metric-pill-label">右侧</div>
+                                <div class="report-metric-pill-value">${escapeHtml(row.right)}</div>
+                            </div>
+                            <div class="report-metric-pill">
+                                <div class="report-metric-pill-label">左右差</div>
+                                <div class="report-metric-pill-value">${escapeHtml(row.diff)}</div>
+                            </div>
+                        </div>
+                    </div>`).join('')}
                 </div>
-            </div>`;
-
-            const feedbackHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">快速反馈</div>
-                <div class="report-section-title mb-2">这个报告帮到你了吗？</div>
-                <p class="report-body-text">你的反馈会帮助我们把报告写得更贴近真实生活，也更容易让下一位用户快速认出自己。</p>
-                <div class="mt-4">
-                    ${renderReportHelpfulnessHtml(reportId)}
+                <div class="grid gap-3 mt-4 lg:grid-cols-[1.05fr_0.95fr]">
+                    <div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">命中规则</div>
+                        <div class="report-hit-list">
+                            ${directSummary.hitRules.map((rule) => `<div class="report-hit-item">${escapeHtml(rule)}</div>`).join('') || '<div class="report-hit-item">当前没有足够命中项。</div>'}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">差值总览</div>
+                        <div class="report-proof-grid">
+                    ${renderDataEvidenceCardsHtml(evidenceCards)}
+                        </div>
+                    </div>
                 </div>
             </div>`;
 
@@ -7010,32 +7259,23 @@
             </div>`;
 
             const container = document.getElementById('empathic-report-container');
-            const storyPrimaryHtml = reportSafetyBlocked
-                ? `${dailyLifeHtml}${dataHtml}`
-                : `<div class="report-story-grid is-main">${dailyLifeHtml}${dataHtml}</div>`;
-            const storySecondaryHtml = reportSafetyBlocked
-                ? relationHtml + appearanceHtml
-                : `<div class="report-story-grid">${relationHtml}${appearanceHtml}</div>`;
-            const storyEndingHtml = reportSafetyBlocked
-                ? `${customerConcernHtml}${advantageHtml}`
-                : `<div class="report-story-grid">${customerConcernHtml}${advantageHtml}</div>`;
-            container.innerHTML = `${visualHtml}${storyPrimaryHtml}${transitionHtml}${storySecondaryHtml}${actionHtml}${storyEndingHtml}${microActionHtml}${feedbackHtml}${disclaimerHtml}`;
+            container.innerHTML = `${visualHtml}${dataHtml}${actionHtml}${disclaimerHtml}`;
             container.classList.remove('hidden');
             setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
-            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : customerResultCopy.headline;
+            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : directSummary.headline;
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
             document.getElementById('final-report-confidence').textContent = `结果稳定度：${compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低'}`;
             document.getElementById('final-report-confidence-detail').innerHTML = `
                 <div class="grid gap-2">
-                    <div><span class="font-black text-slate-900">本次模式：</span>${escapeHtml(customerResultCopy.patternLine)}</div>
-                    <div><span class="font-black text-slate-900">日常自查：</span>${escapeHtml(customerResultCopy.lifeHook)}</div>
-                    <div><span class="font-black text-slate-900">下一步：</span>${escapeHtml(customerResultCopy.nextNeed)}</div>
+                    <div><span class="font-black text-slate-900">前后主方向：</span>${escapeHtml(directSummary.frontBack.value)}</div>
+                    <div><span class="font-black text-slate-900">髂骨朝前：</span>${escapeHtml(directSummary.iliacForward.value)}</div>
+                    <div><span class="font-black text-slate-900">骨盆旋转：</span>${escapeHtml(directSummary.rotation.value)}</div>
                 </div>`;
-            document.getElementById('final-combo-label').textContent = resultLabel;
-            document.getElementById('final-pelvic-orientation').innerHTML = resultLabel;
+            document.getElementById('final-combo-label').textContent = directSummary.headline;
+            document.getElementById('final-pelvic-orientation').innerHTML = directSummary.headline;
             document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
             document.getElementById('final-report-data').textContent = `数据依据：SLR ${slrL.toFixed(1)}°/${slrR.toFixed(1)}° · 髋屈 ${hipL.toFixed(1)}°/${hipR.toFixed(1)}° · 肩屈 ${shL.toFixed(1)}°/${shR.toFixed(1)}°`;
             document.getElementById('final-technical-content').innerHTML = '';
@@ -7046,9 +7286,9 @@
                 heightLayer: { key: heightKey },
                 routeIsolation,
                 planKey,
-                primaryRouteLabel: resultLabel,
-                primarySummary: heroCopy.title,
-                secondarySummary: `${heroCopy.resultLine}${getCompressionLeadText(compKey)}${actionCopy.headline}`,
+                primaryRouteLabel: directSummary.headline,
+                primarySummary: directSummary.frontBack.value,
+                secondarySummary: `${directSummary.iliacForward.value}；${directSummary.rotation.value}；${directSummary.height.value}`,
                 symptomCheck,
                 pelvisCfg,
                 pelvisComboKey: comboKey,
