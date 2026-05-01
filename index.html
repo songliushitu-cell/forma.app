@@ -1232,7 +1232,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.38</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.39</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -7323,6 +7323,21 @@
         <div id="protractor-mode-hint" class="px-4 pt-2 text-center text-[10px] font-medium tracking-wide text-white/55">
             先对准，再锁定，最后确认使用
         </div>
+        <div class="px-4 pt-2 pb-1">
+            <div class="rounded-[1.1rem] bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-2.5 shadow-[0_10px_24px_rgba(0,0,0,0.12)]">
+                <div class="flex items-center justify-between gap-3">
+                    <div id="protractor-read-direction-text" class="min-w-0 text-[10px] font-bold tracking-wide text-white/90">
+                        读数方向：左侧刻度
+                    </div>
+                    <button id="btn-protractor-read-direction" onclick="toggleProtractorReadDirection()" class="flex-shrink-0 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/20 border border-white/10 text-white text-[10px] font-bold tracking-wider active:scale-95 transition-all">
+                        切换
+                    </button>
+                </div>
+                <div id="protractor-read-direction-note" class="hidden mt-2 text-[9px] leading-relaxed text-[#8be5dc]">
+                    已手动纠偏，本次关闭量角器后恢复默认
+                </div>
+            </div>
+        </div>
     </div>
     <!-- 历史记录面板 -->
     <div id="protractor-history-panel" class="absolute right-0 top-0 bottom-0 w-64 z-30 hidden bg-black/85 backdrop-blur-md border-l border-white/10 flex flex-col" style="padding-top:max(env(safe-area-inset-top),10px)">
@@ -7403,6 +7418,7 @@
     let _protractorImageUrl = null;
     let _pCameraLoading = false;
     let _pCameraTimeout = null;
+    let _readDirectionOverride = null;
     let _pAssignSelection = { type: 'slr', side: 'L', angle: 45, rawAngle: 45 };
     let _pendingReportPrompt = null;
     // Angle ranges per test type
@@ -7526,8 +7542,16 @@
         modal.classList.remove('flex');
     }
 
-    function _getCurrentProtractorSide() {
+    function _getDefaultProtractorReadDirection() {
         return document.querySelector('input[name="testSide"]:checked')?.value === 'R' ? 'R' : 'L';
+    }
+
+    function getEffectiveReadDirection() {
+        return _readDirectionOverride ?? _getDefaultProtractorReadDirection();
+    }
+
+    function _getCurrentProtractorSide() {
+        return getEffectiveReadDirection();
     }
 
     function _getProtractorSideLabel(side = _getCurrentProtractorSide()) {
@@ -7549,9 +7573,28 @@
         if (!angleEl) return;
         const previewAngle = _dualMode
             ? normalizeAngleValue(Math.abs(_pAngle - _pAngle2))
-            : _displayAngleFromRaw(_pAssignSelection.rawAngle ?? _pAngle, _pAssignSelection.side);
+            : _displayAngleFromRaw(_pAssignSelection.rawAngle ?? _pAngle, getEffectiveReadDirection());
         _pAssignSelection.angle = previewAngle;
         angleEl.textContent = `${formatAngleValue(previewAngle)}°`;
+    }
+
+    function _syncProtractorReadDirectionControl() {
+        const text = document.getElementById('protractor-read-direction-text');
+        const note = document.getElementById('protractor-read-direction-note');
+        const button = document.getElementById('btn-protractor-read-direction');
+        if (!text || !note || !button) return;
+        const side = getEffectiveReadDirection();
+        const isManual = _readDirectionOverride !== null;
+        text.textContent = `读数方向：${_getProtractorSideLabel(side)}`;
+        note.classList.toggle('hidden', !isManual);
+        button.textContent = side === 'L' ? '切到右侧' : '切到左侧';
+    }
+
+    function refreshProtractorReadDirectionUI() {
+        _syncBadge();
+        _syncProtractorModeUI();
+        _syncProtractorAssignAnglePreview();
+        _syncProtractorReadDirectionControl();
     }
 
     function _syncProtractorModeUI() {
@@ -7562,7 +7605,8 @@
         const isImageMode = _isProtractorImageMode();
         const hasLiveStream = _hasActiveProtractorStream();
         if (!btn || !text || !icon || !hint) return;
-        const sideHint = `当前按${_getProtractorSideLabel()}读数`;
+        const isManual = _readDirectionOverride !== null;
+        const sideHint = `当前按${_getProtractorSideLabel()}读数${isManual ? ' · 已手动纠偏' : ''}`;
         if (isImageMode) {
             btn.classList.add('bg-[#5bd4c8]/25', 'border-[#5bd4c8]/30');
             btn.classList.remove('bg-white/15', 'border-white/10');
@@ -7584,6 +7628,7 @@
                 ? `正在连接摄像头，也可以直接改用相册导入 · ${sideHint}`
                 : `摄像头暂未就绪时，可先导入相册继续测量 · ${sideHint}`;
         }
+        _syncProtractorReadDirectionControl();
         _syncProtractorCameraStatus();
     }
 
@@ -7618,6 +7663,7 @@
         const modal = document.getElementById('protractor-modal');
         const video = document.getElementById('protractor-video');
         modal.classList.remove('hidden'); modal.classList.add('flex');
+        _readDirectionOverride = null;
         _pLocked = false; _updateLockUI();
         _dualMode = false; _togBtn('btn-p-dual', false);
         _levelOn = false; _togBtn('btn-p-level', false);
@@ -7634,8 +7680,8 @@
         _setupCanvas(); _defaultLayout();
         _pAngle = _rawAngleFromDisplay(45);
         _pAngle2 = _rawAngleFromDisplay(120, _getCurrentProtractorSide() === 'L' ? 'R' : 'L');
-        _prevBucket = 4; _syncBadge();
-        _syncProtractorModeUI();
+        _prevBucket = 4;
+        refreshProtractorReadDirectionUI();
         _startCamera(_facingBack);
 
         const c = document.getElementById('protractor-canvas');
@@ -7666,6 +7712,7 @@
         _closeProtractorReportConfirm();
         _pendingReportPrompt = null;
         _pCameraLoading = false;
+        _readDirectionOverride = null;
         _stopCamera(); _stopGyro(); _clearProtractorImage();
     };
 
@@ -7739,6 +7786,14 @@
         _syncProtractorModeUI();
     };
 
+    window.toggleProtractorReadDirection = function() {
+        const current = getEffectiveReadDirection();
+        const next = current === 'L' ? 'R' : 'L';
+        _readDirectionOverride = next === _getDefaultProtractorReadDirection() ? null : next;
+        refreshProtractorReadDirectionUI();
+        if (_voiceOn) _speak(`已切换为${_getProtractorSideLabel(getEffectiveReadDirection())}读数`);
+    };
+
     window.openProtractorImagePicker = function() {
         const input = document.getElementById('protractor-image-input');
         if (input) input.click();
@@ -7786,12 +7841,13 @@
 
     window.resetProtractorLayout = function() {
         _defaultLayout();
+        _readDirectionOverride = null;
         _pAngle = _rawAngleFromDisplay(45);
         _pAngle2 = _rawAngleFromDisplay(120, _getCurrentProtractorSide() === 'L' ? 'R' : 'L');
         _prevBucket = 4;
         _pLocked = false;
         _updateLockUI();
-        _syncBadge();
+        refreshProtractorReadDirectionUI();
         if (navigator.vibrate) navigator.vibrate(12);
         if (_voiceOn) _speak('量角器已重置');
     };
@@ -7835,7 +7891,7 @@
     // === Lock ===
     window.toggleProtractorLock = function() {
         _pLocked = !_pLocked; _updateLockUI();
-        if (_pLocked && _voiceOn) _speak('当前角度' + (_dualMode ? Math.abs(_pAngle - _pAngle2) : _pAngle) + '度');
+        if (_pLocked && _voiceOn) _speak('当前角度' + _dispAngle() + '度');
     };
     function _updateLockUI() {
         const btn = document.getElementById('btn-protractor-lock'), txt = document.getElementById('protractor-lock-text'), ico = document.getElementById('protractor-lock-icon');
@@ -8016,8 +8072,7 @@
         input.addEventListener('change', () => {
             const modal = document.getElementById('protractor-modal');
             if (modal && !modal.classList.contains('hidden')) {
-                _syncBadge();
-                _syncProtractorModeUI();
+                refreshProtractorReadDirectionUI();
             }
         });
     });
