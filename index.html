@@ -26,12 +26,13 @@
                 radial-gradient(circle at 72% 0%, rgba(255,214,10,0.10) 0%, transparent 20%),
                 linear-gradient(180deg, #fcfcfe 0%, #f7f8fb 44%, #eef2f7 100%);
         }
-        .report-full-bleed {
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-            width: min(calc(100vw - 14px), 1460px);
-            max-width: none;
+        .app-shell {
+            width: 100%;
+            max-width: 32rem;
+            transition: max-width 0.42s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+        .app-shell.app-shell-report-mode {
+            max-width: min(calc(100vw - 28px), 1380px);
         }
         .report-hero {
             background:
@@ -55,6 +56,10 @@
             background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,247,249,0.98) 100%);
             border: 1px solid rgba(229,231,235,0.92);
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85);
+        }
+        .report-summary-chip.is-soft-blue {
+            background: linear-gradient(180deg, rgba(248,252,255,0.99) 0%, rgba(239,247,255,0.96) 100%);
+            border-color: rgba(191,219,254,0.74);
         }
         .report-summary-chip-label {
             font-size: 10px;
@@ -173,6 +178,20 @@
             line-height: 1.65;
             color: #6b7280;
         }
+        .report-direct-card-hint {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.76);
+            border: 1px solid rgba(255,255,255,0.78);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #475569;
+        }
         .report-metric-table {
             display: grid;
             gap: 10px;
@@ -223,6 +242,12 @@
             font-size: 12px;
             line-height: 1.65;
             color: #475569;
+        }
+        .report-headline-plain {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #4b5563;
+            max-width: 52ch;
         }
         .report-hero h2,
         .report-hero #final-result-title {
@@ -675,6 +700,10 @@
             display: grid;
             gap: 16px;
         }
+        .report-plan-compact-grid {
+            display: grid;
+            gap: 12px;
+        }
         .report-plan-price {
             border-radius: 28px;
             background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,246,249,0.98) 100%);
@@ -682,11 +711,21 @@
             padding: 20px 18px;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.88);
         }
+        .report-plan-price strong {
+            letter-spacing: -0.05em;
+        }
         .report-plan-editorial {
             border-radius: 24px;
             padding: 18px;
             background: rgba(255,255,255,0.8);
             border: 1px solid rgba(229,231,235,0.9);
+        }
+        .report-plan-mini-card {
+            border-radius: 20px;
+            padding: 14px 14px 15px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(246,249,252,0.97) 100%);
+            border: 1px solid rgba(226,232,240,0.86);
+            box-shadow: 0 10px 22px rgba(15,23,42,0.03);
         }
         .report-plan-checklist {
             display: grid;
@@ -705,16 +744,27 @@
             background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(243,246,250,0.96) 100%);
             border: 1px solid rgba(229,231,235,0.9);
         }
+        .report-plan-button-row {
+            display: grid;
+            gap: 12px;
+        }
         @media (min-width: 860px) {
             .report-plan-hero {
-                grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.62fr);
+                grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.65fr);
                 align-items: stretch;
             }
             .report-plan-grid {
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             }
+            .report-plan-compact-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
             .report-plan-checklist {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .report-plan-button-row {
+                grid-template-columns: minmax(0, 1fr) auto;
+                align-items: center;
             }
         }
         .report-disclaimer {
@@ -723,11 +773,6 @@
             color: #64748b;
             text-align: center;
             padding: 0 8px;
-        }
-        @media (max-width: 639px) {
-            .report-full-bleed {
-                width: calc(100vw - 8px);
-            }
         }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
@@ -1498,7 +1543,7 @@
 <body class="bg-gradient-to-br from-[#e5e5ea] via-[#d1d1d6] to-[#e5e5ea] text-slate-800 flex flex-col items-center min-h-screen py-6 px-4 font-sans selection:bg-[#0a84ff]/20">
 
     <!-- 主容器 -->
-    <div class="w-full max-w-lg mx-auto my-auto bg-[#f5f5f7] rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col border border-white relative transition-all duration-300">
+    <div id="app-shell" class="app-shell mx-auto my-auto bg-[#f5f5f7] rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col border border-white relative transition-all duration-300">
         
         <!-- Apple 银白风格头部 -->
         <div class="px-6 pt-10 pb-8 text-center relative bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
@@ -1521,13 +1566,12 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.43</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.45</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
                     <div class="flex items-center gap-2 text-left">
                         <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide">
                         <p class="text-[10px] sm:text-xs text-slate-500 font-medium tracking-wide">
                             此程序分析结果仅供体态参考，不作为医疗临床诊断依据
                         </p>
@@ -1768,7 +1812,7 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="report-shell report-full-bleed hidden fade-in border border-white/90 px-2.5 py-4 sm:px-5 sm:py-6 rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
+            <div id="final-report-section" class="report-shell hidden fade-in border border-white/90 px-2.5 py-4 sm:px-5 sm:py-6 rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
                 <div class="absolute -top-24 -right-20 w-64 h-64 bg-white/90 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute top-20 -left-20 w-52 h-52 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-16 -left-10 w-44 h-44 bg-white/85 rounded-full blur-3xl pointer-events-none"></div>
@@ -1831,7 +1875,7 @@
 
                 <!-- 专属训练视频方案卡片 -->
                 <div id="video-plan-card" class="report-plan-shell hidden z-10 mt-2 rounded-[2.2rem] overflow-hidden">
-                    <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-5">
+                    <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-4">
                         <div class="report-plan-hero">
                             <div class="min-w-0">
                                 <div class="flex items-start gap-3.5">
@@ -1841,21 +1885,28 @@
                                     <div class="min-w-0 flex-1">
                                         <div id="vp-plan-label" class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-1.5">完整训练方案</div>
                                         <div id="vp-title" class="text-[28px] sm:text-[34px] font-black text-slate-950 leading-[1.04] tracking-[-0.05em]">对应你的完整训练路径</div>
-                                        <div id="vp-tagline" class="text-[13px] text-slate-500 mt-2 leading-relaxed max-w-[50ch]">加载中...</div>
+                                        <div id="vp-tagline" class="text-[13px] text-slate-500 mt-2 leading-relaxed max-w-[48ch]">加载中...</div>
                                     </div>
                                 </div>
                                 <div class="report-plan-editorial mt-4">
-                                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么现在值得按路径走</div>
+                                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么现在该买这条路径</div>
                                     <p id="vp-starter-tip" class="text-[13px] text-slate-700 leading-relaxed">加载中...</p>
                                 </div>
-                                <div class="report-plan-grid mt-4">
-                                    <div class="report-plan-editorial">
-                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">这 299 买到的核心价值</div>
-                                        <p class="text-[12px] text-slate-700 leading-relaxed">不是多几个动作，而是把顺序、边界、每周推进节奏和复测标准一次讲清楚，帮你少走很多反复试错的路。</p>
+                                <div class="report-plan-compact-grid mt-4">
+                                    <div class="report-plan-mini-card">
+                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
+                                        <div class="text-[13px] font-black text-slate-900 leading-snug">先做什么</div>
+                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">第一步怎么进，不再一上来就乱练。</p>
                                     </div>
-                                    <div class="report-plan-editorial">
-                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">适合现在的你，如果你想</div>
-                                        <p id="vp-fit-note" class="text-[12px] text-slate-700 leading-relaxed"></p>
+                                    <div class="report-plan-mini-card">
+                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
+                                        <div class="text-[13px] font-black text-slate-900 leading-snug">为什么这样排</div>
+                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">知道顺序背后的理由，不是只抄动作。</p>
+                                    </div>
+                                    <div class="report-plan-mini-card">
+                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
+                                        <div class="text-[13px] font-black text-slate-900 leading-snug">做到什么再往下走</div>
+                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">知道复测点和停手边界，少走弯路。</p>
                                     </div>
                                 </div>
                             </div>
@@ -1863,33 +1914,28 @@
                                 <div>
                                     <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-2">完整路径价格</div>
                                     <div class="flex items-end gap-2.5">
-                                        <span class="text-[34px] font-black tracking-[-0.06em] text-slate-950">¥299</span>
-                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果匹配，不是通用版</span>
+                                        <strong class="text-[38px] font-black text-slate-950">¥299</strong>
+                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果匹配</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 mt-3 leading-relaxed">更适合已经准备认真开始的人。与其继续零散刷内容，不如把接下来 2 到 4 周的路线一次定清楚。</p>
+                                    <p id="vp-fit-note" class="text-[11px] text-slate-500 mt-3 leading-relaxed"></p>
                                 </div>
-                                <div class="rounded-[1.2rem] border border-[#dbe3ec] bg-white/85 px-3.5 py-3 text-[11px] text-slate-600 leading-relaxed">
-                                    付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，发送本次报告截图，即可领取对应版本。
+                                <div class="report-plan-button-row">
+                                    <div class="rounded-[1.2rem] border border-[#dbe3ec] bg-white/88 px-3.5 py-3 text-[11px] text-slate-600 leading-relaxed">
+                                        付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，发送本次报告截图即可领取。
+                                    </div>
+                                    <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.26)] transition-all">
+                                        查看方案内容
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <div class="flex items-end justify-between gap-3 mb-2">
-                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">你会明确知道</div>
-                                <div class="text-[10px] text-slate-400">从今天开始，哪些事情该先做，哪些先别急</div>
-                            </div>
-                            <div id="vp-quick-list" class="report-plan-checklist"></div>
                         </div>
                         <div class="report-plan-cta">
-                            <div class="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-                                <div class="min-w-0 space-y-2">
-                                    <div class="text-[16px] font-black text-slate-900 leading-snug">真正值钱的，是把“先做什么、为什么这样排、做到什么变化再往下走”一次说明白。</div>
-                                    <p class="text-[11px] text-slate-500 leading-relaxed">这样你买到的不是一张价格截图，而是一条更省时间、也更不容易练乱的完整路径。</p>
-                                </div>
-                                <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.26)] transition-all">
-                                    查看方案内容与领取方式
-                                </button>
+                            <div class="flex items-end justify-between gap-3 mb-2">
+                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">这条路径最适合现在的你，如果你想</div>
+                                <div class="text-[10px] text-slate-400">少试错，少反复，早点开始走正路</div>
                             </div>
+                            <p class="text-[12px] text-slate-700 leading-relaxed mb-3" id="vp-fit-brief">不再继续靠零散动作反复试，而是把接下来 2 到 4 周先走顺。</p>
+                            <div id="vp-quick-list" class="report-plan-checklist"></div>
                         </div>
                         <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d1d5db] bg-white px-4 py-3 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                             <span id="vp-detail-toggle-label">展开适合人群、训练结构和常见误区</span>
@@ -2361,6 +2407,8 @@
         const demoActionHint = document.getElementById('demo-action-hint');
         const demoTriggerLabels = document.querySelectorAll('[data-demo-trigger]');
         const finalReportDateTime = document.getElementById('final-report-datetime');
+        const appShell = document.getElementById('app-shell');
+        const finalReportSection = document.getElementById('final-report-section');
         const usageGateStatus = document.getElementById('usage-gate-status');
         const usageGateNote = document.getElementById('usage-gate-note');
         const usageGateDetail = document.getElementById('usage-gate-detail');
@@ -2418,6 +2466,11 @@
         let isHolding = false;
         let holdStartTime = 0;
         let debugEnabled = false;
+
+        function setAppShellReportMode(enabled) {
+            if (!appShell) return;
+            appShell.classList.toggle('app-shell-report-mode', Boolean(enabled));
+        }
         let referenceGuideState = {
             enabled: false,
             dirX: 1,
@@ -3282,7 +3335,8 @@
             const jumpLink = document.querySelector('.id-jump-video');
             if (jumpLink) jumpLink.classList.add('hidden');
 
-            document.getElementById('final-report-section').classList.remove('hidden');
+            finalReportSection.classList.remove('hidden');
+            setAppShellReportMode(true);
             syncInteractiveUIState(snapshot.reportId || snapshot.assessmentMeta?.reportId || snapshot.id);
             scrollToDisplayArea(document.getElementById('final-report-section'));
             // 恢复骨盆 3D 模型
@@ -4738,66 +4792,77 @@
             const frontBack = compKey === 'anterior'
                 ? {
                     short: '前倾',
-                    value: '前倾型线索更明显',
-                    note: `主动直腿抬高短板 ${metrics.slrFinal.toFixed(1)}°，主动髋屈短板 ${metrics.hipFinal.toFixed(1)}°，主动肩屈短板 ${metrics.shoulderFinal.toFixed(1)}°。`
+                    value: '更像前倾',
+                    plain: '更像前面往下扣、后面往上翘。',
+                    note: `短板值组合更接近前倾：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
                 }
                 : compKey === 'posterior'
                     ? {
                         short: '前移',
-                        value: '前移型线索更明显',
-                        note: `主动直腿抬高短板 ${metrics.slrFinal.toFixed(1)}°，主动髋屈短板 ${metrics.hipFinal.toFixed(1)}°，主动肩屈短板 ${metrics.shoulderFinal.toFixed(1)}°。`
+                        value: '更像前移',
+                        plain: '更像整块骨盆一起往前顶出去。',
+                        note: `短板值组合更接近前移：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
                     }
                     : {
                         short: '待复核',
-                        value: '前倾 / 前移待复核',
+                        value: '前后方向待复核',
+                        plain: '这次还不能直接写成前倾或前移。',
                         note: `当前短板值组合还没有稳定落到单一前后类型。`
                     };
 
             const iliacForward = rotKey === 'LeftAIC' || rotKey === 'Oblique'
                 ? {
                     short: '左侧髂骨朝前',
-                    value: '左侧髂骨更朝前',
-                    note: `左右差命中 ${routeIsolation.rotationResult.evidenceHits}/3。`
+                    value: '左边更往前送',
+                    plain: '左边这块骨头更容易往前跑。',
+                    note: `左右前后差命中 ${routeIsolation.rotationResult.evidenceHits}/3。`
                 }
                 : {
                     short: '待复核',
-                    value: '左右前后差待复核',
+                    value: '哪边更往前待复核',
+                    plain: '这次还不能直接写死左边还是右边更往前。',
                     note: `当前没有稳定落到单侧髂骨朝前。`
                 };
 
             const rotation = rotKey === 'LeftAIC' || rotKey === 'Oblique'
                 ? {
                     short: '向右旋',
-                    value: '骨盆向右旋',
+                    value: '整体更像向右转',
+                    plain: '你可以把它理解成骨盆整块更像在往右拧。',
                     note: `由左右前后差共同指向。`
                 }
                 : {
                     short: '待复核',
                     value: '旋转方向待复核',
+                    plain: '这次还不能直接写死往左转还是往右转。',
                     note: `当前旋转证据不足。`
                 };
 
             const height = heightKey === 'leftHigh'
                 ? {
                     short: '左高右低',
-                    value: '骨盆左高右低',
+                    value: '左边更高，右边更低',
+                    plain: '站着看会更像左边被提起来一点。',
                     note: `高低差命中 ${routeIsolation.heightResult.evidenceHits}/3。`
                 }
                 : heightKey === 'clue'
                     ? {
                         short: '左高线索',
-                        value: '左高线索已出现',
+                        value: '左边偏高的线索已出现',
+                        plain: '已经有一点左高右低的苗头。',
                         note: `已有 1 项高低差线索。`
                     }
                     : heightKey === 'uneven'
                         ? {
                             short: '高低差待复核',
-                            value: '高低差已出现，方向待复核',
+                            value: '高低差已出现，但方向待复核',
+                            plain: '能看出高低差，但还不能直接定哪边更高。',
                             note: `当前左右差已出现，但还不适合直接写死方向。`
                         }
                         : {
                             short: '高度接近',
-                            value: '左右高度接近',
+                            value: '左右高度暂时接近',
+                            plain: '这次没有稳定落到一边高一边低。',
                             note: `当前没有稳定落到左高右低。`
                         };
 
@@ -4825,6 +4890,7 @@
                 headline: frontBack.short === '待复核'
                     ? (iliacForward.short === '待复核' ? '骨盆方向待复核' : `骨盆方向待复核，${iliacForward.short}`)
                     : `骨盆${frontBack.short}${iliacForward.short === '待复核' ? '' : `，${iliacForward.short}`}`,
+                plainHeadline: `${frontBack.plain}${iliacForward.short === '待复核' ? '' : ` 同时，${iliacForward.plain}`}`,
                 frontBack,
                 iliacForward,
                 rotation,
@@ -6080,7 +6146,8 @@
             pendingAssessmentOptions = null;
             symptomCheckState = createDefaultSymptomCheckState();
             finalReportDateTime.textContent = '评估时间：--';
-            document.getElementById('final-report-section').classList.add('hidden');
+            finalReportSection.classList.add('hidden');
+            setAppShellReportMode(false);
             
             document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
             document.querySelector(`input[name="testSide"][value="L"]`).checked = true;
@@ -6828,7 +6895,8 @@
             updateSaveButtonText();
             resetCanvasForNewUpload();
             // 隐藏报表区域
-            document.getElementById('final-report-section').classList.add('hidden');
+            finalReportSection.classList.add('hidden');
+            setAppShellReportMode(false);
             currentAssessmentResult = null;
             
             const mainContent = document.getElementById('main-content');
@@ -7141,7 +7209,8 @@
             </div>` : `
             <div class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">骨盆结果</div>
-                <div class="report-section-title mb-4">根据这次数据，直接看骨盆方向</div>
+                <div class="report-section-title mb-4">你身体现在更像这样</div>
+                <p class="report-headline-plain mb-4">${escapeHtml(directSummary.plainHeadline)}</p>
                 <div class="report-direct-grid">
                     <div class="report-direct-model">
                         <div class="pelvis-stage report-model-stage" style="height:318px;">
@@ -7166,24 +7235,28 @@
                     </div>
                     <div class="report-direct-cards">
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">前后主方向</div>
+                            <div class="report-direct-card-label">整体前后</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.frontBack.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.frontBack.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.frontBack.plain)}</div>
                         </div>
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">哪侧髂骨更朝前</div>
+                            <div class="report-direct-card-label">哪边更往前</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.iliacForward.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.iliacForward.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.iliacForward.plain)}</div>
                         </div>
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">骨盆旋转方向</div>
+                            <div class="report-direct-card-label">整体转向</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.rotation.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.rotation.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.rotation.plain)}</div>
                         </div>
                         <div class="report-direct-card">
                             <div class="report-direct-card-label">左右高低</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.height.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.height.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.height.plain)}</div>
                         </div>
                     </div>
                 </div>
@@ -7213,7 +7286,7 @@
             const dataHtml = `
             <div class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">数据依据</div>
-                <div class="report-section-title mb-3">这次判定对应的数据</div>
+                <div class="report-section-title mb-3">我是根据这 3 组数据这样判断的</div>
                 <div class="report-metric-table">
                     ${directMetricRows.map((row) => `
                     <div class="report-metric-row">
@@ -7239,13 +7312,13 @@
                 </div>
                 <div class="grid gap-3 mt-4 lg:grid-cols-[1.05fr_0.95fr]">
                     <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">命中规则</div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">为什么会这样看</div>
                         <div class="report-hit-list">
                             ${directSummary.hitRules.map((rule) => `<div class="report-hit-item">${escapeHtml(rule)}</div>`).join('') || '<div class="report-hit-item">当前没有足够命中项。</div>'}
                         </div>
                     </div>
                     <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">差值总览</div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">左右差值</div>
                         <div class="report-proof-grid">
                     ${renderDataEvidenceCardsHtml(evidenceCards)}
                         </div>
@@ -7270,9 +7343,8 @@
             document.getElementById('final-report-confidence').textContent = `结果稳定度：${compressionEvaluation.confidenceKey === 'high' ? '高' : compressionEvaluation.confidenceKey === 'medium' ? '中' : '低'}`;
             document.getElementById('final-report-confidence-detail').innerHTML = `
                 <div class="grid gap-2">
-                    <div><span class="font-black text-slate-900">前后主方向：</span>${escapeHtml(directSummary.frontBack.value)}</div>
-                    <div><span class="font-black text-slate-900">髂骨朝前：</span>${escapeHtml(directSummary.iliacForward.value)}</div>
-                    <div><span class="font-black text-slate-900">骨盆旋转：</span>${escapeHtml(directSummary.rotation.value)}</div>
+                    <div class="text-[13px] font-black text-slate-900">${escapeHtml(directSummary.plainHeadline)}</div>
+                    <div><span class="font-black text-slate-900">你这次最先看这 3 个点：</span>${escapeHtml(directSummary.frontBack.value)}、${escapeHtml(directSummary.iliacForward.value)}、${escapeHtml(directSummary.rotation.value)}</div>
                 </div>`;
             document.getElementById('final-combo-label').textContent = directSummary.headline;
             document.getElementById('final-pelvic-orientation').innerHTML = directSummary.headline;
@@ -7297,7 +7369,8 @@
             syncInteractiveUIState(reportId);
             currentReportSnapshot = buildCurrentReportSnapshot();
             consumeFreeReportQuota();
-            document.getElementById('final-report-section').classList.remove('hidden');
+            finalReportSection.classList.remove('hidden');
+            setAppShellReportMode(true);
 
             if (reportSafetyBlocked) {
                 const videoPlanCard = document.getElementById('video-plan-card');
@@ -7427,9 +7500,9 @@
 
         function getVideoPlanStarterTip(plan) {
             const firstStep = plan?.videos?.[0];
-            if (!firstStep) return '你今天不用一下子做很多。先把入口做对，再往后推进，通常比一口气堆很多动作更有效。';
+            if (!firstStep) return '你现在最需要的，不是再多看几个动作，而是先把入口做对。入口对了，后面 2 到 4 周才会越练越清楚。';
             const cleanName = firstStep.name.replace(/^第[一二三四五六七八九十]+步：/, '').trim();
-            return `建议你先从“${cleanName}”开始。因为现在最影响结果的，往往不是动作不够多，而是身体还在用原来的站姿和用力方式。${firstStep.desc}`;
+            return `建议你先从“${cleanName}”开始。因为现在最拖慢变化的，通常不是动作不够，而是第一步做反了。${firstStep.desc}`;
         }
 
         function getVideoPlanFitText(comboKey, plan) {
@@ -7447,8 +7520,8 @@
 
         function getVideoPlanCardFitNote(comboKey) {
             return comboKey.startsWith('mixed_')
-                ? '先把基础做稳，再用复测决定下一步，比一开始就乱选动作更省时间。'
-                : '适合想系统推进的人，把时间花在更有效的 2 到 4 周，而不是更随机的 30 天。';
+                ? '适合先把基础做稳的人，比一开始就乱选动作更省时间。'
+                : '适合已经准备认真开始的人，把时间花在更有效的 2 到 4 周，而不是更随机的 30 天。';
         }
 
         function getVideoPlanQuickItems(plan) {
@@ -7563,6 +7636,9 @@
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
+            document.getElementById('vp-fit-brief').textContent = comboKey.startsWith('mixed_')
+                ? '先把基础站姿和呼吸做顺，再决定往哪边细化，会比一上来乱纠正更稳。'
+                : '先知道今天该从哪一步开始，再知道什么变化说明走对，比继续自己拼动作更省时间。';
             const quickList = document.getElementById('vp-quick-list');
             quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
                 <div class="report-plan-checklist-item">
