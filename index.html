@@ -1566,7 +1566,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.45</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.46</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1892,7 +1892,7 @@
                                     <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么现在该买这条路径</div>
                                     <p id="vp-starter-tip" class="text-[13px] text-slate-700 leading-relaxed">加载中...</p>
                                 </div>
-                                <div class="report-plan-compact-grid mt-4">
+                                <div class="report-plan-compact-grid mt-4 hidden">
                                     <div class="report-plan-mini-card">
                                         <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
                                         <div class="text-[13px] font-black text-slate-900 leading-snug">先做什么</div>
@@ -1929,7 +1929,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="report-plan-cta">
+                        <div class="report-plan-cta hidden">
                             <div class="flex items-end justify-between gap-3 mb-2">
                                 <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">这条路径最适合现在的你，如果你想</div>
                                 <div class="text-[10px] text-slate-400">少试错，少反复，早点开始走正路</div>
@@ -1937,7 +1937,7 @@
                             <p class="text-[12px] text-slate-700 leading-relaxed mb-3" id="vp-fit-brief">不再继续靠零散动作反复试，而是把接下来 2 到 4 周先走顺。</p>
                             <div id="vp-quick-list" class="report-plan-checklist"></div>
                         </div>
-                        <button id="btn-toggle-vp-detail" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d1d5db] bg-white px-4 py-3 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                        <button id="btn-toggle-vp-detail" class="hidden w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d1d5db] bg-white px-4 py-3 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                             <span id="vp-detail-toggle-label">展开适合人群、训练结构和常见误区</span>
                             <svg id="vp-chevron" class="w-4 h-4 text-slate-400 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
@@ -3714,7 +3714,9 @@
                 return;
             }
             symptomCheckState = createDefaultSymptomCheckState();
-            openSymptomCheckModal(buildAssessmentGateFromMeasurements());
+            pendingAssessmentOptions = null;
+            closeSymptomCheckModal();
+            generateFinalReport(symptomCheckState);
         }
 
         function stepConfidenceKey(confidenceKey, direction = 0) {
