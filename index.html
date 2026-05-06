@@ -1566,7 +1566,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.50</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.49</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4950,90 +4950,143 @@
             const compKey = routeIsolation.compressionResult.key;
             const subtypeKey = routeIsolation.subtypeResult.key;
             const heightKey = routeIsolation.heightResult.key;
-            const supportScore = routeIsolation.compressionResult.supportScore;
+            const confidenceKey = routeIsolation.subtypeResult.key === 'unclear'
+                ? routeIsolation.compressionResult.confidenceKey
+                : routeIsolation.subtypeResult.confidenceKey;
             const dynamicBearing = routeIsolation.dynamicBearingResult;
-            const trainingStage = routeIsolation.trainingStage;
-            const hasMeanLateral = routeIsolation.hasMeaningfulLateral;
 
-            // 前后：2/3 证据即可下结论
             const frontBack = compKey === 'anterior'
-                ? { short: '前侧偏紧', value: '大腿前侧和髋前拉得更紧', plain: '你更像前面往下扣，大腿前侧和髋前一直在拽着骨盆。', hint: '你可能会觉得大腿前侧紧、小腹总是绷着、后面臀肌不容易发上力。' }
+                ? {
+                    short: '前倾',
+                    value: '更像前倾',
+                    plain: '更像前面往下扣、后面往上翘。',
+                    note: `短板值组合更接近前倾：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                }
                 : compKey === 'posterior'
-                ? { short: '后侧偏紧', value: '后背和腰部肌肉更紧绷', plain: '你更像整块骨盆被后背推着往前顶。', hint: '你可能会觉得后腰总是很紧、站久了腰容易酸、后背扩不开。' }
-                : { short: '方向暂不够明确', value: '前后哪侧更主导暂时不够明确', plain: '这次数据前后方向还不够明确。', hint: '建议 2-4 周后复测，到时候方向会更清晰。可以先从基础呼吸练习开始。' };
+                    ? {
+                        short: '前移',
+                        value: '更像前移',
+                        plain: '更像整块骨盆一起往前顶出去。',
+                        note: `短板值组合更接近前移：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                    }
+                    : {
+                        short: '待复核',
+                        value: '前后方向待复核',
+                        plain: '这次还不能直接写成前倾或前移。',
+                        note: `当前短板值组合还没有稳定落到单一前后类型。`
+                    };
 
-            // 左右：合并 iliacForward + rotation + height 为一个综合判断
-            let lateral;
-            if (subtypeKey === 'oblique') {
-                lateral = { short: '左高左前', value: '左边骨盆更高、也更往前', plain: '你的左边不只是高一些，还明显更往前推。', hint: '你可能会觉得左边腰和髋总是更紧，右边接不住体重，身体总往左边挂。' };
-            } else if (subtypeKey === 'lateral') {
-                lateral = { short: '左高右低', value: '左边骨盆比右边高', plain: '你的左边骨盆被提得更高，右边被压得偏低。', hint: '你可能会觉得左边腰部更紧更短，右边感觉空空的、使不上劲。' };
-            } else if (subtypeKey === 'baseline') {
-                lateral = { short: '略偏左前', value: '左边骨盆略靠前、右边略高', plain: '轻微不对称：左边略靠前，右边略高一点。', hint: '这是人体本来就有的基础不对称，不用太担心，先把前后方向调好。' };
-            } else if (hasMeanLateral) {
-                lateral = { short: '有左右差', value: '左右不对称已经出现', plain: '你的左右不对称比较明显，具体方向建议结合复测进一步确认。', hint: '先做好基础呼吸练习，左右方向会随着前后改善而变得更清晰。' };
-            } else {
-                lateral = { short: '左右接近', value: '左右暂时比较对称', plain: '这次测试你的左右对称性保持得还不错。', hint: '继续保持目前的运动习惯，注意别长期偏一侧站或坐就行。' };
-            }
+            const iliacForward = subtypeKey === 'baseline' || subtypeKey === 'oblique'
+                ? {
+                    short: '左侧髂骨朝前',
+                    value: '左边更往前送',
+                    plain: '左边这块骨头更容易往前跑。',
+                    note: `三大测试静态分型更接近${subtypeKey === 'oblique' ? '斜轴型' : '基线型'}。`
+                }
+                : {
+                    short: '待复核',
+                    value: '哪边更往前待复核',
+                    plain: '这次先不把哪边更往前写死。',
+                    note: `当前没有稳定落到“左侧更前”的静态分型。`
+                };
 
-            // 程度判断
-            const asymmetryScore = metrics.asymmetryScore;
-            let severity, severityHint;
-            if (compKey === 'mixed' || subtypeKey === 'transition') {
-                severity = '方向暂不够明确'; severityHint = '建议 2-4 周后复测';
-            } else if (asymmetryScore >= 4 || subtypeKey === 'oblique') {
-                severity = '偏离比较明显'; severityHint = '建议按顺序逐步调整，不要急着一步到位';
-            } else if (asymmetryScore >= 2) {
-                severity = '中等的偏离'; severityHint = '有比较清晰的不对称，但基础活动范围还可以';
-            } else {
-                severity = '比较轻度的偏离'; severityHint = '主要表现为基础不对称，活动范围还好';
-            }
+            const rotation = subtypeKey === 'baseline' || subtypeKey === 'oblique'
+                ? {
+                    short: '向右旋',
+                    value: '整体更像向右转',
+                    plain: '你可以把它理解成骨盆整块更像在往右拧。',
+                    note: '由静态分型共同指向右旋倾向。'
+                }
+                : {
+                    short: '待复核',
+                    value: '旋转方向待复核',
+                    plain: '这次先不把整体往哪边转写死。',
+                    note: '当前没有稳定落到旋转方向。'
+                };
 
-            // 现在做什么
-            const action = trainingStage === 1
-                ? { value: '先把呼吸和活动范围打开', hint: '你现在不用急着纠正，先把基础呼吸配合和关节活动度提上来。' }
-                : trainingStage === 2
-                ? { value: '先把前后方向的活动空间建立起来', hint: '前后方向调好之后，左右的差异通常会跟着改善。' }
-                : { value: '可以开始处理左右的偏移了', hint: '你现在的基础已经比较稳，可以进入更有针对性的调整。' };
+            const height = heightKey === 'rightHigh'
+                ? {
+                    short: '右高左低',
+                    value: '右边更高，左边更低',
+                    plain: '站着看会更像右边略高一点。',
+                    note: '基线型静态结果里，右侧通常会略高。'
+                }
+                : heightKey === 'leftHigh'
+                ? {
+                    short: '左高右低',
+                    value: '左边更高，右边更低',
+                    plain: '站着看会更像左边被提起来一点。',
+                    note: `静态分型更接近${subtypeKey === 'oblique' ? '斜轴型' : '横向型'}。`
+                }
+                : heightKey === 'clue'
+                    ? {
+                        short: '左高线索',
+                        value: '左边偏高的线索已出现',
+                        plain: '已经有一点左高右低的苗头。',
+                        note: `已有 1 项高低差线索。`
+                    }
+                    : heightKey === 'uneven'
+                        ? {
+                            short: '高低差待复核',
+                            value: '高低差已出现，但方向待复核',
+                            plain: '能看出高低差，但还不能直接定哪边更高。',
+                            note: `当前左右差已出现，但还不适合直接写死方向。`
+                        }
+                        : {
+                            short: '高度接近',
+                            value: '左右高度暂时接近',
+                            plain: '这次没有稳定落到一边高一边低。',
+                            note: `当前没有稳定落到左高右低。`
+                        };
 
-            // 复测建议
-            const retest = compKey === 'mixed'
-                ? { value: '建议 2-4 周后复测', hint: '届时数据方向会更清晰' }
-                : { value: '建议 2-4 周后复测看变化', hint: '按方向调整后再测，看数值有没有往正常范围靠拢' };
+            const confidence = confidenceKey === 'high' ? '高' : confidenceKey === 'medium' ? '中' : '低';
+            const bearing = dynamicBearing.loadSide === 'right'
+                ? {
+                    short: '右侧待建立',
+                    value: '右边更需要重新学会承重',
+                    plain: '这一步现在还是训练入口假设，不等于已经做完动态承重测试。',
+                    note: dynamicBearing.summary
+                }
+                : {
+                    short: '需复核',
+                    value: '承重入口还要再复核',
+                    plain: '这次先别把哪边该主承重写死。',
+                    note: dynamicBearing.summary
+                };
+            const badges = [
+                { label: `前后：${frontBack.short}`, color: '#6b7280' },
+                { label: `分型：${subtypeKey === 'baseline' ? '基线型' : subtypeKey === 'lateral' ? '横向型' : subtypeKey === 'oblique' ? '斜轴型' : subtypeKey === 'transition' ? '待复核' : '未定型'}`, color: '#6b7280' },
+                { label: `高低：${height.short}`, color: '#6b7280' },
+                { label: `稳定度：${confidence}`, color: '#6b7280' }
+            ];
 
             const hitRules = [
-                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `${item.label}`),
-                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `${item.label}`),
-                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `${item.label}`)
+                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `前移线索：${item.label}`),
+                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `前倾线索：${item.label}`),
+                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `三大测试线索：${item.label}`)
             ];
 
             if (subtypeKey === 'baseline') {
-                hitRules.unshift('三大测试指向：左侧髋屈更大、直腿抬高更小、肩屈更小');
+                hitRules.unshift('静态分型：左髋屈更大、左侧直腿抬高更小、左侧肩屈更小，更接近基线型。');
             } else if (subtypeKey === 'lateral') {
-                hitRules.unshift('三大测试指向：左侧髋屈更大、直腿抬高更大、肩屈更小');
+                hitRules.unshift('静态分型：左髋屈更大、左侧直腿抬高更大、左侧肩屈更小，更接近横向型。');
             } else if (subtypeKey === 'oblique') {
-                hitRules.unshift('三大测试指向：右侧髋屈更大、左侧直腿抬高更大、肩屈更大');
-            } else {
-                hitRules.unshift('三大测试还没有稳定落到单一类型，但可以看到左右差异');
+                hitRules.unshift('静态分型：右髋屈更大、左侧直腿抬高更大、左侧肩屈更大，更接近斜轴型。');
+            } else if (subtypeKey === 'transition') {
+                hitRules.unshift('静态分型：左右差已经出现，但三大测试还没有稳定落到单一分型。');
             }
 
-            const badges = [
-                { label: frontBack.short, color: '#6b7280' },
-                { label: lateral.short, color: '#6b7280' },
-                { label: severity, color: '#6b7280' }
-            ];
-
             return {
-                headline: `${frontBack.value}，${lateral.value}`,
-                plainHeadline: `${frontBack.hint} ${lateral.hint}`,
+                headline: frontBack.short === '待复核'
+                    ? (iliacForward.short === '待复核' ? '骨盆方向待复核' : `骨盆方向待复核，${iliacForward.short}`)
+                    : `骨盆${frontBack.short}${iliacForward.short === '待复核' ? '' : `，${iliacForward.short}`}`,
+                plainHeadline: `${frontBack.plain}${iliacForward.short === '待复核' ? '' : ` 同时，${iliacForward.plain}`}`,
                 frontBack,
-                lateral,
-                severity,
-                severityHint,
-                action: action.value,
-                actionHint: action.hint,
-                retest: retest.value,
-                retestHint: retest.hint,
+                iliacForward,
+                rotation,
+                height,
+                bearing,
+                confidence,
                 badges,
                 hitRules: hitRules.slice(0, 6)
             };
@@ -7359,36 +7412,19 @@
             <div id="report-safety-block" class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">优先事项</div>
                 <div class="report-section-title mb-3">先处理安全提醒</div>
-                <p class="report-body-text">你填写了一些需要注意的情况，建议先找专业医生或康复师评估，确认没有禁忌后再参考这次测试结果。</p>
+                <p class="report-body-text">我们注意到你有需要优先处理的信号，建议先咨询专业评估师再进行针对性调整。</p>
                 <a href="#report-safety-block" class="inline-flex mt-4 items-center rounded-full bg-rose-50 px-4 py-2 text-[11px] font-bold text-rose-600 border border-rose-200 shadow-sm">
                     跳过本报告，直接看安全建议
                 </a>
             </div>` : `
             <div class="report-panel p-5 sm:p-6">
                 <div class="report-eyebrow mb-2">骨盆结果</div>
-                <div class="report-section-title mb-3">你可能已经感觉到</div>
+                <div class="report-section-title mb-4">你身体现在更像这样</div>
                 <p class="report-headline-plain mb-4">${escapeHtml(directSummary.plainHeadline)}</p>
-                <div class="grid grid-cols-3 gap-2 mb-4">
-                    <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 mb-1">偏离程度</div>
-                        <div class="text-[13px] font-black text-slate-800">${escapeHtml(directSummary.severity)}</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(directSummary.severityHint)}</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 mb-1">现在先做</div>
-                        <div class="text-[13px] font-black text-slate-800">${escapeHtml(directSummary.action)}</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(directSummary.actionHint)}</div>
-                    </div>
-                    <div class="bg-slate-50 rounded-2xl p-3 text-center">
-                        <div class="text-[10px] font-bold text-slate-400 mb-1">何时复测</div>
-                        <div class="text-[13px] font-black text-slate-800">${escapeHtml(directSummary.retest)}</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(directSummary.retestHint)}</div>
-                    </div>
-                </div>
                 <div class="report-direct-grid">
                     <div class="report-direct-model">
-                        <div class="pelvis-stage report-model-stage" style="height:280px;">
-                            <canvas id="pelvis-canvas" style="width:100%;height:280px;display:block;border-radius:1.2rem;"></canvas>
+                        <div class="pelvis-stage report-model-stage" style="height:318px;">
+                            <canvas id="pelvis-canvas" style="width:100%;height:318px;display:block;border-radius:1.2rem;"></canvas>
                             <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
                                 <span style="display:flex;align-items:center;gap:8px;">
                                     <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
@@ -7411,12 +7447,26 @@
                         <div class="report-direct-card">
                             <div class="report-direct-card-label">整体前后</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.frontBack.value)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.frontBack.hint)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.frontBack.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.frontBack.plain)}</div>
                         </div>
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">整体左右</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.lateral.value)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.lateral.hint)}</div>
+                            <div class="report-direct-card-label">哪边更往前</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.iliacForward.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.iliacForward.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.iliacForward.plain)}</div>
+                        </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">整体转向</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.rotation.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.rotation.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.rotation.plain)}</div>
+                        </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">左右高低</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.height.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.height.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.height.plain)}</div>
                         </div>
                     </div>
                 </div>
@@ -7500,16 +7550,17 @@
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
+            document.getElementById('final-report-confidence').textContent = `结果稳定度：${directSummary.confidence}`;
             document.getElementById('final-report-confidence-detail').innerHTML = `
                 <div class="grid gap-2">
                     <div class="text-[13px] font-black text-slate-900">${escapeHtml(directSummary.plainHeadline)}</div>
-                    <div><span class="font-black text-slate-900">你这次最可能已经感觉到：</span>${escapeHtml(directSummary.frontBack.hint)}</div>
-                    <div><span class="font-black text-slate-900">现在先做：</span>${escapeHtml(directSummary.action)}</div>
+                    <div><span class="font-black text-slate-900">你这次最先看这 3 个点：</span>${escapeHtml(directSummary.frontBack.value)}、${escapeHtml(directSummary.height.value)}、${escapeHtml(directSummary.iliacForward.value)}</div>
+                    <div><span class="font-black text-slate-900">训练入口先按：</span>${escapeHtml(directSummary.bearing.value)}</div>
                 </div>`;
             document.getElementById('final-combo-label').textContent = directSummary.headline;
             document.getElementById('final-pelvic-orientation').innerHTML = directSummary.headline;
-            document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差：直腿抬高 ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
-            document.getElementById('final-report-data').textContent = `直腿抬高 左${slrL.toFixed(1)}°/右${slrR.toFixed(1)}° · 髋屈 左${hipL.toFixed(1)}°/右${hipR.toFixed(1)}° · 肩屈 左${shL.toFixed(1)}°/右${shR.toFixed(1)}°`;
+            document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
+            document.getElementById('final-report-data').textContent = `数据依据：SLR ${slrL.toFixed(1)}°/${slrR.toFixed(1)}° · 髋屈 ${hipL.toFixed(1)}°/${hipR.toFixed(1)}° · 肩屈 ${shL.toFixed(1)}°/${shR.toFixed(1)}°`;
             document.getElementById('final-technical-content').innerHTML = '';
 
             currentAssessmentResult = {
@@ -7521,7 +7572,7 @@
                 planKey,
                 primaryRouteLabel: directSummary.headline,
                 primarySummary: directSummary.frontBack.value,
-                secondarySummary: `${directSummary.frontBack.value}；${directSummary.lateral.value}；${directSummary.action}`,
+                secondarySummary: `${directSummary.iliacForward.value}；${directSummary.rotation.value}；${directSummary.height.value}；${directSummary.bearing.value}`,
                 symptomCheck,
                 pelvisCfg,
                 pelvisComboKey: comboKey,
