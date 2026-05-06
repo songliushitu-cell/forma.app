@@ -11,6 +11,26 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu@3.21.0/dist/tf-backend-cpu.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <style>
+        :root {
+            --report-ink: #1e1813;
+            --report-ink-soft: #544a40;
+            --report-muted: #7d7266;
+            --report-paper: #fbf7f1;
+            --report-paper-strong: #f4ede3;
+            --report-surface: #fffdfa;
+            --report-line: rgba(123, 104, 80, 0.18);
+            --report-line-strong: rgba(123, 104, 80, 0.28);
+            --report-accent: #b89667;
+            --report-accent-deep: #6e5337;
+            --report-accent-soft: rgba(184, 150, 103, 0.16);
+            --report-shadow: 0 28px 90px rgba(32, 22, 12, 0.10);
+            --report-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+            --report-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+        }
+        body {
+            font-family: var(--report-sans);
+            color: var(--report-ink);
+        }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -21,10 +41,12 @@
         .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
         .report-shell {
             background:
-                radial-gradient(circle at 10% 0%, rgba(255,255,255,0.96) 0%, transparent 26%),
-                radial-gradient(circle at 88% 14%, rgba(90,200,250,0.12) 0%, transparent 26%),
-                radial-gradient(circle at 72% 0%, rgba(255,214,10,0.10) 0%, transparent 20%),
-                linear-gradient(180deg, #fcfcfe 0%, #f7f8fb 44%, #eef2f7 100%);
+                radial-gradient(circle at 12% -2%, rgba(255,255,255,0.86) 0%, transparent 25%),
+                radial-gradient(circle at 88% 6%, rgba(184,150,103,0.16) 0%, transparent 20%),
+                radial-gradient(circle at 78% 28%, rgba(126,107,83,0.12) 0%, transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, #f2ebdf 46%, #ebe3d6 100%);
+            border: 1px solid rgba(255,255,255,0.66);
+            box-shadow: 0 44px 140px rgba(41, 30, 18, 0.12), inset 0 1px 0 rgba(255,255,255,0.75);
         }
         .app-shell {
             width: 100%;
@@ -32,291 +54,323 @@
             transition: max-width 0.42s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
         }
         .app-shell.app-shell-report-mode {
-            max-width: min(calc(100vw - 28px), 1380px);
+            max-width: min(calc(100vw - 28px), 1460px);
         }
         .report-hero {
             background:
-                radial-gradient(circle at top right, rgba(90,200,250,0.14) 0%, transparent 24%),
-                radial-gradient(circle at top left, rgba(255,214,10,0.10) 0%, transparent 20%),
-                linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(251,252,254,0.99) 54%, rgba(243,246,250,0.99) 100%);
-            color: #111827;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 34px 96px rgba(15, 23, 42, 0.07);
+                radial-gradient(circle at 86% 12%, rgba(207, 177, 128, 0.28) 0%, transparent 20%),
+                radial-gradient(circle at 8% 0%, rgba(255,255,255,0.12) 0%, transparent 18%),
+                linear-gradient(135deg, #221a15 0%, #2d231d 36%, #433021 100%);
+            color: #f7f2ea;
+            border-color: rgba(233, 222, 207, 0.18) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 38px 110px rgba(22, 16, 10, 0.26);
         }
         .report-hero-grid {
             display: grid;
-            gap: 18px;
+            gap: 22px;
         }
         .report-summary-strip {
             display: grid;
-            gap: 12px;
+            gap: 14px;
         }
         .report-summary-chip {
-            border-radius: 22px;
-            padding: 16px 18px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,247,249,0.98) 100%);
-            border: 1px solid rgba(229,231,235,0.92);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85);
+            border-radius: 24px;
+            padding: 18px 20px;
+            background: linear-gradient(180deg, rgba(255,249,241,0.96) 0%, rgba(244,236,226,0.92) 100%);
+            border: 1px solid rgba(222, 205, 182, 0.38);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 20px 40px rgba(23, 16, 10, 0.10);
+            backdrop-filter: blur(12px);
         }
         .report-summary-chip.is-soft-blue {
-            background: linear-gradient(180deg, rgba(248,252,255,0.99) 0%, rgba(239,247,255,0.96) 100%);
-            border-color: rgba(191,219,254,0.74);
+            background: linear-gradient(180deg, rgba(252,246,238,0.99) 0%, rgba(242,232,220,0.94) 100%);
+            border-color: rgba(210, 184, 148, 0.40);
         }
         .report-summary-chip-label {
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #8e8e93;
-            margin-bottom: 6px;
+            color: rgba(103, 85, 64, 0.74);
+            margin-bottom: 8px;
         }
         .report-summary-chip-value {
             font-size: 14px;
-            line-height: 1.7;
-            color: #374151;
+            line-height: 1.75;
+            color: var(--report-ink);
             font-weight: 700;
         }
         .report-direct-grid {
             display: grid;
-            gap: 16px;
+            gap: 18px;
             align-items: start;
         }
         .report-direct-model {
-            border-radius: 28px;
+            border-radius: 30px;
             background:
-                radial-gradient(circle at top right, rgba(90,200,250,0.16) 0%, transparent 28%),
-                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,250,253,0.98) 100%);
-            border: 1px solid rgba(226,232,240,0.88);
-            padding: 14px;
-            box-shadow: 0 24px 60px rgba(15,23,42,0.05), inset 0 0 0 1px rgba(255,255,255,0.9);
+                radial-gradient(circle at top right, rgba(200,168,121,0.18) 0%, transparent 26%),
+                linear-gradient(180deg, rgba(255,253,250,0.99) 0%, rgba(247,241,233,0.98) 100%);
+            border: 1px solid var(--report-line);
+            padding: 16px;
+            box-shadow: var(--report-shadow), inset 0 0 0 1px rgba(255,255,255,0.82);
         }
         .report-model-stage {
             position: relative;
             overflow: hidden;
-            border-radius: 22px;
+            border-radius: 24px;
             background:
-                radial-gradient(circle at 70% 18%, rgba(90,200,250,0.34) 0%, transparent 24%),
-                radial-gradient(circle at 18% 14%, rgba(255,214,10,0.18) 0%, transparent 18%),
-                linear-gradient(180deg, #1f2937 0%, #273449 48%, #1f2937 100%);
-            border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+                radial-gradient(circle at 72% 16%, rgba(220,188,137,0.34) 0%, transparent 22%),
+                radial-gradient(circle at 18% 12%, rgba(255,255,255,0.14) 0%, transparent 16%),
+                linear-gradient(180deg, #1d1611 0%, #2b2119 46%, #17110d 100%);
+            border: 1px solid rgba(233, 223, 208, 0.12);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
         }
         .report-model-stage::after {
             content: '';
             position: absolute;
             inset: auto 10% -18% 10%;
             height: 42%;
-            background: radial-gradient(circle, rgba(90,200,250,0.22) 0%, transparent 68%);
-            filter: blur(18px);
+            background: radial-gradient(circle, rgba(200,168,121,0.24) 0%, transparent 68%);
+            filter: blur(20px);
             pointer-events: none;
         }
         .report-direct-cards {
             display: grid;
-            gap: 12px;
+            gap: 14px;
         }
         .report-direct-card {
             position: relative;
             overflow: hidden;
-            border-radius: 22px;
-            padding: 16px 16px 17px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%);
-            border: 1px solid rgba(226,232,240,0.92);
-            box-shadow: 0 18px 34px rgba(15,23,42,0.045);
+            border-radius: 24px;
+            padding: 18px 18px 19px;
+            background: linear-gradient(180deg, rgba(255,253,249,0.99) 0%, rgba(246,238,229,0.95) 100%);
+            border: 1px solid var(--report-line);
+            box-shadow: 0 18px 42px rgba(32,22,12,0.06);
         }
         .report-direct-card::after {
             content: '';
             position: absolute;
-            inset: 0 auto 0 0;
-            width: 4px;
-            background: linear-gradient(180deg, rgba(10,132,255,0.9) 0%, rgba(90,200,250,0.9) 100%);
+            inset: 0 0 auto 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(184,150,103,0) 0%, rgba(184,150,103,0.94) 26%, rgba(184,150,103,0.42) 100%);
         }
         .report-direct-card:nth-child(1) {
-            background: linear-gradient(180deg, rgba(248,252,255,0.99) 0%, rgba(239,247,255,0.96) 100%);
-            border-color: rgba(191,219,254,0.92);
+            background: linear-gradient(180deg, rgba(255,251,246,0.99) 0%, rgba(248,239,228,0.95) 100%);
+            border-color: rgba(186, 156, 116, 0.26);
         }
         .report-direct-card:nth-child(1)::after {
-            background: linear-gradient(180deg, #0a84ff 0%, #5ac8fa 100%);
+            background: linear-gradient(90deg, rgba(184,150,103,0) 0%, #b89667 28%, rgba(184,150,103,0.28) 100%);
         }
         .report-direct-card:nth-child(2) {
-            background: linear-gradient(180deg, rgba(255,251,245,0.99) 0%, rgba(255,246,232,0.96) 100%);
-            border-color: rgba(253,230,138,0.72);
+            background: linear-gradient(180deg, rgba(252,248,242,0.99) 0%, rgba(244,236,228,0.95) 100%);
+            border-color: rgba(126, 103, 83, 0.18);
         }
         .report-direct-card:nth-child(2)::after {
-            background: linear-gradient(180deg, #ff9f0a 0%, #ffd60a 100%);
+            background: linear-gradient(90deg, rgba(110,83,55,0) 0%, #6e5337 28%, rgba(110,83,55,0.24) 100%);
         }
         .report-direct-card:nth-child(3) {
-            background: linear-gradient(180deg, rgba(250,249,255,0.99) 0%, rgba(243,240,255,0.96) 100%);
-            border-color: rgba(216,180,254,0.64);
+            background: linear-gradient(180deg, rgba(255,253,250,0.99) 0%, rgba(241,235,229,0.95) 100%);
+            border-color: rgba(90, 73, 59, 0.18);
         }
         .report-direct-card:nth-child(3)::after {
-            background: linear-gradient(180deg, #7c3aed 0%, #a855f7 100%);
+            background: linear-gradient(90deg, rgba(90,73,59,0) 0%, #5a493b 28%, rgba(90,73,59,0.24) 100%);
         }
         .report-direct-card:nth-child(4) {
-            background: linear-gradient(180deg, rgba(247,252,250,0.99) 0%, rgba(237,249,243,0.96) 100%);
-            border-color: rgba(167,243,208,0.72);
+            background: linear-gradient(180deg, rgba(252,248,243,0.99) 0%, rgba(241,235,228,0.95) 100%);
+            border-color: rgba(95, 86, 73, 0.18);
         }
         .report-direct-card:nth-child(4)::after {
-            background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
+            background: linear-gradient(90deg, rgba(95,86,73,0) 0%, #5f5649 28%, rgba(95,86,73,0.24) 100%);
         }
         .report-direct-card-label {
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #8e8e93;
-            margin-bottom: 8px;
+            color: var(--report-muted);
+            margin-bottom: 10px;
         }
         .report-direct-card-value {
-            font-size: 24px;
+            font-family: var(--report-serif);
+            font-size: 28px;
             line-height: 1.12;
-            font-weight: 900;
-            letter-spacing: -0.04em;
-            color: #111827;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--report-ink);
         }
         .report-direct-card-note {
-            margin-top: 7px;
+            margin-top: 9px;
             font-size: 11px;
-            line-height: 1.65;
-            color: #6b7280;
+            line-height: 1.72;
+            color: var(--report-muted);
         }
         .report-direct-card-hint {
-            margin-top: 10px;
+            margin-top: 12px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 10px;
+            padding: 7px 11px;
             border-radius: 999px;
-            background: rgba(255,255,255,0.76);
-            border: 1px solid rgba(255,255,255,0.78);
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(188, 164, 132, 0.20);
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.04em;
-            color: #475569;
+            letter-spacing: 0.07em;
+            color: var(--report-ink-soft);
         }
         .report-metric-table {
             display: grid;
-            gap: 10px;
+            gap: 12px;
         }
         .report-metric-row {
             display: grid;
-            gap: 10px;
-            border-radius: 20px;
-            padding: 14px 15px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,249,253,0.98) 100%);
-            border: 1px solid rgba(226,232,240,0.88);
-            box-shadow: 0 12px 24px rgba(15,23,42,0.03);
+            gap: 12px;
+            border-radius: 22px;
+            padding: 15px 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,241,234,0.98) 100%);
+            border: 1px solid var(--report-line);
+            box-shadow: 0 14px 30px rgba(32,22,12,0.04);
         }
         .report-metric-values {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
+            gap: 10px;
         }
         .report-metric-pill {
-            border-radius: 16px;
-            background: rgba(255,255,255,0.9);
-            border: 1px solid rgba(229,231,235,0.92);
-            padding: 10px 10px 11px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.82);
+            border: 1px solid rgba(188, 164, 132, 0.18);
+            padding: 11px 11px 12px;
         }
         .report-metric-pill-label {
             font-size: 9px;
             font-weight: 800;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: #94a3b8;
-            margin-bottom: 4px;
+            color: var(--report-muted);
+            margin-bottom: 5px;
         }
         .report-metric-pill-value {
             font-size: 14px;
             line-height: 1.2;
             font-weight: 800;
-            color: #111827;
+            color: var(--report-ink);
         }
         .report-hit-list {
             display: grid;
-            gap: 8px;
+            gap: 10px;
         }
         .report-hit-item {
-            border-radius: 16px;
-            padding: 11px 12px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%);
-            border: 1px solid rgba(226,232,240,0.88);
+            border-radius: 18px;
+            padding: 12px 13px;
+            background: linear-gradient(180deg, rgba(255,253,250,0.98) 0%, rgba(246,239,231,0.96) 100%);
+            border: 1px solid var(--report-line);
             font-size: 12px;
-            line-height: 1.65;
-            color: #475569;
+            line-height: 1.72;
+            color: var(--report-ink-soft);
         }
         .report-headline-plain {
-            font-size: 13px;
-            line-height: 1.8;
-            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.9;
+            color: rgba(243, 236, 227, 0.86);
             max-width: 52ch;
         }
         .report-hero h2,
         .report-hero #final-result-title {
-            color: #111827 !important;
+            color: #fbf6ef !important;
+            font-family: var(--report-serif);
+            letter-spacing: -0.035em;
         }
         .report-hero #final-report-datetime {
-            background: rgba(255,255,255,0.88);
-            color: #6b7280;
-            border-color: rgba(209,213,219,0.86);
+            background: rgba(255,248,238,0.08);
+            color: rgba(247, 240, 230, 0.78);
+            border-color: rgba(255,255,255,0.10);
+            backdrop-filter: blur(10px);
         }
         .report-hero #final-report-confidence-detail {
-            background: rgba(255,255,255,0.88);
-            border-color: rgba(229,231,235,0.95);
-            color: #374151;
-            box-shadow: 0 10px 24px rgba(31,41,55,0.05);
+            background: rgba(255,248,238,0.08);
+            border-color: rgba(255,255,255,0.10);
+            color: #f4ede4;
+            box-shadow: 0 16px 36px rgba(14, 10, 6, 0.18);
+            backdrop-filter: blur(12px);
         }
         .report-hero .id-jump-video {
-            background: rgba(10,132,255,0.08) !important;
-            color: #0a84ff !important;
-            border: 1px solid rgba(10,132,255,0.16);
+            background: rgba(255,248,238,0.08) !important;
+            color: #f6ebdc !important;
+            border: 1px solid rgba(255,255,255,0.12);
         }
         .report-panel {
+            position: relative;
             background:
-                radial-gradient(circle at top right, rgba(255,255,255,0.88) 0%, transparent 26%),
-                rgba(255,255,255,0.975);
-            border: 1px solid rgba(255,255,255,0.98);
-            border-radius: 32px;
-            box-shadow: 0 26px 72px rgba(15,23,42,0.05), inset 0 0 0 1px rgba(209,213,219,0.48);
+                radial-gradient(circle at top right, rgba(255,255,255,0.74) 0%, transparent 22%),
+                linear-gradient(180deg, rgba(255,252,248,0.99) 0%, rgba(248,241,233,0.985) 100%);
+            border: 1px solid var(--report-line);
+            border-radius: 34px;
+            box-shadow: var(--report-shadow), inset 0 1px 0 rgba(255,255,255,0.74);
+        }
+        .report-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto auto 28px;
+            width: 88px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(184,150,103,0.95) 0%, rgba(184,150,103,0) 100%);
+        }
+        .report-panel-result {
+            background:
+                radial-gradient(circle at right top, rgba(184,150,103,0.16) 0%, transparent 24%),
+                linear-gradient(180deg, rgba(255,252,248,0.995) 0%, rgba(248,241,233,0.985) 100%);
+        }
+        .report-panel-data {
+            background:
+                radial-gradient(circle at left top, rgba(255,255,255,0.74) 0%, transparent 22%),
+                linear-gradient(180deg, rgba(252,248,243,0.99) 0%, rgba(244,236,228,0.985) 100%);
+        }
+        .report-panel-action::before {
+            background: linear-gradient(90deg, rgba(110,83,55,0.95) 0%, rgba(110,83,55,0) 100%);
         }
         .report-soft-box {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
-            border: 1px solid rgba(229,231,235,0.92);
-            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.84) 0%, rgba(248,242,235,0.92) 100%);
+            border: 1px solid rgba(188, 164, 132, 0.18);
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.74);
         }
         .report-soft-box.report-soft-box-warm {
-            background: linear-gradient(180deg, rgba(250,250,251,0.96) 0%, rgba(255,255,255,0.98) 100%);
-            border-color: rgba(209,213,219,0.95);
+            background: linear-gradient(180deg, rgba(250,244,237,0.94) 0%, rgba(255,255,255,0.98) 100%);
+            border-color: rgba(123, 104, 80, 0.16);
         }
         .report-eyebrow {
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.18em;
-            color: #8e8e93;
+            letter-spacing: 0.24em;
+            color: var(--report-accent-deep);
             text-transform: uppercase;
         }
         .report-section-title {
-            font-size: 21px;
-            line-height: 1.35;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.035em;
+            font-family: var(--report-serif);
+            font-size: 25px;
+            line-height: 1.24;
+            font-weight: 700;
+            color: var(--report-ink);
+            letter-spacing: -0.03em;
         }
         .report-body-text {
             font-size: 14px;
-            line-height: 1.85;
-            color: #4b5563;
+            line-height: 1.9;
+            color: var(--report-ink-soft);
         }
         .report-note {
             font-size: 12px;
-            line-height: 1.7;
-            color: #6b7280;
+            line-height: 1.74;
+            color: var(--report-muted);
         }
         .report-visual-card img {
             width: 100%;
             height: 136px;
             object-fit: cover;
-            border-radius: 16px;
+            border-radius: 18px;
             display: block;
-            background: #f8fafc;
+            background: #f2ebe1;
         }
         .report-image-trigger {
             width: 100%;
@@ -329,9 +383,9 @@
             text-align: left;
         }
         .report-image-trigger:focus-visible {
-            outline: 2px solid rgba(10, 132, 255, 0.6);
+            outline: 2px solid rgba(184, 150, 103, 0.6);
             outline-offset: 4px;
-            border-radius: 18px;
+            border-radius: 20px;
         }
         .report-image-hint {
             position: absolute;
@@ -342,29 +396,29 @@
             gap: 5px;
             padding: 6px 9px;
             border-radius: 999px;
-            background: rgba(15, 23, 42, 0.7);
-            color: #fff;
+            background: rgba(28, 21, 15, 0.72);
+            color: #f8f1e7;
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.08em;
             pointer-events: none;
         }
         .report-image-modal-backdrop {
-            background: rgba(2, 6, 23, 0.76);
+            background: rgba(18, 12, 8, 0.76);
             backdrop-filter: blur(12px);
         }
         .report-image-modal-card {
-            background: rgba(255,255,255,0.98);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 24px;
-            box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+            background: rgba(252,248,243,0.98);
+            border: 1px solid rgba(255,255,255,0.28);
+            border-radius: 26px;
+            box-shadow: 0 28px 80px rgba(18, 12, 8, 0.28);
         }
         .report-image-modal-img {
             width: 100%;
             max-height: min(72vh, 760px);
             object-fit: contain;
-            border-radius: 18px;
-            background: linear-gradient(180deg, rgba(248,250,252,1) 0%, rgba(241,245,249,1) 100%);
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(248,243,236,1) 0%, rgba(239,231,220,1) 100%);
         }
         .report-bullet-list {
             margin: 0;
@@ -372,15 +426,15 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .report-bullet-list li {
             display: flex;
             align-items: flex-start;
             gap: 10px;
             font-size: 13px;
-            line-height: 1.7;
-            color: #334155;
+            line-height: 1.8;
+            color: var(--report-ink-soft);
         }
         .report-bullet-list li::before {
             content: '';
@@ -388,11 +442,11 @@
             height: 7px;
             margin-top: 8px;
             border-radius: 9999px;
-            background: #0a84ff;
+            background: var(--report-accent);
             flex-shrink: 0;
         }
         .report-bullet-list.report-bullet-list-warm li::before {
-            background: #8e8e93;
+            background: #7c6750;
         }
         .report-data-card {
             background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
@@ -419,21 +473,22 @@
         .report-badge-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
         .report-badge-chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 12px;
+            padding: 8px 13px;
             border-radius: 999px;
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(224, 211, 193, 0.20);
+            background: rgba(255,248,238,0.10);
             font-size: 11px;
             font-weight: 700;
-            color: #374151;
+            color: #f6eee3;
             line-height: 1;
+            backdrop-filter: blur(10px);
         }
         .report-badge-dot {
             width: 8px;
@@ -550,51 +605,53 @@
             }
         }
         .report-proof-card {
-            border-radius: 22px;
-            padding: 16px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
-            border: 1px solid rgba(229,231,235,0.94);
+            border-radius: 24px;
+            padding: 17px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(247,240,232,0.98) 100%);
+            border: 1px solid var(--report-line);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.74);
         }
         .report-proof-card.is-strong {
-            border-color: rgba(10,132,255,0.22);
-            background: linear-gradient(180deg, rgba(250,253,255,0.99) 0%, rgba(238,246,255,0.98) 100%);
+            border-color: rgba(184, 150, 103, 0.28);
+            background: linear-gradient(180deg, rgba(255,251,246,0.99) 0%, rgba(245,235,222,0.98) 100%);
         }
         .report-proof-value {
-            font-size: 20px;
+            font-family: var(--report-serif);
+            font-size: 24px;
             line-height: 1;
-            font-weight: 900;
+            font-weight: 700;
             letter-spacing: -0.03em;
-            color: #111827;
+            color: var(--report-ink);
         }
         .report-proof-label {
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #8e8e93;
+            color: var(--report-muted);
         }
         .report-next-card {
             background:
-                radial-gradient(circle at top right, rgba(90,200,250,0.10) 0%, transparent 24%),
-                radial-gradient(circle at top left, rgba(255,214,10,0.08) 0%, transparent 18%),
-                linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(245,247,250,0.98) 100%);
-            border: 1px solid rgba(219,226,236,0.92);
-            color: #111827;
+                radial-gradient(circle at top right, rgba(184,150,103,0.14) 0%, transparent 22%),
+                radial-gradient(circle at top left, rgba(92,70,47,0.08) 0%, transparent 18%),
+                linear-gradient(180deg, rgba(255,252,248,0.99) 0%, rgba(246,238,229,0.98) 100%);
+            border: 1px solid rgba(123, 104, 80, 0.18);
+            color: var(--report-ink);
         }
         .report-next-card .report-section-title,
         .report-next-card .report-eyebrow,
         .report-next-card .report-body-text {
-            color: #111827;
+            color: var(--report-ink);
         }
         .report-next-card .report-soft-box {
-            background: rgba(255,255,255,0.82);
-            border-color: rgba(209,213,219,0.88);
+            background: rgba(255,255,255,0.70);
+            border-color: rgba(123, 104, 80, 0.16);
         }
         .report-next-card .report-bullet-list li {
-            color: #4b5563;
+            color: var(--report-ink-soft);
         }
         .report-next-card .report-bullet-list li::before {
-            background: #8e8e93;
+            background: var(--report-accent-deep);
         }
         .report-customer-quote {
             border-radius: 22px;
@@ -686,11 +743,11 @@
         }
         .report-plan-shell {
             background:
-                radial-gradient(circle at right top, rgba(90,200,250,0.16) 0%, transparent 24%),
-                radial-gradient(circle at left top, rgba(255,214,10,0.10) 0%, transparent 18%),
-                linear-gradient(180deg, rgba(255,255,255,0.995) 0%, rgba(247,249,252,0.985) 58%, rgba(238,242,247,0.98) 100%);
-            border: 1px solid rgba(255,255,255,0.95);
-            box-shadow: 0 30px 94px rgba(15,23,42,0.07), inset 0 0 0 1px rgba(209,213,219,0.4);
+                radial-gradient(circle at right top, rgba(184,150,103,0.16) 0%, transparent 24%),
+                radial-gradient(circle at left top, rgba(92,70,47,0.08) 0%, transparent 18%),
+                linear-gradient(180deg, rgba(255,253,250,0.995) 0%, rgba(247,241,234,0.985) 58%, rgba(237,229,218,0.98) 100%);
+            border: 1px solid rgba(255,255,255,0.72);
+            box-shadow: 0 30px 94px rgba(32,22,12,0.09), inset 0 0 0 1px rgba(209,213,219,0.28);
         }
         .report-plan-grid {
             display: grid;
@@ -705,44 +762,44 @@
             gap: 12px;
         }
         .report-plan-price {
-            border-radius: 28px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,246,249,0.98) 100%);
-            border: 1px solid rgba(229,231,235,0.95);
+            border-radius: 30px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,239,231,0.98) 100%);
+            border: 1px solid var(--report-line);
             padding: 20px 18px;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.88);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.72);
         }
         .report-plan-price strong {
             letter-spacing: -0.05em;
         }
         .report-plan-editorial {
-            border-radius: 24px;
+            border-radius: 26px;
             padding: 18px;
-            background: rgba(255,255,255,0.8);
-            border: 1px solid rgba(229,231,235,0.9);
+            background: rgba(255,255,255,0.68);
+            border: 1px solid rgba(123, 104, 80, 0.16);
         }
         .report-plan-mini-card {
-            border-radius: 20px;
+            border-radius: 22px;
             padding: 14px 14px 15px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(246,249,252,0.97) 100%);
-            border: 1px solid rgba(226,232,240,0.86);
-            box-shadow: 0 10px 22px rgba(15,23,42,0.03);
+            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,239,230,0.97) 100%);
+            border: 1px solid var(--report-line);
+            box-shadow: 0 10px 22px rgba(32,22,12,0.03);
         }
         .report-plan-checklist {
             display: grid;
             gap: 10px;
         }
         .report-plan-checklist-item {
-            border-radius: 20px;
-            background: rgba(255,255,255,0.92);
-            border: 1px solid rgba(209,213,219,0.82);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.76);
+            border: 1px solid rgba(123, 104, 80, 0.16);
             padding: 14px 14px 15px;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.82);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.66);
         }
         .report-plan-cta {
-            border-radius: 24px;
+            border-radius: 26px;
             padding: 18px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(243,246,250,0.96) 100%);
-            border: 1px solid rgba(229,231,235,0.9);
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,238,230,0.96) 100%);
+            border: 1px solid var(--report-line);
         }
         .report-plan-button-row {
             display: grid;
@@ -769,10 +826,10 @@
         }
         .report-disclaimer {
             font-size: 11px;
-            line-height: 1.7;
-            color: #64748b;
+            line-height: 1.8;
+            color: var(--report-muted);
             text-align: center;
-            padding: 0 8px;
+            padding: 4px 12px 0;
         }
         /* 苹果系统蓝配置 */
         .mac-blue { color: #0a84ff; }
@@ -1812,12 +1869,12 @@
             </div>
 
             <!-- 终极报告生成区 -->
-            <div id="final-report-section" class="report-shell hidden fade-in border border-white/90 px-2.5 py-4 sm:px-5 sm:py-6 rounded-[2.4rem] shadow-[0_30px_100px_rgba(15,23,42,0.08)] mt-2 flex flex-col items-stretch relative overflow-hidden gap-4">
+            <div id="final-report-section" class="report-shell hidden fade-in px-3 py-4 sm:px-6 sm:py-7 rounded-[2.6rem] mt-2 flex flex-col items-stretch relative overflow-hidden gap-5">
                 <div class="absolute -top-24 -right-20 w-64 h-64 bg-white/90 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute top-20 -left-20 w-52 h-52 bg-[#0a84ff]/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-16 -left-10 w-44 h-44 bg-white/85 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div class="relative z-10 w-full report-hero rounded-[2.05rem] border border-white/95 px-5 py-5 sm:px-8 sm:py-8 overflow-hidden">
+                <div class="relative z-10 w-full report-hero rounded-[2.2rem] border px-5 py-6 sm:px-9 sm:py-9 overflow-hidden">
                     <div class="absolute inset-x-0 top-0 h-20 bg-white/65 blur-2xl pointer-events-none"></div>
                     <div class="relative report-hero-grid">
                         <div class="min-w-0">
@@ -1842,7 +1899,7 @@
                                     查看完整训练路径
                                 </a>
                             </div>
-                            <div id="final-report-confidence" class="hidden">结果稳定度：--</div>
+                            <div id="final-report-confidence" class="hidden">数据一致性：--</div>
                         </div>
                         <div class="report-summary-strip">
                             <div id="final-report-confidence-detail" class="report-summary-chip">
@@ -3312,7 +3369,7 @@
             if (snapshot.titleClassName) titleEl.className = snapshot.titleClassName;
 
             const confidenceEl = document.getElementById('final-report-confidence');
-            confidenceEl.textContent = snapshot.reportConfidenceText || '结果稳定度：--';
+            confidenceEl.textContent = snapshot.reportConfidenceText || '数据一致性：--';
             if (snapshot.reportConfidenceClassName) confidenceEl.className = snapshot.reportConfidenceClassName;
 
             document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '当前重点：--';
@@ -3695,8 +3752,8 @@
                     loadSide: 'right',
                     releaseFocus: '先让左边别继续前顶、外开',
                     loadFocus: '再让右边开始更会承重、接髋',
-                    summary: `${firstStep}，再让左边回一点、右边接一点。`,
-                    note: '这一步是根据静态分型推出来的训练入口假设，不等同于已经完成动态承重测试。'
+                    summary: `${firstStep}，再让左侧别继续往前，最后把右侧承重找回来。`,
+                    note: '这一步是根据静态结果给出的初步顺序，不等于已经完成动态承重测试。'
                 };
             }
 
@@ -3709,8 +3766,8 @@
                     loadSide: 'right',
                     releaseFocus: '先让左边别继续高、继续主导',
                     loadFocus: '再把右边从“接不住”里带回来',
-                    summary: `${firstStep}，再降左高，再把右边承重练回来。`,
-                    note: '横向型阶段里，右边更像需要重新建立承重和装载，但最终仍建议结合动态承重复核。'
+                    summary: `${firstStep}，再把左侧偏高降下来，最后把右侧承重找回来。`,
+                    note: '横向差已经比较明确，但右侧承重仍建议结合动态承重结果再确认。'
                 };
             }
 
@@ -3723,8 +3780,8 @@
                     loadSide: 'right',
                     releaseFocus: '先拆左边的高和前',
                     loadFocus: '再让右边重新建立承重“信任感”',
-                    summary: `${firstStep}，再拆左边的高和前，再让右边真正接住重量。`,
-                    note: '斜轴型里右边常常不是单纯弱，而是长期不被信任、不被交重量。'
+                    summary: `${firstStep}，再同时处理左侧偏高和左侧更靠前，最后把右侧承重找回来。`,
+                    note: '这类结果里，右侧往往长期没有稳定承重，所以顺序上要把右侧承重放回去。'
                 };
             }
 
@@ -3737,8 +3794,8 @@
                     loadSide: null,
                     releaseFocus: '先别急着固定左右策略',
                     loadFocus: '先做回位和基础承重观察',
-                    summary: `${firstStep}，再补一次动态承重，确认到底哪边该接。`,
-                    note: '这次左右差已经出现，但还没有稳定落到单一分型，所以不能直接把承重侧写死。'
+                    summary: `${firstStep}，再补一次动态承重，确认到底该先练哪一边。`,
+                    note: '这次左右差已经出现，但方向还不够一致，所以先不判断哪边该主承重。'
                 };
             }
 
@@ -3750,7 +3807,7 @@
                 loadSide: null,
                 releaseFocus: '先把前后和基础站姿做稳',
                 loadFocus: '再看动态承重怎么分工',
-                summary: '当前先保留为待复核，不直接给承重侧。',
+                summary: '当前先不判断承重方向。',
                 note: '动态承重层需要更多输入，当前不做侧别判断。'
             };
         }
@@ -4957,130 +5014,130 @@
 
             const frontBack = compKey === 'anterior'
                 ? {
-                    short: '前倾',
-                    value: '更像前倾',
-                    plain: '更像前面往下扣、后面往上翘。',
-                    note: `短板值组合更接近前倾：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                    short: '前倾倾向',
+                    value: '前倾倾向',
+                    plain: '本次结果显示，骨盆前侧更容易向下，后侧更容易向上。',
+                    note: `依据：三项短板值组合更接近前倾模式。直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
                 }
                 : compKey === 'posterior'
                     ? {
-                        short: '前移',
-                        value: '更像前移',
-                        plain: '更像整块骨盆一起往前顶出去。',
-                        note: `短板值组合更接近前移：直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                        short: '前移倾向',
+                        value: '前移倾向',
+                        plain: '本次结果显示，骨盆整体更容易向前顶。',
+                        note: `依据：三项短板值组合更接近前移模式。直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
                     }
                     : {
-                        short: '待复核',
-                        value: '前后方向待复核',
-                        plain: '这次还不能直接写成前倾或前移。',
-                        note: `当前短板值组合还没有稳定落到单一前后类型。`
+                        short: '暂不判断',
+                        value: '前后方向暂不判断',
+                        plain: '本次数据不足，暂不判断前后方向。',
+                        note: '当前短板值组合没有稳定落到单一前后模式。'
                     };
 
             const iliacForward = subtypeKey === 'baseline' || subtypeKey === 'oblique'
                 ? {
-                    short: '左侧髂骨朝前',
-                    value: '左边更往前送',
-                    plain: '左边这块骨头更容易往前跑。',
-                    note: `三大测试静态分型更接近${subtypeKey === 'oblique' ? '斜轴型' : '基线型'}。`
+                    short: '左侧更靠前',
+                    value: '左侧更靠前',
+                    plain: '本次结果显示，左侧位置更靠前。',
+                    note: `依据：三项测试组合更接近${subtypeKey === 'oblique' ? '左高且左侧更靠前' : '左侧更靠前'}模式。`
                 }
                 : {
-                    short: '待复核',
-                    value: '哪边更往前待复核',
-                    plain: '这次先不把哪边更往前写死。',
-                    note: `当前没有稳定落到“左侧更前”的静态分型。`
+                    short: '暂不判断',
+                    value: '哪边更靠前暂不判断',
+                    plain: '本次数据不足，暂不判断哪边更靠前。',
+                    note: '当前没有稳定落到左右前后方向。'
                 };
 
             const rotation = subtypeKey === 'baseline' || subtypeKey === 'oblique'
                 ? {
-                    short: '向右旋',
-                    value: '整体更像向右转',
-                    plain: '你可以把它理解成骨盆整块更像在往右拧。',
-                    note: '由静态分型共同指向右旋倾向。'
+                    short: '整体偏右',
+                    value: '整体偏右',
+                    plain: '如果从上往下看，骨盆整体更偏向右侧。',
+                    note: '这是根据左右前后关系推导出的辅助判断。'
                 }
                 : {
-                    short: '待复核',
-                    value: '旋转方向待复核',
-                    plain: '这次先不把整体往哪边转写死。',
-                    note: '当前没有稳定落到旋转方向。'
+                    short: '暂不判断',
+                    value: '整体方向暂不判断',
+                    plain: '本次数据不足，暂不判断整体转向。',
+                    note: '当前没有足够证据给出整体转向。'
                 };
 
             const height = heightKey === 'rightHigh'
                 ? {
                     short: '右高左低',
-                    value: '右边更高，左边更低',
-                    plain: '站着看会更像右边略高一点。',
-                    note: '基线型静态结果里，右侧通常会略高。'
+                    value: '右侧更高',
+                    plain: '本次结果显示，右侧位置略高，左侧略低。',
+                    note: '依据：三项测试组合更接近右高左低模式。'
                 }
                 : heightKey === 'leftHigh'
                 ? {
                     short: '左高右低',
-                    value: '左边更高，右边更低',
-                    plain: '站着看会更像左边被提起来一点。',
-                    note: `静态分型更接近${subtypeKey === 'oblique' ? '斜轴型' : '横向型'}。`
+                    value: '左侧更高',
+                    plain: '本次结果显示，左侧位置略高，右侧略低。',
+                    note: `依据：三项测试组合更接近${subtypeKey === 'oblique' ? '左高且左侧更靠前' : '左高右低'}模式。`
                 }
                 : heightKey === 'clue'
                     ? {
-                        short: '左高线索',
-                        value: '左边偏高的线索已出现',
-                        plain: '已经有一点左高右低的苗头。',
-                        note: `已有 1 项高低差线索。`
+                        short: '左侧偏高证据不足',
+                        value: '左侧偏高，但证据不足',
+                        plain: '有 1 项数据提示左侧偏高，但还不够下结论。',
+                        note: '目前只有 1 项数据达到高低差判断线。'
                     }
                     : heightKey === 'uneven'
                         ? {
-                            short: '高低差待复核',
-                            value: '高低差已出现，但方向待复核',
-                            plain: '能看出高低差，但还不能直接定哪边更高。',
-                            note: `当前左右差已出现，但还不适合直接写死方向。`
+                            short: '高低差存在',
+                            value: '已有高低差，但方向暂不判断',
+                            plain: '已经出现高低差，但还不能判断哪边更高。',
+                            note: '当前左右差已出现，但方向不够一致。'
                         }
                         : {
-                            short: '高度接近',
-                            value: '左右高度暂时接近',
-                            plain: '这次没有稳定落到一边高一边低。',
-                            note: `当前没有稳定落到左高右低。`
+                            short: '暂不判断',
+                            value: '高低暂不判断',
+                            plain: '本次数据不足，暂不判断左右高低。',
+                            note: '当前没有稳定落到左右高低模式。'
                         };
 
             const confidence = confidenceKey === 'high' ? '高' : confidenceKey === 'medium' ? '中' : '低';
             const bearing = dynamicBearing.loadSide === 'right'
                 ? {
-                    short: '右侧待建立',
-                    value: '右边更需要重新学会承重',
-                    plain: '这一步现在还是训练入口假设，不等于已经做完动态承重测试。',
+                    short: '先找回右侧承重',
+                    value: '先把右侧承重找回来',
+                    plain: '这是根据静态结果给出的优先顺序，不等于已经完成动态承重测试。',
                     note: dynamicBearing.summary
                 }
                 : {
-                    short: '需复核',
-                    value: '承重入口还要再复核',
-                    plain: '这次先别把哪边该主承重写死。',
+                    short: '承重方向暂不判断',
+                    value: '承重方向暂不判断',
+                    plain: '还没有动态承重结果，先不判断哪边该多承重。',
                     note: dynamicBearing.summary
                 };
             const badges = [
                 { label: `前后：${frontBack.short}`, color: '#6b7280' },
-                { label: `分型：${subtypeKey === 'baseline' ? '基线型' : subtypeKey === 'lateral' ? '横向型' : subtypeKey === 'oblique' ? '斜轴型' : subtypeKey === 'transition' ? '待复核' : '未定型'}`, color: '#6b7280' },
-                { label: `高低：${height.short}`, color: '#6b7280' },
-                { label: `稳定度：${confidence}`, color: '#6b7280' }
+                { label: `左右前后：${iliacForward.short}`, color: '#6b7280' },
+                { label: `左右高低：${height.short}`, color: '#6b7280' },
+                { label: `数据一致性：${confidence}`, color: '#6b7280' }
             ];
 
             const hitRules = [
-                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `前移线索：${item.label}`),
-                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `前倾线索：${item.label}`),
-                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `三大测试线索：${item.label}`)
+                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `符合前移判断条件：${item.label}`),
+                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `符合前倾判断条件：${item.label}`),
+                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `符合左右高低判断条件：${item.label}`)
             ];
 
             if (subtypeKey === 'baseline') {
-                hitRules.unshift('静态分型：左髋屈更大、左侧直腿抬高更小、左侧肩屈更小，更接近基线型。');
+                hitRules.unshift('三项测试组合显示：左侧更靠前，右侧相对更靠后。');
             } else if (subtypeKey === 'lateral') {
-                hitRules.unshift('静态分型：左髋屈更大、左侧直腿抬高更大、左侧肩屈更小，更接近横向型。');
+                hitRules.unshift('三项测试组合显示：左侧更高，右侧相对更低。');
             } else if (subtypeKey === 'oblique') {
-                hitRules.unshift('静态分型：右髋屈更大、左侧直腿抬高更大、左侧肩屈更大，更接近斜轴型。');
+                hitRules.unshift('三项测试组合显示：左侧同时更高、也更靠前。');
             } else if (subtypeKey === 'transition') {
-                hitRules.unshift('静态分型：左右差已经出现，但三大测试还没有稳定落到单一分型。');
+                hitRules.unshift('三项测试都出现了左右差，但方向还不够一致，所以这次先不下固定结论。');
             }
 
             return {
-                headline: frontBack.short === '待复核'
-                    ? (iliacForward.short === '待复核' ? '骨盆方向待复核' : `骨盆方向待复核，${iliacForward.short}`)
-                    : `骨盆${frontBack.short}${iliacForward.short === '待复核' ? '' : `，${iliacForward.short}`}`,
-                plainHeadline: `${frontBack.plain}${iliacForward.short === '待复核' ? '' : ` 同时，${iliacForward.plain}`}`,
+                headline: frontBack.short === '暂不判断'
+                    ? (iliacForward.short === '暂不判断' ? '本次数据不足，部分方向暂不判断' : `本次结果显示：${iliacForward.short}`)
+                    : `本次结果显示：${frontBack.short}${iliacForward.short === '暂不判断' ? '' : `，${iliacForward.short}`}`,
+                plainHeadline: `${frontBack.plain}${iliacForward.short === '暂不判断' ? '' : ` 同时，${iliacForward.plain}`}`,
                 frontBack,
                 iliacForward,
                 rotation,
@@ -5254,7 +5311,7 @@
             if (subType === 'transition') {
                 return {
                     headline: '你现在先把方向看清，再进入更具体的调整。',
-                    lead: '本次已经看到左右差异，但还不适合直接判断成某一种固定方向。先把呼吸、站姿和复测做稳，会比急着纠正更可靠。',
+                    lead: '本次已经看到左右差异，但三项数据方向还不够一致，所以先不下固定结论。先把呼吸、站姿和复测做稳，会比急着纠正更可靠。',
                     doItems: [
                         '先把骨盆带回比较中间的位置',
                         '用同样角度保留一次复测照片或数据',
@@ -5274,7 +5331,7 @@
                     lead: '基础位置已经比前面更稳，接下来重点看两边高低、前后和踩地感觉怎么慢慢对回来。',
                     doItems: [
                         '继续保留把骨盆带回中间的练习',
-                        subType === 'oblique' ? '重点处理“左边更高也更往前”' : '重点处理两边高低或前后差',
+                        subType === 'oblique' ? '重点处理左侧偏高和左侧更靠前' : '重点处理两边高低或前后差',
                         '让更不稳的一边踩地更踏实'
                     ],
                     avoidItems: [
@@ -5329,7 +5386,7 @@
                 baseline: { label: '右侧更稳、左侧更靠前', color: '#6b7280' },
                 lateral: { label: '左侧偏高、右侧偏低', color: '#6b7280' },
                 oblique: { label: '左侧偏高、也偏前', color: '#6b7280' },
-                transition: { label: '方向待复核', color: '#64748b' }
+                transition: { label: '方向暂不判断', color: '#64748b' }
             };
             const compressionConfig = {
                 posterior: { label: '后腰容易顶住', color: '#6b7280' },
@@ -7291,7 +7348,7 @@
                     ? {
                         active: true,
                         side: 'left',
-                        label: '已有前后偏移线索'
+                        label: '前后方向证据不足'
                     }
                     : null;
 
@@ -7314,9 +7371,9 @@
                         : stableRotation
                             ? '左侧更靠前'
                             : unevenHeight
-                                ? '高低差待复核'
+                                ? '高低差已出现，方向暂不判断'
                                 : routeIsolation.hasLateralClue
-                                    ? '已有左右线索'
+                                    ? '左右差已出现'
                                     : '左右暂未定型'
             ];
 
@@ -7398,7 +7455,7 @@
                 : subType === 'lateral'
                     ? '左边更高，右边更低'
                     : subType === 'transition'
-                        ? '左右差异已经出现，方向待复核'
+                        ? '左右差异已经出现，方向暂不判断'
                         : '右边略高，左边更容易往前';
             const actionCopy = buildActionCopy({ trainingStage, subType });
             const referenceImages = getReportReferenceImages(subType);
@@ -7417,9 +7474,9 @@
                     跳过本报告，直接看安全建议
                 </a>
             </div>` : `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">骨盆结果</div>
-                <div class="report-section-title mb-4">你身体现在更像这样</div>
+            <div class="report-panel report-panel-result p-5 sm:p-7">
+                <div class="report-eyebrow mb-2">本次结果</div>
+                <div class="report-section-title mb-4">先看结论，再看数据</div>
                 <p class="report-headline-plain mb-4">${escapeHtml(directSummary.plainHeadline)}</p>
                 <div class="report-direct-grid">
                     <div class="report-direct-model">
@@ -7445,22 +7502,16 @@
                     </div>
                     <div class="report-direct-cards">
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">整体前后</div>
+                            <div class="report-direct-card-label">前后方向</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.frontBack.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.frontBack.note)}</div>
                             <div class="report-direct-card-hint">${escapeHtml(directSummary.frontBack.plain)}</div>
                         </div>
                         <div class="report-direct-card">
-                            <div class="report-direct-card-label">哪边更往前</div>
+                            <div class="report-direct-card-label">左右前后</div>
                             <div class="report-direct-card-value">${escapeHtml(directSummary.iliacForward.value)}</div>
                             <div class="report-direct-card-note">${escapeHtml(directSummary.iliacForward.note)}</div>
                             <div class="report-direct-card-hint">${escapeHtml(directSummary.iliacForward.plain)}</div>
-                        </div>
-                        <div class="report-direct-card">
-                            <div class="report-direct-card-label">整体转向</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.rotation.value)}</div>
-                            <div class="report-direct-card-note">${escapeHtml(directSummary.rotation.note)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.rotation.plain)}</div>
                         </div>
                         <div class="report-direct-card">
                             <div class="report-direct-card-label">左右高低</div>
@@ -7468,14 +7519,20 @@
                             <div class="report-direct-card-note">${escapeHtml(directSummary.height.note)}</div>
                             <div class="report-direct-card-hint">${escapeHtml(directSummary.height.plain)}</div>
                         </div>
+                        <div class="report-direct-card">
+                            <div class="report-direct-card-label">调整重点</div>
+                            <div class="report-direct-card-value">${escapeHtml(directSummary.bearing.value)}</div>
+                            <div class="report-direct-card-note">${escapeHtml(directSummary.bearing.note)}</div>
+                            <div class="report-direct-card-hint">${escapeHtml(directSummary.bearing.plain)}</div>
+                        </div>
                     </div>
                 </div>
             </div>`;
 
             const actionHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel report-next-card p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">训练入口</div>
-                <div class="report-section-title mb-2">先按这个方向处理</div>
+            <div class="report-panel report-next-card report-panel-action p-5 sm:p-7">
+                <div class="report-eyebrow mb-2">调整顺序</div>
+                <div class="report-section-title mb-2">先从这里开始</div>
                 <p class="report-body-text mb-4">${actionCopy.headline}${actionCopy.lead}</p>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <div class="report-soft-box p-4">
@@ -7494,9 +7551,10 @@
             </div>`;
 
             const dataHtml = `
-            <div class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">数据依据</div>
-                <div class="report-section-title mb-3">我是根据这 3 组数据这样判断的</div>
+            <div class="report-panel report-panel-data p-5 sm:p-7">
+                <div class="report-eyebrow mb-2">判断依据</div>
+                <div class="report-section-title mb-2">这次判断主要看这 3 组差值</div>
+                <p class="report-body-text mb-4">左右差达到 10° 才会进入方向判断；没达到判断线的项目只作参考，不单独下结论。</p>
                 <div class="report-metric-table">
                     ${directMetricRows.map((row) => `
                     <div class="report-metric-row">
@@ -7522,13 +7580,13 @@
                 </div>
                 <div class="grid gap-3 mt-4 lg:grid-cols-[1.05fr_0.95fr]">
                     <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">为什么会这样看</div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">满足的判断条件</div>
                         <div class="report-hit-list">
                             ${directSummary.hitRules.map((rule) => `<div class="report-hit-item">${escapeHtml(rule)}</div>`).join('') || '<div class="report-hit-item">当前没有足够命中项。</div>'}
                         </div>
                     </div>
                     <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">左右差值</div>
+                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">每组数据明细</div>
                         <div class="report-proof-grid">
                     ${renderDataEvidenceCardsHtml(evidenceCards)}
                         </div>
@@ -7538,7 +7596,7 @@
 
             const disclaimerHtml = `
             <div class="report-disclaimer">
-                本报告根据你的测试结果，整理常见生活现象，不构成医学诊断。若有明显疼痛、麻木、夜间痛或持续加重，请优先寻求专业评估。
+                这份报告只说明本次动作测量结果，不用于疾病诊断或治疗决定。若有明显疼痛、麻木、夜间痛或症状持续加重，请优先线下就诊。
             </div>`;
 
             const container = document.getElementById('empathic-report-container');
@@ -7550,12 +7608,12 @@
             titleEl.innerText = mainSentence;
             finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
             document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
-            document.getElementById('final-report-confidence').textContent = `结果稳定度：${directSummary.confidence}`;
+            document.getElementById('final-report-confidence').textContent = `数据一致性：${directSummary.confidence}`;
             document.getElementById('final-report-confidence-detail').innerHTML = `
                 <div class="grid gap-2">
                     <div class="text-[13px] font-black text-slate-900">${escapeHtml(directSummary.plainHeadline)}</div>
-                    <div><span class="font-black text-slate-900">你这次最先看这 3 个点：</span>${escapeHtml(directSummary.frontBack.value)}、${escapeHtml(directSummary.height.value)}、${escapeHtml(directSummary.iliacForward.value)}</div>
-                    <div><span class="font-black text-slate-900">训练入口先按：</span>${escapeHtml(directSummary.bearing.value)}</div>
+                    <div><span class="font-black text-slate-900">本次优先看：</span>${escapeHtml(directSummary.frontBack.value)}、${escapeHtml(directSummary.height.value)}、${escapeHtml(directSummary.iliacForward.value)}</div>
+                    <div><span class="font-black text-slate-900">建议先处理：</span>${escapeHtml(directSummary.bearing.value)}</div>
                 </div>`;
             document.getElementById('final-combo-label').textContent = directSummary.headline;
             document.getElementById('final-pelvic-orientation').innerHTML = directSummary.headline;
