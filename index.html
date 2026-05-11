@@ -12,835 +12,291 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <style>
         :root {
-            --report-ink: #1e1813;
-            --report-ink-soft: #544a40;
-            --report-muted: #7d7266;
-            --report-paper: #fbf7f1;
-            --report-paper-strong: #f4ede3;
-            --report-surface: #fffdfa;
-            --report-line: rgba(123, 104, 80, 0.18);
-            --report-line-strong: rgba(123, 104, 80, 0.28);
-            --report-accent: #b89667;
-            --report-accent-deep: #6e5337;
-            --report-accent-soft: rgba(184, 150, 103, 0.16);
-            --report-shadow: 0 28px 90px rgba(32, 22, 12, 0.10);
-            --report-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-            --report-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --report-ink: #1d1d1f;
+            --report-ink-soft: #494a4d;
+            --report-muted: #86868b;
+            --report-paper: #f5f5f7;
+            --report-surface: #ffffff;
+            --report-line: rgba(0,0,0,0.08);
+            --report-line-strong: rgba(0,0,0,0.12);
+            --report-accent: #0a84ff;
+            --report-accent-deep: #0066cc;
+            --report-accent-soft: rgba(10,132,255,0.08);
+            --report-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+            --report-radius: 16px;
+            --report-radius-sm: 10px;
+            --report-gap: 14px;
         }
-        body {
-            font-family: var(--report-sans);
-            color: var(--report-ink);
-        }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; color: var(--report-ink); }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .report-accordion summary::-webkit-details-marker { display: none; }
-        .report-accordion[open] .accordion-chevron { transform: rotate(180deg); }
+
+        /* ── Report Shell ── */
         .report-shell {
-            background:
-                radial-gradient(circle at 12% -2%, rgba(255,255,255,0.86) 0%, transparent 25%),
-                radial-gradient(circle at 88% 6%, rgba(184,150,103,0.16) 0%, transparent 20%),
-                radial-gradient(circle at 78% 28%, rgba(126,107,83,0.12) 0%, transparent 24%),
-                linear-gradient(180deg, #fbf7f1 0%, #f2ebdf 46%, #ebe3d6 100%);
-            border: 1px solid rgba(255,255,255,0.66);
-            box-shadow: 0 44px 140px rgba(41, 30, 18, 0.12), inset 0 1px 0 rgba(255,255,255,0.75);
+            background: linear-gradient(180deg, #f8f8fa 0%, #f2f2f5 100%);
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.04);
         }
-        .app-shell {
-            width: 100%;
-            max-width: 32rem;
-            transition: max-width 0.42s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-        }
-        .app-shell.app-shell-report-mode {
-            max-width: min(calc(100vw - 28px), 1460px);
-        }
+        .app-shell { width: 100%; max-width: 32rem; transition: max-width 0.4s ease; }
+        .app-shell.app-shell-report-mode { max-width: min(calc(100vw - 28px), 960px); }
+
+        /* ── Report Hero ── */
         .report-hero {
-            background:
-                radial-gradient(circle at 86% 12%, rgba(207, 177, 128, 0.28) 0%, transparent 20%),
-                radial-gradient(circle at 8% 0%, rgba(255,255,255,0.12) 0%, transparent 18%),
-                linear-gradient(135deg, #221a15 0%, #2d231d 36%, #433021 100%);
-            color: #f7f2ea;
-            border-color: rgba(233, 222, 207, 0.18) !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 38px 110px rgba(22, 16, 10, 0.26);
-        }
-        .report-hero-grid {
-            display: grid;
-            gap: 22px;
-        }
-        .report-summary-strip {
-            display: grid;
-            gap: 14px;
-        }
-        .report-summary-chip {
-            border-radius: 24px;
-            padding: 18px 20px;
-            background: linear-gradient(180deg, rgba(255,249,241,0.96) 0%, rgba(244,236,226,0.92) 100%);
-            border: 1px solid rgba(222, 205, 182, 0.38);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 20px 40px rgba(23, 16, 10, 0.10);
-            backdrop-filter: blur(12px);
-        }
-        .report-summary-chip.is-soft-blue {
-            background: linear-gradient(180deg, rgba(252,246,238,0.99) 0%, rgba(242,232,220,0.94) 100%);
-            border-color: rgba(210, 184, 148, 0.40);
-        }
-        .report-summary-chip-label {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: rgba(103, 85, 64, 0.74);
-            margin-bottom: 8px;
-        }
-        .report-summary-chip-value {
-            font-size: 14px;
-            line-height: 1.75;
+            background: #fff;
             color: var(--report-ink);
-            font-weight: 700;
+            border: 1px solid rgba(0,0,0,0.06) !important;
+            box-shadow: var(--report-shadow);
+            border-radius: var(--report-radius);
         }
-        .report-direct-grid {
-            display: grid;
-            gap: 18px;
-            align-items: start;
+        .report-hero-grid { display: grid; gap: 16px; }
+        .report-summary-strip { display: grid; gap: 12px; }
+        .report-summary-chip {
+            border-radius: var(--report-radius-sm);
+            padding: 14px 16px;
+            background: var(--report-accent-soft);
+            border: 1px solid rgba(10,132,255,0.12);
         }
+        .report-summary-chip.is-soft-blue { background: rgba(10,132,255,0.04); border-color: rgba(10,132,255,0.12); }
+        .report-summary-chip-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--report-accent); margin-bottom: 6px; }
+        .report-summary-chip-value { font-size: 13px; line-height: 1.6; color: var(--report-ink); font-weight: 600; }
+
+        /* ── Direct Result Grid ── */
+        .report-direct-grid { display: grid; gap: var(--report-gap); align-items: start; }
         .report-direct-model {
-            border-radius: 30px;
-            background:
-                radial-gradient(circle at top right, rgba(200,168,121,0.18) 0%, transparent 26%),
-                linear-gradient(180deg, rgba(255,253,250,0.99) 0%, rgba(247,241,233,0.98) 100%);
-            border: 1px solid var(--report-line);
-            padding: 16px;
-            box-shadow: var(--report-shadow), inset 0 0 0 1px rgba(255,255,255,0.82);
+            border-radius: var(--report-radius);
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 14px;
+            box-shadow: var(--report-shadow);
         }
         .report-model-stage {
-            position: relative;
-            overflow: hidden;
-            border-radius: 24px;
-            background:
-                radial-gradient(circle at 72% 16%, rgba(220,188,137,0.34) 0%, transparent 22%),
-                radial-gradient(circle at 18% 12%, rgba(255,255,255,0.14) 0%, transparent 16%),
-                linear-gradient(180deg, #1d1611 0%, #2b2119 46%, #17110d 100%);
-            border: 1px solid rgba(233, 223, 208, 0.12);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+            position: relative; overflow: hidden; border-radius: 10px;
+            background: #1c1c1e; border: none;
         }
-        .report-model-stage::after {
-            content: '';
-            position: absolute;
-            inset: auto 10% -18% 10%;
-            height: 42%;
-            background: radial-gradient(circle, rgba(200,168,121,0.24) 0%, transparent 68%);
-            filter: blur(20px);
-            pointer-events: none;
-        }
-        .report-direct-cards {
-            display: grid;
-            gap: 14px;
-        }
+        .report-direct-cards { display: grid; gap: 10px; }
         .report-direct-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 24px;
-            padding: 18px 18px 19px;
-            background: linear-gradient(180deg, rgba(255,253,249,0.99) 0%, rgba(246,238,229,0.95) 100%);
-            border: 1px solid var(--report-line);
-            box-shadow: 0 18px 42px rgba(32,22,12,0.06);
+            position: relative; overflow: hidden; border-radius: var(--report-radius);
+            padding: 16px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: var(--report-shadow);
         }
-        .report-direct-card::after {
-            content: '';
-            position: absolute;
-            inset: 0 0 auto 0;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(184,150,103,0) 0%, rgba(184,150,103,0.94) 26%, rgba(184,150,103,0.42) 100%);
-        }
-        .report-direct-card:nth-child(1) {
-            background: linear-gradient(180deg, rgba(255,251,246,0.99) 0%, rgba(248,239,228,0.95) 100%);
-            border-color: rgba(186, 156, 116, 0.26);
-        }
-        .report-direct-card:nth-child(1)::after {
-            background: linear-gradient(90deg, rgba(184,150,103,0) 0%, #b89667 28%, rgba(184,150,103,0.28) 100%);
-        }
-        .report-direct-card:nth-child(2) {
-            background: linear-gradient(180deg, rgba(252,248,242,0.99) 0%, rgba(244,236,228,0.95) 100%);
-            border-color: rgba(126, 103, 83, 0.18);
-        }
-        .report-direct-card:nth-child(2)::after {
-            background: linear-gradient(90deg, rgba(110,83,55,0) 0%, #6e5337 28%, rgba(110,83,55,0.24) 100%);
-        }
-        .report-direct-card:nth-child(3) {
-            background: linear-gradient(180deg, rgba(255,253,250,0.99) 0%, rgba(241,235,229,0.95) 100%);
-            border-color: rgba(90, 73, 59, 0.18);
-        }
-        .report-direct-card:nth-child(3)::after {
-            background: linear-gradient(90deg, rgba(90,73,59,0) 0%, #5a493b 28%, rgba(90,73,59,0.24) 100%);
-        }
-        .report-direct-card:nth-child(4) {
-            background: linear-gradient(180deg, rgba(252,248,243,0.99) 0%, rgba(241,235,228,0.95) 100%);
-            border-color: rgba(95, 86, 73, 0.18);
-        }
-        .report-direct-card:nth-child(4)::after {
-            background: linear-gradient(90deg, rgba(95,86,73,0) 0%, #5f5649 28%, rgba(95,86,73,0.24) 100%);
-        }
-        .report-direct-card-label {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--report-muted);
-            margin-bottom: 10px;
-        }
-        .report-direct-card-value {
-            font-family: var(--report-serif);
-            font-size: 28px;
-            line-height: 1.12;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--report-ink);
-        }
-        .report-direct-card-note {
-            margin-top: 9px;
-            font-size: 11px;
-            line-height: 1.72;
-            color: var(--report-muted);
-        }
+        .report-direct-card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--report-muted); margin-bottom: 4px; }
+        .report-direct-card-value { font-size: 18px; line-height: 1.2; font-weight: 700; color: var(--report-ink); letter-spacing: -0.02em; }
+        .report-direct-card-note { margin-top: 6px; font-size: 12px; line-height: 1.55; color: var(--report-ink-soft); }
         .report-direct-card-hint {
-            margin-top: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 11px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.72);
-            border: 1px solid rgba(188, 164, 132, 0.20);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.07em;
-            color: var(--report-ink-soft);
+            margin-top: 8px; display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 999px;
+            background: var(--report-accent-soft); border: 1px solid rgba(10,132,255,0.12);
+            font-size: 10px; font-weight: 600; color: var(--report-accent);
         }
-        .report-metric-table {
-            display: grid;
-            gap: 12px;
-        }
-        .report-metric-row {
-            display: grid;
-            gap: 12px;
-            border-radius: 22px;
-            padding: 15px 16px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,241,234,0.98) 100%);
-            border: 1px solid var(--report-line);
-            box-shadow: 0 14px 30px rgba(32,22,12,0.04);
-        }
-        .report-metric-values {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 10px;
-        }
-        .report-metric-pill {
-            border-radius: 18px;
-            background: rgba(255,255,255,0.82);
-            border: 1px solid rgba(188, 164, 132, 0.18);
-            padding: 11px 11px 12px;
-        }
-        .report-metric-pill-label {
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--report-muted);
-            margin-bottom: 5px;
-        }
-        .report-metric-pill-value {
-            font-size: 14px;
-            line-height: 1.2;
-            font-weight: 800;
-            color: var(--report-ink);
-        }
-        .report-hit-list {
-            display: grid;
-            gap: 10px;
-        }
-        .report-hit-item {
-            border-radius: 18px;
-            padding: 12px 13px;
-            background: linear-gradient(180deg, rgba(255,253,250,0.98) 0%, rgba(246,239,231,0.96) 100%);
-            border: 1px solid var(--report-line);
-            font-size: 12px;
-            line-height: 1.72;
-            color: var(--report-ink-soft);
-        }
-        .report-headline-plain {
-            font-size: 14px;
-            line-height: 1.9;
-            color: rgba(243, 236, 227, 0.86);
-            max-width: 52ch;
-        }
-        .report-hero h2,
-        .report-hero #final-result-title {
-            color: #fbf6ef !important;
-            font-family: var(--report-serif);
-            letter-spacing: -0.035em;
-        }
-        .report-hero #final-report-datetime {
-            background: rgba(255,248,238,0.08);
-            color: rgba(247, 240, 230, 0.78);
-            border-color: rgba(255,255,255,0.10);
-            backdrop-filter: blur(10px);
-        }
-        .report-hero #final-report-confidence-detail {
-            background: rgba(255,248,238,0.08);
-            border-color: rgba(255,255,255,0.10);
-            color: #f4ede4;
-            box-shadow: 0 16px 36px rgba(14, 10, 6, 0.18);
-            backdrop-filter: blur(12px);
-        }
-        .report-hero .id-jump-video {
-            background: rgba(255,248,238,0.08) !important;
-            color: #f6ebdc !important;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
+
+        /* ── Headlines ── */
+        .report-headline-plain { font-size: 15px; line-height: 1.6; color: var(--report-ink); max-width: 60ch; }
+        .report-hero h2, .report-hero #final-result-title { color: var(--report-ink) !important; font-weight: 700; letter-spacing: -0.02em; }
+        .report-hero #final-report-datetime { background: #f5f5f7; color: var(--report-muted); border: 1px solid rgba(0,0,0,0.06); }
+        .report-hero #final-report-confidence-detail { background: #fff; border: 1px solid rgba(0,0,0,0.06); color: var(--report-ink); box-shadow: var(--report-shadow); }
+        .report-hero .id-jump-video { background: rgba(10,132,255,0.06) !important; color: var(--report-accent) !important; border: 1px solid rgba(10,132,255,0.15); }
+
+        /* ── Panels ── */
         .report-panel {
             position: relative;
-            background:
-                radial-gradient(circle at top right, rgba(255,255,255,0.74) 0%, transparent 22%),
-                linear-gradient(180deg, rgba(255,252,248,0.99) 0%, rgba(248,241,233,0.985) 100%);
-            border: 1px solid var(--report-line);
-            border-radius: 34px;
-            box-shadow: var(--report-shadow), inset 0 1px 0 rgba(255,255,255,0.74);
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: var(--report-radius);
+            box-shadow: var(--report-shadow);
         }
-        .report-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0 auto auto 28px;
-            width: 88px;
-            height: 2px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, rgba(184,150,103,0.95) 0%, rgba(184,150,103,0) 100%);
+        .report-panel-result { border-left: 3px solid var(--report-accent); }
+        .report-panel-data { background: #fff; }
+        .report-panel-action { border-left: 3px solid #ff9500; }
+        .report-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--report-muted); }
+        .report-section-title { font-size: 18px; line-height: 1.3; font-weight: 700; color: var(--report-ink); letter-spacing: -0.02em; }
+        .report-body-text { font-size: 13px; line-height: 1.65; color: var(--report-ink-soft); }
+        .report-note { font-size: 11px; line-height: 1.6; color: var(--report-muted); }
+
+        /* ── Soft Box ── */
+        .report-soft-box { background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); border-radius: var(--report-radius-sm); }
+        .report-soft-box.report-soft-box-warm { background: #f5f5f7; border-color: rgba(0,0,0,0.06); }
+
+        /* ── Metric Table ── */
+        .report-metric-table { display: grid; gap: 8px; }
+        .report-metric-row {
+            display: grid; gap: 10px; border-radius: var(--report-radius-sm);
+            padding: 12px 14px; background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
         }
-        .report-panel-result {
-            background:
-                radial-gradient(circle at right top, rgba(184,150,103,0.16) 0%, transparent 24%),
-                linear-gradient(180deg, rgba(255,252,248,0.995) 0%, rgba(248,241,233,0.985) 100%);
+        .report-metric-values { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+        .report-metric-pill { border-radius: 8px; background: #f5f5f7; padding: 8px 10px; }
+        .report-metric-pill-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--report-muted); margin-bottom: 3px; }
+        .report-metric-pill-value { font-size: 14px; line-height: 1.1; font-weight: 700; color: var(--report-ink); }
+
+        /* ── Hit List ── */
+        .report-hit-list { display: grid; gap: 6px; }
+        .report-hit-item {
+            border-radius: 8px; padding: 10px 12px; background: #f5f5f7;
+            border: 1px solid rgba(0,0,0,0.05); font-size: 11px; line-height: 1.55; color: var(--report-ink-soft);
         }
-        .report-panel-data {
-            background:
-                radial-gradient(circle at left top, rgba(255,255,255,0.74) 0%, transparent 22%),
-                linear-gradient(180deg, rgba(252,248,243,0.99) 0%, rgba(244,236,228,0.985) 100%);
-        }
-        .report-panel-action::before {
-            background: linear-gradient(90deg, rgba(110,83,55,0.95) 0%, rgba(110,83,55,0) 100%);
-        }
-        .report-soft-box {
-            background: linear-gradient(180deg, rgba(255,255,255,0.84) 0%, rgba(248,242,235,0.92) 100%);
-            border: 1px solid rgba(188, 164, 132, 0.18);
-            border-radius: 24px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.74);
-        }
-        .report-soft-box.report-soft-box-warm {
-            background: linear-gradient(180deg, rgba(250,244,237,0.94) 0%, rgba(255,255,255,0.98) 100%);
-            border-color: rgba(123, 104, 80, 0.16);
-        }
-        .report-eyebrow {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.24em;
-            color: var(--report-accent-deep);
-            text-transform: uppercase;
-        }
-        .report-section-title {
-            font-family: var(--report-serif);
-            font-size: 25px;
-            line-height: 1.24;
-            font-weight: 700;
-            color: var(--report-ink);
-            letter-spacing: -0.03em;
-        }
-        .report-body-text {
-            font-size: 14px;
-            line-height: 1.9;
-            color: var(--report-ink-soft);
-        }
-        .report-note {
-            font-size: 12px;
-            line-height: 1.74;
-            color: var(--report-muted);
-        }
-        .report-visual-card img {
-            width: 100%;
-            height: 136px;
-            object-fit: cover;
-            border-radius: 18px;
-            display: block;
-            background: #f2ebe1;
-        }
-        .report-image-trigger {
-            width: 100%;
-            display: block;
-            position: relative;
-            border: none;
-            padding: 0;
-            background: transparent;
-            cursor: zoom-in;
-            text-align: left;
-        }
-        .report-image-trigger:focus-visible {
-            outline: 2px solid rgba(184, 150, 103, 0.6);
-            outline-offset: 4px;
-            border-radius: 20px;
-        }
+
+        /* ── Visual Cards ── */
+        .report-visual-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; display: block; background: #e5e5ea; }
+        .report-image-trigger { width: 100%; display: block; position: relative; border: none; padding: 0; background: transparent; cursor: zoom-in; }
+        .report-image-trigger:focus-visible { outline: 2px solid var(--report-accent); outline-offset: 4px; border-radius: 10px; }
         .report-image-hint {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 9px;
-            border-radius: 999px;
-            background: rgba(28, 21, 15, 0.72);
-            color: #f8f1e7;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            pointer-events: none;
+            position: absolute; right: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 8px; border-radius: 999px; background: rgba(0,0,0,0.7); color: #fff;
+            font-size: 9px; font-weight: 600; pointer-events: none;
         }
-        .report-image-modal-backdrop {
-            background: rgba(18, 12, 8, 0.76);
-            backdrop-filter: blur(12px);
-        }
-        .report-image-modal-card {
-            background: rgba(252,248,243,0.98);
-            border: 1px solid rgba(255,255,255,0.28);
-            border-radius: 26px;
-            box-shadow: 0 28px 80px rgba(18, 12, 8, 0.28);
-        }
-        .report-image-modal-img {
-            width: 100%;
-            max-height: min(72vh, 760px);
-            object-fit: contain;
-            border-radius: 20px;
-            background: linear-gradient(180deg, rgba(248,243,236,1) 0%, rgba(239,231,220,1) 100%);
-        }
-        .report-bullet-list {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .report-bullet-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 13px;
-            line-height: 1.8;
-            color: var(--report-ink-soft);
-        }
-        .report-bullet-list li::before {
-            content: '';
-            width: 7px;
-            height: 7px;
-            margin-top: 8px;
-            border-radius: 9999px;
-            background: var(--report-accent);
-            flex-shrink: 0;
-        }
-        .report-bullet-list.report-bullet-list-warm li::before {
-            background: #7c6750;
-        }
-        .report-data-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.92);
-            border-radius: 20px;
-        }
+        .report-image-modal-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
+        .report-image-modal-card { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--report-radius); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .report-image-modal-img { width: 100%; max-height: min(72vh, 760px); object-fit: contain; border-radius: 10px; background: #f5f5f7; }
+
+        /* ── Bullet List ── */
+        .report-bullet-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .report-bullet-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.6; color: var(--report-ink-soft); }
+        .report-bullet-list li::before { content: ''; width: 5px; height: 5px; margin-top: 7px; border-radius: 999px; background: var(--report-accent); flex-shrink: 0; }
+        .report-bullet-list.report-bullet-list-warm li::before { background: #ff9500; }
+
+        /* ── Data Cards ── */
+        .report-data-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: var(--report-radius-sm); }
         .report-panel-empathy {
-            position: relative;
-            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(246,247,249,0.98) 100%);
-            border: 1px solid rgba(209,213,219,0.88);
-            box-shadow: 0 22px 58px rgba(15,23,42,0.06);
-            overflow: hidden;
+            position: relative; background: #fff; border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: var(--report-shadow); overflow: hidden; border-radius: var(--report-radius);
         }
-        .report-panel-empathy::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 18px;
-            bottom: 18px;
-            width: 5px;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #111827 0%, #8e8e93 100%);
-        }
-        .report-badge-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
+
+        /* ── Badges ── */
+        .report-badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .report-badge-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 13px;
-            border-radius: 999px;
-            border: 1px solid rgba(224, 211, 193, 0.20);
-            background: rgba(255,248,238,0.10);
-            font-size: 11px;
-            font-weight: 700;
-            color: #f6eee3;
-            line-height: 1;
-            backdrop-filter: blur(10px);
+            display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+            border-radius: 999px; border: 1px solid rgba(0,0,0,0.08);
+            background: #f5f5f7; font-size: 10px; font-weight: 600; color: var(--report-ink-soft);
         }
-        .report-badge-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            flex-shrink: 0;
-        }
+        .report-badge-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+
+        /* ── Transition Note ── */
         .report-transition-note {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 13px 15px;
-            border-radius: 18px;
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            background: rgba(248,250,252,0.88);
-            color: #4b5563;
-            font-size: 12px;
-            line-height: 1.7;
+            display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px;
+            border-radius: var(--report-radius-sm); border: 1px solid rgba(0,0,0,0.06);
+            background: #f5f5f7; color: var(--report-ink-soft); font-size: 11px; line-height: 1.55;
         }
-        .daily-life-grid {
-            display: grid;
-            gap: 16px;
-        }
+
+        /* ── Daily Life ── */
+        .daily-life-grid { display: grid; gap: 12px; }
         .daily-life-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
-            border: 1px solid rgba(209,213,219,0.78);
-            border-radius: 26px;
-            padding: 20px;
-            box-shadow: 0 16px 44px rgba(15,23,42,0.045);
+            background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: var(--report-radius);
+            padding: 16px; box-shadow: var(--report-shadow);
         }
-        .daily-life-card.is-checked {
-            border-color: rgba(10,132,255,0.55);
-            box-shadow: 0 14px 34px rgba(10,132,255,0.10);
-        }
+        .daily-life-card.is-checked { border-color: rgba(10,132,255,0.3); box-shadow: 0 0 0 3px rgba(10,132,255,0.06); }
         .daily-life-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(229,231,235,0.98) 100%);
-            border: 1px solid rgba(209,213,219,0.86);
-            color: #6b7280;
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--report-accent-soft); border: 1px solid rgba(10,132,255,0.1);
+            color: var(--report-accent); font-size: 16px; font-weight: 700; flex-shrink: 0;
         }
-        .daily-life-line {
-            display: grid;
-            gap: 5px;
-            padding: 10px 12px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.88);
-            border: 1px solid rgba(229,231,235,0.90);
-        }
-        .daily-life-line-label {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: #6b7280;
-        }
-        .daily-life-line-text {
-            font-size: 13px;
-            line-height: 1.75;
-            color: #4b5563;
-        }
-        .daily-life-footer {
-            font-size: 11px;
-            line-height: 1.7;
-            color: #4b5563;
-            background: rgba(248,250,252,0.92);
-            border: 1px solid rgba(229, 231, 235, 0.92);
-            border-radius: 16px;
-            padding: 11px 12px;
-        }
-        .report-proof-grid {
-            display: grid;
-            gap: 12px;
-        }
-        .report-story-grid {
-            display: grid;
-            gap: 16px;
-        }
-        .report-story-grid.is-main {
-            align-items: start;
-        }
-        @media (min-width: 640px) {
-            .report-proof-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
+        .daily-life-line { display: grid; gap: 4px; padding: 8px 10px; border-radius: 8px; background: #f5f5f7; border: 1px solid rgba(0,0,0,0.04); }
+        .daily-life-line-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--report-muted); }
+        .daily-life-line-text { font-size: 12px; line-height: 1.55; color: var(--report-ink-soft); }
+        .daily-life-footer { font-size: 11px; line-height: 1.55; color: var(--report-muted); background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); border-radius: var(--report-radius-sm); padding: 10px 12px; }
+
+        /* ── Proof Cards ── */
+        .report-proof-grid { display: grid; gap: 8px; }
+        .report-story-grid { display: grid; gap: 12px; }
+        @media (min-width: 640px) { .report-proof-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
         @media (min-width: 920px) {
-            .report-hero-grid {
-                grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
-                align-items: end;
-            }
-            .report-summary-strip {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .report-story-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .report-story-grid.is-main > :first-child {
-                min-width: 0;
-            }
-            .report-story-grid.is-main > :last-child {
-                min-width: 0;
-            }
-            .report-direct-grid {
-                grid-template-columns: minmax(420px, 0.95fr) minmax(0, 1.05fr);
-            }
+            .report-hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr); align-items: end; }
+            .report-summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .report-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .report-direct-grid { grid-template-columns: minmax(400px, 0.9fr) minmax(0, 1.1fr); }
         }
         .report-proof-card {
-            border-radius: 24px;
-            padding: 17px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(247,240,232,0.98) 100%);
-            border: 1px solid var(--report-line);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.74);
+            border-radius: var(--report-radius-sm); padding: 14px;
+            background: #fff; border: 1px solid rgba(0,0,0,0.06);
         }
-        .report-proof-card.is-strong {
-            border-color: rgba(184, 150, 103, 0.28);
-            background: linear-gradient(180deg, rgba(255,251,246,0.99) 0%, rgba(245,235,222,0.98) 100%);
-        }
-        .report-proof-value {
-            font-family: var(--report-serif);
-            font-size: 24px;
-            line-height: 1;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--report-ink);
-        }
-        .report-proof-label {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--report-muted);
-        }
-        .report-next-card {
-            background:
-                radial-gradient(circle at top right, rgba(184,150,103,0.14) 0%, transparent 22%),
-                radial-gradient(circle at top left, rgba(92,70,47,0.08) 0%, transparent 18%),
-                linear-gradient(180deg, rgba(255,252,248,0.99) 0%, rgba(246,238,229,0.98) 100%);
-            border: 1px solid rgba(123, 104, 80, 0.18);
-            color: var(--report-ink);
-        }
+        .report-proof-card.is-strong { border-color: rgba(10,132,255,0.2); background: rgba(10,132,255,0.03); }
+        .report-proof-value { font-size: 22px; line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: var(--report-ink); }
+        .report-proof-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--report-muted); }
+
+        /* ── Next Card ── */
+        .report-next-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); color: var(--report-ink); border-radius: var(--report-radius); }
         .report-next-card .report-section-title,
         .report-next-card .report-eyebrow,
-        .report-next-card .report-body-text {
-            color: var(--report-ink);
-        }
-        .report-next-card .report-soft-box {
-            background: rgba(255,255,255,0.70);
-            border-color: rgba(123, 104, 80, 0.16);
-        }
-        .report-next-card .report-bullet-list li {
-            color: var(--report-ink-soft);
-        }
-        .report-next-card .report-bullet-list li::before {
-            background: var(--report-accent-deep);
-        }
+        .report-next-card .report-body-text { color: var(--report-ink); }
+        .report-next-card .report-soft-box { background: #f5f5f7; border-color: rgba(0,0,0,0.05); }
+        .report-next-card .report-bullet-list li { color: var(--report-ink-soft); }
+        .report-next-card .report-bullet-list li::before { background: var(--report-accent); }
+
+        /* ── Misc ── */
         .report-customer-quote {
-            border-radius: 22px;
-            padding: 16px;
-            background: rgba(255,255,255,0.76);
-            border: 1px solid rgba(209,213,219,0.88);
-            color: #374151;
-            font-size: 13px;
-            line-height: 1.75;
+            border-radius: var(--report-radius-sm); padding: 14px;
+            background: #f5f5f7; border: 1px solid rgba(0,0,0,0.06);
+            color: var(--report-ink-soft); font-size: 12px; line-height: 1.6;
         }
-        .report-advantage-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
-            border: 1px solid rgba(229,231,235,0.95);
-            border-radius: 22px;
-            padding: 15px 16px;
-        }
-        .micro-action-list {
-            display: grid;
-            gap: 12px;
-        }
-        .micro-action-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 14px;
-            border-radius: 18px;
-            border: 1px solid rgba(226, 232, 240, 0.95);
-            background: rgba(255,255,255,0.96);
-        }
-        .micro-action-item.is-done {
-            border-color: rgba(16, 185, 129, 0.6);
-            background: linear-gradient(180deg, rgba(236, 253, 245, 0.96) 0%, rgba(255,255,255,0.98) 100%);
-        }
+        .report-advantage-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: var(--report-radius-sm); padding: 12px 14px; }
+        .micro-action-list { display: grid; gap: 8px; }
+        .micro-action-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: var(--report-radius-sm); border: 1px solid rgba(0,0,0,0.06); background: #fff; }
+        .micro-action-item.is-done { border-color: rgba(52,199,89,0.4); background: rgba(52,199,89,0.04); }
         .micro-action-toggle {
-            width: 22px;
-            height: 22px;
-            border-radius: 999px;
-            border: 1.5px solid rgba(148, 163, 184, 0.75);
-            background: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: transparent;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-            margin-top: 2px;
+            width: 20px; height: 20px; border-radius: 999px;
+            border: 1.5px solid rgba(0,0,0,0.2); background: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: transparent; flex-shrink: 0; transition: all 0.15s ease; margin-top: 1px;
         }
-        .micro-action-item.is-done .micro-action-toggle {
-            border-color: rgba(16, 185, 129, 0.95);
-            background: #10b981;
-            color: #fff;
-        }
+        .micro-action-item.is-done .micro-action-toggle { border-color: #34c759; background: #34c759; color: #fff; }
+
+        /* ── Feedback ── */
         .report-feedback-chip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 80px;
-            padding: 10px 14px;
-            border-radius: 999px;
-            border: 1px solid rgba(226, 232, 240, 0.98);
-            background: rgba(255,255,255,0.96);
-            color: #475569;
-            font-size: 12px;
-            font-weight: 700;
-            transition: all 0.2s ease;
+            display: inline-flex; align-items: center; justify-content: center; min-width: 72px;
+            padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,0.08);
+            background: #fff; color: var(--report-ink-soft); font-size: 11px; font-weight: 600; transition: all 0.15s ease;
         }
-        .report-feedback-chip.is-active {
-            border-color: rgba(10, 132, 255, 0.35);
-            background: rgba(10, 132, 255, 0.1);
-            color: #0a84ff;
-            box-shadow: 0 8px 20px rgba(10, 132, 255, 0.1);
-        }
+        .report-feedback-chip.is-active { border-color: rgba(10,132,255,0.3); background: rgba(10,132,255,0.06); color: var(--report-accent); }
         .report-feedback-note {
-            width: 100%;
-            min-height: 88px;
-            border-radius: 16px;
-            border: 1px solid rgba(226, 232, 240, 0.98);
-            background: rgba(255,255,255,0.96);
-            padding: 12px 14px;
-            font-size: 13px;
-            line-height: 1.7;
-            color: #334155;
-            resize: vertical;
-            outline: none;
+            width: 100%; min-height: 80px; border-radius: var(--report-radius-sm);
+            border: 1px solid rgba(0,0,0,0.08); background: #fff;
+            padding: 10px 12px; font-size: 12px; line-height: 1.6; color: var(--report-ink-soft); resize: vertical; outline: none;
         }
-        .report-feedback-note:focus {
-            border-color: rgba(10, 132, 255, 0.45);
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
-        }
+        .report-feedback-note:focus { border-color: rgba(10,132,255,0.3); box-shadow: 0 0 0 3px rgba(10,132,255,0.08); }
+
+        /* ── Plan Shell ── */
         .report-plan-shell {
-            background:
-                radial-gradient(circle at right top, rgba(184,150,103,0.16) 0%, transparent 24%),
-                radial-gradient(circle at left top, rgba(92,70,47,0.08) 0%, transparent 18%),
-                linear-gradient(180deg, rgba(255,253,250,0.995) 0%, rgba(247,241,234,0.985) 58%, rgba(237,229,218,0.98) 100%);
-            border: 1px solid rgba(255,255,255,0.72);
-            box-shadow: 0 30px 94px rgba(32,22,12,0.09), inset 0 0 0 1px rgba(209,213,219,0.28);
+            background: #fff; border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: var(--report-shadow); border-radius: var(--report-radius);
         }
-        .report-plan-grid {
-            display: grid;
-            gap: 14px;
-        }
-        .report-plan-hero {
-            display: grid;
-            gap: 16px;
-        }
-        .report-plan-compact-grid {
-            display: grid;
-            gap: 12px;
-        }
-        .report-plan-price {
-            border-radius: 30px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,239,231,0.98) 100%);
-            border: 1px solid var(--report-line);
-            padding: 20px 18px;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.72);
-        }
-        .report-plan-price strong {
-            letter-spacing: -0.05em;
-        }
-        .report-plan-editorial {
-            border-radius: 26px;
-            padding: 18px;
-            background: rgba(255,255,255,0.68);
-            border: 1px solid rgba(123, 104, 80, 0.16);
-        }
-        .report-plan-mini-card {
-            border-radius: 22px;
-            padding: 14px 14px 15px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(247,239,230,0.97) 100%);
-            border: 1px solid var(--report-line);
-            box-shadow: 0 10px 22px rgba(32,22,12,0.03);
-        }
-        .report-plan-checklist {
-            display: grid;
-            gap: 10px;
-        }
-        .report-plan-checklist-item {
-            border-radius: 22px;
-            background: rgba(255,255,255,0.76);
-            border: 1px solid rgba(123, 104, 80, 0.16);
-            padding: 14px 14px 15px;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.66);
-        }
-        .report-plan-cta {
-            border-radius: 26px;
-            padding: 18px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,238,230,0.96) 100%);
-            border: 1px solid var(--report-line);
-        }
-        .report-plan-button-row {
-            display: grid;
-            gap: 12px;
-        }
+        .report-plan-grid { display: grid; gap: 10px; }
+        .report-plan-hero { display: grid; gap: 12px; }
+        .report-plan-compact-grid { display: grid; gap: 10px; }
+        .report-plan-price { border-radius: var(--report-radius-sm); background: #f5f5f7; border: 1px solid rgba(0,0,0,0.06); padding: 16px; }
+        .report-plan-price strong { letter-spacing: -0.03em; color: var(--report-ink); }
+        .report-plan-editorial { border-radius: var(--report-radius-sm); padding: 14px; background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); }
+        .report-plan-mini-card { border-radius: var(--report-radius-sm); padding: 12px 14px; background: #fff; border: 1px solid rgba(0,0,0,0.06); }
+        .report-plan-checklist { display: grid; gap: 8px; }
+        .report-plan-checklist-item { border-radius: var(--report-radius-sm); background: #fff; border: 1px solid rgba(0,0,0,0.06); padding: 12px 14px; }
+        .report-plan-cta { border-radius: var(--report-radius-sm); padding: 14px; background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); }
+        .report-plan-button-row { display: grid; gap: 10px; }
         @media (min-width: 860px) {
-            .report-plan-hero {
-                grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.65fr);
-                align-items: stretch;
-            }
-            .report-plan-grid {
-                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            }
-            .report-plan-compact-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-            .report-plan-checklist {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-            .report-plan-button-row {
-                grid-template-columns: minmax(0, 1fr) auto;
-                align-items: center;
-            }
+            .report-plan-hero { grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.65fr); align-items: stretch; }
+            .report-plan-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+            .report-plan-compact-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .report-plan-checklist { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .report-plan-button-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
         }
-        .report-disclaimer {
-            font-size: 11px;
-            line-height: 1.8;
-            color: var(--report-muted);
-            text-align: center;
-            padding: 4px 12px 0;
-        }
-        /* 苹果系统蓝配置 */
+
+        /* ── Disclaimer ── */
+        .report-disclaimer { font-size: 11px; line-height: 1.6; color: var(--report-muted); text-align: center; padding: 2px 8px 0; }
+
+        /* ── System Colors ── */
         .mac-blue { color: #0a84ff; }
         .bg-mac-blue { background-color: #0a84ff; }
         .border-mac-blue { border-color: #0a84ff; }
-        .shadow-mac-blue { box-shadow: 0 4px 14px rgba(10, 132, 255, 0.3); }
-        /* 移除数字输入框的上下箭头 */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .shadow-mac-blue { box-shadow: 0 2px 8px rgba(10, 132, 255, 0.25); }
+
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { appearance: textfield; -moz-appearance: textfield; }
-        .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 220px; overflow: hidden; border-radius: 1rem; }
+
+        .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 220px; overflow: hidden; border-radius: 0.5rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
     <script type="importmap">
@@ -2192,30 +1648,53 @@
                 <button id="btn-close-manual" class="text-slate-400 hover:text-slate-600 p-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             <div class="p-5 flex flex-col gap-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (L)</label>
-                        <input type="number" min="0" max="180" id="m-slr-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                <!-- 角度参照说明 -->
+                <div class="rounded-2xl border border-[#dbeafe] bg-[#f8fbff] px-4 py-3 text-[11px] text-slate-600 leading-relaxed">
+                    <span class="font-bold text-slate-700">怎么知道自己的角度？</span> 不需要量角器。对照身体标记即可：<br>
+                    直腿抬高：<b>脚踝刚到对侧膝盖 ≈ 45°</b>，<b>脚跟到髋水平 ≈ 90°</b><br>
+                    髋屈曲：<b>膝盖刚过髋水平 ≈ 100°</b>，<b>大腿贴胸 ≈ 120°</b><br>
+                    肩屈曲：<b>手臂与耳朵齐平 ≈ 130°</b>，<b>手掌贴耳 ≈ 160°</b>
+                </div>
+                <!-- 直腿抬高 -->
+                <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3">
+                    <div class="text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-3">直腿抬高 · 平躺，腿伸直抬起</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">左侧 (L)</label>
+                            <input type="number" min="0" max="180" id="m-slr-l" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">右侧 (R)</label>
+                            <input type="number" min="0" max="180" id="m-slr-r" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">直腿抬高 (R)</label>
-                        <input type="number" min="0" max="180" id="m-slr-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                </div>
+                <!-- 髋屈曲 -->
+                <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3">
+                    <div class="text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-3">髋屈曲 · 平躺，膝盖往胸口方向抱</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">左侧 (L)</label>
+                            <input type="number" min="0" max="180" id="m-hip-l" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">右侧 (R)</label>
+                            <input type="number" min="0" max="180" id="m-hip-r" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (L)</label>
-                        <input type="number" min="0" max="180" id="m-hip-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动髋屈曲 (R)</label>
-                        <input type="number" min="0" max="180" id="m-hip-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (L)</label>
-                        <input type="number" min="0" max="180" id="m-sh-l" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[10px] font-bold text-slate-500 pl-1 tracking-wide">主动肩屈 (R)</label>
-                        <input type="number" min="0" max="180" id="m-sh-r" class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors shadow-inner" placeholder="0~180">
+                </div>
+                <!-- 肩屈曲 -->
+                <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3">
+                    <div class="text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-3">肩屈曲 · 平躺，手臂从头顶方向往后伸</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">左侧 (L)</label>
+                            <input type="number" min="0" max="180" id="m-sh-l" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[9px] font-bold text-slate-400 pl-1">右侧 (R)</label>
+                            <input type="number" min="0" max="180" id="m-sh-r" class="bg-white border border-[#e5e5ea] rounded-xl px-3 py-2.5 text-base font-bold text-slate-800 outline-none focus:border-[#0a84ff] transition-colors" placeholder="0~180">
+                        </div>
                     </div>
                 </div>
                 <button id="btn-submit-manual" class="w-full py-3.5 mt-3 bg-mac-blue hover:bg-blue-600 text-white rounded-xl font-bold shadow-mac-blue transition-transform active:scale-[0.98] text-[11px] tracking-widest">
@@ -2308,6 +1787,19 @@
                             <option value="same">两边差不多</option>
                             <option value="unclear">说不准</option>
                         </select>
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-[#e5e5ea] bg-[#f5f5f7] px-4 py-3.5">
+                        <label for="symptom-q-sport" class="block text-[10px] font-bold text-slate-500 tracking-[0.16em] mb-2">日常运动习惯（影响结果解读）</label>
+                        <select id="symptom-q-sport" class="w-full bg-white border border-[#e5e5ea] rounded-xl px-3 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#0a84ff] focus:bg-blue-50/50 transition-colors">
+                            <option value="">跳过这题</option>
+                            <option value="yoga">瑜伽/普拉提/舞蹈/体操（经常练柔韧）</option>
+                            <option value="strength">力量训练/举铁/CrossFit</option>
+                            <option value="endurance">跑步/骑行/游泳等有氧为主</option>
+                            <option value="mixed">多种运动混合</option>
+                            <option value="none">基本不运动</option>
+                        </select>
+                        <p class="text-[9px] text-slate-400 mt-1.5 leading-relaxed">有柔韧训练习惯的人，关节活动度可能偏大但稳定性未必好，系统会据此调整判断。</p>
                     </div>
                 </div>
                 <div class="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3.5">
@@ -2449,6 +1941,7 @@
         const symptomQBreath = document.getElementById('symptom-q-breath');
         const symptomQGlute = document.getElementById('symptom-q-glute');
         const symptomQSide = document.getElementById('symptom-q-side');
+        const symptomQSport = document.getElementById('symptom-q-sport');
         const symptomFlagTestPain = document.getElementById('symptom-flag-test-pain');
         const symptomFlagRestPain = document.getElementById('symptom-flag-rest-pain');
         const symptomFlagNeuro = document.getElementById('symptom-flag-neuro');
@@ -3480,86 +2973,105 @@
             const diffHip = hipL - hipR;
             const diffSLR = slrL - slrR;
             const diffSh = shL - shR;
+            const slrMin = slrL !== null && slrR !== null ? Math.min(slrL, slrR) : null;
+            const hipMin = hipL !== null && hipR !== null ? Math.min(hipL, hipR) : null;
+            const shMin = shL !== null && shR !== null ? Math.min(shL, shR) : null;
+            const slrMax = slrL !== null && slrR !== null ? Math.max(slrL, slrR) : null;
+            const shMax = shL !== null && shR !== null ? Math.max(shL, shR) : null;
+            // True bilateral: BOTH sides must meet threshold
+            const slrBilateralLow = slrL !== null && slrR !== null && slrL < 50 && slrR < 50;
+            const slrBilateralHigh = slrL !== null && slrR !== null && slrL > 50 && slrR > 50;
+            const hipBilateralHigh = hipL !== null && hipR !== null && hipL >= 100 && hipR >= 100;
+            const hipBilateralLow = hipL !== null && hipR !== null && hipL < 100 && hipR < 100;
+            const shBilateralLow = shL !== null && shR !== null && shL < 100 && shR < 100;
+            const shBilateralHigh = shL !== null && shR !== null && shL > 100 && shR > 100;
+            // Cheating detection
+            const thoracicExtensionCheat = shMax !== null && slrMin !== null && shMax > 140 && slrMin < 50;
+            const hypermobilitySuspect = slrMax !== null && slrMax > 90;
 
             return {
-                slrL,
-                slrR,
-                hipL,
-                hipR,
-                shL,
-                shR,
-                slrFinal: testRecords.slr.final ?? (slrL !== null && slrR !== null ? normalizeAngleValue(Math.min(slrL, slrR)) : null),
-                hipFinal: testRecords.hip.final ?? (hipL !== null && hipR !== null ? normalizeAngleValue(Math.min(hipL, hipR)) : null),
-                shoulderFinal: testRecords.shoulder.final ?? (shL !== null && shR !== null ? normalizeAngleValue(Math.min(shL, shR)) : null),
-                diffHip,
-                diffSLR,
-                diffSh,
-                threshold,
-                nearThreshold,
+                slrL, slrR, hipL, hipR, shL, shR,
+                slrMin, hipMin, shMin, slrMax, shMax,
+                slrBilateralLow, slrBilateralHigh,
+                hipBilateralHigh, hipBilateralLow,
+                shBilateralLow, shBilateralHigh,
+                thoracicExtensionCheat,
+                hypermobilitySuspect,
+                slrFinal: testRecords.slr.final ?? (slrMin !== null ? normalizeAngleValue(slrMin) : null),
+                hipFinal: testRecords.hip.final ?? (hipMin !== null ? normalizeAngleValue(hipMin) : null),
+                shoulderFinal: testRecords.shoulder.final ?? (shMin !== null ? normalizeAngleValue(shMin) : null),
+                diffHip, diffSLR, diffSh,
+                threshold, nearThreshold,
                 asymmetryScore: scoreDiffMagnitude(diffHip, threshold, nearThreshold) + scoreDiffMagnitude(diffSLR, threshold, nearThreshold) + scoreDiffMagnitude(diffSh, threshold, nearThreshold)
             };
         }
 
         function buildCompressionIsolationResult(metrics) {
+            // Use TRUE BILATERAL checks: both sides must meet threshold for PEC
             const posteriorChecks = [
-                { label: '主动直腿抬高短板值 < 50°', hit: metrics.slrFinal < 50 },
-                { label: '主动髋屈曲短板值 > 100°', hit: metrics.hipFinal > 100 },
-                { label: '主动肩屈短板值 < 100°', hit: metrics.shoulderFinal < 100 }
+                { label: '双侧直腿抬高 < 50°', hit: metrics.slrBilateralLow },
+                { label: '双侧髋屈曲 > 100°', hit: metrics.hipBilateralHigh },
+                { label: '双侧肩屈 < 100°', hit: metrics.shBilateralLow }
             ];
             const anteriorChecks = [
-                { label: '主动直腿抬高短板值 > 50°', hit: metrics.slrFinal > 50 },
-                { label: '主动髋屈曲短板值 < 100°', hit: metrics.hipFinal < 100 },
-                { label: '主动肩屈短板值 > 100°', hit: metrics.shoulderFinal > 100 }
+                { label: '双侧直腿抬高 > 50°', hit: metrics.slrBilateralHigh },
+                { label: '双侧髋屈曲 < 100°', hit: metrics.hipBilateralLow },
+                { label: '双侧肩屈 > 100°', hit: metrics.shBilateralHigh }
             ];
 
             const support = {
                 posterior: countTrue(posteriorChecks.map(item => item.hit)),
                 anterior: countTrue(anteriorChecks.map(item => item.hit))
             };
-            const distance = {
-                posterior: Math.max(0, metrics.slrFinal - 50) + Math.max(0, 100 - metrics.hipFinal) + Math.max(0, metrics.shoulderFinal - 100),
-                anterior: Math.max(0, 50 - metrics.slrFinal) + Math.max(0, metrics.hipFinal - 100) + Math.max(0, 100 - metrics.shoulderFinal)
-            };
 
+            // Stricter: 3/3 = confirmed PEC; 2/3 = tendency (not full PEC)
             let key = 'mixed';
+            let pecLevel = null; // 'confirmed' | 'tendency' | null
             if (support.posterior === 3) {
                 key = 'posterior';
+                pecLevel = 'confirmed';
             } else if (support.anterior === 3) {
                 key = 'anterior';
-            } else if (support.posterior >= 2 && (support.posterior > support.anterior || distance.posterior + 5 < distance.anterior)) {
+                pecLevel = 'confirmed';
+            } else if (support.posterior === 2 && support.posterior > support.anterior) {
                 key = 'posterior';
-            } else if (support.anterior >= 2 && (support.anterior > support.posterior || distance.anterior + 5 < distance.posterior)) {
+                pecLevel = 'tendency';
+            } else if (support.anterior === 2 && support.anterior > support.posterior) {
                 key = 'anterior';
+                pecLevel = 'tendency';
             }
 
             const supportScore = key === 'mixed' ? Math.max(support.posterior, support.anterior) : support[key];
             const confidenceKey = key === 'mixed'
                 ? 'low'
-                : supportScore === 3
+                : pecLevel === 'confirmed'
                     ? 'high'
                     : 'medium';
 
+            // Cheating flags
+            const cheatingFlags = [];
+            if (metrics.thoracicExtensionCheat) {
+                cheatingFlags.push({ type: 'thoracic', label: '肩屈角度偏高但直腿抬高偏低——胸部后仰可能帮了肩的忙，不代表肩膀本身够灵活' });
+            }
+            if (metrics.hypermobilitySuspect) {
+                cheatingFlags.push({ type: 'hypermobility', label: '直腿抬高超过 90°——如果你日常练瑜伽/舞蹈/体操，身体后侧可能已经被拉得太开，灵活不等于稳定' });
+            }
+
             return {
-                key,
-                support,
-                supportScore,
-                distance,
-                confidenceKey,
-                exactMatch: key !== 'mixed' && supportScore === 3,
-                checks: {
-                    posterior: posteriorChecks,
-                    anterior: anteriorChecks
-                },
+                key, support, supportScore, pecLevel, confidenceKey,
+                exactMatch: pecLevel === 'confirmed',
+                checks: { posterior: posteriorChecks, anterior: anteriorChecks },
+                cheatingFlags,
                 primarySummary: key === 'posterior'
-                    ? '主通道先按骨盆后侧更紧处理。'
+                    ? '骨盆后面更紧，从后方把骨盆往前推。'
                     : key === 'anterior'
-                        ? '主通道先按骨盆前侧更紧处理。'
-                        : '主通道先保留为前后都在参与。',
-                secondarySummary: key === 'posterior'
-                    ? '第二层补充更像骨盆后侧更紧。'
-                    : key === 'anterior'
-                        ? '第二层补充更像骨盆前侧更紧。'
-                        : '第二层补充只保留前后都在参与。'
+                        ? '骨盆前面更紧，从前方把骨盆往前拽。'
+                        : '前后方向暂不明确，先做基础归位再复测。',
+                secondarySummary: pecLevel === 'tendency'
+                    ? (key === 'posterior' ? '后侧偏向但三项未全满足，建议多测几次再确认。' : '前侧偏向但三项未全满足，建议多测几次再确认。')
+                    : pecLevel === 'confirmed'
+                        ? '双侧都符合，方向明确。'
+                        : '前后方向不够清晰，先保留。'
             };
         }
 
@@ -3877,6 +3389,7 @@
             symptomQBreath.value = state.answers?.breath || '';
             symptomQGlute.value = state.answers?.glute || '';
             symptomQSide.value = state.answers?.side || '';
+            symptomQSport.value = state.answers?.sport || '';
             symptomFlagTestPain.checked = Boolean(state.redFlags?.testPain);
             symptomFlagRestPain.checked = Boolean(state.redFlags?.restPain);
             symptomFlagNeuro.checked = Boolean(state.redFlags?.neuro);
@@ -3903,7 +3416,8 @@
                     sit: symptomQSit.value,
                     breath: symptomQBreath.value,
                     glute: symptomQGlute.value,
-                    side: symptomQSide.value
+                    side: symptomQSide.value,
+                    sport: symptomQSport.value
                 },
                 redFlags: {
                     testPain: symptomFlagTestPain.checked,
@@ -4605,7 +4119,8 @@
                     sit: '',
                     breath: '',
                     glute: '',
-                    side: ''
+                    side: '',
+                    sport: ''
                 },
                 redFlags: {
                     testPain: false,
@@ -5014,113 +4529,77 @@
 
             const frontBack = compKey === 'anterior'
                 ? {
-                    short: '前倾倾向',
-                    value: '前倾倾向',
-                    plain: '本次结果显示，骨盆前侧更容易向下，后侧更容易向上。',
-                    note: `依据：三项短板值组合更接近前倾模式。直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                    short: '前侧更紧',
+                    value: '前面更紧',
+                    plain: '你髋前和大腿前的肌肉偏紧张，像从前面把骨盆往前拽。所以你会觉得站直了反而腰累，或者大腿根总觉得抻着。',
+                    note: '前侧紧张型——日常容易表现为小腹收着、呼吸偏浅、大腿前侧容易酸。'
                 }
                 : compKey === 'posterior'
                     ? {
-                        short: '前移倾向',
-                        value: '前移倾向',
-                        plain: '本次结果显示，骨盆整体更容易向前顶。',
-                        note: `依据：三项短板值组合更接近前移模式。直腿抬高 ${metrics.slrFinal.toFixed(1)}°，髋屈 ${metrics.hipFinal.toFixed(1)}°，肩屈 ${metrics.shoulderFinal.toFixed(1)}°。`
+                        short: '后侧更紧',
+                        value: '后面更紧',
+                        plain: '你后腰和背部的肌肉偏紧张，像从后面把骨盆往前推。所以你会觉得站久了腰酸、后背发僵，但做体前屈反而还行。',
+                        note: '后侧紧张型——日常容易表现为久站腰累、呼吸后背扩不开、臀看着翘但腰比臀更忙。'
                     }
                     : {
-                        short: '暂不判断',
-                        value: '前后方向暂不判断',
-                        plain: '本次数据不足，暂不判断前后方向。',
-                        note: '当前短板值组合没有稳定落到单一前后模式。'
+                        short: '前后都不明显',
+                        value: '前后方向不明显',
+                        plain: '你的前后紧张方向还不够明确，可能两边都参与了，也可能是测试时身体还没找到最自然的状态。',
+                        note: '建议先做基础呼吸和骨盆归位练习，2-4周后复测方向会更清晰。'
                     };
 
             const iliacForward = subtypeKey === 'baseline' || subtypeKey === 'oblique'
                 ? {
-                    short: '左侧更靠前',
-                    value: '左侧更靠前',
-                    plain: '本次结果显示，左侧位置更靠前。',
-                    note: `依据：三项测试组合更接近${subtypeKey === 'oblique' ? '左高且左侧更靠前' : '左侧更靠前'}模式。`
+                    short: '左侧偏前',
+                    value: '左边更靠前',
+                    plain: '你左边骨盆比右边更往前。这很常见——大多数人左边都容易往前跑。表现是站久了重心偏右，左边像总往外撇。',
+                    note: '这是人体最基础的不对称模式，几乎每个人都有，只是程度不同。'
                 }
                 : {
-                    short: '暂不判断',
-                    value: '哪边更靠前暂不判断',
-                    plain: '本次数据不足，暂不判断哪边更靠前。',
-                    note: '当前没有稳定落到左右前后方向。'
-                };
-
-            const rotation = subtypeKey === 'baseline' || subtypeKey === 'oblique'
-                ? {
-                    short: '整体偏右',
-                    value: '整体偏右',
-                    plain: '如果从上往下看，骨盆整体更偏向右侧。',
-                    note: '这是根据左右前后关系推导出的辅助判断。'
-                }
-                : {
-                    short: '暂不判断',
-                    value: '整体方向暂不判断',
-                    plain: '本次数据不足，暂不判断整体转向。',
-                    note: '当前没有足够证据给出整体转向。'
+                    short: '无明显偏前',
+                    value: '左右前后不明显',
+                    plain: '你的左右前后方向还不够明确，可能还没形成稳定的偏向，也可能是测试时身体还在找感觉。',
+                    note: '建议先做基础站姿练习，2-4周后复测。'
                 };
 
             const height = heightKey === 'rightHigh'
                 ? {
                     short: '右高左低',
-                    value: '右侧更高',
-                    plain: '本次结果显示，右侧位置略高，左侧略低。',
-                    note: '依据：三项测试组合更接近右高左低模式。'
+                    value: '右边略高',
+                    plain: '你右边髋骨比左边略高一点，所以你会觉得穿裤子右边容易往上跑，或者拍照右边线条更抢镜。',
+                    note: '右高是基线型的常见伴随特征，和左侧偏前是同一个模式的两面。'
                 }
                 : heightKey === 'leftHigh'
                 ? {
                     short: '左高右低',
-                    value: '左侧更高',
-                    plain: '本次结果显示，左侧位置略高，右侧略低。',
-                    note: `依据：三项测试组合更接近${subtypeKey === 'oblique' ? '左高且左侧更靠前' : '左高右低'}模式。`
+                    value: '左边更高',
+                    plain: '你左边髋骨比右边高。这会让你的重心更多压在右边，左边反而不太踩得实。',
+                    note: '左高通常意味着右边长期承重不足，需要重建右侧的承重能力。'
                 }
-                : heightKey === 'clue'
-                    ? {
-                        short: '左侧偏高证据不足',
-                        value: '左侧偏高，但证据不足',
-                        plain: '有 1 项数据提示左侧偏高，但还不够下结论。',
-                        note: '目前只有 1 项数据达到高低差判断线。'
-                    }
-                    : heightKey === 'uneven'
-                        ? {
-                            short: '高低差存在',
-                            value: '已有高低差，但方向暂不判断',
-                            plain: '已经出现高低差，但还不能判断哪边更高。',
-                            note: '当前左右差已出现，但方向不够一致。'
-                        }
-                        : {
-                            short: '暂不判断',
-                            value: '高低暂不判断',
-                            plain: '本次数据不足，暂不判断左右高低。',
-                            note: '当前没有稳定落到左右高低模式。'
-                        };
+                : {
+                    short: '高低不明显',
+                    value: '左右高低不明显',
+                    plain: '你的左右高低差还不够明确，可能两边差距不大。',
+                    note: '没有明显高低差是好事，说明身体还在相对均衡的状态。'
+                };
 
-            const confidence = confidenceKey === 'high' ? '高' : confidenceKey === 'medium' ? '中' : '低';
             const bearing = dynamicBearing.loadSide === 'right'
                 ? {
-                    short: '先找回右侧承重',
-                    value: '先把右侧承重找回来',
-                    plain: '这是根据静态结果给出的优先顺序，不等于已经完成动态承重测试。',
+                    short: '优先练右侧',
+                    value: '优先让右脚踩稳',
+                    plain: '你现在需要先让右边学会好好承重。先把左边的紧张放下来，再让右脚扎实踩地——这个顺序很重要，不要反着来。',
                     note: dynamicBearing.summary
                 }
                 : {
-                    short: '承重方向暂不判断',
-                    value: '承重方向暂不判断',
-                    plain: '还没有动态承重结果，先不判断哪边该多承重。',
-                    note: dynamicBearing.summary
+                    short: '先稳基础',
+                    value: '先打好基础再定方向',
+                    plain: '数据还不够下结论。先专注呼吸和站姿基础练习，2-4周后复测再看具体往哪个方向调整。',
+                    note: '方向不明时不要急着单侧训练，先把双侧基础打牢。'
                 };
-            const badges = [
-                { label: `前后：${frontBack.short}`, color: '#6b7280' },
-                { label: `左右前后：${iliacForward.short}`, color: '#6b7280' },
-                { label: `左右高低：${height.short}`, color: '#6b7280' },
-                { label: `数据一致性：${confidence}`, color: '#6b7280' }
-            ];
-
             const hitRules = [
-                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `符合前移判断条件：${item.label}`),
-                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `符合前倾判断条件：${item.label}`),
-                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `符合左右高低判断条件：${item.label}`)
+                ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `后侧紧张条件：${item.label}`),
+                ...routeIsolation.compressionResult.checks.anterior.filter(item => item.hit).map(item => `前侧紧张条件：${item.label}`),
+                ...routeIsolation.heightResult.checks.filter(item => item.hit).map(item => `高低差条件：${item.label}`)
             ];
 
             if (subtypeKey === 'baseline') {
@@ -5133,18 +4612,17 @@
                 hitRules.unshift('三项测试都出现了左右差，但方向还不够一致，所以这次先不下固定结论。');
             }
 
+            const headline = frontBack.short.includes('不明显') && iliacForward.short.includes('不明显')
+                ? '前后和左右方向都还不太明确，建议先打基础'
+                : `${frontBack.value}，${iliacForward.value}，${height.value}`;
+            const plainHeadline = `${frontBack.plain} ${iliacForward.plain} ${height.plain} 所以现在的重点是：${bearing.plain}`;
             return {
-                headline: frontBack.short === '暂不判断'
-                    ? (iliacForward.short === '暂不判断' ? '本次数据不足，部分方向暂不判断' : `本次结果显示：${iliacForward.short}`)
-                    : `本次结果显示：${frontBack.short}${iliacForward.short === '暂不判断' ? '' : `，${iliacForward.short}`}`,
-                plainHeadline: `${frontBack.plain}${iliacForward.short === '暂不判断' ? '' : ` 同时，${iliacForward.plain}`}`,
+                headline,
+                plainHeadline,
                 frontBack,
                 iliacForward,
-                rotation,
                 height,
                 bearing,
-                confidence,
-                badges,
                 hitRules: hitRules.slice(0, 6)
             };
         }
@@ -5194,6 +4672,30 @@
                     detail: `${item.label}：左 ${item.left.toFixed(1)}° / 右 ${item.right.toFixed(1)}°，${formatEvidenceDiff(item.diff)}。`
                 };
             });
+        }
+
+        function buildDailyLifeSection(subType, compKey, reportId) {
+            const subtypeCards = (DAILY_LIFE_COPY_BY_SUBTYPE.cardsBySubtype?.[subType] || DAILY_LIFE_COPY_BY_SUBTYPE.cardsBySubtype?.['transition'] || []).slice(0, 3);
+            const compCards = (DAILY_LIFE_COPY_BY_COMPRESSION.cardsByCompression?.[compKey] || DAILY_LIFE_COPY_BY_COMPRESSION.cardsByCompression?.['mixed'] || []).slice(0, 2);
+            const allCards = [...subtypeCards, ...compCards];
+            if (!allCards.length) return '';
+            return `
+            <div class="report-panel p-5 sm:p-7">
+                <div class="report-eyebrow mb-2">日常关联</div>
+                <div class="report-section-title mb-3">你平时可能已经注意到</div>
+                <div class="daily-life-grid">
+                    ${allCards.map(card => `
+                    <div class="daily-life-card">
+                        <div class="flex items-start gap-3">
+                            <div class="daily-life-icon">${escapeHtml(card.icon || '📌')}</div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-[13px] font-bold text-slate-800 mb-1">${escapeHtml(card.title || '')}</div>
+                                <div class="text-[11px] text-slate-500 leading-relaxed">${escapeHtml(card.scene || card.reason || '')}</div>
+                            </div>
+                        </div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
         }
 
         function renderDataEvidenceCardsHtml(cards = []) {
@@ -5331,7 +4833,7 @@
                     lead: '基础位置已经比前面更稳，接下来重点看两边高低、前后和踩地感觉怎么慢慢对回来。',
                     doItems: [
                         '继续保留把骨盆带回中间的练习',
-                        subType === 'oblique' ? '重点处理左侧偏高和左侧更靠前' : '重点处理两边高低或前后差',
+                        subType === 'oblique' ? '让左边不再习惯性往前顶，同时把右边往下落' : '重点把两边的高低或前后差慢慢拉回来',
                         '让更不稳的一边踩地更踏实'
                     ],
                     avoidItems: [
@@ -7422,25 +6924,13 @@
             return;
 
         function renderIsolatedFinalReport(symptomCheck, metrics) {
-            const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
-            const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
-            const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
-            const diffSLR = slrL - slrR;
-            const diffHip = hipL - hipR;
-            const diffSh = shL - shR;
-
             const routeIsolation = buildRouteIsolationAssessment(metrics);
             const compressionEvaluation = routeIsolation.compressionResult;
-            const rotationEvaluation = routeIsolation.rotationResult;
             const titleEl = document.getElementById('final-result-title');
             const reportSafetyBlocked = hasAnyRedFlag(symptomCheck);
-            const fmt = (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}°`;
             const compKey = compressionEvaluation.key;
-            const rotKey = rotationEvaluation.key;
             const heightKey = routeIsolation.heightResult.key;
             const subtypeKey = routeIsolation.subtypeResult.key;
-            const hasMeaningfulLateral = routeIsolation.hasMeaningfulLateral;
-            const hasLateralClue = routeIsolation.hasLateralClue;
             const trainingStage = routeIsolation.trainingStage;
 
             // ---- 六类分型判定 ----
@@ -7449,191 +6939,100 @@
             const comboKey = `${compKey}_${subType}`;
             const planKeyMap = { baseline: 'LeftAIC', lateral: 'Lateral', oblique: 'Oblique', transition: 'Transition' };
             const planKey = `${compKey}_${planKeyMap[subType]}`;
-            const pelvisCfg = derivePelvisVisualConfig(routeIsolation, metrics, comboKey, compKey);
-            const resultLabel = subType === 'oblique'
-                ? '左边更高，也更靠前'
-                : subType === 'lateral'
-                    ? '左边更高，右边更低'
-                    : subType === 'transition'
-                        ? '左右差异已经出现，方向暂不判断'
-                        : '右边略高，左边更容易往前';
-            const actionCopy = buildActionCopy({ trainingStage, subType });
-            const referenceImages = getReportReferenceImages(subType);
             const reportId = Date.now();
             const directSummary = buildDirectResultSummary(routeIsolation, metrics);
-            const reportBadges = directSummary.badges;
-            const evidenceCards = buildDataEvidenceCards(metrics, routeIsolation);
-            const directMetricRows = buildDirectMetricRows(metrics);
 
-            const visualHtml = reportSafetyBlocked ? `
-            <div id="report-safety-block" class="report-panel p-5 sm:p-6">
-                <div class="report-eyebrow mb-2">优先事项</div>
-                <div class="report-section-title mb-3">先处理安全提醒</div>
-                <p class="report-body-text">我们注意到你有需要优先处理的信号，建议先咨询专业评估师再进行针对性调整。</p>
-                <a href="#report-safety-block" class="inline-flex mt-4 items-center rounded-full bg-rose-50 px-4 py-2 text-[11px] font-bold text-rose-600 border border-rose-200 shadow-sm">
-                    跳过本报告，直接看安全建议
-                </a>
-            </div>` : `
-            <div class="report-panel report-panel-result p-5 sm:p-7">
-                <div class="report-eyebrow mb-2">本次结果</div>
-                <div class="report-section-title mb-4">先看结论，再看数据</div>
-                <p class="report-headline-plain mb-4">${escapeHtml(directSummary.plainHeadline)}</p>
-                <div class="report-direct-grid">
-                    <div class="report-direct-model">
-                        <div class="pelvis-stage report-model-stage" style="height:318px;">
-                            <canvas id="pelvis-canvas" style="width:100%;height:318px;display:block;border-radius:1.2rem;"></canvas>
-                            <div id="pelvis-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5bd4c8;font-size:11px;pointer-events:none;">
-                                <span style="display:flex;align-items:center;gap:8px;">
-                                    <span style="width:14px;height:14px;border:2px solid #5bd4c8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span>
-                                    加载骨盆模型...
-                                </span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 mt-3">
-                            ${referenceImages.map((image) => `
-                            <figure class="report-soft-box report-visual-card p-2.5">
-                                <button type="button" class="report-image-trigger" data-report-image-src="${escapeHtml(image.src)}" data-report-image-label="${escapeHtml(image.label)}" aria-label="放大查看${escapeHtml(image.label)}">
-                                    <img src="${image.src}" alt="${image.label}" onerror="this.closest('figure').style.display='none'">
-                                    <span class="report-image-hint">点按放大</span>
-                                </button>
-                                <figcaption class="mt-2 text-[11px] font-bold text-slate-600 text-center">${image.label}</figcaption>
-                            </figure>`).join('')}
-                        </div>
+            // ── Build training summary ──
+            const plan = VIDEO_PLAN_CONFIG[planKey] || VIDEO_PLAN_CONFIG['mixed_Transition'];
+            const trainingStepsHtml = !reportSafetyBlocked ? plan.videos.map((v, i) => `
+                <div class="flex items-start gap-3 py-2.5 ${i > 0 ? 'border-t border-[#00000008]' : ''}">
+                    <span class="flex-shrink-0 w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] text-[10px] font-black flex items-center justify-center mt-0.5">${i+1}</span>
+                    <div class="min-w-0">
+                        <div class="text-[12px] font-bold text-slate-800">${escapeHtml(v.name)}</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${escapeHtml(v.desc)}</div>
                     </div>
-                    <div class="report-direct-cards">
-                        <div class="report-direct-card">
-                            <div class="report-direct-card-label">前后方向</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.frontBack.value)}</div>
-                            <div class="report-direct-card-note">${escapeHtml(directSummary.frontBack.note)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.frontBack.plain)}</div>
-                        </div>
-                        <div class="report-direct-card">
-                            <div class="report-direct-card-label">左右前后</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.iliacForward.value)}</div>
-                            <div class="report-direct-card-note">${escapeHtml(directSummary.iliacForward.note)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.iliacForward.plain)}</div>
-                        </div>
-                        <div class="report-direct-card">
-                            <div class="report-direct-card-label">左右高低</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.height.value)}</div>
-                            <div class="report-direct-card-note">${escapeHtml(directSummary.height.note)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.height.plain)}</div>
-                        </div>
-                        <div class="report-direct-card">
-                            <div class="report-direct-card-label">调整重点</div>
-                            <div class="report-direct-card-value">${escapeHtml(directSummary.bearing.value)}</div>
-                            <div class="report-direct-card-note">${escapeHtml(directSummary.bearing.note)}</div>
-                            <div class="report-direct-card-hint">${escapeHtml(directSummary.bearing.plain)}</div>
-                        </div>
+                </div>`).join('') : '';
+
+            // ── Build full report HTML ──
+            const cheatingHtml = (compressionEvaluation.cheatingFlags && compressionEvaluation.cheatingFlags.length > 0) ? `
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;margin-top:10px;">
+                <div class="text-[11px] font-bold text-amber-800 mb-1.5">提示</div>
+                ${compressionEvaluation.cheatingFlags.map(flag => `<p class="text-[11px] text-amber-700 leading-relaxed">${escapeHtml(flag.label)}</p>`).join('')}
+            </div>` : '';
+
+            const trainingHtml = !reportSafetyBlocked ? `
+            <div class="report-panel p-5 sm:p-7">
+                <div class="text-[11px] font-bold text-slate-400 mb-3">怎么调整</div>
+                ${trainingStepsHtml}
+            </div>` : '';
+
+            const dataDetailsHtml = !reportSafetyBlocked ? `
+            <details class="mt-3">
+                <summary class="text-[11px] font-bold text-slate-400 cursor-pointer hover:text-slate-600 py-1">查看测量数据 ▸</summary>
+                <div class="mt-2 p-4 rounded-xl bg-[#f5f5f7]">
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div><div class="text-[9px] text-slate-400">直腿抬高</div><div class="text-[14px] font-bold text-slate-800">L ${metrics.slrL?.toFixed(0) ?? '--'}° R ${metrics.slrR?.toFixed(0) ?? '--'}°</div></div>
+                        <div><div class="text-[9px] text-slate-400">髋屈曲</div><div class="text-[14px] font-bold text-slate-800">L ${metrics.hipL?.toFixed(0) ?? '--'}° R ${metrics.hipR?.toFixed(0) ?? '--'}°</div></div>
+                        <div><div class="text-[9px] text-slate-400">肩屈曲</div><div class="text-[14px] font-bold text-slate-800">L ${metrics.shL?.toFixed(0) ?? '--'}° R ${metrics.shR?.toFixed(0) ?? '--'}°</div></div>
                     </div>
                 </div>
-            </div>`;
+            </details>` : '';
 
-            const actionHtml = reportSafetyBlocked ? '' : `
-            <div class="report-panel report-next-card report-panel-action p-5 sm:p-7">
-                <div class="report-eyebrow mb-2">调整顺序</div>
-                <div class="report-section-title mb-2">先从这里开始</div>
-                <p class="report-body-text mb-4">${actionCopy.headline}${actionCopy.lead}</p>
-                <div class="grid gap-3 sm:grid-cols-2">
-                    <div class="report-soft-box p-4">
-                        <div class="text-[12px] font-bold text-slate-700 mb-3">现在先做</div>
-                        <ul class="report-bullet-list">
-                            ${actionCopy.doItems.map((item) => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                    <div class="report-soft-box p-4">
-                        <div class="text-[12px] font-bold text-slate-700 mb-3">现阶段不建议</div>
-                        <ul class="report-bullet-list report-bullet-list-warm">
-                            ${actionCopy.avoidItems.map((item) => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>
-            </div>`;
+            let dailyLifeCards = '';
+            if (!reportSafetyBlocked) {
+                try { dailyLifeCards = buildDailyLifeSection(subType, compKey, reportId); } catch(e) {}
+            }
 
-            const dataHtml = `
-            <div class="report-panel report-panel-data p-5 sm:p-7">
-                <div class="report-eyebrow mb-2">判断依据</div>
-                <div class="report-section-title mb-2">这次判断主要看这 3 组差值</div>
-                <p class="report-body-text mb-4">左右差达到 10° 才会进入方向判断；没达到判断线的项目只作参考，不单独下结论。</p>
-                <div class="report-metric-table">
-                    ${directMetricRows.map((row) => `
-                    <div class="report-metric-row">
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="text-[13px] font-black text-slate-900">${escapeHtml(row.label)}</div>
-                            <div class="text-[11px] font-bold text-slate-500">${escapeHtml(row.diff)}</div>
-                        </div>
-                        <div class="report-metric-values">
-                            <div class="report-metric-pill">
-                                <div class="report-metric-pill-label">左侧</div>
-                                <div class="report-metric-pill-value">${escapeHtml(row.left)}</div>
-                            </div>
-                            <div class="report-metric-pill">
-                                <div class="report-metric-pill-label">右侧</div>
-                                <div class="report-metric-pill-value">${escapeHtml(row.right)}</div>
-                            </div>
-                            <div class="report-metric-pill">
-                                <div class="report-metric-pill-label">左右差</div>
-                                <div class="report-metric-pill-value">${escapeHtml(row.diff)}</div>
-                            </div>
-                        </div>
-                    </div>`).join('')}
+            const reportHtml = reportSafetyBlocked ? `
+            <div class="report-panel p-5 sm:p-6">
+                <div class="text-[22px] font-black text-slate-900 mb-2">先处理安全提醒</div>
+                <p class="text-[13px] text-slate-500 leading-relaxed">你有需要优先处理的信号，建议先咨询专业医师再做针对性训练。</p>
+            </div>
+            <div class="text-center text-[11px] text-slate-400 mt-4">这不是医疗诊断。有疼痛请就医。</div>` : `
+            <div class="report-panel p-5 sm:p-7">
+                <div class="text-[26px] font-black text-slate-900 leading-tight mb-3">${escapeHtml(directSummary.headline)}</div>
+                <div class="flex flex-col gap-1.5 mb-5">
+                    <div class="text-[13px] text-slate-600 leading-relaxed">${escapeHtml(directSummary.frontBack.plain)}</div>
+                    <div class="text-[13px] text-slate-600 leading-relaxed">${escapeHtml(directSummary.iliacForward.plain)}</div>
+                    ${directSummary.height.short !== '高低不明显' ? `<div class="text-[13px] text-slate-600 leading-relaxed">${escapeHtml(directSummary.height.plain)}</div>` : ''}
                 </div>
-                <div class="grid gap-3 mt-4 lg:grid-cols-[1.05fr_0.95fr]">
-                    <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">满足的判断条件</div>
-                        <div class="report-hit-list">
-                            ${directSummary.hitRules.map((rule) => `<div class="report-hit-item">${escapeHtml(rule)}</div>`).join('') || '<div class="report-hit-item">当前没有足够命中项。</div>'}
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-[10px] font-bold tracking-[0.16em] text-slate-400 uppercase mb-2">每组数据明细</div>
-                        <div class="report-proof-grid">
-                    ${renderDataEvidenceCardsHtml(evidenceCards)}
-                        </div>
-                    </div>
+                <div class="rounded-xl bg-[#0a84ff]/5 border border-[#0a84ff]/10 px-4 py-3">
+                    <span class="text-[12px] font-bold text-[#0a84ff]">重点：</span>
+                    <span class="text-[12px] text-slate-700">${escapeHtml(directSummary.bearing.plain)}</span>
                 </div>
-            </div>`;
-
-            const disclaimerHtml = `
-            <div class="report-disclaimer">
-                这份报告只说明本次动作测量结果，不用于疾病诊断或治疗决定。若有明显疼痛、麻木、夜间痛或症状持续加重，请优先线下就诊。
-            </div>`;
+            </div>
+            ${cheatingHtml}
+            ${trainingHtml}
+            ${dailyLifeCards}
+            ${dataDetailsHtml}
+            <div class="text-center text-[11px] text-slate-400 mt-4">这不是医疗诊断。有疼痛请就医。</div>`;
 
             const container = document.getElementById('empathic-report-container');
-            container.innerHTML = `${visualHtml}${dataHtml}${actionHtml}${disclaimerHtml}`;
+            container.innerHTML = reportHtml;
             container.classList.remove('hidden');
-            setTimeout(() => renderPelvis3D(pelvisCfg, comboKey), 200);
 
-            const mainSentence = reportSafetyBlocked ? '本次评估已生成，建议先看安全提醒' : directSummary.headline;
-            titleEl.innerText = mainSentence;
-            finalReportDateTime.textContent = `评估时间：${formatReportDateTime()}`;
-            document.getElementById('final-report-badges').innerHTML = renderBadgeRowHtml(reportBadges);
-            document.getElementById('final-report-confidence').textContent = `数据一致性：${directSummary.confidence}`;
-            document.getElementById('final-report-confidence-detail').innerHTML = `
-                <div class="grid gap-2">
-                    <div class="text-[13px] font-black text-slate-900">${escapeHtml(directSummary.plainHeadline)}</div>
-                    <div><span class="font-black text-slate-900">本次优先看：</span>${escapeHtml(directSummary.frontBack.value)}、${escapeHtml(directSummary.height.value)}、${escapeHtml(directSummary.iliacForward.value)}</div>
-                    <div><span class="font-black text-slate-900">建议先处理：</span>${escapeHtml(directSummary.bearing.value)}</div>
-                </div>`;
-            document.getElementById('final-combo-label').textContent = directSummary.headline;
-            document.getElementById('final-pelvic-orientation').innerHTML = directSummary.headline;
-            document.getElementById('final-pelvic-asymmetry').innerHTML = `左右差值：SLR ${fmt(diffSLR)}　髋屈 ${fmt(diffHip)}　肩屈 ${fmt(diffSh)}`;
-            document.getElementById('final-report-data').textContent = `数据依据：SLR ${slrL.toFixed(1)}°/${slrR.toFixed(1)}° · 髋屈 ${hipL.toFixed(1)}°/${hipR.toFixed(1)}° · 肩屈 ${shL.toFixed(1)}°/${shR.toFixed(1)}°`;
+            titleEl.innerText = reportSafetyBlocked ? '安全提醒' : directSummary.headline;
+            finalReportDateTime.textContent = '';
+            document.getElementById('final-report-badges').innerHTML = '';
+            document.getElementById('final-report-confidence').textContent = '';
+            document.getElementById('final-report-confidence-detail').innerHTML = '';
+            document.getElementById('final-combo-label').textContent = '';
+            document.getElementById('final-pelvic-orientation').innerHTML = '';
+            document.getElementById('final-pelvic-asymmetry').innerHTML = '';
+            document.getElementById('final-report-data').textContent = '';
             document.getElementById('final-technical-content').innerHTML = '';
+            document.getElementById('final-report-section').querySelector('.report-summary-strip')?.remove();
 
             currentAssessmentResult = {
                 compressionLayer: { key: compKey },
-                rotationLayer: { key: rotKey },
                 heightLayer: { key: heightKey },
                 dynamicBearingLayer: routeIsolation.dynamicBearingResult,
                 routeIsolation,
                 planKey,
                 primaryRouteLabel: directSummary.headline,
                 primarySummary: directSummary.frontBack.value,
-                secondarySummary: `${directSummary.iliacForward.value}；${directSummary.rotation.value}；${directSummary.height.value}；${directSummary.bearing.value}`,
+                secondarySummary: `${directSummary.iliacForward.value}；${directSummary.height.value}；${directSummary.bearing.value}`,
                 symptomCheck,
-                pelvisCfg,
-                pelvisComboKey: comboKey,
                 reportId
             };
             syncInteractiveUIState(reportId);
@@ -7645,10 +7044,6 @@
             if (reportSafetyBlocked) {
                 const videoPlanCard = document.getElementById('video-plan-card');
                 if (videoPlanCard) videoPlanCard.classList.add('hidden');
-                const jumpLink = document.querySelector('.id-jump-video');
-                if (jumpLink) jumpLink.classList.add('hidden');
-            } else {
-                renderVideoPlanCard(planKey);
             }
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
@@ -7659,111 +7054,111 @@
         // ============================================================
         const VIDEO_PLAN_CONFIG = {
             posterior_LeftAIC: {
-                title: '完整训练方案 · 左侧偏前校正',
-                tagline: '先把后腰一直顶着的力放下来，再把左侧偏前慢慢带回更中间的位置。',
+                title: '后侧紧张 + 左侧偏前 · 完整方案',
+                tagline: '先把后腰顶着的力放下来，再把左侧偏前慢慢带回来。每步都按顺序做，不要跳过。',
                 videos: [
-                    { name: '第一步：先让后腰别一直绷着', desc: '如果后腰一直在帮你撑住，骨盆就很难真的回到中间。第一步不是拼命练，而是先把这层外面的顶劲放下来。' },
-                    { name: '第二步：把后背和骨盆后侧松开一点', desc: '后侧有了空间，呼吸和髋的活动范围才更容易回来，这一步是在给后面拉回方向做准备。' },
-                    { name: '第三步：把左侧偏前慢慢带回来', desc: '前两步做对后，再把左侧更靠前的位置慢慢带回去，左右更容易重新对上。' }
+                    { name: '第一步：90/90 髋桥 + 气球呼吸', desc: '仰卧，双脚踩墙，膝髋各 90°，膝间夹轻球或枕头。鼻吸鼻呼，呼气时让肋骨下沉、后腰轻贴地，不要用力压腰。做 3 组，每组 5 次慢呼气。目的：把后腰一直顶着的劲先放下来。' },
+                    { name: '第二步：侧卧风车开合', desc: '侧卧，上方手画大圈（风车），配合呼吸。吸气时手臂打开，呼气时手臂收回。左右各做 2 组，每组 8 次。目的：后背和骨盆后侧有了空间后，让胸廓和骨盆重新配合。' },
+                    { name: '第三步：站姿靠墙骨盆归位', desc: '背靠墙，脚离墙一脚距离，微屈膝。呼气时让尾骨轻轻向下、后腰靠近墙面（不要死命贴），吸气保持。做 3 组，每组 6 次呼吸。目的：把左侧偏前的骨盆慢慢带回中间。' }
                 ]
             },
             posterior_Oblique: {
-                title: '完整训练方案 · 左侧偏高偏前',
-                tagline: '先把后腰一直顶着的力放下来，再同时处理左侧偏高和偏前两个方向。',
+                title: '后侧紧张 + 左侧偏高偏前 · 完整方案',
+                tagline: '后腰顶劲先放，再同时处理高低和前后两个方向。',
                 videos: [
-                    { name: '第一步：先让后腰别一直绷着', desc: '如果后腰一直帮你顶着，左边又高又往前的状态就会被越锁越死，所以先把最外层的紧劲降下来。' },
-                    { name: '第二步：让上半身和骨盆重新配合', desc: '身体已经偏向左前时，不能只盯着局部拉伸，要先让上半身和骨盆重新回到同一个节奏。' },
-                    { name: '第三步：把左侧偏高又偏前慢慢带回来', desc: '等紧劲先放下来后，再同时处理高低和前后两个方向，变化才更稳。' }
+                    { name: '第一步：全呼气俯卧', desc: '俯卧，额头垫毛巾，双手放体侧。用鼻缓慢呼气到底，感受腹部自然收进去、后腰两侧都有下沉感。做 3 组，每组 5 次深呼气。目的：后腰紧绷的劲先降下来。' },
+                    { name: '第二步：坐姿骨盆时钟', desc: '坐椅子前 1/3，想象骨盆是钟面。先让骨盆缓慢向前倾（12 点方向），再向后倾（6 点方向），再向左倾和右倾。全程配合呼吸，不憋气。做 3 组，每组完整画圈 5 次。目的：让身体感知到自己习惯偏左前的位置，建立新的中间参考。' },
+                    { name: '第三步：单腿站姿收髋 + 呼吸', desc: '右脚单腿站立（手扶墙），左膝微屈悬空。呼气时让左侧髋部向下落、右侧臀部轻轻收紧。保持 5 次慢呼吸，换边。每边 3 组。目的：让左侧不再习惯性往上和往前顶，右侧重新建立承重感。' }
                 ]
             },
             posterior_Lateral: {
-                title: '完整训练方案 · 左侧偏高',
-                tagline: '先把后腰一直顶着的力放下来，再处理左侧偏高带来的左右差。',
+                title: '后侧紧张 + 左侧偏高 · 完整方案',
+                tagline: '先降后腰顶劲，再处理左高右低的高低差。',
                 videos: [
-                    { name: '第一步：先让后腰别一直顶着', desc: '后腰这股一直往上顶的劲先放下来，骨盆才有机会回到更平一点的位置。' },
-                    { name: '第二步：减少一直把骨盆带偏的那股力', desc: '高低差不只是外面看起来一高一低，更关键的是把那股一直拉偏你的用力习惯降下来。' },
-                    { name: '第三步：让左右脚重新轮流踩稳', desc: '偏移降下来后，让两只脚都能真正踩稳，身体才不容易又偏回去。' }
+                    { name: '第一步：仰卧肋间呼吸', desc: '仰卧屈膝，手放两侧下肋骨。吸气让肋骨向两侧和后背扩开，呼气让肋骨慢慢收拢、感觉后腰变宽变沉。做 3 组，每组 6 次呼吸。目的：让后腰和胸廓不再顶着。' },
+                    { name: '第二步：侧卧髋内收', desc: '朝右侧卧，左腿屈膝踩在右膝前方。呼气时让左膝轻轻向中线方向靠（幅度不大），感受左侧骨盆从高位慢慢降下来。做 3 组，每组 8 次。目的：减少左侧一直把骨盆拉高的力。' },
+                    { name: '第三步：双腿站姿重心转移', desc: '双脚分开与髋同宽。呼气时把重心慢慢移到右脚（右侧承重增加），左脚仍贴地但不承重。保持 5 次呼吸后慢慢回来。做 3 组。目的：让右侧重新学会承重，左右轮流踩稳。' }
                 ]
             },
             posterior_Transition: {
-                title: '完整训练方案 · 先稳基础',
-                tagline: '先把后腰和站姿做稳，再用复测确认更具体的方向。',
+                title: '后侧紧张 · 先稳基础',
+                tagline: '先把后腰和站姿做稳，2-4 周后再复测确认方向。',
                 videos: [
-                    { name: '第一步：先让后腰别一直顶着', desc: '先把后腰一直撑着的感觉降下来，让骨盆有机会回到比较正的位置。' },
-                    { name: '第二步：让双脚站得更平均', desc: '方向还没完全稳定时，先不要急着压某一边，重点让两只脚都能踩得踏实。' },
-                    { name: '第三步：2 到 4 周后复测确认方向', desc: '用同样角度复测，再决定进入左侧偏高、左侧偏前或其他更具体方案。' }
+                    { name: '第一步：仰卧慢呼归位', desc: '仰卧屈膝，手放腹部。鼻吸时腹部轻轻鼓起，嘴呼时让肋骨下沉、后腰变宽贴地，不要用蛮力压。做 3 组，每组 8 次呼吸。目的：让后腰不再习惯性顶着。' },
+                    { name: '第二步：四点撑地猫牛式', desc: '四点跪位。吸气时骨盆前倾、胸椎伸展，呼气时骨盆后倾、胸椎屈曲。动作要慢，配合呼吸节奏。做 2 组，每组 10 次。目的：让骨盆和脊柱在前后方向上找回活动范围。' },
+                    { name: '第三步：2-4 周后复测', desc: '持续以上基础训练 2-4 周后，用同样方式复测三个动作。届时左右方向通常会变清晰，再进入更具体的专项方案。' }
                 ]
             },
             anterior_LeftAIC: {
-                title: '完整训练方案 · 左侧偏前校正',
-                tagline: '先减轻髋前一直拉着的力，再把左侧偏前慢慢带回更中间的位置。',
+                title: '前侧紧张 + 左侧偏前 · 完整方案',
+                tagline: '先减轻髋前一直拉着的力，再把左侧偏前慢慢带回来。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '髋前和大腿前侧一直在把骨盆往前带，第一步不是猛拉，而是先把这股持续往前拽的力降下来。' },
-                    { name: '第二步：让侧腹和腿后侧重新帮上忙', desc: '前侧松一点之后，还要把身体学会往回收，不然它还是会继续往前跑。' },
-                    { name: '第三步：把左侧偏前慢慢带回来', desc: '当前面那层拉力降下来后，再处理左侧更靠前的位置，方向会更容易回到中间。' }
+                    { name: '第一步：半跪姿髋屈肌放松', desc: '右膝跪地（垫毛巾），左脚在前，保持骨盆正对前方。呼气时让右侧臀部轻轻收紧、骨盆微微后倾，感受右髋前方有拉伸感但不刺痛。保持 5 次慢呼吸，每边 3 组。目的：减少前侧一直把骨盆往前拽的紧张。' },
+                    { name: '第二步：仰卧腹斜肌激活', desc: '仰卧屈膝，手放两侧下肋骨。呼气时让下肋骨向骨盆方向轻轻收拢（不是吸肚子），同时感受腹斜肌的轻柔张力。保持 5 次呼吸为一组，做 3 组。目的：前侧松了之后，把侧腹和后侧链的稳定感找回来。' },
+                    { name: '第三步：站姿骨盆后倾练习', desc: '靠墙站立，微屈膝。呼气时让尾骨向下卷、腰后侧靠近墙面，吸气保持。重点不是贴得紧，而是感受骨盆从习惯性前倾回到中立的感觉。做 3 组，每组 6 次呼吸。目的：把左侧偏前的骨盆慢慢带回中线。' }
                 ]
             },
             anterior_Oblique: {
-                title: '完整训练方案 · 左侧偏高偏前',
-                tagline: '先减轻髋前一直拉着的力，再同时处理左侧偏高和偏前两个方向。',
+                title: '前侧紧张 + 左侧偏高偏前 · 完整方案',
+                tagline: '先减少前侧拉力，再同时处理高低和前后。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧这层一直拉着的感觉先降下来，骨盆才不会一直被往前带。' },
-                    { name: '第二步：让上半身和骨盆重新配合', desc: '身体已经偏向左前方时，要先把上下半身带回一个节奏，不能只顾某一块地方酸不酸。' },
-                    { name: '第三步：把左侧偏高又偏前慢慢带回来', desc: '紧张先降下来后，再一起处理高低和前后两个方向，变化会更稳。' }
+                    { name: '第一步：仰卧膝下落', desc: '仰卧屈膝，脚平放。呼气时让一侧膝盖慢慢向外打开（不追求幅度），感受髋前侧的放松，吸气时慢慢回来。左右各 3 组，每组 8 次。目的：把双侧髋前一致拉紧的张力先降下来。' },
+                    { name: '第二步：坐姿骨盆侧倾呼吸', desc: '坐椅子前 1/3，骨盆正对前方。吸气，呼气时让左侧坐骨向下沉、右侧坐骨相对向上（等于左侧骨盆降、右侧升）。动作幅度小，配合深呼气。做 3 组，每组 6 次。目的：让身体学会把左侧从又高又前的位置带回来。' },
+                    { name: '第三步：侧卧右侧臀激活', desc: '朝右侧卧，屈膝约 30°，脚跟并拢。呼气时右膝向上打开（像蚌壳），保持骨盆不后倒。做 2 组，每组 12 次。目的：把右侧从"接不住"里拉回来，让它重新学会承重稳定。' }
                 ]
             },
             anterior_Lateral: {
-                title: '完整训练方案 · 左侧偏高',
-                tagline: '先减轻髋前一直拉着的力，再处理左侧偏高带来的左右差。',
+                title: '前侧紧张 + 左侧偏高 · 完整方案',
+                tagline: '先减少前侧拉力，再处理左高右低。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '前侧先松下来，骨盆不再一直被往前拽，后面的左右调整才更容易真正落地。' },
-                    { name: '第二步：减少一直把骨盆带偏的那股力', desc: '髋前拉紧和左侧偏高会互相放大，所以第二步是把那股持续拉偏你的用力习惯降下来。' },
-                    { name: '第三步：让两边重新轮流踩稳', desc: '偏移改善后，让两边重新轮流踩稳地面，骨盆才不只是短暂摆正。' }
+                    { name: '第一步：半跪姿髋前放松', desc: '右膝跪地，左脚在前，骨盆正对前方。呼气时让骨盆微微后倾，感受右侧髋前和左大腿前侧的舒展。每边保持 5 次呼吸，各 3 组。目的：把前侧一直拽着骨盆的力先降下来。' },
+                    { name: '第二步：站姿骨盆侧移练习', desc: '双脚分开，身体直立。呼气时让骨盆整体向右平移（左侧髋向下落），感受左侧腰部拉长。保持 3 次呼吸后慢慢回。做 3 组，每组 6 次。目的：把左侧偏高的习惯慢慢拉回来。' },
+                    { name: '第三步：右腿单腿站姿', desc: '右手扶墙，右脚承重，左脚轻触地面不承重。保持骨盆水平、不向左侧掉。每次保持 30 秒，做 3 组。目的：让右侧重新变强，左右轮流踩稳。' }
                 ]
             },
             anterior_Transition: {
-                title: '完整训练方案 · 先稳基础',
-                tagline: '先把髋前和站姿做稳，再用复测确认更具体的方向。',
+                title: '前侧紧张 · 先稳基础',
+                tagline: '先把髋前和站姿做稳，2-4 周后复测。',
                 videos: [
-                    { name: '第一步：先减少前侧一直拉着骨盆的感觉', desc: '先让髋前和身体前侧没那么紧，避免一上来就把方向越练越乱。' },
-                    { name: '第二步：让双脚站得更平均', desc: '方向还没完全稳定时，先让两边都能踩得踏实，比急着纠正某一边更可靠。' },
-                    { name: '第三步：2 到 4 周后复测确认方向', desc: '用同样角度复测，再决定进入左侧偏高、左侧偏前或其他更具体方案。' }
+                    { name: '第一步：仰卧慢呼髋前放松', desc: '仰卧，双脚平放在臀部下方约一拳距离。呼气时骨盆后倾、腰轻贴地，感受髋前侧的舒展。做 3 组，每组 8 次呼吸。目的：让髋前和身体前侧没那么紧。' },
+                    { name: '第二步：四点撑地猫牛式', desc: '四点跪位，呼气骨盆后倾拱背，吸气骨盆前倾塌腰。动作缓慢配合呼吸。做 2 组，每组 10 次。目的：让骨盆在前后方向上恢复灵活度。' },
+                    { name: '第三步：2-4 周后复测确认方向', desc: '基础训练 2-4 周后复测，届时左右方向通常会更清晰，再按新结果进入更具体的方案。' }
                 ]
             },
             mixed_LeftAIC: {
-                title: '完整训练方案 · 先建立基础',
-                tagline: '先把呼吸、站姿和骨盆基础做稳，2 到 4 周后再看更细的方向。',
+                title: '前后方向待明确 + 左侧偏前 · 先稳基础再定方向',
+                tagline: '先做好呼吸和站姿基础，方向自然会变清晰。',
                 videos: [
-                    { name: '第一步：先把呼吸做顺', desc: '无论前后方向如何，先让呼吸慢下来，让腰、肋骨和骨盆不再一直抢着用力。' },
-                    { name: '第二步：让骨盆找到比较正的位置', desc: '前后方向不确定时，先帮助骨盆回到比较正的范围，为后续训练打好基础。' },
-                    { name: '第三步：复测并确认方向', desc: '基础训练 2-4 周后，三项测试值通常会更清晰，再按新的结果进入对应方案。' }
+                    { name: '第一步：仰卧三部呼吸', desc: '仰卧屈膝，手放腹部和下肋。先用鼻吸鼻呼 2 分钟（什么也不做，只感受呼吸节奏），然后尝试呼气时让肋骨向下沉、后腰变宽。做 3 组，每组 6 次慢呼气。目的：无论前后方向如何，先把呼吸做顺。' },
+                    { name: '第二步：站姿靠墙归位', desc: '背靠墙，脚离墙半脚，微屈膝。呼气时让骨盆回到中间感觉，不用力压墙。保持 8 次呼吸为一组，做 3 组。目的：让骨盆找到比较正的参考位置。' },
+                    { name: '第三步：复测并确认方向', desc: '基础训练 2-4 周后，三项测试的数值通常会变清晰。届时再按新结果进入对应方案（后侧或前侧专项）。' }
                 ]
             },
             mixed_Lateral: {
-                title: '完整训练方案 · 先处理左右差',
-                tagline: '前后方向先不急着定，先把已经出现的左右差处理掉。',
+                title: '前后方向待明确 + 左侧偏高 · 先处理左右差',
+                tagline: '左右差距已经明确，先把高低差稳下来。',
                 videos: [
-                    { name: '第一步：先把呼吸做顺', desc: '先让呼吸和双脚站稳打好基础，避免左右差距继续被日常站姿放大。' },
-                    { name: '第二步：减少左边一直托着，让右脚踩稳', desc: '左侧偏高已经清晰，优先让右脚重新踩得踏实，不需要等前后方向确认再开始这一步。' },
-                    { name: '第三步：复测确认前后方向', desc: '横向改善后复测，前后方向通常会更清晰，届时再叠加对应的前后方向专项训练。' }
+                    { name: '第一步：仰卧慢呼归位', desc: '仰卧屈膝，手放腹部。鼻吸气、嘴慢呼，呼气时让肋骨下沉、两侧髋骨感觉均匀接触地面。做 3 组，每组 6 次呼吸。目的：打好呼吸和骨盆基础。' },
+                    { name: '第二步：侧卧左侧髋降落', desc: '朝左侧卧，屈膝。呼气时让左侧坐骨轻轻向脚跟方向延伸（等于让左侧骨盆从高位降下来），保持 5 次呼吸。做 3 组。目的：左侧偏高已经清晰，优先让左脚重新踩得踏实。' },
+                    { name: '第三步：复测确认前后方向', desc: '横向改善后复测，前后方向通常会更清晰。届时叠加对应的前后方向训练。' }
                 ]
             },
             mixed_Oblique: {
-                title: '完整训练方案 · 先拉回斜向偏移',
-                tagline: '前后方向先不急着定，先处理已经出现的左侧偏高偏前。',
+                title: '前后方向待明确 + 左侧偏高偏前 · 先拉回斜向偏移',
+                tagline: '前后先不定，但斜向偏移已经出现，先把它拉回来。',
                 videos: [
-                    { name: '第一步：先把呼吸做顺', desc: '先让呼吸和双脚站稳打好基础，减少身体一直偏向左前方的习惯。' },
-                    { name: '第二步：把左侧偏高也偏前慢慢带回来', desc: '这种情况有两个方向：高低和前后都要处理，只压高度是不够的。同步让右脚踩得更踏实。' },
-                    { name: '第三步：复测确认前后方向', desc: '斜向改善后复测，前后方向通常会更清晰，届时再叠加对应的前后方向专项训练。' }
+                    { name: '第一步：仰卧慢呼归位', desc: '仰卧屈膝，鼻吸嘴呼。呼气时让双侧肋骨对称下沉、骨盆两侧均匀触地。做 3 组，每组 6 次呼吸。目的：打好基础，减少斜向偏移继续加重。' },
+                    { name: '第二步：坐姿骨盆归中练习', desc: '坐椅子，骨盆正对前方。呼气时让左侧坐骨向下沉（降左髋）、同时骨盆微微后倾（收前移），两个方向一起做。幅度小、配合呼气。做 3 组，每组 6 次。目的：同时处理左高和左前两个方向。' },
+                    { name: '第三步：复测确认前后方向', desc: '斜向改善后复测，前后方向通常会更清晰。届时叠加对应的前后方向专项训练。' }
                 ]
             },
             mixed_Transition: {
-                title: '完整训练方案 · 先稳基础',
-                tagline: '前后和左右都还要继续观察，先把基础站姿做顺。',
+                title: '前后左右方向都待定 · 先稳基础',
+                tagline: '先把呼吸和站姿做顺，不急着判断方向。',
                 videos: [
-                    { name: '第一步：先把呼吸做顺', desc: '先让腰、肋骨和骨盆不要一直抢着用力，给身体一个更容易回到中间的起点。' },
-                    { name: '第二步：让双脚站得更平均', desc: '先让两边都能踩得踏实，不急着判断哪一边一定高或一定低。' },
-                    { name: '第三步：2 到 4 周后复测确认方向', desc: '复测后方向更清楚，再进入对应的完整训练路径。' }
+                    { name: '第一步：仰卧三部呼吸', desc: '仰卧屈膝。先自然呼吸感受节奏（2 分钟），然后尝试呼气时肋骨下沉（不要憋气），最后加上尾骨微向下卷的骨盆后倾。做 3 组，每组 8 次呼吸。目的：让腰、肋骨和骨盆不再抢着用力。' },
+                    { name: '第二步：站姿双脚平均承重', desc: '自然站立，闭眼感受重心在哪只脚。如果偏左，有意识把重心向右移一点——不是完全到右脚，而是让两边更平均。保持 5 次呼吸后检查是否又偏回去。每次 5 分钟。目的：先稳定基础。' },
+                    { name: '第三步：2-4 周后复测', desc: '复测后方向更清楚，再进入对应方案。不建议在方向不清晰时急着练单侧动作。' }
                 ]
             }
         };
@@ -7936,6 +7331,9 @@
             // 存储当前 comboKey 供弹窗使用
             card.dataset.comboKey = comboKey;
             card.classList.remove('hidden');
+            document.getElementById('btn-toggle-vp-detail').classList.remove('hidden');
+            document.getElementById('vp-detail').classList.add('hidden');
+            document.getElementById('vp-detail-toggle-label').textContent = '展开适合人群和避坑提醒';
         }
 
         function openVideoPlanModal() {
