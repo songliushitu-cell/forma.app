@@ -260,28 +260,108 @@
         }
         .report-feedback-note:focus { border-color: rgba(10,132,255,0.3); box-shadow: 0 0 0 3px rgba(10,132,255,0.08); }
 
+        /* ── Conclusion Card ── */
+        .report-conclusion-card {
+            border-radius: var(--report-radius);
+            background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(240,246,255,0.96) 40%, rgba(230,241,254,0.94) 100%);
+            border: 1px solid rgba(10,132,255,0.12);
+            box-shadow: 0 12px 40px rgba(10,132,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.9);
+            padding: 20px 22px;
+            position: relative;
+            overflow: hidden;
+        }
+        .report-conclusion-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0a84ff 0%, #5ac8fa 50%, #ffd60a 100%);
+            border-radius: 3px 3px 0 0;
+        }
+        .report-conclusion-card::after {
+            content: '';
+            position: absolute;
+            top: -28px; right: -28px;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(90,200,250,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .report-conclusion-headline {
+            font-size: 22px; line-height: 1.25; font-weight: 900;
+            letter-spacing: -0.04em; color: var(--report-ink); margin-bottom: 6px;
+        }
+        .report-conclusion-subtitle {
+            font-size: 13px; line-height: 1.65; color: var(--report-ink-soft); max-width: 56ch;
+        }
+
         /* ── Plan Shell ── */
         .report-plan-shell {
-            background: #fff; border: 1px solid rgba(0,0,0,0.06);
-            box-shadow: var(--report-shadow); border-radius: var(--report-radius);
+            background:
+                radial-gradient(circle at 85% 5%, rgba(10,132,255,0.06) 0%, transparent 38%),
+                radial-gradient(circle at 15% 90%, rgba(255,214,10,0.04) 0%, transparent 34%),
+                linear-gradient(155deg, #ffffff 0%, #f8faff 30%, #f3f7fe 60%, #ffffff 100%);
+            border: 1.5px solid rgba(10,132,255,0.1);
+            box-shadow: 0 24px 80px rgba(10,132,255,0.07), inset 0 0 0 1px rgba(255,255,255,0.95);
+            position: relative;
         }
-        .report-plan-grid { display: grid; gap: 10px; }
-        .report-plan-hero { display: grid; gap: 12px; }
-        .report-plan-compact-grid { display: grid; gap: 10px; }
-        .report-plan-price { border-radius: var(--report-radius-sm); background: #f5f5f7; border: 1px solid rgba(0,0,0,0.06); padding: 16px; }
-        .report-plan-price strong { letter-spacing: -0.03em; color: var(--report-ink); }
-        .report-plan-editorial { border-radius: var(--report-radius-sm); padding: 14px; background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); }
-        .report-plan-mini-card { border-radius: var(--report-radius-sm); padding: 12px 14px; background: #fff; border: 1px solid rgba(0,0,0,0.06); }
+        .report-plan-shell::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0a84ff 0%, #5ac8fa 40%, #ffd60a 100%);
+            border-radius: 4px 4px 0 0;
+            z-index: 1;
+        }
+        .report-plan-hero { display: grid; gap: 18px; }
+        .report-plan-benefit-list { display: grid; gap: 8px; }
+        .report-plan-benefit-item {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 14px; border-radius: 14px;
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(10,132,255,0.08);
+            font-size: 13px; line-height: 1.6; color: var(--report-ink); font-weight: 600;
+        }
+        .report-plan-benefit-item .benefit-icon {
+            flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+            background: linear-gradient(135deg, #0a84ff 0%, #3b82f6 100%);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 800; margin-top: 2px;
+        }
+        .report-plan-price {
+            border-radius: var(--report-radius-sm);
+            background: linear-gradient(155deg, #ffffff 0%, #f0f7ff 100%);
+            border: 1.5px solid rgba(10,132,255,0.15);
+            padding: 22px 20px;
+            box-shadow: 0 12px 32px rgba(10,132,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.92);
+            display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
+        }
+        .report-plan-price .price-label {
+            font-size: 10px; font-weight: 800; letter-spacing: 0.18em;
+            text-transform: uppercase; color: #64748b; margin-bottom: 6px;
+        }
+        .report-plan-price .price-amount {
+            font-size: 42px; font-weight: 900; letter-spacing: -0.05em; color: #0a84ff; line-height: 1;
+        }
         .report-plan-checklist { display: grid; gap: 8px; }
-        .report-plan-checklist-item { border-radius: var(--report-radius-sm); background: #fff; border: 1px solid rgba(0,0,0,0.06); padding: 12px 14px; }
-        .report-plan-cta { border-radius: var(--report-radius-sm); padding: 14px; background: #f5f5f7; border: 1px solid rgba(0,0,0,0.05); }
-        .report-plan-button-row { display: grid; gap: 10px; }
+        .report-plan-checklist-item {
+            border-radius: var(--report-radius-sm); background: #fff;
+            border: 1px solid rgba(0,0,0,0.06); padding: 12px 14px;
+        }
+        .report-plan-cta-button {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px 20px; border-radius: 14px;
+            background: linear-gradient(135deg, #0a84ff 0%, #3b82f6 100%);
+            color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.08em;
+            box-shadow: 0 12px 28px rgba(10,132,255,0.28);
+            transition: all 0.2s ease; cursor: pointer; border: none;
+        }
+        .report-plan-cta-button:hover { filter: brightness(1.08); box-shadow: 0 16px 36px rgba(10,132,255,0.35); }
+        .report-plan-cta-button:active { transform: scale(0.97); }
         @media (min-width: 860px) {
-            .report-plan-hero { grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.65fr); align-items: stretch; }
-            .report-plan-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-            .report-plan-compact-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .report-plan-hero { grid-template-columns: 1fr 288px; align-items: stretch; }
             .report-plan-checklist { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .report-plan-button-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
         }
 
         /* ── Disclaimer ── */
@@ -1389,72 +1469,78 @@
                 <!-- 专属训练视频方案卡片 -->
                 <div id="video-plan-card" class="report-plan-shell hidden z-10 mt-2 rounded-[2.2rem] overflow-hidden">
                     <div class="px-5 py-5 sm:px-7 sm:py-7 flex flex-col gap-4">
-                        <div class="report-plan-hero">
+                        <!-- 顶部图标 + 标签 -->
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-11 h-11 rounded-xl bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] flex items-center justify-center shadow-[0_12px_24px_rgba(10,132,255,0.22)]">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
                             <div class="min-w-0">
-                                <div class="flex items-start gap-3.5">
-                                    <div class="flex-shrink-0 w-12 h-12 rounded-[1.15rem] bg-[linear-gradient(145deg,#ffffff_0%,#eef3fb_100%)] border border-white/95 flex items-center justify-center shadow-[0_16px_30px_rgba(10,132,255,0.12)]">
-                                <svg class="w-4.5 h-4.5 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div id="vp-plan-label" class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-1.5">完整训练方案</div>
-                                        <div id="vp-title" class="text-[28px] sm:text-[34px] font-black text-slate-950 leading-[1.04] tracking-[-0.05em]">对应你的完整训练路径</div>
-                                        <div id="vp-tagline" class="text-[13px] text-slate-500 mt-2 leading-relaxed max-w-[48ch]">加载中...</div>
-                                    </div>
+                                <div id="vp-plan-label" class="text-[10px] font-bold text-[#0a84ff] tracking-[0.18em] uppercase">完整训练方案 · 根据你的结果匹配</div>
+                            </div>
+                        </div>
+                        <!-- 标题 + 描述 -->
+                        <div id="vp-title" class="text-[24px] sm:text-[28px] font-black text-slate-950 leading-[1.15] tracking-[-0.04em]">对应你的完整训练路径</div>
+                        <p id="vp-tagline" class="text-[13px] text-slate-500 leading-relaxed max-w-[56ch] -mt-2">加载中...</p>
+                        <!-- 核心理念说明 -->
+                        <div class="rounded-xl bg-[#f0f6ff] border border-[#d0e2ff] px-4 py-3">
+                            <p id="vp-starter-tip" class="text-[12px] text-slate-700 leading-relaxed">加载中...</p>
+                        </div>
+                        <!-- 主体：左右两栏 -->
+                        <div class="report-plan-hero">
+                            <!-- 左侧：benefit 列表 + do/avoid -->
+                            <div class="report-plan-benefit-list">
+                                <div class="report-plan-benefit-item">
+                                    <span class="benefit-icon">1</span>
+                                    <span id="vp-benefit-1">先做什么 —— 第一步怎么进</span>
                                 </div>
-                                <div class="report-plan-editorial mt-4">
-                                    <div class="text-[9px] font-bold text-slate-500 tracking-[0.18em] uppercase mb-1.5">为什么现在该买这条路径</div>
-                                    <p id="vp-starter-tip" class="text-[13px] text-slate-700 leading-relaxed">加载中...</p>
+                                <div class="report-plan-benefit-item">
+                                    <span class="benefit-icon">2</span>
+                                    <span id="vp-benefit-2">为什么这样排 —— 知道理由</span>
                                 </div>
-                                <div class="report-plan-compact-grid mt-4 hidden">
-                                    <div class="report-plan-mini-card">
-                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
-                                        <div class="text-[13px] font-black text-slate-900 leading-snug">先做什么</div>
-                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">第一步怎么进，不再一上来就乱练。</p>
-                                    </div>
-                                    <div class="report-plan-mini-card">
-                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
-                                        <div class="text-[13px] font-black text-slate-900 leading-snug">为什么这样排</div>
-                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">知道顺序背后的理由，不是只抄动作。</p>
-                                    </div>
-                                    <div class="report-plan-mini-card">
-                                        <div class="text-[9px] font-bold text-slate-500 tracking-[0.16em] uppercase mb-1.5">你会拿到</div>
-                                        <div class="text-[13px] font-black text-slate-900 leading-snug">做到什么再往下走</div>
-                                        <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">知道复测点和停手边界，少走弯路。</p>
-                                    </div>
+                                <div class="report-plan-benefit-item">
+                                    <span class="benefit-icon">3</span>
+                                    <span id="vp-benefit-3">做到什么停 —— 知道边界</span>
+                                </div>
+                                <!-- 现在先做 -->
+                                <div class="mt-2 rounded-xl bg-[#f0fdf4] border border-[#bbf7d0] px-4 py-3">
+                                    <div class="text-[10px] font-bold text-emerald-600 tracking-[0.12em] uppercase mb-2">现在先做</div>
+                                    <ul id="vp-do-list" class="flex flex-col gap-1.5 text-[12px] text-slate-700 font-medium"></ul>
+                                </div>
+                                <!-- 现阶段不建议 -->
+                                <div class="rounded-xl bg-[#fef2f2] border border-[#fecaca] px-4 py-3">
+                                    <div class="text-[10px] font-bold text-rose-600 tracking-[0.12em] uppercase mb-2">现阶段不建议</div>
+                                    <ul id="vp-avoid-list-merged" class="flex flex-col gap-1.5 text-[12px] text-slate-600"></ul>
                                 </div>
                             </div>
-                            <div class="report-plan-price flex flex-col justify-between gap-4">
+                            <!-- 右侧：价格卡 -->
+                            <div class="report-plan-price">
                                 <div>
-                                    <div class="text-[9px] font-bold text-slate-400 tracking-[0.18em] uppercase mb-2">完整路径价格</div>
-                                    <div class="flex items-end gap-2.5">
-                                        <strong class="text-[38px] font-black text-slate-950">¥299</strong>
-                                        <span class="pb-1 text-[10px] text-slate-400">按这次结果匹配</span>
+                                    <div class="price-label">完整路径价格</div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-[15px] font-bold text-[#0a84ff]">¥</span>
+                                        <span class="price-amount">299</span>
                                     </div>
-                                    <p id="vp-fit-note" class="text-[11px] text-slate-500 mt-3 leading-relaxed"></p>
+                                    <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">按这次结果匹配，不替代线下诊疗</p>
+                                    <p id="vp-fit-note" class="text-[11px] text-slate-500 mt-2 leading-relaxed"></p>
                                 </div>
-                                <div class="report-plan-button-row">
-                                    <div class="rounded-[1.2rem] border border-[#dbe3ec] bg-white/88 px-3.5 py-3 text-[11px] text-slate-600 leading-relaxed">
-                                        付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，发送本次报告截图即可领取。
+                                <div>
+                                    <div class="rounded-xl bg-white/80 border border-slate-100 px-3 py-2.5 text-[10px] text-slate-500 mb-3 leading-relaxed">
+                                        付款后添加微信 <b class="text-slate-800">songjiaotou999</b>，发送报告截图即可领取
                                     </div>
-                                    <button id="btn-get-video-plan" class="w-full sm:w-auto flex-shrink-0 bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)] hover:brightness-105 active:scale-95 text-white rounded-2xl px-5 py-3 text-[12px] font-bold tracking-wider shadow-[0_14px_30px_rgba(10,132,255,0.26)] transition-all">
+                                    <button id="btn-get-video-plan" class="report-plan-cta-button">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
                                         查看方案内容
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="report-plan-cta hidden">
-                            <div class="flex items-end justify-between gap-3 mb-2">
-                                <div class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">这条路径最适合现在的你，如果你想</div>
-                                <div class="text-[10px] text-slate-400">少试错，少反复，早点开始走正路</div>
-                            </div>
-                            <p class="text-[12px] text-slate-700 leading-relaxed mb-3" id="vp-fit-brief">不再继续靠零散动作反复试，而是把接下来 2 到 4 周先走顺。</p>
-                            <div id="vp-quick-list" class="report-plan-checklist"></div>
-                        </div>
+                        <!-- 折叠展开按钮 -->
                         <button id="btn-toggle-vp-detail" class="hidden w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d1d5db] bg-white px-4 py-3 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                             <span id="vp-detail-toggle-label">展开适合人群、训练结构和常见误区</span>
                             <svg id="vp-chevron" class="w-4 h-4 text-slate-400 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </div>
+                    <!-- 折叠详情区 -->
                     <div id="vp-detail" class="hidden border-t border-[#e5e5ea]">
                         <div class="px-5 py-4 flex flex-col gap-3">
                             <div>
@@ -4627,6 +4713,48 @@
             };
         }
 
+        function buildReportConclusion(directSummary, compKey, subtypeKey) {
+            const compLabel = compKey === 'anterior' ? '前侧紧张' : compKey === 'posterior' ? '后侧紧张' : '骨盆方向';
+            const subtypeLabel = subtypeKey === 'baseline' ? '左侧偏前'
+                : subtypeKey === 'oblique' ? '左侧偏高且偏前'
+                : subtypeKey === 'lateral' ? '左侧偏高'
+                : subtypeKey === 'transition' ? '方向待确认'
+                : '方向';
+            const parts = [];
+            if (compLabel.indexOf('前后') === -1 && compLabel !== '骨盆方向') parts.push(compLabel);
+            if (subtypeLabel.indexOf('待确认') === -1 && subtypeLabel.indexOf('方向') === -1 && subtypeLabel !== compLabel) parts.push(subtypeLabel);
+            const headline = parts.length ? parts.join('，') : '骨盆方向待复核';
+            const caption = `${directSummary.frontBack.plain} ${directSummary.iliacForward.plain} ${directSummary.height.plain} 现在的重点是：${directSummary.bearing.plain}`;
+            return { headline, caption };
+        }
+
+        function buildDataNarrative(metrics, routeIsolation) {
+            const th = metrics.threshold;
+            const parts = [];
+            const absSlr = Math.abs(metrics.diffSLR);
+            const absHip = Math.abs(metrics.diffHip);
+            const absSh = Math.abs(metrics.diffSh);
+            const slrDir = metrics.diffSLR > 0 ? '左侧更大' : '右侧更大';
+            const hipDir = metrics.diffHip > 0 ? '左侧更大' : '右侧更大';
+            if (absSlr >= th) parts.push(`直腿抬高 ${slrDir} ${absSlr.toFixed(1)}°`);
+            if (absHip >= th) parts.push(`髋屈曲 ${hipDir} ${absHip.toFixed(1)}°`);
+            if (parts.length === 0) {
+                return { text: `三项测试左右差均小于 ${th}°，本次数据尚未形成明确的左右不对称模式。建议后续重测观察变化趋势。`, tags: [{ label: '左右接近', color: '#6b7280' }, { label: '建议重测', color: '#0a84ff' }] };
+            }
+            const compLabel = routeIsolation.compressionResult.key === 'posterior' ? '后侧紧张' : routeIsolation.compressionResult.key === 'anterior' ? '前侧紧张' : '前后不明显';
+            const subtypeKey = routeIsolation.subtypeResult.key;
+            const tagColor = subtypeKey === 'baseline' ? '#0a84ff' : subtypeKey === 'oblique' ? '#ff9f0a' : subtypeKey === 'lateral' ? '#8b5cf6' : '#6b7280';
+            let text = `${parts.join('，')}，提示存在左右不对称。`;
+            if (subtypeKey !== 'unclear' && subtypeKey !== 'transition') {
+                text += ` 三项方向一致性较高，更接近${compLabel}叠加${subtypeKey === 'baseline' ? '基线型' : subtypeKey === 'lateral' ? '横向型' : '斜轴型'}。`;
+            }
+            const tags = [
+                { label: compLabel !== '前后不明显' ? compLabel : '方向待复核', color: '#0a84ff' },
+                { label: routeIsolation.heightResult.key === 'rightHigh' ? '右高左低' : routeIsolation.heightResult.key === 'leftHigh' ? '左高右低' : '高低接近', color: tagColor }
+            ];
+            return { text, tags };
+        }
+
         function buildDirectMetricRows(metrics) {
             return [
                 {
@@ -6941,6 +7069,8 @@
             const planKey = `${compKey}_${planKeyMap[subType]}`;
             const reportId = Date.now();
             const directSummary = buildDirectResultSummary(routeIsolation, metrics);
+            const dataNarrative = buildDataNarrative(metrics, routeIsolation);
+            const conclusion = buildReportConclusion(directSummary, compKey, subtypeKey);
 
             // ── Build training summary ──
             const plan = VIDEO_PLAN_CONFIG[planKey] || VIDEO_PLAN_CONFIG['mixed_Transition'];
@@ -6989,6 +7119,10 @@
                 <p class="text-[13px] text-slate-500 leading-relaxed">你有需要优先处理的信号，建议先咨询专业医师再做针对性训练。</p>
             </div>
             <div class="text-center text-[11px] text-slate-400 mt-4">这不是医疗诊断。有疼痛请就医。</div>` : `
+            <div class="report-conclusion-card mb-2">
+                <div class="report-conclusion-headline">${escapeHtml(conclusion.headline)}</div>
+                <p class="report-conclusion-subtitle">${escapeHtml(conclusion.caption)}</p>
+            </div>
             <div class="report-panel p-5 sm:p-7">
                 <div class="text-[26px] font-black text-slate-900 leading-tight mb-3">${escapeHtml(directSummary.headline)}</div>
                 <div class="flex flex-col gap-1.5 mb-5">
@@ -7044,6 +7178,8 @@
             if (reportSafetyBlocked) {
                 const videoPlanCard = document.getElementById('video-plan-card');
                 if (videoPlanCard) videoPlanCard.classList.add('hidden');
+            } else {
+                renderVideoPlanCard(planKey);
             }
             scrollToDisplayArea(document.getElementById('final-report-section'));
         }
@@ -7301,21 +7437,31 @@
             document.getElementById('vp-tagline').textContent = plan.tagline;
             document.getElementById('vp-starter-tip').textContent = getVideoPlanStarterTip(plan);
             document.getElementById('vp-fit-note').textContent = getVideoPlanCardFitNote(comboKey);
-            document.getElementById('vp-fit-brief').textContent = comboKey.startsWith('mixed_')
-                ? '先把基础站姿和呼吸做顺，再决定往哪边细化，会比一上来乱纠正更稳。'
-                : '先知道今天该从哪一步开始，再知道什么变化说明走对，比继续自己拼动作更省时间。';
-            const quickList = document.getElementById('vp-quick-list');
-            quickList.innerHTML = getVideoPlanQuickItems(plan).map(item => `
-                <div class="report-plan-checklist-item">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-[linear-gradient(135deg,#e8f1ff_0%,#d8e8ff_100%)] text-[#0a84ff] text-[10px] font-black flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(10,132,255,0.10)]">${item.step}</span>
-                        <span class="text-[10px] font-black text-slate-500 tracking-[0.12em]">${escapeHtml(item.title)}</span>
-                    </div>
-                    <div class="text-[12px] font-bold text-slate-800 leading-relaxed">${escapeHtml(item.text)}</div>
-                </div>
-            `).join('');
+
+            // 填充 benefit 列表
+            const benefits = getVideoPlanBenefitItems(plan);
+            const b1 = document.getElementById('vp-benefit-1');
+            const b2 = document.getElementById('vp-benefit-2');
+            const b3 = document.getElementById('vp-benefit-3');
+            if (b1) b1.textContent = benefits[0];
+            if (b2) b2.textContent = benefits[1];
+            if (b3) b3.textContent = benefits[2];
+
+            // 填充"现在先做" — 取第一步作为建议
+            const doList = document.getElementById('vp-do-list');
+            if (doList && plan.videos.length > 0) {
+                const firstStep = plan.videos[0];
+                doList.innerHTML = `<li>先从</li><li class="font-bold text-slate-800">${escapeHtml(firstStep.name.replace(/^第[一二三四五六七八九十]+步[：:]\s*/, ''))}</li><li class="mt-1">开始，配合呼吸节奏，不着急上大动作。每一步都有明确的"做到什么感觉就可以往下走"的判断标准。</li>`;
+            }
+
+            // 填充"现阶段不建议" — 从 avoid 列表构建
+            const avoidList = document.getElementById('vp-avoid-list-merged');
+            if (avoidList) {
+                const avoidItems = getVideoPlanAvoidItems(comboKey);
+                avoidList.innerHTML = avoidItems.slice(0, 3).map(item => `<li>${escapeHtml(item.title)}</li>`).join('');
+            }
+
             renderVideoPlanAvoidList('vp-avoid-list', comboKey, true);
-            // price is now static HTML in card template
 
             const videoList = document.getElementById('vp-video-list');
             videoList.innerHTML = plan.videos.map((v, i) => `
@@ -7328,12 +7474,23 @@
                 </li>
             `).join('');
 
-            // 存储当前 comboKey 供弹窗使用
             card.dataset.comboKey = comboKey;
             card.classList.remove('hidden');
             document.getElementById('btn-toggle-vp-detail').classList.remove('hidden');
             document.getElementById('vp-detail').classList.add('hidden');
             document.getElementById('vp-detail-toggle-label').textContent = '展开适合人群和避坑提醒';
+        }
+
+        function getVideoPlanBenefitItems(plan) {
+            const names = (plan?.videos || []).slice(0, 3).map((item) => {
+                const t = item.name.replace(/^第[一二三四五六七八九十]+步[：:]\s*/, '').trim();
+                return t || item.name;
+            });
+            return [
+                names[0] ? `先做什么 —— ${names[0]}` : '先做什么 —— 第一步怎么进',
+                names[1] ? `为什么这样排 —— ${names[1]}` : '为什么这样排 —— 知道理由',
+                names[2] ? `做到什么停 —— ${names[2]}` : '做到什么停 —— 知道边界'
+            ];
         }
 
         function openVideoPlanModal() {
@@ -7366,8 +7523,8 @@
             if (isFromBottomBtn) {
                 const btnGet = document.getElementById('btn-get-video-plan');
                 if (btnGet) {
-                    btnGet.classList.remove('bg-[linear-gradient(135deg,#0a84ff_0%,#3b82f6_100%)]', 'hover:brightness-105');
-                    btnGet.classList.add('bg-white', 'text-[#0a84ff]', 'border', 'border-[#0a84ff]/20', 'shadow-none');
+                    btnGet.classList.remove('report-plan-cta-button');
+                    btnGet.classList.add('bg-white', 'text-[#0a84ff]', 'border', 'border-[#0a84ff]/20', 'shadow-none', 'rounded-2xl', 'px-5', 'py-3', 'text-[12px]', 'font-bold', 'tracking-wider', 'flex', 'items-center', 'justify-center', 'gap-2', 'w-full');
                     btnGet.textContent = '已查看方案详情';
                 }
             }
