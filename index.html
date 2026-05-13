@@ -379,6 +379,21 @@
         .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 220px; overflow: hidden; border-radius: 0.5rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
+    <script>
+        // 视频弹窗触发器 — 在模块脚本加载前就绪
+        window._openDemo = function(type) {
+            var m = document.getElementById('demo-modal');
+            if (!m) return;
+            m.style.display = 'flex';
+            m.classList.remove('hidden');
+            var v = document.getElementById('demo-animation-video');
+            var cfg = { slr: { src: '直腿抬高演示.mp4', title: '主动直腿抬高演示' }, hip: { src: '髋屈曲演示.mp4', title: '主动髋屈曲演示' }, shoulder: { src: '肩屈演示.mp4', title: '主动肩屈演示' } };
+            var c = cfg[type] || cfg.slr;
+            document.getElementById('demo-modal-title').textContent = c.title;
+            if (v.src.indexOf(c.src) === -1) { v.src = c.src; v.load(); }
+            v.play().catch(function(){});
+        };
+    </script>
     <script type="importmap">
     { "imports": {
         "three": "./three_local/three.module.js",
@@ -1159,7 +1174,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.1</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.2</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1191,12 +1206,12 @@
             </div>
         </div>
 
-        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
+        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0 hidden">
             <div class="flex items-center gap-3 min-w-0">
                 <svg id="ai-loading-spinner" class="animate-spin h-5 w-5 mac-blue shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600 tracking-wide leading-relaxed">摄像头识别加载中，你可以直接使用手动录入。</p>
+                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600">摄像头识别已关闭，可直接使用手动录入或量角器。</p>
             </div>
-            <button id="btn-retry-ai" class="hidden shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">重试引擎</button>
+            <button id="btn-retry-ai" class="shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">开启摄像头识别</button>
         </div>
 
         <!-- 主内容区 -->
@@ -6131,30 +6146,14 @@
 
             return aiEngineState.initPromise;
         }
-        const _aiPollStart = Date.now();
-        let _aiDomReady = document.readyState !== 'loading';
-        if (!_aiDomReady) {
-            document.addEventListener('DOMContentLoaded', () => { _aiDomReady = true; });
-        }
-        (function _pollAndInitAI() {
-            if (window.tf && window.poseDetection) {
-                initAI().catch(() => {});
-                return;
-            }
-            const elapsed = Date.now() - _aiPollStart;
-            if (_aiDomReady && elapsed > 5000) {
-                updateAIStatus('ready', '视觉引擎未加载，可直接使用手动录入。');
-                return;
-            }
-            if (elapsed > 15000) {
-                updateAIStatus('ready', '视觉引擎加载超时，请直接使用手动录入。');
-                return;
-            }
-            setTimeout(_pollAndInitAI, 500);
-        })();
-
+        // 不再自动加载TensorFlow，用户点击按钮手动开启
         btnRetryAI.addEventListener('click', () => {
-            initAI(true).catch(() => {});
+            updateAIStatus('loading', '正在启动摄像头识别...');
+            initAI(true).then(() => {
+                updateAIStatus('ready', '摄像头识别已就绪，可点击拍照或录像。');
+            }).catch(() => {
+                updateAIStatus('failed', '启动失败，请使用手动录入或量角器。');
+            });
         });
 
         function scrollToDisplayArea(targetElement = null) {
