@@ -1159,7 +1159,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.8.49</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.0</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -1194,7 +1194,7 @@
         <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
             <div class="flex items-center gap-3 min-w-0">
                 <svg id="ai-loading-spinner" class="animate-spin h-5 w-5 mac-blue shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600 tracking-wide leading-relaxed">正在后台加载视觉引擎，你也可以先手动录入数据。</p>
+                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600 tracking-wide leading-relaxed">摄像头识别加载中，你可以直接使用手动录入。</p>
             </div>
             <button id="btn-retry-ai" class="hidden shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">重试引擎</button>
         </div>
@@ -1924,7 +1924,7 @@
             </div>
             <div class="p-5 flex flex-col gap-4">
                 <div class="overflow-hidden rounded-[1.5rem] border border-[#e5e5ea] bg-[#f5f5f7] shadow-inner">
-                    <video id="demo-animation-video" class="w-full aspect-video max-h-[42vh] object-contain bg-slate-900" playsinline muted controls preload="metadata"></video>
+                    <video id="demo-animation-video" class="w-full aspect-video max-h-[42vh] object-contain bg-slate-900" playsinline muted controls preload="auto"></video>
                 </div>
                 <div id="demo-video-status" class="hidden text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 leading-relaxed">
                     演示视频暂时未加载成功，你仍可先根据下方文字提示开始测试。
@@ -2142,7 +2142,7 @@
         const DAILY_LIFE_FEEDBACK_STORAGE_KEY = 'pelvic_daily_life_feedback_v1';
         const REPORT_HELPFULNESS_STORAGE_KEY = 'pelvic_report_helpfulness_v1';
         const MICRO_ACTION_STORAGE_KEY = 'pelvic_micro_actions_v1';
-        const DAILY_LIFE_COPY_VERSION = '1.1.1';
+        const DAILY_LIFE_COPY_VERSION = '1.9.0';
         const DEMO_SAFETY_NOTICE = '若出现疼痛、串麻感或明显不适，请立即停止测试。';
         const VOICE_SAFETY_SUFFIX = '如果过程中出现疼痛、串麻感或明显不适，请立即停止测试。';
         const LICENSE_PLAN_CONFIG = {
@@ -4006,44 +4006,37 @@
 
         function playDemoVideo(testType) {
             const videoConfig = getDemoVideoConfig(testType);
-            const playbackToken = demoPlaybackToken + 1;
-            demoPlaybackToken = playbackToken;
+            const playbackToken = ++demoPlaybackToken;
             activeDemoKey = testType;
             updateDemoVideoStatus('');
+            demoAnimationVideo.controls = true;
 
-            if (demoAnimationVideo.getAttribute('src') !== videoConfig.src) {
+            const changed = demoAnimationVideo.getAttribute('src') !== videoConfig.src;
+            if (changed) {
                 demoAnimationVideo.src = videoConfig.src;
                 demoAnimationVideo.poster = videoConfig.poster || '';
                 demoAnimationVideo.load();
             }
 
-            const startPlayback = () => {
+            const tryPlay = () => {
                 if (playbackToken !== demoPlaybackToken || demoModal.classList.contains('hidden')) return;
-                const playPromise = demoAnimationVideo.play();
-                if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => {
-                        updateDemoVideoStatus('演示视频已准备好，如未自动播放，可手动点一下播放按钮。');
-                    });
-                }
+                const p = demoAnimationVideo.play();
+                if (p) p.catch(() => {
+                    updateDemoVideoStatus('点一下视频上的播放按钮即可观看。');
+                });
             };
 
-            if (demoAnimationVideo.readyState >= 1) {
-                try {
-                    demoAnimationVideo.currentTime = 0;
-                } catch (error) {
-                    console.warn('[demo-animation] reset failed', error);
-                }
-                startPlayback();
+            if (!changed && demoAnimationVideo.readyState >= 2) {
+                demoAnimationVideo.currentTime = 0;
+                tryPlay();
             } else {
-                demoAnimationVideo.addEventListener('loadedmetadata', () => {
-                    if (playbackToken !== demoPlaybackToken || demoModal.classList.contains('hidden')) return;
-                    try {
-                        demoAnimationVideo.currentTime = 0;
-                    } catch (error) {
-                        console.warn('[demo-animation] reset failed', error);
+                demoAnimationVideo.addEventListener('loadeddata', tryPlay, { once: true });
+                setTimeout(() => {
+                    if (playbackToken === demoPlaybackToken && demoAnimationVideo.readyState < 2) {
+                        tryPlay();
+                        updateDemoVideoStatus('视频较大，正在缓冲，你也可以直接点播放按钮。');
                     }
-                    startPlayback();
-                }, { once: true });
+                }, 3000);
             }
         }
 
@@ -4054,13 +4047,19 @@
         }
 
         function openDemoModal(testType) {
-            const videoConfig = getDemoVideoConfig(testType);
-            demoModalTitle.textContent = videoConfig.title;
-            demoModalSubtitle.textContent = `当前测试：${getSelectedSideLabel()}，点击下方按钮可关闭并返回页面。`;
-            demoActionHint.textContent = '看完这一段动作演示后，再开始拍照、识别或手动录入。';
-            renderDemoTips(videoConfig.tips);
-            demoModal.classList.remove('hidden');
-            playDemoVideo(testType);
+            try {
+                const videoConfig = getDemoVideoConfig(testType);
+                if (!videoConfig) { console.warn('[demo] no video config for', testType); return; }
+                demoModalTitle.textContent = videoConfig.title || '动作演示';
+                demoModalSubtitle.textContent = `当前测试：${getSelectedSideLabel()}，点击下方按钮可关闭并返回页面。`;
+                if (demoActionHint) demoActionHint.textContent = '看完这一段动作演示后，再开始拍照、识别或手动录入。';
+                renderDemoTips(videoConfig.tips || []);
+                demoModal.classList.remove('hidden');
+                playDemoVideo(testType);
+            } catch(e) {
+                console.error('[demo] openDemoModal failed', e);
+                demoModal.classList.remove('hidden');
+            }
         }
 
         function updateAIStatus(status, message) {
@@ -5959,11 +5958,20 @@
         });
         demoTriggerLabels.forEach(label => {
             label.addEventListener('click', (e) => {
-                if (e.target.closest('input')) return;
                 const testType = label.getAttribute('data-demo-trigger');
                 if (!testType) return;
                 openDemoModal(testType);
             });
+            // Backup: also bind directly on the visible div inside
+            const innerDiv = label.querySelector('div');
+            if (innerDiv) {
+                innerDiv.style.pointerEvents = 'auto';
+                innerDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const testType = label.getAttribute('data-demo-trigger');
+                    if (testType) openDemoModal(testType);
+                });
+            }
         });
 
         ['slr', 'hip', 'shoulder'].forEach(type => {
@@ -6085,7 +6093,7 @@
 
             aiEngineState.status = 'loading';
             aiEngineState.error = '';
-            updateAIStatus('loading', 'AI 引擎准备中，您可以先采用手动录入，同样有效。');
+            updateAIStatus('loading', '摄像头识别准备中，可直接使用手动录入或量角器。');
 
             aiEngineState.initPromise = (async () => {
                 if (!window.tf || !window.poseDetection) {
@@ -6129,12 +6137,12 @@
                 return;
             }
             const elapsed = Date.now() - _aiPollStart;
-            if (_aiDomReady && elapsed > 3000) {
-                updateAIStatus('failed', '视觉引擎脚本未能加载成功，请刷新页面或先使用手动录入。');
+            if (_aiDomReady && elapsed > 5000) {
+                updateAIStatus('ready', '视觉引擎未加载，可直接使用手动录入。');
                 return;
             }
-            if (elapsed > 20000) {
-                updateAIStatus('failed', '视觉引擎脚本加载超时，你可以先手动录入，或刷新页面重试。');
+            if (elapsed > 15000) {
+                updateAIStatus('ready', '视觉引擎加载超时，请直接使用手动录入。');
                 return;
             }
             setTimeout(_pollAndInitAI, 500);
