@@ -3064,13 +3064,13 @@
             const shMin = shL !== null && shR !== null ? Math.min(shL, shR) : null;
             const slrMax = slrL !== null && slrR !== null ? Math.max(slrL, slrR) : null;
             const shMax = shL !== null && shR !== null ? Math.max(shL, shR) : null;
-            // True bilateral: BOTH sides must meet threshold
-            const slrBilateralLow = slrL !== null && slrR !== null && slrL < 50 && slrR < 50;
-            const slrBilateralHigh = slrL !== null && slrR !== null && slrL > 50 && slrR > 50;
-            const hipBilateralHigh = hipL !== null && hipR !== null && hipL >= 100 && hipR >= 100;
-            const hipBilateralLow = hipL !== null && hipR !== null && hipL < 100 && hipR < 100;
-            const shBilateralLow = shL !== null && shR !== null && shL < 100 && shR < 100;
-            const shBilateralHigh = shL !== null && shR !== null && shL > 100 && shR > 100;
+            // Worst-side PEC: use min value (bottleneck) for each test
+            const slrBilateralLow = slrMin !== null && slrMin <= 50;
+            const slrBilateralHigh = slrMin !== null && slrMin > 50;
+            const hipBilateralHigh = hipMin !== null && hipMin > 100;
+            const hipBilateralLow = hipMin !== null && hipMin < 100;
+            const shBilateralLow = shMin !== null && shMin <= 100;
+            const shBilateralHigh = shMin !== null && shMin > 100;
             // Cheating detection
             const thoracicExtensionCheat = shMax !== null && slrMin !== null && shMax > 140 && slrMin < 50;
             const hypermobilitySuspect = slrMax !== null && slrMax > 90;
@@ -3095,14 +3095,14 @@
         function buildCompressionIsolationResult(metrics) {
             // Use TRUE BILATERAL checks: both sides must meet threshold for PEC
             const posteriorChecks = [
-                { label: '双侧直腿抬高 < 50°', hit: metrics.slrBilateralLow },
-                { label: '双侧髋屈曲 > 100°', hit: metrics.hipBilateralHigh },
-                { label: '双侧肩屈 < 100°', hit: metrics.shBilateralLow }
+                { label: '短板直腿抬高 ≤ 50°', hit: metrics.slrBilateralLow },
+                { label: '短板髋屈曲 > 100°', hit: metrics.hipBilateralHigh },
+                { label: '短板肩屈 ≤ 100°', hit: metrics.shBilateralLow }
             ];
             const anteriorChecks = [
-                { label: '双侧直腿抬高 > 50°', hit: metrics.slrBilateralHigh },
-                { label: '双侧髋屈曲 < 100°', hit: metrics.hipBilateralLow },
-                { label: '双侧肩屈 > 100°', hit: metrics.shBilateralHigh }
+                { label: '短板直腿抬高 > 50°', hit: metrics.slrBilateralHigh },
+                { label: '短板髋屈曲 < 100°', hit: metrics.hipBilateralLow },
+                { label: '短板肩屈 > 100°', hit: metrics.shBilateralHigh }
             ];
 
             const support = {
@@ -3142,21 +3142,20 @@
             if (metrics.hypermobilitySuspect) {
                 cheatingFlags.push({ type: 'hypermobility', label: '直腿抬高超过 90°——如果你日常练瑜伽/舞蹈/体操，身体后侧可能已经被拉得太开，灵活不等于稳定' });
             }
-
             return {
                 key, support, supportScore, pecLevel, confidenceKey,
                 exactMatch: pecLevel === 'confirmed',
                 checks: { posterior: posteriorChecks, anterior: anteriorChecks },
                 cheatingFlags,
                 primarySummary: key === 'posterior'
-                    ? '骨盆后面更紧，从后方把骨盆往前推。'
+                    ? '骨盆后侧的臀部肌肉和大腿后侧肌肉偏紧张，把骨盆往前推。'
                     : key === 'anterior'
-                        ? '骨盆前面更紧，从前方把骨盆往前拽。'
+                        ? '骨盆前侧的肌肉（髋前、大腿前）偏紧张，把骨盆往前拽。'
                         : '前后方向暂不明确，先做基础归位再复测。',
                 secondarySummary: pecLevel === 'tendency'
                     ? (key === 'posterior' ? '后侧偏向但三项未全满足，建议多测几次再确认。' : '前侧偏向但三项未全满足，建议多测几次再确认。')
                     : pecLevel === 'confirmed'
-                        ? '双侧都符合，方向明确。'
+                        ? '三项都符合，方向明确。'
                         : '前后方向不够清晰，先保留。'
             };
         }
@@ -3164,25 +3163,47 @@
         function buildSubtypeIsolationResult(metrics) {
             const checkSets = {
                 baseline: [
-                    { label: '左侧髋屈曲 > 右侧 ≥10°', hit: metrics.diffHip > metrics.threshold },
-                    { label: '左侧直腿抬高 < 右侧 ≥10°', hit: metrics.diffSLR < -metrics.threshold },
-                    { label: '左侧肩屈 < 右侧 ≥10°', hit: metrics.diffSh < -metrics.threshold }
+                    { label: '左侧髋屈曲 > 右侧 ≥10°', hit: metrics.diffHip >= metrics.threshold },
+                    { label: '左侧直腿抬高 < 右侧 ≥10°', hit: metrics.diffSLR <= -metrics.threshold },
+                    { label: '左侧肩屈 < 右侧 ≥10°', hit: metrics.diffSh <= -metrics.threshold }
                 ],
                 lateral: [
-                    { label: '左侧髋屈曲 > 右侧 ≥10°', hit: metrics.diffHip > metrics.threshold },
-                    { label: '左侧直腿抬高 > 右侧 ≥10°', hit: metrics.diffSLR > metrics.threshold },
-                    { label: '左侧肩屈 < 右侧 ≥10°', hit: metrics.diffSh < -metrics.threshold }
+                    { label: '左侧髋屈曲 > 右侧 ≥10°', hit: metrics.diffHip >= metrics.threshold },
+                    { label: '左侧直腿抬高 > 右侧 ≥10°', hit: metrics.diffSLR >= metrics.threshold },
+                    { label: '左侧肩屈 < 右侧 ≥10°', hit: metrics.diffSh <= -metrics.threshold }
                 ],
                 oblique: [
-                    { label: '右侧髋屈曲 > 左侧 ≥10°', hit: metrics.diffHip < -metrics.threshold },
-                    { label: '左侧直腿抬高 > 右侧 ≥10°', hit: metrics.diffSLR > metrics.threshold },
-                    { label: '左侧肩屈 > 右侧 ≥10°', hit: metrics.diffSh > metrics.threshold }
+                    { label: '右侧髋屈曲 > 左侧 ≥10°', hit: metrics.diffHip <= -metrics.threshold },
+                    { label: '左侧直腿抬高 > 右侧 ≥10°', hit: metrics.diffSLR >= metrics.threshold },
+                    { label: '左侧肩屈 > 右侧 ≥10°', hit: metrics.diffSh >= metrics.threshold }
                 ]
             };
 
             const support = Object.fromEntries(
                 Object.entries(checkSets).map(([key, checks]) => [key, countTrue(checks.map(item => item.hit))])
             );
+            // Near-threshold hits: diffs >= 5° but < 10°
+            const nearCheckSets = {
+                baseline: [
+                    { hit: metrics.diffHip >= metrics.nearThreshold && metrics.diffHip < metrics.threshold },
+                    { hit: metrics.diffSLR <= -metrics.nearThreshold && metrics.diffSLR > -metrics.threshold },
+                    { hit: metrics.diffSh <= -metrics.nearThreshold && metrics.diffSh > -metrics.threshold }
+                ],
+                lateral: [
+                    { hit: metrics.diffHip >= metrics.nearThreshold && metrics.diffHip < metrics.threshold },
+                    { hit: metrics.diffSLR >= metrics.nearThreshold && metrics.diffSLR < metrics.threshold },
+                    { hit: metrics.diffSh <= -metrics.nearThreshold && metrics.diffSh > -metrics.threshold }
+                ],
+                oblique: [
+                    { hit: metrics.diffHip <= -metrics.nearThreshold && metrics.diffHip > -metrics.threshold },
+                    { hit: metrics.diffSLR >= metrics.nearThreshold && metrics.diffSLR < metrics.threshold },
+                    { hit: metrics.diffSh >= metrics.nearThreshold && metrics.diffSh < metrics.threshold }
+                ]
+            };
+            const nearSupport = Object.fromEntries(
+                Object.entries(nearCheckSets).map(([key, checks]) => [key, countTrue(checks.map(item => item.hit))])
+            );
+            const hasNearPattern = Math.max(nearSupport.baseline, nearSupport.lateral, nearSupport.oblique) >= 2;
             const asymmetryCount = [Math.abs(metrics.diffHip), Math.abs(metrics.diffSLR), Math.abs(metrics.diffSh)]
                 .filter(value => value >= metrics.threshold).length;
             const maxSupport = Math.max(support.baseline, support.lateral, support.oblique);
@@ -3206,16 +3227,18 @@
                         ? 'high'
                         : 'medium';
             const summaryMap = {
-                baseline: '三大测试更接近基线型：左前右后。',
-                lateral: '三大测试更接近横向型：左高右低。',
-                oblique: '三大测试更接近斜轴型：左高且左前。',
-                transition: '三大测试已经出现左右差，但还没有稳定落到单一分型。',
-                unclear: '三大测试暂时没有稳定落到固定分型。'
+                baseline: '左右差异明显：左边骨盆更靠前，右边更靠后。',
+                lateral: '左右差异明显：左边髋骨更高，右边更低。',
+                oblique: '左右差异明显：左边髋骨又高又靠前。',
+                transition: '左右差异已出现，但还不够稳定，暂不固定判断。',
+                unclear: '左右差异不明显，暂不判断具体方向。'
             };
 
             return {
                 key,
                 support,
+                nearSupport,
+                hasNearPattern,
                 asymmetryCount,
                 evidenceHits,
                 confidenceKey,
@@ -3343,43 +3366,43 @@
 
             if (subtypeResult.key === 'baseline') {
                 return {
-                    key: 'right_load_hypothesis',
+                    key: 'left_load_hypothesis',
                     mode: 'hypothesis',
                     confidenceKey: 'low',
                     releaseSide: 'left',
-                    loadSide: 'right',
-                    releaseFocus: '先让左边别继续前顶、外开',
-                    loadFocus: '再让右边开始更会承重、接髋',
-                    summary: `${firstStep}，再让左侧别继续往前，最后把右侧承重找回来。`,
-                    note: '这一步是根据静态结果给出的初步顺序，不等于已经完成动态承重测试。'
+                    loadSide: 'left',
+                    releaseFocus: '先让左边不再继续往前顶、往外开',
+                    loadFocus: '再让左边重新学会承重、接髋',
+                    summary: `${firstStep}，再让左侧不再继续往前顶，最后让左侧重新学会承重。`,
+                    note: '根据静态结果给出的初步顺序，左侧长期不承重，需要重建左侧的负重能力。'
                 };
             }
 
             if (subtypeResult.key === 'lateral') {
                 return {
-                    key: 'right_load_hypothesis',
+                    key: 'left_load_hypothesis',
                     mode: 'hypothesis',
                     confidenceKey: 'low',
                     releaseSide: 'left',
-                    loadSide: 'right',
-                    releaseFocus: '先让左边别继续高、继续主导',
-                    loadFocus: '再把右边从“接不住”里带回来',
-                    summary: `${firstStep}，再把左侧偏高降下来，最后把右侧承重找回来。`,
-                    note: '横向差已经比较明确，但右侧承重仍建议结合动态承重结果再确认。'
+                    loadSide: 'left',
+                    releaseFocus: '先让左边不再继续高、不再继续主导',
+                    loadFocus: '再让左边从”不承重”里带回来',
+                    summary: `${firstStep}，再把左侧偏高降下来，最后让左侧重新学会承重。`,
+                    note: '横向差明确，左侧偏高意味着左边长期逃避承重，需要重建左侧的负重能力。'
                 };
             }
 
             if (subtypeResult.key === 'oblique') {
                 return {
-                    key: 'right_load_hypothesis',
+                    key: 'left_load_hypothesis',
                     mode: 'hypothesis',
                     confidenceKey: 'low',
                     releaseSide: 'left',
-                    loadSide: 'right',
-                    releaseFocus: '先拆左边的高和前',
-                    loadFocus: '再让右边重新建立承重“信任感”',
-                    summary: `${firstStep}，再同时处理左侧偏高和左侧更靠前，最后把右侧承重找回来。`,
-                    note: '这类结果里，右侧往往长期没有稳定承重，所以顺序上要把右侧承重放回去。'
+                    loadSide: 'left',
+                    releaseFocus: '先把左边的高和前拆开',
+                    loadFocus: '再让左边重新建立承重感',
+                    summary: `${firstStep}，再同时处理左侧偏高和左侧更靠前，最后让左侧重新学会承重。`,
+                    note: '这类结果里，左边长期又高又前不承重，右边一直在代偿，所以先把左边带回来才能让右边松下来。'
                 };
             }
 
@@ -4615,72 +4638,94 @@
 
             const frontBack = compKey === 'anterior'
                 ? {
-                    short: '前侧更紧',
-                    value: '前面更紧',
-                    plain: '你髋前和大腿前的肌肉偏紧张，像从前面把骨盆往前拽。所以你会觉得站直了反而腰累，或者大腿根总觉得抻着。',
-                    note: '前侧紧张型——日常容易表现为小腹收着、呼吸偏浅、大腿前侧容易酸。'
+                    short: '前侧偏紧',
+                    value: '骨盆前侧偏紧',
+                    plain: '你的骨盆往前倒——但不是后侧太紧，而是前侧的肌肉（大腿根、髋前面）太紧张，像有人从前面拽着骨盆往前拉。所以你会觉得：站直了腰反而酸，大腿根总觉得抻着，练臀桥大腿前侧先酸（不是屁股酸）。',
+                    note: '前侧紧张——髋前面、大腿前侧、小腹习惯性收紧，抢了屁股和后背的活。'
                 }
                 : compKey === 'posterior'
                     ? {
-                        short: '后侧更紧',
-                        value: '后面更紧',
-                        plain: '你后腰和背部的肌肉偏紧张，像从后面把骨盆往前推。所以你会觉得站久了腰酸、后背发僵，但做体前屈反而还行。',
-                        note: '后侧紧张型——日常容易表现为久站腰累、呼吸后背扩不开、臀看着翘但腰比臀更忙。'
+                        short: '后侧偏紧',
+                        value: '骨盆后侧偏紧',
+                        plain: '你的骨盆往前倒——推着它往前倒的力量来自身体后侧：后腰、后背、大腿后侧太紧张，像有人从背后推着你的腰往前顶。所以你会觉得：站久了腰酸、后背发僵，屁股看着翘但干活的是腰。',
+                        note: '后侧紧张——后背、后腰、大腿后侧一直在帮你撑着，站久腰酸、弯腰反而还行。'
                     }
                     : {
                         short: '前后都不明显',
                         value: '前后方向不明显',
-                        plain: '你的前后紧张方向还不够明确，可能两边都参与了，也可能是测试时身体还没找到最自然的状态。',
-                        note: '建议先做基础呼吸和骨盆归位练习，2-4周后复测方向会更清晰。'
+                        plain: '你的前后紧张方向还不够明确，可能两边都参与了。建议先做基础呼吸练习，2-4周后复测方向会更清晰。',
+                        note: '前后方向不确定时，先专注呼吸和站姿基础。'
                     };
 
+            const pecConfirmed = routeIsolation.compressionResult.pecLevel === 'confirmed';
             const iliacForward = subtypeKey === 'baseline' || subtypeKey === 'oblique'
                 ? {
                     short: '左侧偏前',
-                    value: '左边更靠前',
-                    plain: '你左边骨盆比右边更往前。这很常见——大多数人左边都容易往前跑。表现是站久了重心偏右，左边像总往外撇。',
-                    note: '这是人体最基础的不对称模式，几乎每个人都有，只是程度不同。'
+                    value: '左边骨盆靠前',
+                    plain: '你左边骨盆比右边更往前跑。这是人体最普遍的特征，几乎人人都有。所以你站久了重心会不自觉偏到右脚，提包永远用右手，左边像总往外撇。',
+                    note: '左边习惯性往前跑，左脚踩地不踏实，身体把重量推到右脚。'
                 }
-                : {
-                    short: '无明显偏前',
-                    value: '左右前后不明显',
-                    plain: '你的左右前后方向还不够明确，可能还没形成稳定的偏向，也可能是测试时身体还在找感觉。',
-                    note: '建议先做基础站姿练习，2-4周后复测。'
-                };
+                : subtypeKey === 'lateral'
+                    ? {
+                        short: '左侧偏高',
+                        value: '左边髋骨偏高',
+                        plain: '你左边髋骨比右边明显高一截。穿裤子左边腰线怎么拽都拽不平，拍照两边线条不在一个水平线上。站久了右边更累——不是因为右边弱，是左边一直不踩地，右边被迫在替你撑着。',
+                        note: '左高右低，左边长期不承重，右边在代偿。'
+                    }
+                : pecConfirmed
+                    ? {
+                        short: '基本对称',
+                        value: '左右基本对称',
+                        plain: '你的左右差异很小，身体没有明显偏向某一侧。这是好事——训练先专注前后方向就够了。',
+                        note: '左右基本对称，训练可以先专注前后方向的调整。'
+                    }
+                    : {
+                        short: '无明显偏前',
+                        value: '左右方向不够明确',
+                        plain: '你的左右方向还不够明确。建议先做基础练习，2-4周后复测再看。',
+                        note: '方向不明时不要急着单侧训练，先打基础。'
+                    };
 
             const height = heightKey === 'rightHigh'
                 ? {
                     short: '右高左低',
                     value: '右边略高',
-                    plain: '你右边髋骨比左边略高一点，所以你会觉得穿裤子右边容易往上跑，或者拍照右边线条更抢镜。',
-                    note: '右高是基线型的常见伴随特征，和左侧偏前是同一个模式的两面。'
+                    plain: '你右边腰线比左边高一点，穿裤子、裙子的时候右边容易往上跑，拍照右边的线条更抢镜。右高和左前是同一个习惯的两面。',
+                    note: '右边比左边略高，和左边骨盆靠前是同一个模式的两面。'
                 }
                 : heightKey === 'leftHigh'
                 ? {
                     short: '左高右低',
                     value: '左边更高',
-                    plain: '你左边髋骨比右边高。这会让你的重心更多压在右边，左边反而不太踩得实。',
-                    note: '左高通常意味着右边长期承重不足，需要重建右侧的承重能力。'
+                    plain: '你左边髋骨比右边高，正面看左边腰线明显高。拍照两边线条不在一个水平线上。左边长期不踩地，身体的重量全压在右脚上。',
+                    note: '左边高 = 左边不承重，右边在代偿。'
                 }
-                : {
-                    short: '高低不明显',
-                    value: '左右高低不明显',
-                    plain: '你的左右高低差还不够明确，可能两边差距不大。',
-                    note: '没有明显高低差是好事，说明身体还在相对均衡的状态。'
-                };
+                : pecConfirmed
+                    ? {
+                        short: '基本平齐',
+                        value: '左右基本平齐',
+                        plain: '你左右髋骨高低差不多，没有明显的高低差。',
+                        note: '高低平齐是好事，身体比较均衡。'
+                    }
+                    : {
+                        short: '高低不明显',
+                        value: '左右高低不明显',
+                        plain: '你左右高低差还不够明确。',
+                        note: '没有明显高低差，先专注前后方向。'
+                    };
 
-            const bearing = dynamicBearing.loadSide === 'right'
+            const bearing = dynamicBearing.loadSide === 'left'
                 ? {
-                    short: '优先练右侧',
-                    value: '优先让右脚踩稳',
-                    plain: '你现在需要先让右边学会好好承重。先把左边的紧张放下来，再让右脚扎实踩地——这个顺序很重要，不要反着来。',
+                    short: '先让左边踩地',
+                    value: '先让左边学会踩地',
+                    plain: '你的左边骨盆习惯性往前跑，左脚踩地不踏实，身体把重量推到右脚上。训练分两步：第一步，先把左边骨盆的紧张松开，让左边能踩住地面；第二步，再让右边正常发力。这两步顺序不能反——左边踩不稳，右边练了也白练。',
                     note: dynamicBearing.summary
                 }
                 : {
                     short: '先稳基础',
-                    value: '先打好基础再定方向',
-                    plain: '数据还不够下结论。先专注呼吸和站姿基础练习，2-4周后复测再看具体往哪个方向调整。',
-                    note: '方向不明时不要急着单侧训练，先把双侧基础打牢。'
+                    value: '先打好基础',
+                    plain: '数据还不够下结论。先专注呼吸和站姿基础练习，2-4周后复测再看。',
+                    note: '方向不明时不要急着单侧训练，先打基础。'
                 };
             const hitRules = [
                 ...routeIsolation.compressionResult.checks.posterior.filter(item => item.hit).map(item => `后侧紧张条件：${item.label}`),
@@ -4714,17 +4759,13 @@
         }
 
         function buildReportConclusion(directSummary, compKey, subtypeKey) {
-            const compLabel = compKey === 'anterior' ? '前侧紧张' : compKey === 'posterior' ? '后侧紧张' : '骨盆方向';
-            const subtypeLabel = subtypeKey === 'baseline' ? '左侧偏前'
-                : subtypeKey === 'oblique' ? '左侧偏高且偏前'
-                : subtypeKey === 'lateral' ? '左侧偏高'
-                : subtypeKey === 'transition' ? '方向待确认'
-                : '方向';
-            const parts = [];
-            if (compLabel.indexOf('前后') === -1 && compLabel !== '骨盆方向') parts.push(compLabel);
-            if (subtypeLabel.indexOf('待确认') === -1 && subtypeLabel.indexOf('方向') === -1 && subtypeLabel !== compLabel) parts.push(subtypeLabel);
-            const headline = parts.length ? parts.join('，') : '骨盆方向待复核';
-            const caption = `${directSummary.frontBack.plain} ${directSummary.iliacForward.plain} ${directSummary.height.plain} 现在的重点是：${directSummary.bearing.plain}`;
+            const compLabel = compKey === 'anterior' ? '骨盆前侧偏紧' : compKey === 'posterior' ? '骨盆后侧偏紧' : '方向待确认';
+            const subtypeLabel = subtypeKey === 'baseline' ? '左边骨盆靠前'
+                : subtypeKey === 'oblique' ? '左边又高又靠前'
+                : subtypeKey === 'lateral' ? '左边髋骨偏高'
+                : '';
+            const headline = subtypeLabel ? `${compLabel}，${subtypeLabel}` : compLabel;
+            const caption = `${directSummary.frontBack.plain} ${directSummary.iliacForward.plain} ${directSummary.bearing.plain}`;
             return { headline, caption };
         }
 
@@ -7052,6 +7093,7 @@
             return;
 
         function renderIsolatedFinalReport(symptomCheck, metrics) {
+            try {
             const routeIsolation = buildRouteIsolationAssessment(metrics);
             const compressionEvaluation = routeIsolation.compressionResult;
             const titleEl = document.getElementById('final-result-title');
@@ -7182,6 +7224,12 @@
                 renderVideoPlanCard(planKey);
             }
             scrollToDisplayArea(document.getElementById('final-report-section'));
+        } catch(e) {
+            console.error('[report] render failed', e);
+            const container = document.getElementById('empathic-report-container');
+            container.innerHTML = '<div class="report-panel p-5"><p class="text-red-600 font-bold">报告生成出错</p><p class="text-slate-500 text-sm mt-2">' + (e.message || '未知错误') + '</p></div>';
+            container.classList.remove('hidden');
+            document.getElementById('final-report-section').classList.remove('hidden');
         }
         }
 
