@@ -1223,7 +1223,7 @@
             </div>
         </div>
 
-        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0 hidden">
+        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
             <div class="flex items-center gap-3 min-w-0">
                 <svg id="ai-loading-spinner" class="animate-spin h-5 w-5 mac-blue shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600">摄像头识别已关闭，可直接使用手动录入或量角器。</p>
@@ -7647,7 +7647,7 @@
 <!-- 角度测量器模态窗 -->
 <div id="protractor-modal" class="fixed inset-0 z-[9999] bg-black hidden flex-col">
     <!-- 顶部栏 -->
-    <div class="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 bg-gradient-to-b from-black/70 to-transparent pb-4" style="padding-top:max(env(safe-area-inset-top),10px)">
+    <div class="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-3 bg-gradient-to-b from-black/70 to-transparent pb-4" style="padding-top:max(env(safe-area-inset-top),10px)">
         <button onclick="closeProtractor()" class="w-9 h-9 flex items-center justify-center rounded-full bg-red-500/90 backdrop-blur-sm text-white border border-red-300/40 shadow-[0_8px_18px_rgba(239,68,68,0.28)] active:scale-90 transition-transform" title="退出量角器">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -7664,7 +7664,7 @@
     <img id="protractor-image" class="absolute inset-0 w-full h-full object-contain hidden bg-black" alt="导入的量角器图片">
     <input id="protractor-image-input" type="file" accept="image/*" class="hidden">
     <!-- 量角器 Canvas 叠加 -->
-    <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full" style="touch-action:none;"></canvas>
+    <canvas id="protractor-canvas" class="absolute inset-0 w-full h-full z-10" style="touch-action:none;"></canvas>
     <!-- 摄像头错误提示 -->
     <div id="protractor-cam-status" class="absolute left-1/2 top-[30%] -translate-x-1/2 -translate-y-1/2 z-20 px-5 py-3 rounded-2xl bg-black/55 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap border border-white/10">正在连接摄像头<br><span class="text-white/65 text-[10px]">首次打开可能会看到浏览器权限提示</span></div>
     <div id="protractor-cam-error" class="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 z-20 hidden px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold text-center tracking-wide leading-relaxed whitespace-nowrap">摄像头无法启动<br><span class="text-white/60 text-[10px]">量角器仍可手动使用</span></div>
