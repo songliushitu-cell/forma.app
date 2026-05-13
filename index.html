@@ -1241,16 +1241,16 @@
                 <label class="block text-xs font-bold text-slate-500 tracking-wider">1. 选择测试动作</label>
                 <div class="grid grid-cols-3 gap-2">
                     <label class="cursor-pointer" data-demo-trigger="slr">
-                        <input type="radio" name="testType" value="slr" class="peer hidden" checked>
-                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm">直腿抬高</div>
+                        <input type="radio" name="testType" value="slr" class="peer hidden" checked onclick="event.stopPropagation()">
+                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm" onclick="window._openDemo('slr');event.stopPropagation()">直腿抬高</div>
                     </label>
                     <label class="cursor-pointer" data-demo-trigger="hip">
-                        <input type="radio" name="testType" value="hip" class="peer hidden">
-                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm">髋屈曲</div>
+                        <input type="radio" name="testType" value="hip" class="peer hidden" onclick="event.stopPropagation()">
+                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm" onclick="window._openDemo('hip');event.stopPropagation()">髋屈曲</div>
                     </label>
                     <label class="cursor-pointer" data-demo-trigger="shoulder">
-                        <input type="radio" name="testType" value="shoulder" class="peer hidden">
-                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm">肩屈</div>
+                        <input type="radio" name="testType" value="shoulder" class="peer hidden" onclick="event.stopPropagation()">
+                        <div class="text-center py-2.5 px-1 text-[11px] font-bold rounded-xl border border-transparent bg-[#e5e5ea] text-slate-500 peer-checked:border-[#0a84ff]/30 peer-checked:bg-white peer-checked:text-[#0a84ff] transition-all shadow-inner peer-checked:shadow-sm" onclick="window._openDemo('shoulder');event.stopPropagation()">肩屈</div>
                     </label>
                 </div>
                 <div class="flex p-1 bg-[#e5e5ea] rounded-xl shadow-inner mt-1 border border-black/5">
@@ -4043,21 +4043,26 @@
         function closeDemoModal() {
             stopDemoPlayback();
             updateDemoVideoStatus('');
+            demoModal.style.display = '';
             demoModal.classList.add('hidden');
         }
+
+        window._openDemo = function(testType) { openDemoModal(testType); };
 
         function openDemoModal(testType) {
             try {
                 const videoConfig = getDemoVideoConfig(testType);
+                demoModal.style.display = 'flex';
+                demoModal.classList.remove('hidden');
                 if (!videoConfig) { console.warn('[demo] no video config for', testType); return; }
                 demoModalTitle.textContent = videoConfig.title || '动作演示';
                 demoModalSubtitle.textContent = `当前测试：${getSelectedSideLabel()}，点击下方按钮可关闭并返回页面。`;
                 if (demoActionHint) demoActionHint.textContent = '看完这一段动作演示后，再开始拍照、识别或手动录入。';
                 renderDemoTips(videoConfig.tips || []);
-                demoModal.classList.remove('hidden');
                 playDemoVideo(testType);
             } catch(e) {
                 console.error('[demo] openDemoModal failed', e);
+                demoModal.style.display = 'flex';
                 demoModal.classList.remove('hidden');
             }
         }
