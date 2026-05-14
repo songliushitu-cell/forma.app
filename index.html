@@ -6827,7 +6827,7 @@
             return null; 
         }
 
-        function resetTrackerItem(type) {
+        window.resetTrackerItem = function(type) {
             const nameMap = { 'slr': '主动直腿抬高', 'hip': '主动髋屈曲', 'shoulder': '主动肩屈' };
             if (!confirm(`确定要重新录入 ${nameMap[type]} 的数据吗？`)) return;
             
