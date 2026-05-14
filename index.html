@@ -4145,12 +4145,11 @@
 
         async function ensureAIReady(actionLabel) {
             if (detector) return true;
-
             try {
                 await initAI(aiEngineState.status === 'failed');
                 return Boolean(detector);
             } catch (error) {
-                alert(`视觉引擎暂未就绪，当前无法${actionLabel}。你可以先使用手动录入，稍后再点“重试引擎”。`);
+                updateAIStatus('failed', '摄像头未启动（手机需HTTPS），请使用手动录入或量角器拍照。');
                 return false;
             }
         }
@@ -8106,7 +8105,7 @@
                 _pCameraLoading = false;
                 if (errEl) {
                     errEl.classList.remove('hidden');
-                    errEl.innerHTML = '摄像头启动超时<br><span class="text-white/60 text-[10px]">可点“启动实时”重试，或先用相册继续</span>';
+                    errEl.innerHTML = '摄像头启动超时<br><span class=”text-white/60 text-[10px]”>手机端需HTTPS，请用相册拍照测量</span>';
                 }
                 _syncProtractorModeUI();
             }
@@ -8120,7 +8119,7 @@
             .catch(() => {
                 if (errEl) {
                     errEl.classList.remove('hidden');
-                    errEl.innerHTML = '摄像头无法启动<br><span class="text-white/60 text-[10px]">可点“启动实时”重试，或先用相册继续</span>';
+                    errEl.innerHTML = '摄像头无法启动<br><span class=”text-white/60 text-[10px]”>手机端需HTTPS才能用摄像头，请用相册拍照</span>';
                 }
             })
             .finally(() => {
