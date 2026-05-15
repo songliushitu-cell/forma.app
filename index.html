@@ -1181,7 +1181,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.7</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.8</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -2924,6 +2924,13 @@
         function buildCurrentReportSnapshot() {
             const reportId = currentAssessmentResult?.reportId || currentReportSnapshot?.reportId || Date.now();
             const feedbackState = buildReportFeedbackState(reportId);
+            const confidenceEl = document.getElementById('final-report-confidence');
+            const confidenceDetailEl = document.getElementById('final-report-confidence-detail');
+            const comboLabelEl = document.getElementById('final-combo-label');
+            const pelvicOrientationEl = document.getElementById('final-pelvic-orientation');
+            const pelvicAsymmetryEl = document.getElementById('final-pelvic-asymmetry');
+            const reportDataEl = document.getElementById('final-report-data');
+            const technicalContentEl = document.getElementById('final-technical-content');
             return {
                 id: Date.now(),
                 reportId,
@@ -2932,15 +2939,15 @@
                 titleClassName: document.getElementById('final-result-title').className,
                 reportDateTimeText: finalReportDateTime.textContent,
                 reportBadgesHtml: document.getElementById('final-report-badges').innerHTML,
-                reportConfidenceText: document.getElementById('final-report-confidence').textContent,
-                reportConfidenceClassName: document.getElementById('final-report-confidence').className,
-                reportConfidenceDetailHtml: document.getElementById('final-report-confidence-detail').innerHTML,
+                reportConfidenceText: confidenceEl?.textContent || '',
+                reportConfidenceClassName: confidenceEl?.className || '',
+                reportConfidenceDetailHtml: confidenceDetailEl?.innerHTML || '',
                 empathicHtml: document.getElementById('empathic-report-container').innerHTML,
-                comboLabelText: document.getElementById('final-combo-label').textContent,
-                pelvicOrientationHtml: document.getElementById('final-pelvic-orientation').innerHTML,
-                pelvicAsymmetryHtml: document.getElementById('final-pelvic-asymmetry').innerHTML,
-                reportDataText: document.getElementById('final-report-data').textContent,
-                technicalContentHtml: document.getElementById('final-technical-content').innerHTML,
+                comboLabelText: comboLabelEl?.textContent || '',
+                pelvicOrientationHtml: pelvicOrientationEl?.innerHTML || '',
+                pelvicAsymmetryHtml: pelvicAsymmetryEl?.innerHTML || '',
+                reportDataText: reportDataEl?.textContent || '',
+                technicalContentHtml: technicalContentEl?.innerHTML || '',
                 routeIsolation: currentAssessmentResult?.routeIsolation || null,
                 primaryRouteLabel: currentAssessmentResult?.primaryRouteLabel || '',
                 primarySummary: currentAssessmentResult?.primarySummary || '',
@@ -2973,7 +2980,8 @@
             confidenceEl.textContent = snapshot.reportConfidenceText || '数据一致性：--';
             if (snapshot.reportConfidenceClassName) confidenceEl.className = snapshot.reportConfidenceClassName;
 
-            document.getElementById('final-report-confidence-detail').innerHTML = snapshot.reportConfidenceDetailHtml || '当前重点：--';
+            const confidenceDetailEl = document.getElementById('final-report-confidence-detail');
+            if (confidenceDetailEl) confidenceDetailEl.innerHTML = snapshot.reportConfidenceDetailHtml || '当前重点：--';
             
             const empathicContainer = document.getElementById('empathic-report-container');
             if (snapshot.empathicHtml) {
@@ -2983,11 +2991,16 @@
                 empathicContainer.classList.add('hidden');
             }
 
-            document.getElementById('final-combo-label').textContent = snapshot.comboLabelText || '--';
-            document.getElementById('final-pelvic-orientation').innerHTML = snapshot.pelvicOrientationHtml || '--';
-            document.getElementById('final-pelvic-asymmetry').innerHTML = snapshot.pelvicAsymmetryHtml || '--';
-            document.getElementById('final-report-data').textContent = snapshot.reportDataText || '数据依据：--';
-            document.getElementById('final-technical-content').innerHTML = snapshot.technicalContentHtml || '';
+            const comboLabelEl = document.getElementById('final-combo-label');
+            if (comboLabelEl) comboLabelEl.textContent = snapshot.comboLabelText || '--';
+            const pelvicOrientationEl = document.getElementById('final-pelvic-orientation');
+            if (pelvicOrientationEl) pelvicOrientationEl.innerHTML = snapshot.pelvicOrientationHtml || '--';
+            const pelvicAsymmetryEl = document.getElementById('final-pelvic-asymmetry');
+            if (pelvicAsymmetryEl) pelvicAsymmetryEl.innerHTML = snapshot.pelvicAsymmetryHtml || '--';
+            const reportDataEl = document.getElementById('final-report-data');
+            if (reportDataEl) reportDataEl.textContent = snapshot.reportDataText || '数据依据：--';
+            const technicalContentEl = document.getElementById('final-technical-content');
+            if (technicalContentEl) technicalContentEl.innerHTML = snapshot.technicalContentHtml || '';
             const videoPlanCard = document.getElementById('video-plan-card');
             if (videoPlanCard) videoPlanCard.classList.add('hidden');
             const jumpLink = document.querySelector('.id-jump-video');
@@ -7384,13 +7397,18 @@
             finalReportDateTime.textContent = '';
             document.getElementById('final-report-badges').innerHTML = '';
             document.getElementById('final-report-confidence').textContent = '';
-            document.getElementById('final-report-confidence-detail').innerHTML = '';
-            document.getElementById('final-combo-label').textContent = '';
-            document.getElementById('final-pelvic-orientation').innerHTML = '';
-            document.getElementById('final-pelvic-asymmetry').innerHTML = '';
-            document.getElementById('final-report-data').textContent = '';
-            document.getElementById('final-technical-content').innerHTML = '';
-            document.getElementById('final-report-section').querySelector('.report-summary-strip')?.remove();
+            const confidenceDetailEl = document.getElementById('final-report-confidence-detail');
+            if (confidenceDetailEl) confidenceDetailEl.innerHTML = '当前重点：--';
+            const comboLabelEl = document.getElementById('final-combo-label');
+            if (comboLabelEl) comboLabelEl.textContent = '';
+            const pelvicOrientationEl = document.getElementById('final-pelvic-orientation');
+            if (pelvicOrientationEl) pelvicOrientationEl.innerHTML = '';
+            const pelvicAsymmetryEl = document.getElementById('final-pelvic-asymmetry');
+            if (pelvicAsymmetryEl) pelvicAsymmetryEl.innerHTML = '';
+            const reportDataEl = document.getElementById('final-report-data');
+            if (reportDataEl) reportDataEl.textContent = '';
+            const technicalContentEl = document.getElementById('final-technical-content');
+            if (technicalContentEl) technicalContentEl.innerHTML = '';
 
             currentAssessmentResult = {
                 compressionLayer: { key: compKey },

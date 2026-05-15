@@ -1,6 +1,6 @@
 {
   "name": "forma-basic",
-  "version": "1.8.48",
+  "version": "1.9.8",
   "private": true,
   "scripts": {
     "version:sync": "node scripts/bump_version.js --sync",
