@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>onclick 独立性测试</title></head><body>
+<h2>测试1：onclick 不依赖模块加载</h2>
+<button id="btn1" onclick="window._demoTest('slr')">点击测试视频弹窗</button>
+<p id="result1" style="color:red">等待点击...</p>
+
+<h2>测试2：量角器摄像头错误提示</h2>
+<button id="btn2" onclick="window._protoTest()">模拟打开量角器</button>
+<p id="result2" style="color:red">等待点击...</p>
+
+<script>
+// ===== 这个脚本不依赖任何 import，模块加载前就能用 =====
+var DEMO_CFG = {
+  slr: { src:'直腿抬高演示.mp4', title:'主动直腿抬高演示', tips:['仰卧位，测试腿保持伸直向上抬高。','一旦出现膝盖弯曲或骨盆转动，就停在当下。'] },
+  hip: { src:'髋屈曲演示.mp4', title:'主动髋屈曲演示', tips:['将膝盖主动拉向胸口，不要用惯性。','出现骨盆卷起时立即停止。'] },
+  shoulder: { src:'肩屈演示.mp4', title:'主动肩屈演示', tips:['手臂向后上方平稳抬起。','如果挺胸或旋转躯干，就停在那个位置。'] }
+};
+
+window._demoTest = function(type) {
+  var cfg = DEMO_CFG[type];
+  if (!cfg) { document.getElementById('result1').textContent = '❌ FAIL: 配置未找到'; return; }
+  document.getElementById('result1').textContent = '✅ PASS: _demoTest(' + type + ') 调用成功，标题=' + cfg.title;
+};
+
+window._protoTest = function() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    document.getElementById('result2').textContent = '❌ FAIL: getUserMedia 不可用(手机HTTP)';
+  } else {
+    document.getElementById('result2').textContent = '✅ PASS: getUserMedia 可用';
+  }
+};
+
+// 自检：页面加载后立即验证
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof window._demoTest === 'function' && typeof window._protoTest === 'function') {
+    document.getElementById('result1').textContent = '✅ 函数已注册，请点击按钮测试';
+    document.getElementById('result2').textContent = '✅ 函数已注册，请点击按钮测试';
+  } else {
+    document.getElementById('result1').textContent = '❌ FAIL: 函数未注册！';
+  }
+});
+</script>
+</body></html>

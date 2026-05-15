@@ -379,6 +379,28 @@
         .pelvis-stage { display: flex; align-items: center; justify-content: center; height: 220px; overflow: hidden; border-radius: 0.5rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
+    <script>
+        // ===== onclick 桥接 —— 不依赖模块，页面解析即生效 =====
+        var _VIDEO_CFG = { slr:{src:'直腿抬高演示.mp4',title:'主动直腿抬高演示',tips:['仰卧位，测试腿保持伸直向上抬高。','一旦出现膝盖弯曲、大腿外展或骨盆转动，就停在当下。','测试时如有明显疼痛，请停止并咨询线下专业人员。']}, hip:{src:'髋屈曲演示.mp4',title:'主动髋屈曲演示',tips:['将膝盖主动拉向胸口，不要用惯性猛拉。','出现骨盆卷起或大腿向外打开时，请立即停止。','测试时如有明显疼痛，请停止并咨询线下专业人员。']}, shoulder:{src:'肩屈演示.mp4',title:'主动肩屈演示',tips:['手臂向后上方平稳抬起，保持身体放松。','如果开始挺胸、旋转躯干或借力代偿，就停在那个位置。','测试时如有明显疼痛，请停止并咨询线下专业人员。']} };
+        window._showDemo = function(t) {
+            var m = document.getElementById('demo-modal');
+            if (!m) return;
+            m.classList.remove('hidden');
+            var c = _VIDEO_CFG[t] || _VIDEO_CFG.slr;
+            document.getElementById('demo-modal-title').textContent = c.title;
+            var tips = document.getElementById('demo-tips');
+            if (tips) tips.innerHTML = c.tips.map(function(x){ return '<div style="display:flex;align-items:flex-start;gap:8px"><span style="color:#0a84ff">•</span><span>'+x+'</span></div>'; }).join('');
+            var v = document.getElementById('demo-animation-video');
+            if (v.src.indexOf(c.src) === -1) { v.src = c.src; v.load(); }
+            v.play().catch(function(){});
+        };
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('demo-modal'), video = document.getElementById('demo-animation-video');
+            var close = function() { if (video) { video.pause(); } if (modal) modal.classList.add('hidden'); };
+            var b = document.getElementById('btn-close-demo'); if (b) b.addEventListener('click', close);
+            var c = document.getElementById('btn-confirm-demo'); if (c) c.addEventListener('click', close);
+        });
+    </script>
     <script type="importmap">
     { "imports": {
         "three": "./three_local/three.module.js",
@@ -1159,7 +1181,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.6</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.7</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4046,7 +4068,6 @@
             demoModal.classList.add('hidden');
         }
 
-        window._showDemo = function(t) { openDemoModal(t); };
         function openDemoModal(testType) {
             const videoConfig = getDemoVideoConfig(testType);
             demoModalTitle.textContent = videoConfig.title;
