@@ -4105,6 +4105,157 @@
             }
         }
 
+        function createCameraAccessError(code, message, cause = null) {
+            const error = new Error(message);
+            error.name = code;
+            error.code = code;
+            if (cause) error.cause = cause;
+            return error;
+        }
+
+        function getBrowserEnvironmentInfo() {
+            const ua = navigator.userAgent || '';
+            const lowerUA = ua.toLowerCase();
+            const isIOS = /iphone|ipad|ipod/.test(lowerUA);
+            const isAndroid = /android/.test(lowerUA);
+            const isWeChat = /micromessenger/.test(lowerUA) && !/wxwork/.test(lowerUA);
+            const isWXWork = /wxwork/.test(lowerUA);
+            const isSafari = /safari/.test(lowerUA) && !/chrome|crios|android/.test(lowerUA);
+            const isChrome = /chrome|crios/.test(lowerUA) && !/edg\//.test(lowerUA);
+            return {
+                ua,
+                isIOS,
+                isAndroid,
+                isWeChat,
+                isWXWork,
+                isSafari,
+                isChrome
+            };
+        }
+
+        function getOpenInBrowserHint() {
+            const env = getBrowserEnvironmentInfo();
+            if (env.isWXWork) return '请点右上角后改用系统浏览器打开，再重试摄像头。';
+            if (env.isWeChat) return '请点右上角后选择“在浏览器打开”，再重试摄像头。';
+            if (env.isIOS) return '请优先用 Safari 打开当前页面。';
+            if (env.isAndroid) return '请优先用 Chrome 打开当前页面。';
+            return '请改用系统浏览器重新打开当前页面。';
+        }
+
+        function getPermissionFixHint() {
+            const env = getBrowserEnvironmentInfo();
+            if (env.isWXWork || env.isWeChat) return `${getOpenInBrowserHint()} 如果仍失败，再检查微信/企业微信和系统相机权限。`;
+            if (env.isIOS) return '请检查 iPhone/iPad 的“设置 > Safari > 相机”以及系统“隐私与安全性 > 相机”。';
+            if (env.isAndroid) return '请检查系统“设置 > 应用 > 浏览器 > 权限 > 相机”是否已允许。';
+            return '请检查浏览器地址栏的相机权限，以及系统隐私设置里的相机权限。';
+        }
+
+        function getCameraSupportState() {
+            const hostname = window.location.hostname || '';
+            const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(hostname);
+            const env = getBrowserEnvironmentInfo();
+            return {
+                hostname,
+                protocol: window.location.protocol,
+                isSecureContext: Boolean(window.isSecureContext || isLocalHost),
+                hasMediaDevices: Boolean(navigator.mediaDevices),
+                hasGetUserMedia: Boolean(navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function'),
+                environment: env
+            };
+        }
+
+        function getCameraPrerequisiteError(featureLabel, fallbackLabel) {
+            const support = getCameraSupportState();
+            if (!support.hasGetUserMedia) {
+                return createCameraAccessError(
+                    'CameraUnavailableError',
+                    `当前打开环境不支持调用${featureLabel}。${getOpenInBrowserHint()} ${fallbackLabel}`
+                );
+            }
+            if (!support.isSecureContext) {
+                return createCameraAccessError(
+                    'InsecureContextError',
+                    `当前页面不是安全环境，摄像头只能在 HTTPS 或 localhost 下使用。${getOpenInBrowserHint()}`
+                );
+            }
+            return null;
+        }
+
+        function shouldRetryAlternateFacingMode(error) {
+            return ['OverconstrainedError', 'ConstraintNotSatisfiedError', 'NotFoundError', 'DevicesNotFoundError']
+                .includes(error?.name);
+        }
+
+        function formatCameraErrorMessage(error, { featureLabel = '摄像头', fallbackLabel = '请改用其他方式继续。' } = {}) {
+            if (!error) return `${featureLabel}启动失败，${fallbackLabel}`;
+            if (error.code === 'InsecureContextError' || error.code === 'CameraUnavailableError') return error.message;
+
+            switch (error.name) {
+                case 'NotAllowedError':
+                case 'PermissionDeniedError':
+                case 'SecurityError':
+                    return `${featureLabel}权限被拒绝。${getPermissionFixHint()}`;
+                case 'NotFoundError':
+                case 'DevicesNotFoundError':
+                    return `未找到可用${featureLabel}，像是设备没有可用镜头或相机被系统禁用了。请检查设备相机是否正常，再重试；${fallbackLabel}`;
+                case 'NotReadableError':
+                case 'TrackStartError':
+                    return `${featureLabel}像是正被其他应用占用。请先关闭相机、视频会议、录屏或其他正在用镜头的页面，再重试。`;
+                case 'OverconstrainedError':
+                case 'ConstraintNotSatisfiedError':
+                    return `当前设备不支持所请求的${featureLabel}规格，通常是后置/前置镜头能力不匹配；已尝试切换其他镜头仍失败。${fallbackLabel}`;
+                case 'AbortError':
+                    return `${featureLabel}启动被中断，请重试一次；若仍失败，${fallbackLabel}`;
+                default: {
+                    const detail = error.message ? `（${error.message}）` : '';
+                    return `${featureLabel}启动失败${detail}，${fallbackLabel}`;
+                }
+            }
+        }
+
+        async function requestCameraStreamWithFallback({
+            featureLabel = '摄像头',
+            preferredFacingMode = 'environment',
+            widthIdeal = 1280,
+            heightIdeal = null,
+            fallbackToAlternate = true,
+            fallbackLabel = '请改用其他方式继续。'
+        } = {}) {
+            const prerequisiteError = getCameraPrerequisiteError(featureLabel, fallbackLabel);
+            if (prerequisiteError) throw prerequisiteError;
+
+            const buildConstraints = (facingMode) => {
+                const video = { width: { ideal: widthIdeal } };
+                if (heightIdeal) video.height = { ideal: heightIdeal };
+                if (facingMode) video.facingMode = facingMode;
+                return { video, audio: false };
+            };
+
+            const alternateFacingMode = preferredFacingMode === 'environment'
+                ? 'user'
+                : (preferredFacingMode === 'user' ? 'environment' : null);
+            const attemptOrder = [preferredFacingMode];
+            if (fallbackToAlternate && alternateFacingMode) attemptOrder.push(alternateFacingMode);
+
+            let firstError = null;
+            for (let index = 0; index < attemptOrder.length; index += 1) {
+                const facingMode = attemptOrder[index];
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia(buildConstraints(facingMode));
+                    return { stream, facingMode, usedFallback: index > 0, firstError };
+                } catch (error) {
+                    if (!firstError) firstError = error;
+                    const hasNextAttempt = index < attemptOrder.length - 1;
+                    if (!hasNextAttempt || !shouldRetryAlternateFacingMode(error)) {
+                        if (firstError && error !== firstError) error.primaryError = firstError;
+                        throw error;
+                    }
+                }
+            }
+
+            throw firstError || createCameraAccessError('CameraStartError', `${featureLabel}启动失败，${fallbackLabel}`);
+        }
+
         async function resolveBestBackend() {
             const backendCandidates = ['webgl', 'cpu'];
             let lastError = null;
@@ -4128,7 +4279,9 @@
                 await initAI(aiEngineState.status === 'failed');
                 return Boolean(detector);
             } catch (error) {
-                updateAIStatus('failed', '摄像头未启动（手机需HTTPS），请使用手动录入或量角器拍照。');
+                if (aiEngineState.status !== 'failed') {
+                    updateAIStatus('failed', `视觉引擎未就绪：${error?.message || '未知错误'}。请检查网络后重试，或先使用手动录入 / 量角器。`);
+                }
                 return false;
             }
         }
@@ -6145,13 +6298,26 @@
         const _aiPollStart = Date.now();
         (function _poll() {
             if (window.tf && window.poseDetection) { initAI().catch(()=>{}); return; }
-            if (Date.now() - _aiPollStart > 8000) { updateAIStatus('ready', '摄像头未启动，可直接使用手动录入或量角器。'); return; }
+            if (Date.now() - _aiPollStart > 8000) {
+                aiEngineState.status = 'failed';
+                aiEngineState.error = '视觉模型脚本加载超时';
+                updateAIStatus('failed', '视觉引擎脚本加载超时，请检查网络或 CDN 后重试；也可先使用手动录入或量角器。');
+                return;
+            }
             setTimeout(_poll, 500);
         })();
         btnRetryAI.addEventListener('click', () => {
             updateAIStatus('loading', '正在启动...');
             initAI(true).then(() => updateAIStatus('ready', '已就绪。')).catch(() => updateAIStatus('failed', '启动失败，请用手动录入。'));
         });
+
+        function showLiveTrackingError(message) {
+            analyzingMask.innerHTML = '';
+            const tip = document.createElement('div');
+            tip.className = 'max-w-[18rem] rounded-2xl border border-rose-200 bg-white/92 px-5 py-4 text-center text-xs font-bold leading-relaxed text-rose-600 shadow-sm';
+            tip.textContent = message;
+            analyzingMask.appendChild(tip);
+        }
 
         function scrollToDisplayArea(targetElement = null) {
             const element = targetElement || (!canvasContainer.classList.contains('hidden') ? canvasContainer : (!resultBoard.classList.contains('hidden') ? resultBoard : document.getElementById('final-report-section')));
@@ -6227,7 +6393,13 @@
             await new Promise(r => setTimeout(r, 50));
 
             try {
-                liveStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 } } });
+                const cameraSession = await requestCameraStreamWithFallback({
+                    featureLabel: '实时捕捉摄像头',
+                    preferredFacingMode: 'environment',
+                    widthIdeal: 1280,
+                    fallbackLabel: '请使用手动录入或量角器拍照。'
+                });
+                liveStream = cameraSession.stream;
                 videoElement.srcObject = liveStream;
                 await new Promise(resolve => videoElement.onloadedmetadata = () => resolve());
                 videoElement.play();
@@ -6240,7 +6412,14 @@
                 analyzingMask.innerHTML = `<div class="bg-white/90 px-6 py-4 rounded-2xl shadow-sm flex flex-col items-center"><svg class="animate-spin h-6 w-6 mac-blue mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="mac-blue font-bold text-xs tracking-widest">AI 深度标定中...</span></div>`;
                 
                 document.getElementById('live-angle-display').innerText = '0.0°';
-                document.getElementById('live-status-text').innerHTML = `<span class="w-2 h-2 rounded-full bg-mac-blue animate-pulse shadow-mac-blue"></span> 等待系统锚定...`;
+                document.getElementById('live-status-text').innerHTML = cameraSession.usedFallback
+                    ? `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shadow-sm"></span> 后置不可用，已切换到前置摄像头`
+                    : `<span class="w-2 h-2 rounded-full bg-mac-blue animate-pulse shadow-mac-blue"></span> 等待系统锚定...`;
+                updateDebugState({
+                    fallback: cameraSession.usedFallback
+                        ? '回退状态: 后置失败，已切换前置摄像头'
+                        : '回退状态: 未触发'
+                });
 
                 const tType = document.querySelector('input[name="testType"]:checked').value;
                 const tSideName = document.querySelector('input[name="testSide"]:checked').value === 'L' ? '左侧' : '右侧';
@@ -6253,8 +6432,12 @@
                 
                 livePoseLoop();
             } catch (e) { 
+                console.error('[startLiveTrackingFlow]', e);
                 updateDebugState({ mode: '摄像头启动失败' });
-                analyzingMask.innerHTML = `<span class="text-rose-500 font-bold text-xs tracking-widest">硬件调用失败，请检查浏览器权限配置。</span>`;
+                showLiveTrackingError(formatCameraErrorMessage(e, {
+                    featureLabel: '实时捕捉摄像头',
+                    fallbackLabel: '请使用手动录入或量角器拍照。'
+                }));
                 setTimeout(() => { resetCanvasForNewUpload(); }, 3000);
             }
         }
@@ -7100,6 +7283,7 @@
 
             renderIsolatedFinalReport(symptomCheck, metrics);
             return;
+        }
 
         function renderIsolatedFinalReport(symptomCheck, metrics) {
             try {
@@ -7830,6 +8014,21 @@
         }
     }
 
+    function _showProtractorCameraError(message) {
+        const errEl = document.getElementById('protractor-cam-error');
+        if (!errEl) return;
+        errEl.classList.remove('hidden');
+        errEl.innerHTML = '';
+        const main = document.createElement('div');
+        main.textContent = message;
+        const hint = document.createElement('span');
+        hint.className = 'text-white/60 text-[10px]';
+        hint.textContent = '量角器仍可通过相册导入继续测量';
+        errEl.appendChild(main);
+        errEl.appendChild(document.createElement('br'));
+        errEl.appendChild(hint);
+    }
+
     function _getShortTestLabel(testType) {
         return testType === 'slr' ? '直腿抬高' : (testType === 'hip' ? '髋屈曲' : '肩屈');
     }
@@ -8069,7 +8268,7 @@
     };
 
     // === Camera ===
-    function _startCamera(back) {
+    async function _startCamera(back) {
         const video = document.getElementById('protractor-video');
         const errEl = document.getElementById('protractor-cam-error');
         if (_hasActiveProtractorStream() || _pCameraLoading) return;
@@ -8085,32 +8284,37 @@
             if (!_hasActiveProtractorStream() && _pCameraLoading) {
                 _pCameraLoading = false;
                 if (errEl) {
-                    errEl.classList.remove('hidden');
-                    errEl.innerHTML = '摄像头启动超时<br><span class=”text-white/60 text-[10px]”>手机端需HTTPS，请用相册拍照测量</span>';
+                    _showProtractorCameraError('摄像头启动超时，请检查权限或改用系统浏览器后重试。');
                 }
                 _syncProtractorModeUI();
             }
         }, 6000);
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: back ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
-            .then(s => {
-                _pStream = s;
-                video.srcObject = s;
-                return video.play().catch(() => {});
-            })
-            .catch(() => {
-                if (errEl) {
-                    errEl.classList.remove('hidden');
-                    errEl.innerHTML = '摄像头无法启动<br><span class=”text-white/60 text-[10px]”>手机端需HTTPS才能用摄像头，请用相册拍照</span>';
-                }
-            })
-            .finally(() => {
-                if (_pCameraTimeout) {
-                    clearTimeout(_pCameraTimeout);
-                    _pCameraTimeout = null;
-                }
-                _pCameraLoading = false;
-                _syncProtractorModeUI();
+        try {
+            const cameraSession = await requestCameraStreamWithFallback({
+                featureLabel: '量角器摄像头',
+                preferredFacingMode: back ? 'environment' : 'user',
+                widthIdeal: 1280,
+                heightIdeal: 720,
+                fallbackLabel: '请直接导入相册图片继续测量。'
             });
+            _pStream = cameraSession.stream;
+            _facingBack = cameraSession.facingMode === 'environment';
+            video.srcObject = _pStream;
+            await video.play().catch(() => {});
+        } catch (error) {
+            console.error('[protractor camera]', error);
+            _showProtractorCameraError(formatCameraErrorMessage(error, {
+                featureLabel: '量角器摄像头',
+                fallbackLabel: '请直接导入相册图片继续测量。'
+            }));
+        } finally {
+            if (_pCameraTimeout) {
+                clearTimeout(_pCameraTimeout);
+                _pCameraTimeout = null;
+            }
+            _pCameraLoading = false;
+            _syncProtractorModeUI();
+        }
     }
     function _stopCamera() {
         if (_pCameraTimeout) {
