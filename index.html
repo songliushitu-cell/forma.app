@@ -1181,7 +1181,7 @@
                 <h1 id="main-header" class="text-4xl sm:text-5xl font-[900] text-black tracking-wider drop-shadow-sm">FORMA</h1>
                 <div class="flex items-center justify-center mt-2 mb-1 gap-2">
                     <h2 class="text-sm sm:text-base font-bold text-slate-500 tracking-[0.2em]">骨盆评估</h2>
-                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.8</span>
+                    <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.9</span>
                 </div>
                 
                 <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
@@ -4815,92 +4815,120 @@
                 ? routeIsolation.compressionResult.confidenceKey
                 : routeIsolation.subtypeResult.confidenceKey;
             const dynamicBearing = routeIsolation.dynamicBearingResult;
+            const pecConfirmed = routeIsolation.compressionResult.pecLevel === 'confirmed';
 
             const frontBack = compKey === 'anterior'
                 ? {
-                    short: '前侧偏紧',
-                    value: '骨盆前侧偏紧',
-                    plain: '你的骨盆往前倒——但不是后侧太紧，而是前侧的肌肉（大腿根、髋前面）太紧张，像有人从前面拽着骨盆往前拉。所以你会觉得：站直了腰反而酸，大腿根总觉得抻着，练臀桥大腿前侧先酸（不是屁股酸）。',
-                    note: '前侧紧张——髋前面、大腿前侧、小腹习惯性收紧，抢了屁股和后背的活。'
+                    short: '骨盆前倾',
+                    value: '骨盆前倾',
+                    plain: '你的骨盆现在是前倾位，主要是髋前、大腿前侧和下腹这条线一直在往前拽。你更容易出现站直就顶腰、大腿根发紧、练臀桥或抬腿时总是大腿前侧先酸。',
+                    note: '前倾主要来自前侧拉扯，腰前侧和大腿根更容易先紧。'
                 }
                 : compKey === 'posterior'
                     ? {
-                        short: '后侧偏紧',
-                        value: '骨盆后侧偏紧',
-                        plain: '你的骨盆往前倒——推着它往前倒的力量来自身体后侧：后腰、后背、大腿后侧太紧张，像有人从背后推着你的腰往前顶。所以你会觉得：站久了腰酸、后背发僵，屁股看着翘但干活的是腰。',
-                        note: '后侧紧张——后背、后腰、大腿后侧一直在帮你撑着，站久腰酸、弯腰反而还行。'
+                        short: '骨盆前倾',
+                        value: '骨盆前倾',
+                        plain: '你的骨盆现在也是前倾位，但主要不是前侧在拉，而是后腰、后背和大腿后侧一直在往前顶。你更容易出现久站腰酸、后背发僵、屁股看着翘但真正先累的是腰和腿后侧。',
+                        note: '前倾主要来自后侧硬顶，腰后侧和腿后侧更容易先累。'
                     }
                     : {
                         short: '前后都不明显',
                         value: '前后方向不明显',
-                        plain: '你的前后紧张方向还不够明确，可能两边都参与了。建议先做基础呼吸练习，2-4周后复测方向会更清晰。',
-                        note: '前后方向不确定时，先专注呼吸和站姿基础。'
+                        plain: '你的前后紧张方向还不够明确，可能前侧和后侧都参与了。建议先做基础呼吸练习，2-4周后复测方向会更清晰。',
+                        note: '前后方向还不够清楚，先把呼吸和站姿基础做稳。'
                     };
 
-            const pecConfirmed = routeIsolation.compressionResult.pecLevel === 'confirmed';
-            const iliacForward = subtypeKey === 'baseline' || subtypeKey === 'oblique'
+            const iliacForward = subtypeKey === 'baseline'
                 ? {
-                    short: '左侧偏前',
-                    value: '左边骨盆靠前',
-                    plain: '你左边骨盆比右边更往前跑。这是人体最普遍的特征，几乎人人都有。所以你站久了重心会不自觉偏到右脚，提包永远用右手，左边像总往外撇。',
-                    note: '左边习惯性往前跑，左脚踩地不踏实，身体把重量推到右脚。'
+                    short: '左前右后',
+                    value: '左侧骨盆在前',
+                    plain: '你的骨盆朝左前转，左侧骨盆在前，右侧相对在后。你更容易出现左脚踩不满、重心老往右脚跑、站久后右腿和右腰先累。',
+                    note: '左侧在前，重心很容易被推到右脚。'
                 }
                 : subtypeKey === 'lateral'
                     ? {
-                        short: '左侧偏高',
-                        value: '左边髋骨偏高',
-                        plain: '你左边髋骨比右边明显高一截。穿裤子左边腰线怎么拽都拽不平，拍照两边线条不在一个水平线上。站久了右边更累——不是因为右边弱，是左边一直不踩地，右边被迫在替你撑着。',
-                        note: '左高右低，左边长期不承重，右边在代偿。'
+                        short: '左高右低',
+                        value: '左侧骨盆偏高',
+                        plain: '你的骨盆主要问题是左高右低，左侧骨盆被提得更高。你更容易出现裤腰左边总往上跑、两侧腰线不齐，站久后右腿像一直在替左边撑着。',
+                        note: '左高右低时，右腿和右腰通常更像代偿侧。'
                     }
-                : pecConfirmed
-                    ? {
-                        short: '基本对称',
-                        value: '左右基本对称',
-                        plain: '你的左右差异很小，身体没有明显偏向某一侧。这是好事——训练先专注前后方向就够了。',
-                        note: '左右基本对称，训练可以先专注前后方向的调整。'
-                    }
-                    : {
-                        short: '无明显偏前',
-                        value: '左右方向不够明确',
-                        plain: '你的左右方向还不够明确。建议先做基础练习，2-4周后复测再看。',
-                        note: '方向不明时不要急着单侧训练，先打基础。'
-                    };
+                    : subtypeKey === 'oblique'
+                        ? {
+                            short: '左前左高',
+                            value: '左侧骨盆在前又偏高',
+                            plain: '你的骨盆朝左前上方偏，左侧骨盆同时在前又偏高。你更容易出现左边腰胯一直别着，右腿长期当主承重腿，走久、站久或单腿站时右侧先累。',
+                            note: '左边又高又前时，右侧承重链通常最吃力。'
+                        }
+                    : pecConfirmed
+                        ? {
+                            short: '基本对称',
+                            value: '左右基本对称',
+                            plain: '你的左右差异很小，身体没有明显偏向某一侧。这是好事，训练先专注前后方向就够了。',
+                            note: '左右基本对称，先把前后方向调顺。'
+                        }
+                        : {
+                            short: '无明显侧偏',
+                            value: '左右方向不够明确',
+                            plain: '你的左右方向还不够明确。建议先做基础练习，2-4周后复测再看。',
+                            note: '方向不明时不要急着单侧训练，先打基础。'
+                        };
 
             const height = heightKey === 'rightHigh'
                 ? {
                     short: '右高左低',
-                    value: '右边略高',
-                    plain: '你右边腰线比左边高一点，穿裤子、裙子的时候右边容易往上跑，拍照右边的线条更抢镜。右高和左前是同一个习惯的两面。',
-                    note: '右边比左边略高，和左边骨盆靠前是同一个模式的两面。'
+                    value: '右侧略高',
+                    plain: '从高低看，右侧骨盆略高。常见表现是右边裤腰更容易往上跑，拍照时右边腰线更抢眼，也更容易把重量挂在右边。',
+                    note: '右侧略高时，身体通常更爱把重量挂到右边。'
                 }
                 : heightKey === 'leftHigh'
                 ? {
                     short: '左高右低',
-                    value: '左边更高',
-                    plain: '你左边髋骨比右边高，正面看左边腰线明显高。拍照两边线条不在一个水平线上。左边长期不踩地，身体的重量全压在右脚上。',
-                    note: '左边高 = 左边不承重，右边在代偿。'
+                    value: '左侧更高',
+                    plain: '从高低看，左侧骨盆更高。常见表现是左边腰线更高、裤腰左边更难拉平，这通常说明左脚没踩实，重量更多落在右脚。',
+                    note: '左侧更高往往伴随左脚不敢踩、右脚接管承重。'
                 }
                 : pecConfirmed
                     ? {
                         short: '基本平齐',
                         value: '左右基本平齐',
-                        plain: '你左右髋骨高低差不多，没有明显的高低差。',
-                        note: '高低平齐是好事，身体比较均衡。'
+                        plain: '你左右髋骨高低差不多，没有明显高低差。',
+                        note: '高低基本平齐，这一层问题不突出。'
                     }
                     : {
                         short: '高低不明显',
                         value: '左右高低不明显',
                         plain: '你左右高低差还不够明确。',
-                        note: '没有明显高低差，先专注前后方向。'
+                        note: '高低方向还不够清楚，先专注前后方向。'
                     };
 
             const bearing = dynamicBearing.loadSide === 'left'
-                ? {
-                    short: '先让左边踩地',
-                    value: '先让左边学会踩地',
-                    plain: '你的左边骨盆习惯性往前跑，左脚踩地不踏实，身体把重量推到右脚上。训练分两步：第一步，先把左边骨盆的紧张松开，让左边能踩住地面；第二步，再让右边正常发力。这两步顺序不能反——左边踩不稳，右边练了也白练。',
-                    note: dynamicBearing.summary
-                }
+                ? subtypeKey === 'baseline'
+                    ? {
+                        short: '先处理左前',
+                        value: '先把左侧前移拉回来',
+                        plain: '当前重点不是盲目练右边，而是先把左侧骨盆从前面拉回一点，再把左脚踩地补回来。左边不回位，右边就会一直替左边扛，右腰、右臀和右腿会反复累。',
+                        note: '先处理左前，再补左脚承重。'
+                    }
+                    : subtypeKey === 'lateral'
+                        ? {
+                            short: '先处理左高',
+                            value: '先把左侧高度降下来',
+                            plain: '当前重点是先把左侧骨盆的高度降下来，再把左脚承重补回来。左边一直高着，右腿和右腰就会一直被迫兜底，久站、上楼和走多都更容易累。',
+                            note: '先降左高，再补左脚承重。'
+                        }
+                        : subtypeKey === 'oblique'
+                            ? {
+                                short: '先处理左前加左高',
+                                value: '先把左侧前移和抬高一起带回中间',
+                                plain: '当前重点是同时处理左侧骨盆前移和抬高，再重建左脚承重。左边不回中，右边就会一直当主承重腿，右腰、右臀外侧和右膝外侧更容易反复累。',
+                                note: '先把左边的前移和抬高一起拉回，再重建左侧承重。'
+                            }
+                            : {
+                                short: '先稳基础',
+                                value: '先打好基础',
+                                plain: '数据还不够下结论。先专注呼吸和站姿基础练习，2-4周后复测再看。',
+                                note: '方向不明时不要急着单侧训练，先打基础。'
+                            }
                 : {
                     short: '先稳基础',
                     value: '先打好基础',
@@ -4923,10 +4951,19 @@
                 hitRules.unshift('三项测试都出现了左右差，但方向还不够一致，所以这次先不下固定结论。');
             }
 
-            const headline = frontBack.short.includes('不明显') && iliacForward.short.includes('不明显')
-                ? '前后和左右方向都还不太明确，建议先打基础'
-                : `${frontBack.value}，${iliacForward.value}，${height.value}`;
-            const plainHeadline = `${frontBack.plain} ${iliacForward.plain} ${height.plain} 所以现在的重点是：${bearing.plain}`;
+            let headline = '前后和左右方向都还不太明确，建议先打基础';
+            if (!frontBack.short.includes('不明显') || !iliacForward.short.includes('不明显')) {
+                if (subtypeKey === 'baseline') {
+                    headline = `${frontBack.value}，左侧骨盆在前，右侧略高`;
+                } else if (subtypeKey === 'lateral') {
+                    headline = `${frontBack.value}，左侧骨盆偏高`;
+                } else if (subtypeKey === 'oblique') {
+                    headline = `${frontBack.value}，左侧骨盆在前又偏高`;
+                } else {
+                    headline = `${frontBack.value}，${iliacForward.value}，${height.value}`;
+                }
+            }
+            const plainHeadline = `${frontBack.plain} ${iliacForward.plain} ${height.plain} 当前重点是：${bearing.plain}`;
             return {
                 headline,
                 plainHeadline,
@@ -4939,13 +4976,13 @@
         }
 
         function buildReportConclusion(directSummary, compKey, subtypeKey) {
-            const compLabel = compKey === 'anterior' ? '骨盆前侧偏紧' : compKey === 'posterior' ? '骨盆后侧偏紧' : '方向待确认';
-            const subtypeLabel = subtypeKey === 'baseline' ? '左边骨盆靠前'
-                : subtypeKey === 'oblique' ? '左边又高又靠前'
-                : subtypeKey === 'lateral' ? '左边髋骨偏高'
+            const compLabel = compKey === 'anterior' || compKey === 'posterior' ? '骨盆前倾' : '方向待确认';
+            const subtypeLabel = subtypeKey === 'baseline' ? '左侧骨盆在前，右侧略高'
+                : subtypeKey === 'oblique' ? '左侧骨盆在前又偏高'
+                : subtypeKey === 'lateral' ? '左侧骨盆偏高'
                 : '';
             const headline = subtypeLabel ? `${compLabel}，${subtypeLabel}` : compLabel;
-            const caption = `${directSummary.frontBack.plain} ${directSummary.iliacForward.plain} ${directSummary.bearing.plain}`;
+            const caption = `${directSummary.frontBack.note} ${directSummary.iliacForward.note} ${directSummary.bearing.note}`;
             return { headline, caption };
         }
 
