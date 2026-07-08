@@ -36,12 +36,13 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* ── Report Shell ── */
+        html, body { overflow-x: hidden; }
         .report-shell {
             background: linear-gradient(180deg, #f8f8fa 0%, #f2f2f5 100%);
             border: 1px solid rgba(0,0,0,0.06);
             box-shadow: 0 2px 16px rgba(0,0,0,0.04);
         }
-        .app-shell { width: 100%; max-width: 32rem; transition: max-width 0.4s ease; }
+        .app-shell { width: 100%; max-width: 32rem; margin-inline: auto; transition: max-width 0.4s ease; }
         .app-shell.app-shell-report-mode { max-width: min(calc(100vw - 28px), 960px); }
 
         /* ── Report Hero ── */
@@ -1184,18 +1185,18 @@
                     <span class="text-[9px] font-bold text-slate-500 bg-white px-1.5 py-0.5 rounded tracking-widest border border-[#e5e5ea] shadow-sm mt-0.5">v1.9.9</span>
                 </div>
                 
-                <div class="mt-4 flex flex-col items-end bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5 inline-block max-w-fit">
-                    <div class="flex items-center gap-2 text-left">
+                <div class="mt-4 w-full max-w-[28rem] mx-auto flex flex-col items-center bg-white/60 backdrop-blur-sm rounded-lg border border-white shadow-sm px-3.5 py-1.5">
+                    <div class="flex items-center gap-2 text-center">
                         <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p class="text-[10px] sm:text-xs text-slate-500 font-medium tracking-wide">
+                        <p class="text-[10px] sm:text-xs text-slate-500 font-medium tracking-wide text-left">
                             此程序分析结果仅供体态参考，不作为医疗临床诊断依据
                         </p>
                     </div>
-                    <div id="contact-badge" class="mt-2 inline-flex items-center gap-2 self-start rounded-full bg-white/85 backdrop-blur-sm border border-white shadow-sm px-3 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wide text-left">
+                    <div id="contact-badge" class="mt-2 inline-flex items-center gap-2 self-center rounded-full bg-white/85 backdrop-blur-sm border border-white shadow-sm px-3 py-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wide text-left">
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#0a84ff]/10 text-[#0a84ff] shrink-0">🌍</span>
                         <span>联系方式：<span class="text-slate-800">songjiaotou999</span>（工作微信，闲聊勿扰）</span>
                     </div>
-                    <div class="mt-3 w-full max-w-[280px] self-start rounded-2xl bg-white/80 backdrop-blur-sm border border-white shadow-sm px-3.5 py-3" style="display:none">
+                    <div class="mt-3 w-full max-w-[280px] self-center rounded-2xl bg-white/80 backdrop-blur-sm border border-white shadow-sm px-3.5 py-3" style="display:none">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-[9px] sm:text-[10px] font-bold text-slate-400 tracking-[0.18em]">报告使用状态</div>
@@ -1213,12 +1214,12 @@
             </div>
         </div>
 
-        <div id="ai-loading" class="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0">
+        <div id="ai-loading" class="flex w-full flex-col gap-2 px-5 py-3 bg-[#f5f5f7] border-b border-[#e5e5ea] shrink-0 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3 min-w-0">
                 <svg id="ai-loading-spinner" class="animate-spin h-5 w-5 mac-blue shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p id="ai-loading-message" class="text-[11px] font-bold text-slate-600">摄像头识别已关闭，可直接使用手动录入或量角器。</p>
+                <p id="ai-loading-message" class="min-w-0 text-[11px] font-bold text-slate-600">摄像头识别已关闭，可直接使用手动录入或量角器。</p>
             </div>
-            <button id="btn-retry-ai" class="shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all">开启摄像头识别</button>
+            <button id="btn-retry-ai" class="self-end shrink-0 text-[10px] font-bold text-[#0a84ff] bg-white border border-[#0a84ff]/20 rounded-full px-3 py-1.5 shadow-sm active:scale-95 transition-all sm:self-auto">开启摄像头识别</button>
         </div>
 
         <!-- 主内容区 -->
@@ -4451,21 +4452,21 @@
             // ── 假胯宽 ──────────────────────────────────────────────────
             if (isAnterior && (isLateral || isOblique)) {
                 add('假胯宽（左侧更明显）', 'left', 'likely',
-                    '前侧肌群过紧 + 左侧骨盆偏高偏前，左髋股骨大转子被外旋顶出，正面看左侧髋部轮廓外扩明显。');
+                    '前侧肌群过紧 + 左侧代偿更集中时，左髋外侧更容易被带得外扩，正面看左侧髋部轮廓更明显。');
             } else if (isAnterior && isBaseline) {
                 add('双侧假胯宽', 'both', 'likely',
                     '髂腰肌、阔筋膜张肌持续紧绷，双侧股骨大转子被外旋撑开，正面看髋部偏宽、两侧轮廓外扩。');
             } else if (isPosterior && (isLateral || isOblique)) {
                 add('假胯宽（左侧）', 'left', 'possible',
-                    '左侧骨盆偏高，左髋位置外移，正面看左侧髋部轮廓略宽于右侧。');
+                    '左侧抬高代偿更明显时，左髋位置更容易外移，正面看左侧髋部轮廓略宽于右侧。');
             }
 
             // ── 臀部凹陷 / 不饱满 ────────────────────────────────────────
             if (isLateral || isOblique) {
                 add('右侧臀部凹陷', 'right', 'likely',
-                    '右侧骨盆偏低，右侧臀中肌长期拉长失活，髋侧面填充感不足，背面看右侧臀部比左侧更扁、更空。');
+                    '右侧长期更像兜底侧时，右侧臀中肌更容易处在拉长又接不住的位置，髋侧面填充感不足，背面看右侧臀部比左侧更扁、更空。');
                 add('臀部左右高低/大小不对称', 'both', 'likely',
-                    '左臀峰更高更靠后，右臀峰更低更薄。背面看两侧臀形不在同一水平，左边"挂"出来，右边更掉。');
+                    '左侧更像在提着，右侧更像在接着。背面看两侧臀形不在同一水平，左边更容易"挂"出来，右边更容易往下掉。');
             }
             if (isAnterior && isBaseline) {
                 add('双侧臀部不饱满', 'both', 'possible',
@@ -4668,13 +4669,13 @@
 
             if (isLateral) {
                 add(
-                    '骨盆左侧偏高、右侧偏低——左侧腰方肌更容易紧，单侧腰部不适风险偏高',
-                    '骨盆左边被上提时，左侧腰方肌是主要"托举者"，长期过度工作会让左侧腰部比右侧更容易出现疲劳性酸痛甚至慢性腰痛。右侧则相反，因为一直被压低，右侧腰会感觉"空空的"。',
+                    '左侧抬高代偿更明显——左侧腰方肌更容易紧，单侧腰部不适风险偏高',
+                    '左边一直像被往上提着时，左侧腰方肌就更像主要"托举者"。长期过度工作会让左侧腰部比右侧更容易出现疲劳性酸痛甚至慢性腰痛。右侧则相反，因为一直在下面兜底，右侧腰会感觉"空空的"。',
                     a.back === 'leftMore' || a.side === 'leftTired'
                 );
                 add(
                     '右侧臀中肌/臀小肌功能不足——右侧稳定性明显偏弱',
-                    '骨盆右边偏低时，右侧的外展肌群（臀中肌、臀小肌）更难稳定骨盆，单腿站立或上楼梯时右侧更容易晃动或塌陷，长期下去膝关节和踝关节也会代偿。',
+                    '右侧长期更像承重补位侧时，右侧的外展肌群（臀中肌、臀小肌）更难稳定骨盆，单腿站立或上楼梯时右侧更容易晃动或塌陷，长期下去膝关节和踝关节也会代偿。',
                     a.side === 'rightWeak'
                 );
                 add(
@@ -4686,18 +4687,18 @@
 
             if (isOblique) {
                 add(
-                    '骨盆斜向偏移——左侧整体负荷过大',
-                    '左边骨盆既高又靠前，意味着左侧的腰、髋前、臀上缘、外髋都在同时代偿，是身体里最"忙"的一侧。左边容易累、左边容易紧、左边更难真正放松，是这种情况最典型的表现。',
+                    '左侧复合代偿——左侧整体负荷过大',
+                    '左边同时存在抬高和抢先带动的倾向时，左侧的腰、髋前、臀上缘、外髋都更容易同时代偿，是身体里最"忙"的一侧。左边容易累、左边容易紧、左边更难真正放松，是这种情况最典型的表现。',
                     a.side === 'leftTired' || a.back === 'leftMore'
                 );
                 add(
                     '右侧从承重到稳定全面不足——容易被忽视的"沉默"一侧',
-                    '右边骨盆偏低、偏后，右侧的肌肉一直处于被动伸长状态，既不容易发力也不容易感知到。做任何单侧动作时，右边都更容易塌、更接不住，但因为右边不累，往往不会引起注意。',
+                    '右边长期更像被动兜底的一侧时，右侧的肌肉一直处于被动伸长状态，既不容易发力也不容易感知到。做任何单侧动作时，右边都更容易塌、更接不住，但因为右边不一定先累，往往不会第一时间引起注意。',
                     a.side === 'rightWeak'
                 );
                 add(
-                    '骶髂关节和腰椎旋转负担——斜向锁定带来的连锁反应',
-                    '骨盆斜向偏移会让腰椎随之产生代偿性旋转，骶髂关节一侧受压更大，长期可能出现骶髂关节区域的隐痛，或腰椎小关节的不对称磨损。',
+                    '骶髂关节和腰椎旋转负担——复合代偿带来的连锁反应',
+                    '左右受力长期不均时，腰椎更容易跟着产生代偿性旋转，骶髂关节一侧受压更大，长期可能出现骶髂关节区域的隐痛，或腰椎小关节的不对称磨损。',
                     a.sit === 'shifted'
                 );
             }
@@ -4714,10 +4715,10 @@
         }
 
         function getReportVisualPrefix(subType) {
-            if (subType === 'lateral') return '横向型';
-            if (subType === 'oblique') return '斜轴型';
+            if (subType === 'lateral') return '高低差型';
+            if (subType === 'oblique') return '高低前后都有差型';
             if (subType === 'transition') return '方向待复核';
-            return '基线型';
+            return '前后差型';
         }
 
         function getReportReferenceImages(subType) {
@@ -4747,53 +4748,53 @@
 
         function buildReportHeroCopy({ subType, hasMeaningfulLateral, hasLateralClue, trainingStage }) {
             let title = '骨盆已经开始偏向一边';
-            let resultLine = '骨盆位置已经开始偏向一边。';
+            let resultLine = '这次筛查能看到骨盆前后和左右的偏差线索。';
 
             if (subType === 'transition') {
                 title = '左右差异已经出现，方向还需要复核';
-                resultLine = '这次能看到两边差异，但还不能直接写死成某一个固定方向。';
+                resultLine = '这次能看到两边差异，但还不建议直接写死成某一个结构方向。';
             } else if (subType === 'oblique' && hasMeaningfulLateral) {
-                title = '左边更高，也更靠前';
-                resultLine = '左侧位置更高，也更容易往前跑。';
+                title = '左边骨盆偏高，也更容易往前跑';
+                resultLine = '左边更容易又高、又往前，右边更像一直在下面撑着。';
             } else if (subType === 'lateral' && hasMeaningfulLateral) {
-                title = '左边偏高，身体两边用力已经开始偏向不同方向';
-                resultLine = '目前更明显的是左右高低差。';
+                title = '左边骨盆偏高';
+                resultLine = '目前更明显的是左右高低不一样。';
             } else if (subType === 'lateral' && hasLateralClue) {
                 title = '左边偏高的线索已经出现';
                 resultLine = '左右差异已经开始显出来了。';
             } else if (hasMeaningfulLateral) {
-                title = '左右位置已经开始偏向一边';
-                resultLine = '目前已经能看到明显的左右偏移。';
+                title = '左边更容易往前跑';
+                resultLine = '目前已经能看到明显的左右偏差。';
             } else if (hasLateralClue) {
-                title = '骨盆已经开始偏向一边';
-                resultLine = '左右差异已经有线索，但还没完全稳定。';
+                title = '左右差异已经开始出现';
+                resultLine = '已经有线索了，但还没完全稳定。';
             }
 
             const nextStepLine = trainingStage === 3
-                ? '基础位置已经更稳，可以开始更具体地处理左右偏移。'
-                : '现阶段先把骨盆带回比较中间的位置，把站姿和用力顺回来，再处理后面的左右偏移。';
+                ? '基础已经更稳，可以开始更具体地处理左右不平衡。'
+                : '现阶段先把站姿、承重和用力顺回来，再决定后面要不要做更细的结构复核。';
 
             return { title, resultLine, nextStepLine };
         }
 
         function buildCustomerResultCopy({ subType, compKey, resultLabel, trainingStage }) {
             const compressionText = compKey === 'posterior'
-                ? '骨盆前后位置不一样时，坐着和站着时下面的支撑会不平均，后腰就更容易先出来顶住，所以很多人最先感觉到的是坐久、站久后的腰紧。'
+                ? '当后腰、后背和腿后侧一直在帮你顶住时，坐着和站着时下面的支撑会不平均，所以很多人最先感觉到的是坐久、站久后的腰紧。'
                 : compKey === 'anterior'
-                    ? '骨盆前侧一直拉着时，髋前和大腿根会更容易先有感觉，所以久坐起身、抬腿和训练时，前侧常常比臀更早紧起来。'
+                    ? '当髋前和大腿前侧一直在把身体往前拉时，久坐起身、抬腿和训练时，前侧常常比臀更早紧起来。'
                     : '前后方向还需要继续观察，所以现在先把站姿、坐姿和复测做稳定。';
 
             const headlineMap = {
-                lateral: '这次更像左侧偏高。很多人最先不是从疼痛认出来，而是从裤腰、照片和站姿先认出来。',
-                oblique: '这次更像左侧又高又往前。你平时看到的，往往不是骨盆三个字，而是衣服、坐姿和拍照线条先变了。',
-                baseline: '这次更像右侧略高、左侧更容易往前。很多人会先觉得站久时左右不一样，或者提东西总爱用同一边。',
+                lateral: '这次更像左边骨盆偏高。很多人最先不是从疼痛认出来，而是从裤腰、照片和站姿先认出来。',
+                oblique: '这次更像左边骨盆偏高，也更容易往前跑。你平时先看到的，往往不是骨盆三个字，而是衣服、坐姿和拍照线条先变了。',
+                baseline: '这次更像左边更容易往前跑。很多人会先觉得站久时左右不一样，或者提东西总爱用同一边。',
                 transition: '这次已经能看到左右差异，但方向还不够稳定，所以现阶段更重要的是先把基础站姿和复测做稳。'
             };
 
             const lifeHookMap = {
                 lateral: '你可以先看三件小事：裤腰左侧是不是总更高一点；拍背面照时两边线条是不是不在一条水平线上；上楼时右脚那一下是不是总要追着身体走。',
-                oblique: '你可以先看三件小事：裤缝或裙缝是不是容易转歪；坐下后左边是不是更容易往前顶；拍照时左边是不是更容易显高、显抢眼。',
-                baseline: '你可以先看三件小事：裤腰是不是右边更容易偏高；站久后是不是更爱把身体放到右边；提包或抱东西时是不是更顺手用右侧。',
+                oblique: '你可以先看三件小事：裤缝或裙缝是不是容易转歪；坐下后左边是不是更容易先顶住；拍照时左边是不是更容易显高、显抢眼。',
+                baseline: '你可以先看三件小事：站久后是不是更爱把身体放到右边；左脚是不是更容易踩不满；提包或抱东西时是不是更顺手用右侧。',
                 transition: '你可以先看三件小事：拍背面照时两边是不是已经不太一样；久站后身体总偏哪边；2 到 4 周后再用同样角度复测一次。'
             };
 
@@ -4821,43 +4822,43 @@
                 ? {
                     short: '骨盆前倾',
                     value: '骨盆前倾',
-                    plain: '你的骨盆现在是前倾位，主要是髋前、大腿前侧和下腹这条线一直在往前拽。你更容易出现站直就顶腰、大腿根发紧、练臀桥或抬腿时总是大腿前侧先酸。',
-                    note: '前倾主要来自前侧拉扯，腰前侧和大腿根更容易先紧。'
+                    plain: '这次更像骨盆前倾，而且主要是髋前、大腿前侧和下腹这条线一直在把你往前拉。你更容易出现站直就顶腰、大腿根发紧、练臀桥或抬腿时总是大腿前侧先酸。',
+                    note: '更像前侧偏紧，容易把骨盆往前拉。'
                 }
                 : compKey === 'posterior'
                     ? {
                         short: '骨盆前倾',
                         value: '骨盆前倾',
-                        plain: '你的骨盆现在也是前倾位，但主要不是前侧在拉，而是后腰、后背和大腿后侧一直在往前顶。你更容易出现久站腰酸、后背发僵、屁股看着翘但真正先累的是腰和腿后侧。',
-                        note: '前倾主要来自后侧硬顶，腰后侧和腿后侧更容易先累。'
+                        plain: '这次也更像骨盆前倾，但主要不是前侧在拉，而是后腰、后背和大腿后侧一直在往前顶。你更容易出现久站腰酸、后背发僵、屁股看着翘但真正先累的是腰和腿后侧。',
+                        note: '更像后侧偏紧，容易把骨盆往前顶。'
                     }
                     : {
-                        short: '前后都不明显',
-                        value: '前后方向不明显',
+                        short: '骨盆前后方向待复核',
+                        value: '骨盆前后方向待复核',
                         plain: '你的前后紧张方向还不够明确，可能前侧和后侧都参与了。建议先做基础呼吸练习，2-4周后复测方向会更清晰。',
                         note: '前后方向还不够清楚，先把呼吸和站姿基础做稳。'
                     };
 
             const iliacForward = subtypeKey === 'baseline'
                 ? {
-                    short: '左前右后',
-                    value: '左侧骨盆在前',
-                    plain: '你的骨盆朝左前转，左侧骨盆在前，右侧相对在后。你更容易出现左脚踩不满、重心老往右脚跑、站久后右腿和右腰先累。',
-                    note: '左侧在前，重心很容易被推到右脚。'
+                    short: '左边更容易往前跑',
+                    value: '左边更容易往前跑',
+                    plain: '这次更像左边骨盆比右边更容易往前跑，右边更像在后面撑着。你更容易出现左脚踩不满、重心老往右脚跑、站久后右腿和右腰先累。',
+                    note: '左边更容易往前，重心很容易被推到右脚。'
                 }
                 : subtypeKey === 'lateral'
                     ? {
-                        short: '左高右低',
-                        value: '左侧骨盆偏高',
-                        plain: '你的骨盆主要问题是左高右低，左侧骨盆被提得更高。你更容易出现裤腰左边总往上跑、两侧腰线不齐，站久后右腿像一直在替左边撑着。',
-                        note: '左高右低时，右腿和右腰通常更像代偿侧。'
+                        short: '左边骨盆偏高',
+                        value: '左边骨盆偏高',
+                        plain: '这次更像左边骨盆偏高，右边相对更低。你更容易出现裤腰左边总往上跑、两侧腰线不齐，站久后右腿像一直在替左边撑着。',
+                        note: '左边偏高时，右腿和右腰通常更像补位的一侧。'
                     }
                     : subtypeKey === 'oblique'
                         ? {
-                            short: '左前左高',
-                            value: '左侧骨盆在前又偏高',
-                            plain: '你的骨盆朝左前上方偏，左侧骨盆同时在前又偏高。你更容易出现左边腰胯一直别着，右腿长期当主承重腿，走久、站久或单腿站时右侧先累。',
-                            note: '左边又高又前时，右侧承重链通常最吃力。'
+                            short: '左边骨盆偏高，也更容易往前跑',
+                            value: '左边骨盆偏高，也更容易往前跑',
+                            plain: '这次更像左边骨盆同时偏高、也更容易往前跑，右腿长期当主要承重腿。走久、站久或单腿站时，右侧更容易先累。',
+                            note: '左边又高又往前时，右侧承重链通常最吃力。'
                         }
                     : pecConfirmed
                         ? {
@@ -4875,17 +4876,17 @@
 
             const height = heightKey === 'rightHigh'
                 ? {
-                    short: '右高左低',
-                    value: '右侧略高',
-                    plain: '从高低看，右侧骨盆略高。常见表现是右边裤腰更容易往上跑，拍照时右边腰线更抢眼，也更容易把重量挂在右边。',
-                    note: '右侧略高时，身体通常更爱把重量挂到右边。'
+                    short: '右边骨盆偏高',
+                    value: '右边骨盆偏高',
+                    plain: '从高低看，右边骨盆更像偏高。常见表现是右边裤腰更容易往上跑，拍照时右边腰线更抢眼，也更容易把重量挂在右边。',
+                    note: '右边偏高时，身体通常更爱把重量留在右边。'
                 }
                 : heightKey === 'leftHigh'
                 ? {
-                    short: '左高右低',
-                    value: '左侧更高',
-                    plain: '从高低看，左侧骨盆更高。常见表现是左边腰线更高、裤腰左边更难拉平，这通常说明左脚没踩实，重量更多落在右脚。',
-                    note: '左侧更高往往伴随左脚不敢踩、右脚接管承重。'
+                    short: '左边骨盆偏高',
+                    value: '左边骨盆偏高',
+                    plain: '从高低看，左边骨盆更像偏高。常见表现是左边腰线更高、裤腰左边更难拉平，这通常说明左脚没踩实，重量更多落在右脚。',
+                    note: '左边偏高往往伴随左脚不敢踩、右脚接管承重。'
                 }
                 : pecConfirmed
                     ? {
@@ -4904,24 +4905,24 @@
             const bearing = dynamicBearing.loadSide === 'left'
                 ? subtypeKey === 'baseline'
                     ? {
-                        short: '先处理左前',
-                        value: '先把左侧前移拉回来',
-                        plain: '当前重点不是盲目练右边，而是先把左侧骨盆从前面拉回一点，再把左脚踩地补回来。左边不回位，右边就会一直替左边扛，右腰、右臀和右腿会反复累。',
-                        note: '先处理左前，再补左脚承重。'
+                        short: '先把左边带回中间',
+                        value: '先把左边带回中间',
+                        plain: '当前重点不是盲目练右边，而是先让左边别再一直往前跑，再把左脚踩地补回来。左边接不住，右边就会一直替左边扛，右腰、右臀和右腿会反复累。',
+                        note: '先把左边别再一直往前带，再补左脚承重。'
                     }
                     : subtypeKey === 'lateral'
                         ? {
-                            short: '先处理左高',
-                            value: '先把左侧高度降下来',
-                            plain: '当前重点是先把左侧骨盆的高度降下来，再把左脚承重补回来。左边一直高着，右腿和右腰就会一直被迫兜底，久站、上楼和走多都更容易累。',
-                            note: '先降左高，再补左脚承重。'
+                            short: '先把左边降下来',
+                            value: '先把左边降下来',
+                            plain: '当前重点是先把左边一直偏高的状态降下来，再把左脚承重补回来。左边一直高着，右腿和右腰就会一直被迫兜底，久站、上楼和走多都更容易累。',
+                            note: '先降左边，再补左脚承重。'
                         }
                         : subtypeKey === 'oblique'
                             ? {
-                                short: '先处理左前加左高',
-                                value: '先把左侧前移和抬高一起带回中间',
-                                plain: '当前重点是同时处理左侧骨盆前移和抬高，再重建左脚承重。左边不回中，右边就会一直当主承重腿，右腰、右臀外侧和右膝外侧更容易反复累。',
-                                note: '先把左边的前移和抬高一起拉回，再重建左侧承重。'
+                                short: '先处理左边又高又往前',
+                                value: '先处理左边又高又往前',
+                                plain: '当前重点是同时处理左边一直偏高、又老往前跑的习惯，再重建左脚承重。左边不回中，右边就会一直当主要承重腿，右腰、右臀外侧和右膝外侧更容易反复累。',
+                                note: '先把左边又高又往前的状态拉回来，再重建左侧承重。'
                             }
                             : {
                                 short: '先稳基础',
@@ -4942,11 +4943,11 @@
             ];
 
             if (subtypeKey === 'baseline') {
-                hitRules.unshift('三项测试组合显示：左侧更靠前，右侧相对更靠后。');
+                hitRules.unshift('三项测试组合显示：左边更容易往前跑，右边更像在后面撑着。');
             } else if (subtypeKey === 'lateral') {
-                hitRules.unshift('三项测试组合显示：左侧更高，右侧相对更低。');
+                hitRules.unshift('三项测试组合显示：左边更高，右边相对更低。');
             } else if (subtypeKey === 'oblique') {
-                hitRules.unshift('三项测试组合显示：左侧同时更高、也更靠前。');
+                hitRules.unshift('三项测试组合显示：左边同时更高，也更容易往前跑。');
             } else if (subtypeKey === 'transition') {
                 hitRules.unshift('三项测试都出现了左右差，但方向还不够一致，所以这次先不下固定结论。');
             }
@@ -4954,11 +4955,11 @@
             let headline = '前后和左右方向都还不太明确，建议先打基础';
             if (!frontBack.short.includes('不明显') || !iliacForward.short.includes('不明显')) {
                 if (subtypeKey === 'baseline') {
-                    headline = `${frontBack.value}，左侧骨盆在前，右侧略高`;
+                    headline = `${frontBack.value}，左边更容易往前跑`;
                 } else if (subtypeKey === 'lateral') {
-                    headline = `${frontBack.value}，左侧骨盆偏高`;
+                    headline = `${frontBack.value}，左边骨盆偏高`;
                 } else if (subtypeKey === 'oblique') {
-                    headline = `${frontBack.value}，左侧骨盆在前又偏高`;
+                    headline = `${frontBack.value}，左边骨盆偏高，也更容易往前跑`;
                 } else {
                     headline = `${frontBack.value}，${iliacForward.value}，${height.value}`;
                 }
@@ -4976,10 +4977,11 @@
         }
 
         function buildReportConclusion(directSummary, compKey, subtypeKey) {
-            const compLabel = compKey === 'anterior' || compKey === 'posterior' ? '骨盆前倾' : '方向待确认';
-            const subtypeLabel = subtypeKey === 'baseline' ? '左侧骨盆在前，右侧略高'
-                : subtypeKey === 'oblique' ? '左侧骨盆在前又偏高'
-                : subtypeKey === 'lateral' ? '左侧骨盆偏高'
+            const compLabel = compKey === 'anterior' || compKey === 'posterior' ? '骨盆前倾'
+                : '方向待确认';
+            const subtypeLabel = subtypeKey === 'baseline' ? '左边更容易往前跑'
+                : subtypeKey === 'oblique' ? '左边骨盆偏高，也更容易往前跑'
+                : subtypeKey === 'lateral' ? '左边骨盆偏高'
                 : '';
             const headline = subtypeLabel ? `${compLabel}，${subtypeLabel}` : compLabel;
             const caption = `${directSummary.frontBack.note} ${directSummary.iliacForward.note} ${directSummary.bearing.note}`;
@@ -5004,11 +5006,11 @@
             const tagColor = subtypeKey === 'baseline' ? '#0a84ff' : subtypeKey === 'oblique' ? '#ff9f0a' : subtypeKey === 'lateral' ? '#8b5cf6' : '#6b7280';
             let text = `${parts.join('，')}，提示存在左右不对称。`;
             if (subtypeKey !== 'unclear' && subtypeKey !== 'transition') {
-                text += ` 三项方向一致性较高，更接近${compLabel}叠加${subtypeKey === 'baseline' ? '基线型' : subtypeKey === 'lateral' ? '横向型' : '斜轴型'}。`;
+                text += ` 三项方向一致性较高，更接近${compLabel}叠加${subtypeKey === 'baseline' ? '左边更容易往前跑型' : subtypeKey === 'lateral' ? '左边偏高型' : '左边偏高又更容易往前跑型'}。`;
             }
             const tags = [
                 { label: compLabel !== '前后不明显' ? compLabel : '方向待复核', color: '#0a84ff' },
-                { label: routeIsolation.heightResult.key === 'rightHigh' ? '右高左低' : routeIsolation.heightResult.key === 'leftHigh' ? '左高右低' : '高低接近', color: tagColor }
+                { label: routeIsolation.heightResult.key === 'rightHigh' ? '右边偏高' : routeIsolation.heightResult.key === 'leftHigh' ? '左边偏高' : '高低接近', color: tagColor }
             ];
             return { text, tags };
         }
@@ -5271,9 +5273,9 @@
         function buildSubtypeBadge(comboKey, compKey) {
             const subType = getReportSubtype(comboKey);
             const subTypeConfig = {
-                baseline: { label: '右侧更稳、左侧更靠前', color: '#6b7280' },
-                lateral: { label: '左侧偏高、右侧偏低', color: '#6b7280' },
-                oblique: { label: '左侧偏高、也偏前', color: '#6b7280' },
+                baseline: { label: '左边更容易往前跑', color: '#6b7280' },
+                lateral: { label: '左边骨盆偏高', color: '#6b7280' },
+                oblique: { label: '左边偏高，也更容易往前跑', color: '#6b7280' },
                 transition: { label: '方向暂不判断', color: '#64748b' }
             };
             const compressionConfig = {
@@ -7255,7 +7257,7 @@
                 ? {
                     active: true,
                     side: 'left',
-                    label: subtypeKey === 'oblique' ? '左侧更高也更靠前' : '左侧更靠前'
+                    label: subtypeKey === 'oblique' ? '左侧复合代偿更明显' : '左侧代偿更明显'
                 }
                 : hintedRotation
                     ? {
@@ -7278,11 +7280,11 @@
             const summaryLabels = [
                 compressionType === 'posterior' ? '后腰容易顶住' : compressionType === 'anterior' ? '髋前容易拉紧' : '前后方向待确认',
                 heightResult.key === 'rightHigh'
-                    ? '右侧略高、左侧更前'
+                    ? '右侧挂重更明显'
                     : heightResult.key === 'leftHigh'
-                        ? (subtypeKey === 'oblique' ? '左侧又高又前' : '左侧偏高、右侧偏低')
+                        ? (subtypeKey === 'oblique' ? '左侧复合代偿更明显' : '左侧抬高倾向更明显')
                         : stableRotation
-                            ? '左侧更靠前'
+                            ? '左侧代偿更明显'
                             : unevenHeight
                                 ? '高低差已出现，方向暂不判断'
                                 : routeIsolation.hasLateralClue
